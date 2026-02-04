@@ -9,6 +9,7 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ['/api/', '/_next/'],
       },
     ],
+    host: 'https://dima-fomin.pl',
     sitemap: 'https://dima-fomin.pl/sitemap.xml',
   };
 }

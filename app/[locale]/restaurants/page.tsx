@@ -13,6 +13,17 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       title: t('restaurants.title'),
       description: t('restaurants.description'),
+      url: `https://dima-fomin.pl/${locale}/restaurants`,
+      type: 'website',
+    },
+    alternates: {
+      canonical: `https://dima-fomin.pl/${locale}/restaurants`,
+      languages: {
+        'pl': 'https://dima-fomin.pl/pl/restaurants',
+        'en': 'https://dima-fomin.pl/en/restaurants',
+        'ru': 'https://dima-fomin.pl/ru/restaurants',
+        'uk': 'https://dima-fomin.pl/uk/restaurants',
+      },
     },
   };
 }
