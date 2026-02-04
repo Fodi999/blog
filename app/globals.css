@@ -1,26 +1,247 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: 255 255 255;
+    --foreground: 17 24 39;
+    --muted: 107 114 128;
+    --muted-foreground: 75 85 99;
+    --card: 255 255 255;
+    --card-foreground: 10 10 10;
+    --primary: 220 38 38;
+    --primary-foreground: 255 255 255;
+    --primary-hover: 185 28 28;
+    --accent: 239 68 68;
+    --accent-foreground: 255 255 255;
+    --border: 229 231 235;
+    --input-border: 209 213 219;
+  }
+
+  .dark {
+    --background: 3 7 18;
+    --foreground: 243 244 246;
+    --muted: 156 163 175;
+    --muted-foreground: 209 213 219;
+    --card: 15 23 42;
+    --card-foreground: 250 250 250;
+    --primary: 239 68 68;
+    --primary-foreground: 255 255 255;
+    --primary-hover: 248 113 113;
+    --accent: 220 38 38;
+    --accent-foreground: 255 255 255;
+    --border: 30 41 59;
+    --input-border: 55 65 81;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@theme inline {
+  --color-background: rgb(var(--background));
+  --color-foreground: rgb(var(--foreground));
+  --color-muted: rgb(var(--muted));
+  --color-muted-foreground: rgb(var(--muted-foreground));
+  --color-card: rgb(var(--card));
+  --color-card-foreground: rgb(var(--card-foreground));
+  --color-primary: rgb(var(--primary));
+  --color-primary-foreground: rgb(var(--primary-foreground));
+  --color-primary-hover: rgb(var(--primary-hover));
+  --color-accent: rgb(var(--accent));
+  --color-accent-foreground: rgb(var(--accent-foreground));
+  --color-border: rgb(var(--border));
+  --color-input-border: rgb(var(--input-border));
 }
+
+* {
+  @apply border-gray-200 dark:border-gray-800;
+}
+
+body {
+  background-color: rgb(var(--background));
+  color: rgb(var(--foreground));
+  font-family: var(--font-inter), system-ui, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Theme-aware utility classes */
+.text-foreground {
+  color: rgb(var(--foreground));
+}
+
+.text-muted {
+  color: rgb(var(--muted-foreground));
+}
+
+.text-primary {
+  color: rgb(var(--primary));
+}
+
+.text-primary-hover:hover {
+  color: rgb(var(--primary-hover));
+}
+
+.bg-background {
+  background-color: rgb(var(--background));
+}
+
+.bg-card {
+  background-color: rgb(var(--card));
+}
+
+.border-border {
+  border-color: rgb(var(--border));
+}
+
+.bg-background-blur {
+  background-color: rgb(var(--background) / 0.9);
+}
+
+/* Link hover effect */
+.link-hover {
+  transition: color 0.2s ease;
+}
+
+.link-hover:hover {
+  color: rgb(var(--primary));
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, rgb(var(--foreground)) 0%, rgb(var(--primary)) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Card hover effects */
+article.group:hover {
+  --card-shadow: 0 10px 30px -5px rgb(var(--primary) / 0.15);
+  transform: translateY(-2px);
+}
+
+article.group {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Smooth transitions for theme switching */
+* {
+  @apply transition-colors duration-200;
+}
+
+/* Custom scrollbar for dark theme */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100 dark:bg-gray-900;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 dark:bg-gray-700 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-400 dark:bg-gray-600;
+}
+
+/* Selection colors */
+::selection {
+  @apply bg-red-100 dark:bg-red-900/30 text-red-900 dark:text-red-100;
+}
+
+/* Animations */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-in-from-top {
+  from {
+    transform: translateY(-10px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes spin-in {
+  from {
+    transform: rotate(-180deg);
+    opacity: 0;
+  }
+  to {
+    transform: rotate(0deg);
+    opacity: 1;
+  }
+}
+
+/* Premium Editorial Spacing */
+.editorial-section {
+  margin-top: 3rem;
+  padding-top: 3rem;
+  border-top: 1px solid rgb(var(--border) / 0.2);
+}
+
+.editorial-divider {
+  margin: 4rem 0;
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgb(var(--border) / 0.3) 20%, 
+    rgb(var(--border) / 0.3) 80%, 
+    transparent
+  );
+}
+
+/* Error/Warning List Styling */
+.mistake-list li {
+  margin-bottom: 1.5rem;
+  line-height: 1.8;
+}
+
+.mistake-list li strong {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 1.05em;
+}
+
+
+.animate-in {
+  animation-fill-mode: both;
+}
+
+.fade-in {
+  animation: fade-in 0.2s ease-out;
+}
+
+.slide-in-from-top-2 {
+  animation: slide-in-from-top 0.2s ease-out;
+}
+
+.spin-in-180 {
+  animation: spin-in 0.3s ease-out;
+}
+
+.duration-200 {
+  animation-duration: 0.2s;
+}
+
+.duration-300 {
+  animation-duration: 0.3s;
+}
+
+.animate-in {
+  animation: fade-in 0.2s ease-out, slide-in-from-top-2 0.2s ease-out;
+}
+
+.fade-in {
+  animation: fade-in 0.2s ease-out;
+}
+
+.slide-in-from-top-2 {
+  animation: slide-in-from-top 0.2s ease-out;
+}
+

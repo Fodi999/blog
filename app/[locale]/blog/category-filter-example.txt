@@ -1,0 +1,9 @@
+// Пример для будущей фильтрации по категориям
+// В app/[locale]/blog/page.tsx можно добавить:
+
+const searchParams = await props.searchParams;
+const categoryFilter = searchParams?.category;
+
+const filteredPosts = categoryFilter 
+  ? allPosts.filter(post => post.category === categoryFilter)
+  : allPosts;

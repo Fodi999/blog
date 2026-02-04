@@ -1,0 +1,93 @@
+import type { Metadata } from "next";
+import { NextIntlClientProvider } from 'next-intl';
+import { getMessages, getTranslations } from 'next-intl/server';
+import { Inter, Noto_Sans_JP } from 'next/font/google';
+import { Header } from '@/components/Header';
+import { Footer } from '@/components/Footer';
+import { Providers } from '@/components/Providers';
+import { notFound } from 'next/navigation';
+import { locales } from '@/i18n';
+import '../globals.css';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'metadata' });
+
+  return {
+    title: t('title'),
+    description: t('description'),
+    metadataBase: new URL('https://dima-fomin.pl'),
+    openGraph: {
+      title: t('title'),
+      description: t('description'),
+      images: ['https://i.postimg.cc/RCf8VLFn/DSCF4639.jpg'],
+      locale: locale,
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: t('title'),
+      description: t('description'),
+      images: ['https://i.postimg.cc/RCf8VLFn/DSCF4639.jpg'],
+    },
+    alternates: {
+      languages: {
+        'pl': '/pl',
+        'en': '/en',
+        'ru': '/ru',
+        'uk': '/uk',
+      },
+    },
+  };
+}
+
+const inter = Inter({ 
+  subsets: ["latin", "cyrillic"],
+  variable: '--font-inter',
+});
+
+const notoSansJP = Noto_Sans_JP({ 
+  subsets: ["latin"],
+  variable: '--font-noto-sans-jp',
+  weight: ['400', '500', '700'],
+});
+
+export function generateStaticParams() {
+  return locales.map((locale) => ({ locale }));
+}
+
+export default async function LocaleLayout({
+  children,
+  params,
+}: {
+  children: React.ReactNode;
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  
+  if (!locales.includes(locale as any)) {
+    notFound();
+  }
+
+  const messages = await getMessages({ locale });
+
+  return (
+    <html lang={locale} suppressHydrationWarning className={`${inter.variable} ${notoSansJP.variable}`}>
+      <body className="antialiased min-h-screen">
+        <Providers>
+          <NextIntlClientProvider messages={messages}>
+            <Header />
+            <main className="container mx-auto px-4 py-8">
+              {children}
+            </main>
+            <Footer />
+          </NextIntlClientProvider>
+        </Providers>
+      </body>
+    </html>
+  );
+}

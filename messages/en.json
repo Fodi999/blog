@@ -1,0 +1,88 @@
+{
+  "metadata": {
+    "title": "Dima Fomin - Sushi Chef & Food Technologist",
+    "description": "Expert in sushi art, Japanese cuisine, and culinary technology. Sharing professional experience and mastery secrets.",
+    "blog": {
+      "title": "Sushi & Japanese Cuisine Blog | Dima Fomin",
+      "description": "Professional articles about sushi, Japanese knives, and culinary techniques from a chef with European experience."
+    },
+    "about": {
+      "title": "About Me - Dima Fomin | Sushi Chef",
+      "description": "My story, experience in top European restaurants, and approach to Japanese cuisine."
+    },
+    "contact": {
+      "title": "Contact | Dima Fomin",
+      "description": "Get in touch for consultations, training, or collaboration."
+    }
+  },
+  "nav": {
+    "home": "Home",
+    "blog": "Blog",
+    "about": "About",
+    "contact": "Contact"
+  },
+  "home": {
+    "hero": {
+      "title": "Dima Fomin",
+      "subtitle": "Sushi Chef • Japanese Cuisine • Food Technologist",
+      "tagline": "Perfect rice. Master's technique. Sushi without compromise.",
+      "philosophy": "Sushi starts with technique. I show how professionals do it."
+    },
+    "latestPosts": "Latest Articles",
+    "featuredArticle": "Featured Article",
+    "readMore": "Read more",
+    "allArticles": "See all articles",
+    "aboutSection": {
+      "title": "About Me",
+      "description": "I'm a sushi chef with a passion for Japanese cuisine and modern culinary technology. I've worked in Europe's finest restaurants and now share my expertise."
+    }
+  },
+  "blog": {
+    "title": "Blog",
+    "allPosts": "All Articles",
+    "readMore": "Read more",
+    "backToBlog": "Back to blog",
+    "authorRole": "Sushi Chef & Culinary Expert",
+    "moreFromCategory": "→ More from",
+    "allArticles": "All articles"
+  },
+  "about": {
+    "title": "About Me",
+    "subtitle": "Sushi Chef & Food Technologist",
+    "journey": {
+      "title": "My Journey",
+      "content": "I've dedicated my life to mastering the art of sushi and Japanese cuisine. With years of experience working in top restaurants across Europe, I've developed a deep understanding of both traditional techniques and modern culinary innovation."
+    },
+    "expertise": {
+      "title": "Expertise",
+      "items": [
+        "Traditional sushi preparation and presentation",
+        "Japanese knife skills and technique",
+        "Fish and seafood selection",
+        "Kitchen automation and technology",
+        "Culinary education and training"
+      ]
+    },
+    "mission": {
+      "title": "Mission",
+      "content": "Through this blog, I share my knowledge and passion for Japanese cuisine, helping aspiring chefs and food enthusiasts master the art of sushi and understand the technology behind modern kitchens."
+    },
+    "gallery": "Gallery"
+  },
+  "contact": {
+    "title": "Contact",
+    "description": "Get in touch with me",
+    "email": {
+      "title": "Email",
+      "primary": "fodi85999@gmail.com"
+    },
+    "social": {
+      "title": "Social Media",
+      "instagram": "Instagram: @fodifood",
+      "instagramUrl": "https://www.instagram.com/fodifood?igsh=aXZqbjZmNWhsNzNn"
+    }
+  },
+  "footer": {
+    "rights": "© 2026 Dima Fomin. All rights reserved."
+  }
+}
