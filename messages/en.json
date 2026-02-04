@@ -13,13 +13,18 @@
     "contact": {
       "title": "Contact | Dima Fomin",
       "description": "Get in touch for consultations, training, or collaboration."
+    },
+    "restaurants": {
+      "title": "Solutions for Restaurants | Dima Fomin",
+      "description": "Modern online ordering systems and websites for restaurants. See demo and order your own solution."
     }
   },
   "nav": {
     "home": "Home",
     "blog": "Blog",
     "about": "About",
-    "contact": "Contact"
+    "contact": "Contact",
+    "restaurants": "For Restaurants"
   },
   "home": {
     "hero": {
@@ -35,6 +40,11 @@
     "aboutSection": {
       "title": "About Me",
       "description": "I'm a sushi chef with a passion for Japanese cuisine and modern culinary technology. I've worked in Europe's finest restaurants and now share my expertise."
+    },
+    "restaurantsTeaser": {
+      "title": "Technologies for Restaurants",
+      "description": "Check out the systems I design and test in real conditions.",
+      "link": "View Demo →"
     }
   },
   "blog": {
@@ -84,5 +94,50 @@
   },
   "footer": {
     "rights": "© 2026 Dima Fomin. All rights reserved."
+  },
+  "restaurants": {
+    "title": "Solutions for Restaurants",
+    "subtitle": "I design modern websites and online ordering systems for restaurants. All solutions are tested in real conditions.",
+    "viewDemo": "View Demo",
+    "order": "I want this system",
+    "features": {
+      "mobile": {
+        "title": "Mobile-first",
+        "description": "Responsive systems adapted for smartphones and tablets"
+      },
+      "orders": {
+        "title": "Order System",
+        "description": "Complete process from menu to delivery status"
+      },
+      "tested": {
+        "title": "Tested",
+        "description": "All solutions work in real restaurants"
+      }
+    },
+    "demos": {
+      "title": "Available Solutions",
+      "subtitle": "See working systems and order your own version",
+      "comingSoon": "Coming Soon",
+      "sushi": {
+        "badge": "Demo Available",
+        "title": "Sushi Delivery System",
+        "description": "Complete online ordering system for sushi restaurant with menu, cart and order status.",
+        "features": {
+          "menu": "Interactive menu with categories and photos",
+          "cart": "Shopping cart with price and delivery calculation",
+          "status": "Real-time order status tracking",
+          "mobile": "Fully responsive design"
+        }
+      },
+      "next": {
+        "title": "Next Projects in Development",
+        "description": "Working on systems for other types of restaurants. Contact me for details."
+      }
+    },
+    "cta": {
+      "title": "Need Such a System?",
+      "description": "Write to me, we will discuss your needs and create a solution tailored to your restaurant.",
+      "button": "Get in Touch"
+    }
   }
 }

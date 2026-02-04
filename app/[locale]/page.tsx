@@ -102,6 +102,25 @@ export default async function HomePage({
         )}
       </section>
 
+      {/* Restaurant Solutions Teaser - B2B Section */}
+      <section className="py-12 bg-gradient-to-br from-red-500/10 to-orange-500/10 rounded-2xl px-8 mb-12">
+        <div className="max-w-3xl">
+          <h2 className="text-2xl md:text-3xl font-semibold mb-3 text-foreground">
+            {t('restaurantsTeaser.title')}
+          </h2>
+          <p className="text-lg text-muted mb-6">
+            {t('restaurantsTeaser.description')}
+          </p>
+          <Link
+            href="/restaurants"
+            className="inline-flex items-center gap-2 text-primary font-semibold text-lg hover:gap-3 transition-all group"
+          >
+            {t('restaurantsTeaser.link')}
+            <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+          </Link>
+        </div>
+      </section>
+
       {/* Latest Posts Grid */}
       <section className="py-12">
         <div className="flex items-center justify-between mb-8">

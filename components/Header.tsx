@@ -33,6 +33,10 @@ export async function Header() {
             {t('blog')}
             <span className="absolute -bottom-1 left-0 w-0 h-0.5 group-hover:w-full transition-all duration-200" style={{ backgroundColor: 'rgb(var(--primary))' }} />
           </Link>
+          <Link href="/restaurants" className="text-foreground link-hover relative group">
+            {t('restaurants')}
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 group-hover:w-full transition-all duration-200" style={{ backgroundColor: 'rgb(var(--primary))' }} />
+          </Link>
           <Link href="/about" className="text-foreground link-hover relative group">
             {t('about')}
             <span className="absolute -bottom-1 left-0 w-0 h-0.5 group-hover:w-full transition-all duration-200" style={{ backgroundColor: 'rgb(var(--primary))' }} />

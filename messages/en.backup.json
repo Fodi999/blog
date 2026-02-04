@@ -134,24 +134,7 @@
     "cta": {
       "title": "Potrzebujesz takiego systemu?",
       "description": "Napisz do mnie, omówimy Twoje potrzeby i stworzymy rozwiązanie dopasowane do Twojej restauracji.",
-      "button": "Skontaktuj się",
-      "enhanced": {
-        "badge": "Dla restauracji",
-        "title": "Gotowi zwiększyć zamówienia online bez prowizji agregatora?",
-        "description": "Własny system zamówień to 0% prowizji, pełna kontrola nad menu i cenami, bezpośredni kontakt z klientem.",
-        "primaryButton": "Zapytaj o wdrożenie",
-        "secondaryButton": "Zadaj pytanie",
-        "trust": {
-          "noCosts": "Bez ukrytych kosztów",
-          "fast": "Szybkie wdrożenie",
-          "support": "Wsparcie w PL"
-        }
-      }
-    },
-    "facts": {
-      "implementation": "Wdrożenie: 7–14 dni",
-      "languages": "PL / EN / RU",
-      "hosting": "Vercel"
+      "button": "Skontaktuj się"
     }
   },
   "footer": {
