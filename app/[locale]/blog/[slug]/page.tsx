@@ -135,7 +135,7 @@ export default async function BlogPostPage({
             <div className="flex items-center gap-4">
               <div className="w-16 h-16 rounded-full overflow-hidden ring-2 ring-red-500">
                 <Image
-                  src="https://i.postimg.cc/fWKbJXrD/Snimok-ekrana-2026-02-04-v-20-56-27.png"
+                  src="https://i.postimg.cc/W1KV4b43/logo1.webp"
                   alt="Chef Dima Fomin"
                   width={64}
                   height={64}

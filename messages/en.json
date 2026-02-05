@@ -30,8 +30,8 @@
     "hero": {
       "title": "Dima Fomin",
       "subtitle": "Sushi Chef • Japanese Cuisine • Food Technologist",
-      "tagline": "Perfect rice. Master's technique. Sushi without compromise.",
-      "philosophy": "Sushi starts with technique. I show how professionals do it."
+      "tagline": "The technique that holds professional kitchens together.",
+      "philosophy": "Practical knowledge that elevates dishes, processes, and business."
     },
     "latestPosts": "Latest Articles",
     "featuredArticle": "Featured Article",
@@ -39,11 +39,11 @@
     "allArticles": "See all articles",
     "aboutSection": {
       "title": "About Me",
-      "description": "I'm a sushi chef with a passion for Japanese cuisine and modern culinary technology. I've worked in Europe's finest restaurants and now share my expertise."
+      "description": "I'm a sushi chef with experience in Europe's finest restaurants, passionate about Japanese cuisine and modern culinary technology. Now sharing practical knowledge and professional expertise."
     },
     "restaurantsTeaser": {
       "title": "Technologies for Restaurants",
-      "description": "Check out the systems I design and test in real conditions.",
+      "description": "Check out the restaurant systems I design and test in real kitchen conditions.",
       "link": "View Demo →"
     }
   },
@@ -61,21 +61,63 @@
     "subtitle": "Sushi Chef & Food Technologist",
     "journey": {
       "title": "My Journey",
-      "content": "I've dedicated my life to mastering the art of sushi and Japanese cuisine. With years of experience working in top restaurants across Europe, I've developed a deep understanding of both traditional techniques and modern culinary innovation."
+      "content": "I am a professional sushi chef and food technologist with over 20 years of experience in gastronomy. My journey began with classical culinary education and led to work in restaurants and production kitchens across Poland, Lithuania, Estonia, Germany, France, and Canada.\n\nOver the years of practice, I have built a deep understanding of Japanese cuisine, product handling, and professional kitchen processes — from traditional techniques to modern technological solutions."
     },
     "expertise": {
       "title": "Expertise",
       "items": [
         "Traditional sushi preparation and presentation",
-        "Japanese knife skills and technique",
-        "Fish and seafood selection",
-        "Kitchen automation and technology",
-        "Culinary education and training"
+        "Professional Japanese knife work",
+        "Selection, processing, and quality control of fish and seafood",
+        "Development and implementation of new products",
+        "Setting up and optimizing kitchen processes",
+        "Kitchen automation and gastronomic technologies",
+        "Staff training and culinary mentoring",
+        "Working with HACCP standards"
       ]
     },
+    "experience": {
+      "title": "Work Experience",
+      "fishInHouse": {
+        "title": "FISH in HOUSE — Dnipro",
+        "role": "Head Chef / Technologist",
+        "period": "2018 – 2022",
+        "responsibilities": [
+          "New product development",
+          "Quality control and shelf life extension",
+          "Production process optimization",
+          "Equipment selection",
+          "Staff training",
+          "Sales volume management"
+        ]
+      },
+      "miodMalina": {
+        "title": "Restauracja Autorska \"Miód Malina\" — Zgorzelec, Poland",
+        "role": "Cook",
+        "period": "2017 – 2018"
+      },
+      "charlemagne": {
+        "title": "Restaurant Charlemagne — Agde, France",
+        "role": "Cook, seafood",
+        "period": "2022"
+      },
+      "wawel": {
+        "title": "Boulangerie Pâtisserie WAWEL — Montreal, Canada",
+        "role": "Cook",
+        "period": "2022 – 2023"
+      }
+    },
+    "education": {
+      "title": "Education",
+      "degree": "Certified Chef",
+      "school": "Vocational Technical School No. 53, Dnipro",
+      "period": "2002 – 2003",
+      "honors": "Graduated with honors",
+      "internship": "Internship at Charlie's restaurant"
+    },
     "mission": {
-      "title": "Mission",
-      "content": "Through this blog, I share my knowledge and passion for Japanese cuisine, helping aspiring chefs and food enthusiasts master the art of sushi and understand the technology behind modern kitchens."
+      "title": "My Mission",
+      "content": "Through this blog and projects, I share practical knowledge of professional kitchens. My goal is to help chefs, restaurants, and food enthusiasts understand the product, technique, and technology that modern gastronomy is built on.\n\nI believe that a strong kitchen starts not with a recipe, but with understanding the process."
     },
     "gallery": "Gallery"
   },
@@ -93,6 +135,8 @@
     }
   },
   "footer": {
+    "stats": "Visited by chefs and restaurateurs from different countries",
+    "viewPublicStats": "View statistics →",
     "rights": "© 2026 Dima Fomin. All rights reserved."
   },
   "restaurants": {
@@ -100,6 +144,9 @@
     "subtitle": "I design modern websites and online ordering systems for restaurants. All solutions are tested in real conditions.",
     "viewDemo": "View Demo",
     "order": "I want this system",
+    "whyWorks": {
+      "title": "Why This Works"
+    },
     "features": {
       "mobile": {
         "title": "Mobile-first",
@@ -135,9 +182,16 @@
       }
     },
     "cta": {
-      "title": "Need Such a System?",
-      "description": "Write to me, we will discuss your needs and create a solution tailored to your restaurant.",
-      "button": "Get in Touch"
+      "badge": "For Restaurants",
+      "title": "Ready to increase online orders without aggregator commissions?",
+      "description": "Your own online ordering system means: 0% commission, full control over menu and prices, direct contact with customers, independence from intermediary platforms.",
+      "button": "Request Implementation",
+      "buttonSecondary": "Ask a Question",
+      "benefits": {
+        "noHiddenCosts": "no hidden costs",
+        "fastImplementation": "fast implementation",
+        "supportPL": "support in Polish"
+      }
     }
   }
 }

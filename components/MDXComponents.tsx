@@ -49,7 +49,7 @@ export function ChefTip({ children }: ChefTipProps) {
             borderColor: 'rgb(var(--primary))'
           }}>
             <Image
-              src="https://i.postimg.cc/fWKbJXrD/Snimok-ekrana-2026-02-04-v-20-56-27.png"
+              src="https://i.postimg.cc/W1KV4b43/logo1.webp"
               alt="Chef Dima Fomin"
               width={48}
               height={48}

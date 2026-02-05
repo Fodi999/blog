@@ -20,7 +20,7 @@ export function PostCard({ slug, title, excerpt, date, category, readTime, cover
       }}>
         {/* Cover Image */}
         {coverImage && (
-          <div className="relative w-full h-48 overflow-hidden">
+          <div className="relative w-full h-40 sm:h-48 overflow-hidden">
             <Image
               src={coverImage}
               alt={title}
@@ -31,10 +31,10 @@ export function PostCard({ slug, title, excerpt, date, category, readTime, cover
           </div>
         )}
         
-        <div className="p-6">
+        <div className="p-4 sm:p-5 md:p-6">
           {/* Category Badge */}
-          <div className="mb-4">
-            <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold tracking-wide" style={{
+          <div className="mb-3 md:mb-4">
+            <span className="inline-block px-2.5 md:px-3 py-1 rounded-full text-[10px] md:text-xs font-semibold tracking-wide" style={{
               backgroundColor: 'rgb(var(--primary) / 0.1)',
               color: 'rgb(var(--primary))'
             }}>
@@ -43,24 +43,24 @@ export function PostCard({ slug, title, excerpt, date, category, readTime, cover
           </div>
           
           {/* Title */}
-          <h3 className="text-xl font-bold mb-3 text-foreground group-hover:text-primary transition-colors leading-tight">
+          <h3 className="text-lg sm:text-xl font-bold mb-2 md:mb-3 text-foreground group-hover:text-primary transition-colors leading-tight">
             {title}
           </h3>
           
           {/* Excerpt */}
-          <p className="text-muted line-clamp-2 mb-4 text-sm leading-relaxed">
+          <p className="text-muted line-clamp-2 mb-3 md:mb-4 text-sm leading-relaxed">
             {excerpt}
           </p>
           
           {/* Meta Info */}
-          <div className="flex items-center gap-4 text-xs text-muted pt-3 border-t border-border">
+          <div className="flex items-center gap-3 md:gap-4 text-xs text-muted pt-2 md:pt-3 border-t border-border">
             <div className="flex items-center gap-1.5">
-              <Calendar className="h-3.5 w-3.5" />
+              <Calendar className="h-3 w-3 md:h-3.5 md:w-3.5" />
               <time dateTime={date}>{date}</time>
             </div>
             {readTime && (
               <div className="flex items-center gap-1.5">
-                <Clock className="h-3.5 w-3.5" />
+                <Clock className="h-3 w-3 md:h-3.5 md:w-3.5" />
                 <span>{readTime}</span>
               </div>
             )}

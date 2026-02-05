@@ -30,8 +30,8 @@
     "hero": {
       "title": "Dima Fomin",
       "subtitle": "Sushi Chef • Japanese Cuisine • Food Technologist",
-      "tagline": "Perfekcyjny ryż. Technika mistrza. Sushi bez kompromisów.",
-      "philosophy": "Sushi zaczyna się od techniki. Pokazuję, jak robią to profesjonaliści."
+      "tagline": "Technika, na której opiera się profesjonalna kuchnia.",
+      "philosophy": "Praktyczna wiedza, która podnosi poziom potraw, procesów i biznesu."
     },
     "latestPosts": "Najnowsze artykuły",
     "featuredArticle": "Wyróżniony artykuł",
@@ -39,11 +39,11 @@
     "allArticles": "Zobacz wszystkie artykuły",
     "aboutSection": {
       "title": "O mnie",
-      "description": "Jestem sushi chefem z pasją do japońskiej kuchni i nowoczesnych technologii kulinarnych. Pracowałem w najlepszych restauracjach Europy i teraz dzielę się swoją wiedzą."
+      "description": "Jestem sushi chefem z doświadczeniem w najlepszych restauracjach Europy, pasjonatem japońskiej kuchni i nowoczesnych technologii kulinarnych. Teraz dzielę się praktyczną wiedzą i profesjonalnym doświadczeniem."
     },
     "restaurantsTeaser": {
       "title": "Technologie dla restauracji",
-      "description": "Sprawdź systemy, które projektuję i testuję w realnych warunkach.",
+      "description": "Sprawdź systemy dla restauracji, które projektuję i testuję w rzeczywistych warunkach kuchni.",
       "link": "Zobacz demo →"
     }
   },
@@ -58,24 +58,66 @@
   },
   "about": {
     "title": "O mnie",
-    "subtitle": "Sushi Chef & Food Technologist",
+    "subtitle": "Sushi Chef i Technolog Żywności",
     "journey": {
       "title": "Moja Droga",
-      "content": "Poświęciłem swoje życie opanowaniu sztuki sushi i kuchni japońskiej. Przez lata doświadczenia w najlepszych restauracjach Europy rozwinąłem głębokie zrozumienie zarówno tradycyjnych technik, jak i nowoczesnych innowacji kulinarnych."
+      "content": "Jestem profesjonalnym sushi chefem i technologiem żywności z ponad 20-letnim doświadczeniem w gastronomii. Moja droga rozpoczęła się od klasycznego wykształcenia kulinarnego i doprowadziła do pracy w restauracjach i kuchniach produkcyjnych w Polsce, Litwie, Estonii, Niemczech, Francji i Kanadzie.\n\nPrzez lata praktyki zbudowałem głębokie zrozumienie kuchni japońskiej, pracy z produktem i procesów profesjonalnej kuchni — od tradycyjnych technik po nowoczesne rozwiązania technologiczne."
     },
     "expertise": {
       "title": "Ekspertyza",
       "items": [
-        "Tradycyjne przygotowanie i prezentacja sushi",
-        "Umiejętności posługiwania się japońskimi nożami",
-        "Wybór ryb i owoców morza",
-        "Automatyzacja kuchni i technologia",
-        "Edukacja kulinarna i szkolenia"
+        "Tradycyjne przygotowanie i podanie sushi",
+        "Profesjonalna praca z japońskimi nożami",
+        "Wybór, obróbka i kontrola jakości ryb i owoców morza",
+        "Opracowywanie i wdrażanie nowych produktów",
+        "Konfiguracja i optymalizacja procesów kuchennych",
+        "Automatyzacja kuchni i technologie gastronomiczne",
+        "Szkolenie personelu i mentoring kulinarny",
+        "Praca według standardów HACCP"
       ]
     },
+    "experience": {
+      "title": "Doświadczenie zawodowe",
+      "fishInHouse": {
+        "title": "FISH in HOUSE — Dniepr",
+        "role": "Szef kuchni / Technolog",
+        "period": "2018 – 2022",
+        "responsibilities": [
+          "Opracowywanie nowych produktów",
+          "Kontrola jakości i przedłużanie trwałości",
+          "Optymalizacja procesów produkcyjnych",
+          "Dobór sprzętu",
+          "Szkolenie personelu",
+          "Zarządzanie wolumenem sprzedaży"
+        ]
+      },
+      "miodMalina": {
+        "title": "Restauracja Autorska \"Miód Malina\" — Zgorzelec, Polska",
+        "role": "Kucharz",
+        "period": "2017 – 2018"
+      },
+      "charlemagne": {
+        "title": "Restaurant Charlemagne — Agde, Francja",
+        "role": "Kucharz, owoce morza",
+        "period": "2022"
+      },
+      "wawel": {
+        "title": "Boulangerie Pâtisserie WAWEL — Montreal, Kanada",
+        "role": "Kucharz",
+        "period": "2022 – 2023"
+      }
+    },
+    "education": {
+      "title": "Wykształcenie",
+      "degree": "Dyplomowany kucharz",
+      "school": "Technikum Zawodowe Nr 53, Dniepr",
+      "period": "2002 – 2003",
+      "honors": "Ukończenie z wyróżnieniem",
+      "internship": "Staż w restauracji Charlie's"
+    },
     "mission": {
-      "title": "Misja",
-      "content": "Przez ten blog dzielę się moją wiedzą i pasją do kuchni japońskiej, pomagając aspirującym szefom kuchni i entuzjastom jedzenia opanować sztukę sushi i zrozumieć technologię stojącą za nowoczesnymi kuchniami."
+      "title": "Moja Misja",
+      "content": "Poprzez ten blog i projekty dzielę się praktyczną wiedzą z profesjonalnej kuchni. Moim celem jest pomoc kucharzom, restauracjom i entuzjastom jedzenia w zrozumieniu produktu, techniki i technologii, na których opiera się współczesna gastronomia.\n\nWierzę, że silna kuchnia zaczyna się nie od przepisu, ale od zrozumienia procesu."
     },
     "gallery": "Galeria"
   },
@@ -97,6 +139,9 @@
     "subtitle": "Projektuję nowoczesne strony i systemy zamówień online dla gastronomii. Wszystkie rozwiązania testuję w realnych warunkach.",
     "viewDemo": "Zobacz demo",
     "order": "Chcę taki system",
+    "whyWorks": {
+      "title": "Dlaczego to działa"
+    },
     "features": {
       "mobile": {
         "title": "Mobile-first",
@@ -132,20 +177,15 @@
       }
     },
     "cta": {
-      "title": "Potrzebujesz takiego systemu?",
-      "description": "Napisz do mnie, omówimy Twoje potrzeby i stworzymy rozwiązanie dopasowane do Twojej restauracji.",
-      "button": "Skontaktuj się",
-      "enhanced": {
-        "badge": "Dla restauracji",
-        "title": "Gotowi zwiększyć zamówienia online bez prowizji agregatora?",
-        "description": "Własny system zamówień to 0% prowizji, pełna kontrola nad menu i cenami, bezpośredni kontakt z klientem.",
-        "primaryButton": "Zapytaj o wdrożenie",
-        "secondaryButton": "Zadaj pytanie",
-        "trust": {
-          "noCosts": "Bez ukrytych kosztów",
-          "fast": "Szybkie wdrożenie",
-          "support": "Wsparcie w PL"
-        }
+      "badge": "Dla restauracji",
+      "title": "Gotowi zwiększyć zamówienia online bez prowizji agregatora?",
+      "description": "Własny system zamówień online to: 0% prowizji, pełna kontrola nad menu i cenami, bezpośredni kontakt z klientami, niezależność od platform-pośredników.",
+      "button": "Zapytaj o wdrożenie",
+      "buttonSecondary": "Zadaj pytanie",
+      "benefits": {
+        "noHiddenCosts": "bez ukrytych kosztów",
+        "fastImplementation": "szybkie wdrożenie",
+        "supportPL": "wsparcie po polsku"
       }
     },
     "facts": {
@@ -155,6 +195,8 @@
     }
   },
   "footer": {
+    "stats": "Stronę odwiedzają szefowie kuchni i restauratorzy z różnych krajów",
+    "viewPublicStats": "Zobacz statystyki →",
     "rights": "© 2026 Dima Fomin. Wszelkie prawa zastrzeżone."
   }
 }
