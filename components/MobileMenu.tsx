@@ -11,6 +11,9 @@ export function MobileMenu() {
   const t = useTranslations('nav');
   const pathname = usePathname();
 
+  // Remove locale prefix from pathname for comparison
+  const cleanPathname = pathname?.replace(/^\/(ru|en|pl|uk)/, '') || '/';
+
   // Close menu when route changes
   useEffect(() => {
     setIsOpen(false);
@@ -78,7 +81,7 @@ export function MobileMenu() {
               <Link
                 href="/"
                 className={`group text-foreground hover:text-primary hover:bg-primary/5 transition-all py-3 px-4 text-base font-medium rounded-lg ${
-                  pathname === '/' || pathname?.match(/^\/[a-z]{2}\/?$/) ? 'bg-primary/10 text-primary' : ''
+                  cleanPathname === '/' ? 'bg-primary/10 text-primary' : ''
                 }`}
               >
                 <div className="flex flex-col">
@@ -89,7 +92,7 @@ export function MobileMenu() {
               <Link
                 href="/blog"
                 className={`group text-foreground hover:text-primary hover:bg-primary/5 transition-all py-3 px-4 text-base font-medium rounded-lg ${
-                  pathname?.includes('/blog') ? 'bg-primary/10 text-primary' : ''
+                  cleanPathname.startsWith('/blog') ? 'bg-primary/10 text-primary' : ''
                 }`}
               >
                 <div className="flex flex-col">
@@ -100,7 +103,7 @@ export function MobileMenu() {
               <Link
                 href="/restaurants"
                 className={`group text-foreground hover:text-primary hover:bg-primary/5 transition-all py-3 px-4 text-base font-medium rounded-lg ${
-                  pathname?.includes('/restaurants') ? 'bg-primary/10 text-primary' : ''
+                  cleanPathname.startsWith('/restaurants') ? 'bg-primary/10 text-primary' : ''
                 }`}
               >
                 <div className="flex flex-col">
@@ -111,7 +114,7 @@ export function MobileMenu() {
               <Link
                 href="/about"
                 className={`group text-foreground hover:text-primary hover:bg-primary/5 transition-all py-3 px-4 text-base font-medium rounded-lg ${
-                  pathname?.includes('/about') ? 'bg-primary/10 text-primary' : ''
+                  cleanPathname.startsWith('/about') ? 'bg-primary/10 text-primary' : ''
                 }`}
               >
                 <div className="flex flex-col">
@@ -122,7 +125,7 @@ export function MobileMenu() {
               <Link
                 href="/contact"
                 className={`group text-foreground hover:text-primary hover:bg-primary/5 transition-all py-3 px-4 text-base font-medium rounded-lg ${
-                  pathname?.includes('/contact') ? 'bg-primary/10 text-primary' : ''
+                  cleanPathname.startsWith('/contact') ? 'bg-primary/10 text-primary' : ''
                 }`}
               >
                 <div className="flex flex-col">
