@@ -79,7 +79,7 @@ export default async function HomePage({
         
         {latestPosts.length > 0 && (
           <div className="mb-8 md:mb-12 px-4">
-            <Link href={`/${locale}/blog/${latestPosts[0].slug}`} className="block group">
+            <Link href={`/blog/${latestPosts[0].slug}`} className="block group">
               <div className="bg-card border border-border rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300">
                 {latestPosts[0].coverImage && (
                   <div className="relative h-[250px] sm:h-[300px] md:h-[400px] overflow-hidden">
@@ -137,7 +137,7 @@ export default async function HomePage({
         <div className="flex items-center justify-between mb-6 md:mb-8">
           <h2 className="text-2xl md:text-3xl font-bold text-foreground">{t('latestPosts')}</h2>
           <Link 
-            href={`/${locale}/blog`}
+            href="/blog"
             className="flex items-center gap-2 text-primary link-hover font-medium text-sm md:text-base"
           >
             {t('allArticles')}

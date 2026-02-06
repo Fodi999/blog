@@ -15,8 +15,10 @@ interface PostCardProps {
 }
 
 export function PostCard({ slug, title, excerpt, date, category, series, seriesOrder, readTime, coverImage }: PostCardProps) {
+  const href = `/blog/${slug}` as const;
+  
   return (
-    <Link href={`/blog/${slug}`}>
+    <Link href={href}>
       <article className="group border border-border rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 bg-card cursor-pointer" style={{
         boxShadow: 'var(--card-shadow, 0 0 0 rgba(0,0,0,0))'
       }}>

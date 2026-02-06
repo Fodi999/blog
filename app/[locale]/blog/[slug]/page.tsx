@@ -70,7 +70,7 @@ export default async function BlogPostPage({
   return (
     <div className="max-w-4xl mx-auto">
       <Link 
-        href={`/${locale}/blog`}
+        href="/blog"
         className="inline-flex items-center gap-2 text-primary link-hover mb-8"
       >
         <ArrowLeft className="h-4 w-4" />
@@ -151,13 +151,13 @@ export default async function BlogPostPage({
             {/* CTA */}
             <div className="flex flex-col items-start md:items-end gap-2">
               <a 
-                href={`/${locale}/blog?category=${encodeURIComponent(post.category)}`}
+                href={`/blog?category=${encodeURIComponent(post.category)}`}
                 className="text-primary hover:text-primary-hover transition-colors font-medium"
               >
                 {t('moreFromCategory')} {post.category}
               </a>
               <a 
-                href={`/${locale}/blog`}
+                href="/blog"
                 className="text-sm text-muted hover:text-foreground transition-colors"
               >
                 {t('allArticles')}
