@@ -24,14 +24,20 @@
     "blog": "Blog",
     "about": "About",
     "contact": "Contact",
-    "restaurants": "For Restaurants"
+    "restaurants": "For Restaurants",
+    "homeDesc": "Professional kitchen",
+    "blogDesc": "Articles & knowledge",
+    "aboutDesc": "20+ years experience",
+    "contactDesc": "Get in touch",
+    "restaurantsDesc": "Business solutions"
   },
   "home": {
     "hero": {
       "title": "Dima Fomin",
       "subtitle": "Sushi Chef • Japanese Cuisine • Food Technologist",
       "tagline": "The technique that holds professional kitchens together.",
-      "philosophy": "Practical knowledge that elevates dishes, processes, and business."
+      "philosophy": "Practical knowledge that elevates dishes, processes, and business.",
+      "cta": "For Restaurants →"
     },
     "latestPosts": "Latest Articles",
     "featuredArticle": "Featured Article",
@@ -144,6 +150,11 @@
     "subtitle": "I design modern websites and online ordering systems for restaurants. All solutions are tested in real conditions.",
     "viewDemo": "View Demo",
     "order": "I want this system",
+    "trust": {
+      "mainMessage": "Solutions designed by a chef, not an IT agency",
+      "point1": "20+ years of experience in gastronomy",
+      "point2": "Tested in a real kitchen"
+    },
     "whyWorks": {
       "title": "Why This Works"
     },

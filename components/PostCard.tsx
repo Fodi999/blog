@@ -1,5 +1,5 @@
 import { Link } from '@/i18n/routing';
-import { Calendar, Clock } from 'lucide-react';
+import { Calendar, Clock, BookOpen } from 'lucide-react';
 import Image from 'next/image';
 
 interface PostCardProps {
@@ -8,11 +8,13 @@ interface PostCardProps {
   excerpt: string;
   date: string;
   category: string;
+  series?: string;
+  seriesOrder?: number;
   readTime?: string;
   coverImage?: string;
 }
 
-export function PostCard({ slug, title, excerpt, date, category, readTime, coverImage }: PostCardProps) {
+export function PostCard({ slug, title, excerpt, date, category, series, seriesOrder, readTime, coverImage }: PostCardProps) {
   return (
     <Link href={`/blog/${slug}`}>
       <article className="group border border-border rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 bg-card cursor-pointer" style={{
@@ -32,14 +34,22 @@ export function PostCard({ slug, title, excerpt, date, category, readTime, cover
         )}
         
         <div className="p-4 sm:p-5 md:p-6">
-          {/* Category Badge */}
-          <div className="mb-3 md:mb-4">
+          {/* Category Badge and Series Badge */}
+          <div className="mb-3 md:mb-4 flex flex-wrap items-center gap-2">
             <span className="inline-block px-2.5 md:px-3 py-1 rounded-full text-[10px] md:text-xs font-semibold tracking-wide" style={{
               backgroundColor: 'rgb(var(--primary) / 0.1)',
               color: 'rgb(var(--primary))'
             }}>
               {category}
             </span>
+            
+            {/* Series Badge */}
+            {series && (
+              <span className="inline-flex items-center gap-1 px-2.5 md:px-3 py-1 rounded-full text-[10px] md:text-xs font-semibold tracking-wide bg-foreground/10 text-foreground">
+                <BookOpen className="h-2.5 w-2.5 md:h-3 md:w-3" />
+                {series} {seriesOrder && `#${seriesOrder}`}
+              </span>
+            )}
           </div>
           
           {/* Title */}

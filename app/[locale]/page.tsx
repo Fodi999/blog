@@ -55,6 +55,17 @@ export default async function HomePage({
           alt="Dima Fomin - Sushi Chef"
           priority
         />
+        
+        {/* CTA Button */}
+        <div className="mt-8 md:mt-12 px-4 flex justify-center">
+          <Link 
+            href="/restaurants"
+            className="inline-flex items-center gap-2 px-6 md:px-8 py-3 md:py-4 bg-primary text-white font-bold text-base md:text-lg rounded-lg hover:bg-primary/90 transition-all duration-200 shadow-lg hover:shadow-xl"
+          >
+            {t('hero.cta')}
+            <ArrowRight className="h-5 w-5" />
+          </Link>
+        </div>
       </section>
 
       {/* Featured Article - Large & Prominent */}

@@ -52,6 +52,36 @@ export default async function RestaurantsPage() {
         </div>
       </section>
 
+      {/* TRUST BLOCK - Key differentiator */}
+      <section className="relative">
+        <div className="max-w-3xl mx-auto">
+          <div className="bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border-2 border-primary/20 rounded-2xl p-6 md:p-8 lg:p-10">
+            <div className="space-y-4 md:space-y-6">
+              {/* Main message */}
+              <blockquote className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground leading-tight">
+                "{t('trust.mainMessage')}"
+              </blockquote>
+              
+              {/* Key points */}
+              <div className="grid sm:grid-cols-2 gap-3 md:gap-4 pt-4">
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="h-5 w-5 text-primary flex-shrink-0 mt-1" />
+                  <span className="text-sm md:text-base font-medium text-foreground">
+                    {t('trust.point1')}
+                  </span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="h-5 w-5 text-primary flex-shrink-0 mt-1" />
+                  <span className="text-sm md:text-base font-medium text-foreground">
+                    {t('trust.point2')}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* FEATURES */}
       <section className="space-y-6 md:space-y-8">
         <div className="mb-6 md:mb-8">

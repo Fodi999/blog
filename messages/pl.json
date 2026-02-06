@@ -24,14 +24,20 @@
     "blog": "Blog",
     "about": "O mnie",
     "contact": "Kontakt",
-    "restaurants": "Dla restauracji"
+    "restaurants": "Dla restauracji",
+    "homeDesc": "Profesjonalna kuchnia",
+    "blogDesc": "Artykuły i wiedza",
+    "aboutDesc": "20+ lat doświadczenia",
+    "contactDesc": "Skontaktuj się",
+    "restaurantsDesc": "Rozwiązania biznesowe"
   },
   "home": {
     "hero": {
       "title": "Dima Fomin",
       "subtitle": "Sushi Chef • Japanese Cuisine • Food Technologist",
       "tagline": "Technika, na której opiera się profesjonalna kuchnia.",
-      "philosophy": "Praktyczna wiedza, która podnosi poziom potraw, procesów i biznesu."
+      "philosophy": "Praktyczna wiedza, która podnosi poziom potraw, procesów i biznesu.",
+      "cta": "Dla restauracji →"
     },
     "latestPosts": "Najnowsze artykuły",
     "featuredArticle": "Wyróżniony artykuł",
@@ -139,6 +145,11 @@
     "subtitle": "Projektuję nowoczesne strony i systemy zamówień online dla gastronomii. Wszystkie rozwiązania testuję w realnych warunkach.",
     "viewDemo": "Zobacz demo",
     "order": "Chcę taki system",
+    "trust": {
+      "mainMessage": "Rozwiązania projektowane przez szefa kuchni, a nie agencję IT",
+      "point1": "20+ lat doświadczenia w gastronomii",
+      "point2": "Testowane na prawdziwej kuchni"
+    },
     "whyWorks": {
       "title": "Dlaczego to działa"
     },

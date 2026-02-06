@@ -10,7 +10,7 @@ export async function Header() {
   const t = await getTranslations({ locale, namespace: 'nav' });
 
   return (
-    <header className="border-b border-border sticky top-0 bg-background-blur backdrop-blur-md z-50 shadow-sm">
+    <header className="border-b border-border sticky top-0 z-50 shadow-sm" style={{ backgroundColor: 'rgb(var(--background))' }}>
       <nav className="container mx-auto px-4 py-3 md:py-4 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 md:gap-3 text-lg md:text-xl font-bold text-foreground link-hover">
           <div className="w-8 h-8 md:w-10 md:h-10 rounded-full overflow-hidden ring-2 ring-red-500">
