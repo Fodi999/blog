@@ -1,6 +1,6 @@
 import { getTranslations, getLocale } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
-import { ExternalLink, ShoppingCart, Smartphone, CheckCircle, Zap, Globe, Cloud, Clock, Briefcase } from 'lucide-react';
+import { ExternalLink, ShoppingCart, Smartphone, CheckCircle, Zap, Globe, Cloud, Clock, Briefcase, Package, ChefHat, TrendingUp, Brain } from 'lucide-react';
 import type { Metadata } from 'next';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -289,21 +289,77 @@ export default async function RestaurantsPage() {
             </div>
           </div>
 
-          {/* Placeholder for future demo - MUTED */}
-          <div className="rounded-2xl border-2 border-dashed border-border/50 p-5 md:p-8 space-y-4 md:space-y-6 bg-muted/5 opacity-60 hover:opacity-80 transition-opacity">
-            <div className="space-y-2.5 md:space-y-3">
-              <div className="flex items-center gap-2">
-                <Clock className="h-5 w-5 md:h-6 md:w-6 text-muted" />
-                <span className="inline-block px-2.5 md:px-3 py-1 rounded-full text-[10px] md:text-xs font-semibold bg-muted/30 text-muted">
-                  {t('demos.comingSoon')}
+          {/* Demo card 2 - RestaurantAI - SECONDARY */}
+          <div className="rounded-2xl border-2 border-blue-500/20 p-5 md:p-8 space-y-4 md:space-y-6 bg-gradient-to-br from-blue-500/5 to-purple-500/5 hover:shadow-2xl transition-all hover:border-blue-500/40">
+            <div className="space-y-3 md:space-y-4">
+              <div className="flex items-center justify-between flex-wrap gap-2">
+                <span className="inline-block px-2.5 md:px-3 py-1 md:py-1.5 rounded-full text-[10px] md:text-xs font-bold bg-blue-500 text-white shadow-md">
+                  ✓ {t('demos.restaurantai.badge')}
                 </span>
+                <span className="text-[10px] md:text-xs text-muted font-mono">v1.0.0</span>
               </div>
-              <h3 className="text-xl md:text-2xl font-bold text-muted">
-                {t('demos.next.title')}
+              
+              <h3 className="text-xl md:text-2xl font-bold text-foreground">
+                {t('demos.restaurantai.title')}
               </h3>
+              
               <p className="text-sm md:text-base text-muted leading-relaxed">
-                {t('demos.next.description')}
+                {t('demos.restaurantai.description')}
               </p>
+
+              {/* Product Facts */}
+              <div className="flex flex-wrap gap-3 md:gap-4 pt-2 text-[10px] md:text-xs text-muted">
+                <div className="flex items-center gap-1.5">
+                  <Package className="h-3 w-3 md:h-3.5 md:w-3.5 text-blue-500" />
+                  <span>{t('demos.restaurantai.facts.inventory')}</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <ChefHat className="h-3 w-3 md:h-3.5 md:w-3.5 text-blue-500" />
+                  <span>{t('demos.restaurantai.facts.recipes')}</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Brain className="h-3 w-3 md:h-3.5 md:w-3.5 text-blue-500" />
+                  <span>{t('demos.restaurantai.facts.ai')}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="h-px bg-border"></div>
+
+            <ul className="space-y-2.5 md:space-y-3">
+              <li className="flex items-start gap-2 md:gap-2.5 text-xs md:text-sm">
+                <CheckCircle className="h-4 w-4 md:h-5 md:w-5 text-blue-500 mt-0.5 flex-shrink-0" />
+                <span className="text-foreground">{t('demos.restaurantai.features.inventory')}</span>
+              </li>
+              <li className="flex items-start gap-2 md:gap-2.5 text-xs md:text-sm">
+                <CheckCircle className="h-4 w-4 md:h-5 md:w-5 text-blue-500 mt-0.5 flex-shrink-0" />
+                <span className="text-foreground">{t('demos.restaurantai.features.recipes')}</span>
+              </li>
+              <li className="flex items-start gap-2 md:gap-2.5 text-xs md:text-sm">
+                <CheckCircle className="h-4 w-4 md:h-5 md:w-5 text-blue-500 mt-0.5 flex-shrink-0" />
+                <span className="text-foreground">{t('demos.restaurantai.features.menu')}</span>
+              </li>
+              <li className="flex items-start gap-2 md:gap-2.5 text-xs md:text-sm">
+                <CheckCircle className="h-4 w-4 md:h-5 md:w-5 text-blue-500 mt-0.5 flex-shrink-0" />
+                <span className="text-foreground">{t('demos.restaurantai.features.ai')}</span>
+              </li>
+            </ul>
+
+            <div className="flex flex-col gap-2.5 md:gap-3 pt-3 md:pt-4">
+              <Link
+                href="/demos/restaurant-ai"
+                className="inline-flex items-center justify-center gap-2 px-5 md:px-6 py-3 md:py-3.5 rounded-xl bg-blue-500 text-white font-bold hover:shadow-lg hover:scale-105 transition-all text-sm md:text-base"
+              >
+                <ExternalLink className="h-4 w-4 md:h-5 md:w-5" />
+                {t('viewDemo')}
+              </Link>
+
+              <Link
+                href="/contact?product=restaurant-ai"
+                className="inline-flex items-center justify-center gap-2 px-5 md:px-6 py-2.5 md:py-3 rounded-xl border-2 border-blue-500/30 text-foreground font-semibold hover:border-blue-500 hover:bg-blue-500/5 transition-all text-sm md:text-base"
+              >
+                {t('order')}
+              </Link>
             </div>
           </div>
         </div>

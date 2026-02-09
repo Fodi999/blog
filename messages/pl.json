@@ -17,6 +17,10 @@
     "restaurants": {
       "title": "Rozwiązania dla Restauracji | Dima Fomin",
       "description": "Nowoczesne systemy zamówień online i strony internetowe dla restauracji. Zobacz demo i zamów własne rozwiązanie."
+    },
+    "restaurantai": {
+      "title": "RestaurantAI — B2B SaaS dla Restauracji | Dima Fomin",
+      "description": "Platforma do zarządzania restauracją: magazyn, przepisy, menu engineering i rekomendacje AI. Zamieniaj dane w zyski."
     }
   },
   "nav": {
@@ -180,6 +184,22 @@
           "cart": "Koszyk z obliczaniem ceny i dostawy",
           "status": "Śledzenie statusu zamówienia w czasie rzeczywistym",
           "mobile": "W pełni responsywny design"
+        }
+      },
+      "restaurantai": {
+        "badge": "Demo dostępne",
+        "title": "RestaurantAI — B2B SaaS dla restauracji",
+        "description": "Platforma do zarządzania restauracją: magazyn, przepisy, menu engineering i rekomendacje AI. Dane zamieniają się w konkretne działania zwiększające zyski.",
+        "facts": {
+          "inventory": "Magazyn",
+          "recipes": "Przepisy",
+          "ai": "Analityka AI"
+        },
+        "features": {
+          "inventory": "Śledzenie produktów, daty ważności i kontrola stanów",
+          "recipes": "Automatyczne obliczanie kosztów dań",
+          "menu": "Menu Engineering (Star/Cash Cow/Question/Dog)",
+          "ai": "Rekomendacje AI z wpływem w PLN"
         }
       },
       "next": {

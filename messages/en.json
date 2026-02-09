@@ -17,6 +17,10 @@
     "restaurants": {
       "title": "Solutions for Restaurants | Dima Fomin",
       "description": "Modern online ordering systems and websites for restaurants. See demo and order your own solution."
+    },
+    "restaurantai": {
+      "title": "RestaurantAI — B2B SaaS for Restaurants | Dima Fomin",
+      "description": "Restaurant management platform: inventory, recipes, menu engineering and AI recommendations. Transform data into profit."
     }
   },
   "nav": {
@@ -185,6 +189,22 @@
           "cart": "Shopping cart with price and delivery calculation",
           "status": "Real-time order status tracking",
           "mobile": "Fully responsive design"
+        }
+      },
+      "restaurantai": {
+        "badge": "Demo Available",
+        "title": "RestaurantAI — B2B SaaS for Restaurants",
+        "description": "Restaurant management platform: inventory, recipes, menu engineering and AI recommendations. Transform data into profit-driving actions.",
+        "facts": {
+          "inventory": "Inventory",
+          "recipes": "Recipes",
+          "ai": "AI Analytics"
+        },
+        "features": {
+          "inventory": "Product tracking, expiry dates and stock control",
+          "recipes": "Automatic dish cost calculation",
+          "menu": "Menu Engineering (Star/Cash Cow/Question/Dog)",
+          "ai": "AI recommendations with PLN impact"
         }
       },
       "next": {
