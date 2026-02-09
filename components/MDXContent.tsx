@@ -113,7 +113,7 @@ const components = {
     // External images
     if (src.startsWith('http')) {
       return (
-        <div className="relative w-full h-[400px] my-6 rounded-lg overflow-hidden">
+        <span className="block relative w-full h-[400px] my-6 rounded-lg overflow-hidden">
           <Image
             src={src}
             alt={alt || ''}
@@ -121,7 +121,7 @@ const components = {
             className="object-cover"
             sizes="(max-width: 768px) 100vw, 800px"
           />
-        </div>
+        </span>
       );
     }
     
