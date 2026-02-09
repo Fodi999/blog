@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
+import { BlogCategory, PostLevel } from './blog-categories';
 
 const contentDirectory = path.join(process.cwd(), 'content');
 
@@ -13,6 +14,10 @@ export interface Post {
   readTime?: string;
   coverImage?: string;
   content: string;
+  series?: string;
+  seriesOrder?: number;
+  level?: PostLevel;
+  publishedAt?: string;
 }
 
 /**
@@ -41,6 +46,10 @@ export async function getPostBySlug(locale: string, slug: string): Promise<Post 
       readTime: data.readTime,
       coverImage: data.coverImage,
       content,
+      series: data.series,
+      seriesOrder: data.seriesOrder,
+      level: data.level,
+      publishedAt: data.publishedAt || data.date,
     };
   } catch (error) {
     console.error(`Error reading post ${locale}/blog/${slug}:`, error);
@@ -83,13 +92,22 @@ export async function getAllPosts(locale: string): Promise<Omit<Post, 'content'>
           excerpt: data.excerpt || '',
           readTime: data.readTime,
           coverImage: data.coverImage,
+          series: data.series,
+          seriesOrder: data.seriesOrder,
+          level: data.level,
+          publishedAt: data.publishedAt || data.date,
         });
       } catch (error) {
         console.error(`Error reading post ${fileName}:`, error);
       }
     }
     
-    return validPosts.sort((a, b) => (a.date > b.date ? -1 : 1));
+    // Сортировка: новые статьи первыми (по publishedAt, затем по date)
+    return validPosts.sort((a, b) => {
+      const dateA = a.publishedAt || a.date;
+      const dateB = b.publishedAt || b.date;
+      return dateB.localeCompare(dateA); // Descending order (новые первыми)
+    });
   } catch (error) {
     console.error(`Error reading posts directory for ${locale}:`, error);
     return [];

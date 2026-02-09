@@ -1,7 +1,7 @@
 import { getTranslations } from 'next-intl/server';
-import { PostCard } from '@/components/PostCard';
 import { getAllPosts } from '@/lib/posts';
 import type { Metadata } from 'next';
+import { BlogContent } from './BlogContent';
 
 export async function generateMetadata({
   params,
@@ -30,20 +30,21 @@ export default async function BlogPage({
   const t = await getTranslations({ locale, namespace: 'blog' });
   const posts = await getAllPosts(locale);
 
+  // Extract unique categories from posts
+  const categories = Array.from(new Set(posts.map(post => post.category)));
+
   return (
-    <div className="max-w-6xl mx-auto px-4">
+    <div className="max-w-7xl mx-auto px-4">
       <div className="mb-8 md:mb-12">
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 md:mb-4 text-foreground">{t('title')}</h1>
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 md:mb-4 text-foreground">
+          {t('title')}
+        </h1>
         <p className="text-lg md:text-xl text-muted">
-          {t('allPosts')}
+          {t('subtitle')}
         </p>
       </div>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-        {posts.map((post) => (
-          <PostCard key={post.slug} {...post} />
-        ))}
-      </div>
+      <BlogContent posts={posts} categories={categories} />
     </div>
   );
 }

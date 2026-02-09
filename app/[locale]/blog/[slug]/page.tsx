@@ -35,21 +35,46 @@ export async function generateMetadata({
     };
   }
 
+  const publishedTime = post.publishedAt || post.date;
+  const defaultImage = 'https://i.postimg.cc/RCf8VLFn/DSCF4639.jpg';
+
   return {
     title: `${post.title} | Dima Fomin`,
     description: post.excerpt,
+    authors: [{ name: 'Dima Fomin' }],
+    keywords: [
+      post.category,
+      'sushi',
+      'japanese cuisine',
+      'culinary techniques',
+      ...(post.series ? [post.series] : []),
+    ],
     openGraph: {
       title: post.title,
       description: post.excerpt,
       type: 'article',
-      publishedTime: post.date,
-      images: post.coverImage ? [post.coverImage] : ['https://i.postimg.cc/RCf8VLFn/DSCF4639.jpg'],
+      publishedTime,
+      authors: ['Dima Fomin'],
+      section: post.category,
+      tags: [post.category, ...(post.series ? [post.series] : [])],
+      images: post.coverImage ? [post.coverImage] : [defaultImage],
+      locale,
     },
     twitter: {
       card: 'summary_large_image',
       title: post.title,
       description: post.excerpt,
-      images: post.coverImage ? [post.coverImage] : undefined,
+      images: post.coverImage ? [post.coverImage] : [defaultImage],
+      creator: '@dimafomin',
+    },
+    alternates: {
+      canonical: `/${locale}/blog/${slug}`,
+      languages: {
+        'pl': `/pl/blog/${slug}`,
+        'en': `/en/blog/${slug}`,
+        'uk': `/uk/blog/${slug}`,
+        'ru': `/ru/blog/${slug}`,
+      },
     },
   };
 }

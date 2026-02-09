@@ -21,6 +21,10 @@
     "restaurantai": {
       "title": "RestaurantAI — B2B SaaS dla Restauracji | Dima Fomin",
       "description": "Platforma do zarządzania restauracją: magazyn, przepisy, menu engineering i rekomendacje AI. Zamieniaj dane w zyski."
+    },
+    "sushidelivery": {
+      "title": "System Dostawy dla Restauracji Sushi | Dima Fomin",
+      "description": "Kompletny system zamówień online: menu, koszyk, dostawa i śledzenie zamówień w czasie rzeczywistym. Gotowy do produkcji."
     }
   },
   "nav": {
@@ -59,12 +63,30 @@
   },
   "blog": {
     "title": "Blog",
+    "subtitle": "Profesjonalne artykuły o sushi, kuchni japońskiej i technikach kulinarnych",
     "allPosts": "Wszystkie artykuły",
+    "postsTotal": "artykułów",
+    "of": "z",
     "readMore": "Czytaj więcej",
     "backToBlog": "Powrót do bloga",
     "authorRole": "Sushi Chef & Culinary Expert",
     "moreFromCategory": "→ Więcej z kategorii",
-    "allArticles": "Wszystkie artykuły"
+    "allArticles": "Wszystkie artykuły",
+    "searchPlaceholder": "Szukaj artykułów, składników, technik…",
+    "recentSearches": "Ostatnie wyszukiwania",
+    "activeFilters": "Aktywne filtry",
+    "clearFilters": "Wyczyść wszystko",
+    "noResultsSearch": "Nie znaleziono wyników dla \"{query}\"",
+    "noResultsCategory": "Brak artykułów w tej kategorii",
+    "categories": {
+      "all": "Wszystkie",
+      "sushimastery": "🍣 Sushi Mastery",
+      "kitchentech": "🔪 Kitchen Tech",
+      "chefmindset": "🧠 Doświadczenie szefa",
+      "restaurants": "🏪 Dla restauracji",
+      "products": "📦 Produkty",
+      "ai": "🤖 AI i Technologie"
+    }
   },
   "about": {
     "title": "O mnie",
@@ -223,6 +245,280 @@
       "implementation": "Wdrożenie: 7–14 dni",
       "languages": "PL / EN / RU",
       "hosting": "Vercel"
+    }
+  },
+  "restaurantai": {
+    "backToRestaurants": "← Powrót do rozwiązań",
+    "badge": "W opracowaniu",
+    "title": "RestaurantAI",
+    "subtitle": "Platforma B2B SaaS dla restauracji, która łączy magazyn, przepisy, dania, menu engineering i rekomendacje AI w jeden system zarządzania zyskiem.",
+    "openDemo": "Otwórz demo",
+    "metrics": {
+      "inventory": "Magazyn",
+      "inventoryDesc": "Ewidencja produktów",
+      "recipes": "Przepisy",
+      "recipesDesc": "Koszt własny",
+      "menu": "Menu",
+      "menuDesc": "Engineering",
+      "ai": "AI",
+      "aiDesc": "Rekomendacje"
+    },
+    "preview": {
+      "title": "Demo platformy na żywo",
+      "subtitle": "Otwórz demo i przetestuj wszystkie funkcje już teraz"
+    },
+    "problem": {
+      "badge": "Problem",
+      "title": "Główny problem restauracji",
+      "point1": "Liczą Food Cost w Excelu",
+      "point2": "Nie widzą rzeczywistych strat",
+      "point3": "Nie wiedzą, które dania obniżają zysk",
+      "point4": "Podejmują decyzje \"na wyczucie\"",
+      "point5": "Dowiadują się o problemach za późno",
+      "point6": "Brak systemowej kontroli nad danymi"
+    },
+    "solution": {
+      "title": "Jak działa platforma",
+      "subtitle": "RestaurantAI rozwiązuje problemy restauracji systemowo — od ewidencji do rekomendacji AI"
+    },
+    "modules": {
+      "inventory": {
+        "title": "1. Magazyn (Inventory)",
+        "description": "Wiesz co masz, ile, kiedy traci ważność i ile to kosztuje.",
+        "feature1": "Ewidencja produktów z kategoriami",
+        "feature2": "Daty ważności z ostrzeżeniami",
+        "feature3": "Kontrola stanów w czasie rzeczywistym",
+        "feature4": "Baza składników",
+        "feature5": "Żadnych Exceli i \"przybliżonych liczb\""
+      },
+      "recipes": {
+        "title": "2. Przepisy",
+        "description": "Przepis liczony na podstawie magazynu, a nie \"w głowie\".",
+        "feature1": "Automatyczne obliczanie kosztu własnego",
+        "feature2": "Porcje, waga, wydajność",
+        "feature3": "Ostrzeżenia o problematycznych składnikach",
+        "feature4": "Ujednolicona baza przepisów",
+        "feature5": "System liczy za Ciebie"
+      },
+      "menu": {
+        "title": "3. Menu Engineering",
+        "description": "Klasyczny Menu Engineering, ale zautomatyzowany. System pokazuje co promować, co optymalizować, co usunąć.",
+        "star": "Promować",
+        "cashcow": "Zostawić jak jest",
+        "question": "Optymalizować",
+        "dog": "Usunąć z menu"
+      },
+      "ai": {
+        "title": "4. Rekomendacje AI",
+        "description": "RestaurantAI nie tylko pokazuje dane — mówi co zrobić.",
+        "example": "Przykład rekomendacji:",
+        "exampleText": "Wykorzystaj tracącą ważność śmietanę w 2 daniach — oszczędność 120 PLN",
+        "feature1": "Zysk w okresie",
+        "feature2": "Straty przez magazyn",
+        "feature3": "Potencjalny wzrost",
+        "feature4": "Podpowiedzi AI z efektem w PLN"
+      }
+    },
+    "why": {
+      "title": "Dlaczego to działa",
+      "point1": {
+        "title": "Stworzone przez szefa kuchni",
+        "description": "Znam kuchnię od środka: procesy, chaos, rzeczywistość"
+      },
+      "point2": {
+        "title": "Przetestowane w restauracjach",
+        "description": "Nie teoria, a działający system"
+      },
+      "point3": {
+        "title": "Pieniądze w centrum",
+        "description": "Każda funkcja powiązana z zyskiem"
+      },
+      "point4": {
+        "title": "Logika backendowa",
+        "description": "Obliczenia na serwerze, nie w przeglądarce"
+      }
+    },
+    "target": {
+      "title": "Dla kogo ta platforma",
+      "subtitle": "RestaurantAI stworzony dla tych, którzy chcą kontrolować liczby, a nie zgadywać",
+      "type1": {
+        "icon": "🍽",
+        "title": "Restauracje średniej wielkości"
+      },
+      "type2": {
+        "icon": "☕",
+        "title": "Kawiarnie z pełną kuchnią"
+      },
+      "type3": {
+        "icon": "🏭",
+        "title": "Cloud Kitchens"
+      },
+      "type4": {
+        "icon": "👨‍🍳",
+        "title": "Projekty gastronomiczne"
+      }
+    },
+    "results": {
+      "badge": "Rezultaty",
+      "title": "Co otrzymujesz",
+      "metric1": {
+        "value": "📉",
+        "label": "Obniżenie Food Cost"
+      },
+      "metric2": {
+        "value": "📈",
+        "label": "Wzrost zysku"
+      },
+      "metric3": {
+        "value": "❌",
+        "label": "Mniej odpisów"
+      },
+      "metric4": {
+        "value": "⏱",
+        "label": "Oszczędność czasu"
+      },
+      "metric5": {
+        "value": "📊",
+        "label": "Kontrola w jednym miejscu"
+      }
+    },
+    "cta": {
+      "title": "Gotowi zobaczyć jak to działa?",
+      "description": "RestaurantAI to nie kolejny program. To cyfrowy partner restauratora, który liczy, analizuje, ostrzega i pomaga zarabiać więcej.",
+      "buttonDemo": "Otwórz demo",
+      "buttonContact": "Kontakt w sprawie wdrożenia",
+      "benefit1": "Demo bez rejestracji",
+      "benefit2": "Prawdziwe obliczenia",
+      "benefit3": "Wsparcie po polsku"
+    }
+  },
+  "sushidelivery": {
+    "backToRestaurants": "← Powrót do rozwiązań dla restauracji",
+    "badge": "Demo dostępne",
+    "title": "System Dostawy dla Restauracji",
+    "subtitle": "Kompletny system zamówień online z menu, koszykiem i śledzeniem zamówień. Przetestowany w rzeczywistych warunkach.",
+    "openDemo": "Otwórz demo →",
+    "metrics": {
+      "implementation": "7–14 dni",
+      "implementationDesc": "Od startu do uruchomienia",
+      "languages": "PL / EN / RU",
+      "languagesDesc": "Wielojęzyczność",
+      "hosting": "Vercel",
+      "hostingDesc": "Szybki hosting",
+      "mobile": "100%",
+      "mobileDesc": "Mobile First"
+    },
+    "preview": {
+      "title": "Zobacz jak to działa",
+      "subtitle": "Prawdziwe demo — klikalne i funkcjonalne"
+    },
+    "features": {
+      "title": "Kluczowe moduły systemu",
+      "subtitle": "Wszystko czego potrzebujesz do przyjmowania zamówień online",
+      "menu": {
+        "title": "Interaktywne Menu",
+        "description": "Katalog produktów ze zdjęciami, opisami i cenami. Wsparcie kategorii i wyszukiwania.",
+        "feature1": "Kategorie i filtry (rolki, sushi, zestawy, napoje)",
+        "feature2": "Wysokiej jakości zdjęcia dań",
+        "feature3": "Opisy składu i wagi",
+        "feature4": "Zarządzanie cenami i dostępnością"
+      },
+      "cart": {
+        "title": "Koszyk i Finalizacja",
+        "description": "Wygodny koszyk z automatycznym obliczaniem kosztu i czasu dostawy.",
+        "feature1": "Zmiana ilości i usuwanie pozycji",
+        "feature2": "Automatyczne obliczanie kosztu dostawy",
+        "feature3": "Wybór metody płatności (karta/gotówka)",
+        "feature4": "Walidacja danych klienta"
+      },
+      "delivery": {
+        "title": "Strefy Dostawy",
+        "description": "Inteligentny system wykrywania stref i obliczania kosztu dostawy.",
+        "feature1": "Wykrywanie adresu klienta",
+        "feature2": "Automatyczne obliczanie strefy dostawy",
+        "feature3": "Konfigurowalne strefy i taryfy",
+        "feature4": "Obliczanie czasu dostawy"
+      },
+      "tracking": {
+        "title": "Śledzenie Zamówienia",
+        "description": "Klient widzi status zamówienia w czasie rzeczywistym: przyjęte → w przygotowaniu → w drodze → dostarczone.",
+        "feature1": "Status zamówienia w czasie rzeczywistym",
+        "feature2": "Unikalny link do śledzenia",
+        "feature3": "Powiadomienia o zmianie statusu",
+        "feature4": "Wizualny pasek postępu"
+      }
+    },
+    "tech": {
+      "title": "Stos Technologiczny",
+      "subtitle": "Nowoczesne technologie dla szybkiej i niezawodnej pracy",
+      "stack1": {
+        "title": "Next.js 14 + TypeScript",
+        "description": "Renderowanie serwerowe, wydajność, SEO"
+      },
+      "stack2": {
+        "title": "Tailwind CSS",
+        "description": "Responsywny design dla wszystkich urządzeń"
+      },
+      "stack3": {
+        "title": "Shadcn/UI",
+        "description": "Gotowe komponenty premium jakości"
+      },
+      "stack4": {
+        "title": "next-intl",
+        "description": "Wielojęzyczność z pudełka"
+      },
+      "stack5": {
+        "title": "Vercel Hosting",
+        "description": "Globalna CDN, SSL, auto-skalowanie"
+      },
+      "stack6": {
+        "title": "Responsive Design",
+        "description": "Idealnie działa na mobile, tabletach, desktopie"
+      }
+    },
+    "why": {
+      "title": "Dlaczego ten system działa",
+      "point1": {
+        "title": "Stworzony przez szefa kuchni",
+        "description": "System opracowany ze zrozumieniem rzeczywistych procesów kuchni i dostawy"
+      },
+      "point2": {
+        "title": "Mobile First",
+        "description": "90% zamówień przychodzi z telefonów — system jest zoptymalizowany właśnie pod to"
+      },
+      "point3": {
+        "title": "Production Ready",
+        "description": "Nie MVP, ale gotowe rozwiązanie. Przetestowane w rzeczywistej eksploatacji"
+      }
+    },
+    "perfectFor": {
+      "title": "Idealnie dla",
+      "subtitle": "Ten system stworzony dla restauracji, które chcą przyjmować zamówienia bez pośredników",
+      "type1": {
+        "icon": "🍣",
+        "title": "Restauracje sushi"
+      },
+      "type2": {
+        "icon": "🍕",
+        "title": "Pizzerie"
+      },
+      "type3": {
+        "icon": "🍔",
+        "title": "Burgery"
+      },
+      "type4": {
+        "icon": "🥘",
+        "title": "Kawiarnie z dostawą"
+      }
+    },
+    "cta": {
+      "title": "Gotowi uruchomić swój system zamówień?",
+      "description": "To nie tylko strona — to twój własny kanał sprzedaży bez prowizji agregatora.",
+      "buttonDemo": "Wypróbuj demo",
+      "buttonContact": "Zamów wdrożenie",
+      "benefit1": "Bez rejestracji",
+      "benefit2": "Prawdziwe demo",
+      "benefit3": "Wsparcie po polsku"
     }
   },
   "footer": {

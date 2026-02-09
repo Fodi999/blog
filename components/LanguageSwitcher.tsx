@@ -8,10 +8,10 @@ import { Globe, Check } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 const localeNames: Record<string, string> = {
-  pl: '🇵🇱 Polski',
-  en: '🇬🇧 English',
-  uk: '🇺🇦 Українська',
-  ru: '🇷🇺 Русский',
+  pl: 'Polski',
+  en: 'English',
+  uk: 'Українська',
+  ru: 'Русский',
 };
 
 export function LanguageSwitcher() {

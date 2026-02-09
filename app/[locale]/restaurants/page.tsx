@@ -111,107 +111,12 @@ export default async function RestaurantsPage() {
 
       {/* DEMOS */}
       <section className="pt-12 md:pt-24 pb-16 md:pb-32 space-y-6 md:space-y-8">
-        <div className="text-center mb-8 md:mb-16">
+        <div className="text-center mb-8 md:mb-12">
           <h2 className="text-2xl md:text-3xl font-bold mb-3 md:mb-4 text-foreground">{t('demos.title')}</h2>
           <p className="text-base md:text-lg text-muted">{t('demos.subtitle')}</p>
         </div>
 
-        {/* Live Preview - Fixed Container with Scale Control */}
-        <div className="mx-auto max-w-6xl mb-16 md:mb-24">
-          <div className="relative">
-            {/* Desktop Frame - Scaled - Hide on mobile, show simplified version */}
-            <div className="hidden md:block relative origin-top-left scale-[0.85] xl:scale-[0.9] 2xl:scale-[0.95] -mb-[15%] xl:-mb-[10%] 2xl:-mb-[5%]">
-              {/* Browser Chrome */}
-              <div className="bg-gray-200 dark:bg-gray-800 rounded-t-2xl px-4 py-3 flex items-center gap-2 border border-b-0 border-border">
-                <div className="flex gap-1.5">
-                  <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                  <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                  <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                </div>
-                <div className="flex-1 mx-4">
-                  <div className="bg-white dark:bg-gray-900 rounded-md px-3 py-1 text-xs text-muted flex items-center gap-2">
-                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                    </svg>
-                    delivery-omega-six.vercel.app
-                  </div>
-                </div>
-              </div>
-
-              {/* Desktop Preview - 16:9 ratio */}
-              <div className="relative rounded-b-2xl border border-t-0 border-border overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
-                {/* LIVE DEMO Badge */}
-                <div className="absolute top-4 left-4 z-10 bg-red-500/90 backdrop-blur-sm text-white px-3 py-1.5 rounded-full text-xs font-semibold flex items-center gap-2">
-                  <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
-                  LIVE DEMO
-                </div>
-
-                <div className="relative w-full aspect-[16/9] bg-white dark:bg-gray-900">
-                  <iframe
-                    src="https://delivery-omega-six.vercel.app"
-                    className="absolute inset-0 w-full h-full"
-                    title="Sushi Delivery System Demo"
-                    loading="lazy"
-                    sandbox="allow-scripts allow-same-origin allow-forms"
-                    style={{ transform: 'scale(0.6)', transformOrigin: 'top left', width: '166.67%', height: '166.67%' }}
-                  />
-                  
-                  {/* Bottom Gradient Overlay */}
-                  <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black/50 via-black/20 to-transparent pointer-events-none"></div>
-                </div>
-              </div>
-
-              {/* Mobile Frame - Anchored to Desktop */}
-              <div className="hidden lg:block absolute right-[-40px] bottom-[-40px] scale-75 xl:scale-[0.8]">
-                <div className="w-[320px] bg-gray-900 rounded-[3rem] p-3 shadow-[0_20px_60px_rgba(0,0,0,0.35)] border-8 border-gray-800">
-                  {/* Notch */}
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/3 h-6 bg-gray-900 rounded-b-2xl z-10"></div>
-                  
-                  {/* Mobile Screen - 9:19 ratio */}
-                  <div className="bg-white rounded-[2.5rem] overflow-hidden relative" style={{ height: '640px' }}>
-                    <iframe
-                      src="https://delivery-omega-six.vercel.app"
-                      className="w-full h-full"
-                      title="Mobile Preview"
-                      loading="lazy"
-                      sandbox="allow-scripts allow-same-origin allow-forms"
-                      style={{ transform: 'scale(0.5)', transformOrigin: 'top left', width: '200%', height: '200%' }}
-                    />
-                    
-                    {/* Mobile Badge */}
-                    <div className="absolute top-8 left-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-lg text-[10px] font-semibold text-gray-900 text-center">
-                      📱 Mobile Ready
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Mobile Simplified Preview */}
-            <div className="md:hidden">
-              <div className="relative rounded-2xl border-2 border-border overflow-hidden shadow-xl bg-white dark:bg-gray-900">
-                {/* LIVE DEMO Badge */}
-                <div className="absolute top-3 left-3 z-10 bg-red-500/90 backdrop-blur-sm text-white px-2.5 py-1 rounded-full text-[10px] font-semibold flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>
-                  LIVE
-                </div>
-
-                <div className="relative w-full aspect-[9/16] sm:aspect-[16/10]">
-                  <iframe
-                    src="https://delivery-omega-six.vercel.app"
-                    className="absolute inset-0 w-full h-full"
-                    title="Sushi Delivery System Demo"
-                    loading="lazy"
-                    sandbox="allow-scripts allow-same-origin allow-forms"
-                    style={{ transform: 'scale(0.5)', transformOrigin: 'top left', width: '200%', height: '200%' }}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Description and Cards Below */}
+        {/* Product Cards */}
         <div className="grid md:grid-cols-2 gap-6 md:gap-8">
           {/* Demo card 1 - Sushi Delivery - PRIMARY */}
           <div className="rounded-2xl border-2 border-primary/20 p-5 md:p-8 space-y-4 md:space-y-6 bg-gradient-to-br from-red-500/5 to-orange-500/5 hover:shadow-2xl transition-all hover:border-primary/40">
@@ -270,15 +175,13 @@ export default async function RestaurantsPage() {
             </ul>
 
             <div className="flex flex-col gap-2.5 md:gap-3 pt-3 md:pt-4">
-              <a
-                href="https://delivery-omega-six.vercel.app"
-                target="_blank"
-                rel="noopener noreferrer"
+              <Link
+                href="/demos/sushi-delivery"
                 className="inline-flex items-center justify-center gap-2 px-5 md:px-6 py-3 md:py-3.5 rounded-xl bg-primary text-white font-bold hover:shadow-lg hover:scale-105 transition-all text-sm md:text-base"
               >
                 <ExternalLink className="h-4 w-4 md:h-5 md:w-5" />
                 {t('viewDemo')}
-              </a>
+              </Link>
 
               <Link
                 href="/contact?product=sushi-delivery"

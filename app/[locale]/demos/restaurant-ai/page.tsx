@@ -1,6 +1,6 @@
 import { getTranslations, getLocale } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
-import { ExternalLink, ArrowLeft, Package, ChefHat, TrendingUp, Brain, CheckCircle, BarChart3, DollarSign, AlertTriangle, Star } from 'lucide-react';
+import { ExternalLink, ArrowLeft, Package, ChefHat, TrendingUp, Brain, CheckCircle, BarChart3, DollarSign, AlertTriangle, Star, Construction } from 'lucide-react';
 import type { Metadata } from 'next';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -49,8 +49,9 @@ export default async function RestaurantAIDemoPage() {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="space-y-3 md:space-y-4">
             <div className="flex items-center gap-3 flex-wrap">
-              <span className="inline-block px-3 py-1.5 rounded-full text-xs font-bold bg-blue-500 text-white shadow-md">
-                ✓ {t('badge')}
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-orange-500 text-white shadow-md">
+                <Construction className="h-3 w-3" />
+                {t('badge')}
               </span>
               <span className="text-xs md:text-sm text-muted font-mono">v1.0.0 • B2B SaaS</span>
             </div>
@@ -267,8 +268,12 @@ export default async function RestaurantAIDemoPage() {
             </div>
 
             <div className="p-6 md:p-8 rounded-2xl border-2 border-blue-500/20 bg-gradient-to-br from-blue-500/5 to-purple-500/5">
-              <div className="aspect-video bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/20 dark:to-purple-900/20 rounded-xl flex items-center justify-center">
-                <Package className="h-16 w-16 md:h-24 md:w-24 text-blue-500/30" />
+              <div className="aspect-video rounded-xl overflow-hidden">
+                <img 
+                  src="https://i.postimg.cc/htX7NPGw/fodifood_Ultra_smooth_3D_animation_of_minimalist_white_blocks_p_88052e9b_bafe_41e9_9dd2_8bf8c137880b.png"
+                  alt="Inventory Management System"
+                  className="w-full h-full object-cover"
+                />
               </div>
             </div>
           </div>
@@ -276,8 +281,12 @@ export default async function RestaurantAIDemoPage() {
           {/* Module 2: Recipes */}
           <div className="grid md:grid-cols-2 gap-6 md:gap-8 items-center">
             <div className="order-2 md:order-1 p-6 md:p-8 rounded-2xl border-2 border-green-500/20 bg-gradient-to-br from-green-500/5 to-blue-500/5">
-              <div className="aspect-video bg-gradient-to-br from-green-100 to-blue-100 dark:from-green-900/20 dark:to-blue-900/20 rounded-xl flex items-center justify-center">
-                <ChefHat className="h-16 w-16 md:h-24 md:w-24 text-green-500/30" />
+              <div className="aspect-video rounded-xl overflow-hidden">
+                <img 
+                  src="https://i.postimg.cc/BvDPQYHY/fodifood_black_and_white_hand_drawn_sketch_illustration_of_a_pr_477616d0_66b8_4466_b4e7_d93fe0a6c0c6.png"
+                  alt="Recipe Management System"
+                  className="w-full h-full object-cover"
+                />
               </div>
             </div>
 
@@ -346,8 +355,12 @@ export default async function RestaurantAIDemoPage() {
             </div>
 
             <div className="p-6 md:p-8 rounded-2xl border-2 border-purple-500/20 bg-gradient-to-br from-purple-500/5 to-pink-500/5">
-              <div className="aspect-video bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/20 dark:to-pink-900/20 rounded-xl flex items-center justify-center">
-                <BarChart3 className="h-16 w-16 md:h-24 md:w-24 text-purple-500/30" />
+              <div className="aspect-video rounded-xl overflow-hidden">
+                <img 
+                  src="https://i.postimg.cc/Vv7dH3PP/fodifood_Top_down_futuristic_visual_of_a_3D_printed_steak_being_5a218c16_6f1b_42d0_a67d_de2e8b551dbb.png"
+                  alt="Menu Engineering Matrix"
+                  className="w-full h-full object-cover"
+                />
               </div>
             </div>
           </div>
@@ -355,8 +368,12 @@ export default async function RestaurantAIDemoPage() {
           {/* Module 4: AI Recommendations */}
           <div className="grid md:grid-cols-2 gap-6 md:gap-8 items-center">
             <div className="order-2 md:order-1 p-6 md:p-8 rounded-2xl border-2 border-indigo-500/20 bg-gradient-to-br from-indigo-500/5 to-purple-500/5">
-              <div className="aspect-video bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-xl flex items-center justify-center">
-                <Brain className="h-16 w-16 md:h-24 md:w-24 text-indigo-500/30" />
+              <div className="aspect-video rounded-xl overflow-hidden">
+                <img 
+                  src="https://i.postimg.cc/t47p5sg9/fodifood-Abstract-high-end-technology-visualization-representin-b000a618-2095-441d-a556-802fa7b8f8ea.png"
+                  alt="AI Recommendations System"
+                  className="w-full h-full object-cover"
+                />
               </div>
             </div>
 
@@ -426,7 +443,6 @@ export default async function RestaurantAIDemoPage() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           {[1, 2, 3, 4].map((i) => (
             <div key={i} className="p-5 md:p-6 rounded-xl border-2 border-border bg-card hover:border-primary/30 transition-colors text-center space-y-2">
-              <div className="text-4xl mb-2">{t(`target.type${i}.icon`)}</div>
               <h4 className="text-base md:text-lg font-bold text-foreground">{t(`target.type${i}.title`)}</h4>
             </div>
           ))}
