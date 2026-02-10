@@ -350,3 +350,193 @@ article.group {
   animation: slide-in-from-top 0.2s ease-out;
 }
 
+
+/* ========================================
+   MOBILE RESPONSIVE STYLES
+   ======================================== */
+
+/* Мобильная адаптация для блога */
+@media (max-width: 768px) {
+  /* Контейнер статьи */
+  .max-w-4xl {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  /* Заголовок статьи */
+  article header h1 {
+    font-size: 1.875rem !important;
+    line-height: 1.2 !important;
+    margin-bottom: 1rem !important;
+  }
+
+  /* Подзаголовок/excerpt */
+  article header p {
+    font-size: 1rem !important;
+    line-height: 1.5 !important;
+  }
+
+  /* Метаинформация */
+  article header .flex.items-center.gap-4 {
+    flex-wrap: wrap;
+    gap: 0.5rem !important;
+  }
+
+  /* Hero изображение */
+  article .aspect-\[21\/9\] {
+    aspect-ratio: 16/9 !important;
+    margin-bottom: 2rem !important;
+  }
+
+  /* Технологическая карта */
+  #recipe-pdf {
+    width: 100% !important;
+    padding: 1rem !important;
+    margin: 0 !important;
+  }
+
+  /* Кнопка PDF */
+  .print-button-container {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 1rem !important;
+    padding: 1rem !important;
+  }
+
+  .print-button-container button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Таблицы */
+  .tech-table {
+    font-size: 11px !important;
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tech-table thead th {
+    padding: 6px 4px !important;
+    font-size: 10px !important;
+    white-space: nowrap;
+  }
+
+  .tech-table tbody td {
+    padding: 6px 4px !important;
+    font-size: 11px !important;
+    line-height: 1.3 !important;
+  }
+
+  .tech-table th:nth-child(1),
+  .tech-table td:nth-child(1) {
+    width: 40px !important;
+    min-width: 40px;
+  }
+
+  .tech-table th:nth-child(3),
+  .tech-table td:nth-child(3) {
+    width: 60px !important;
+    min-width: 60px;
+  }
+
+  /* Примечания */
+  .tech-note {
+    font-size: 11px !important;
+    padding-left: 8px !important;
+    margin-top: 1rem !important;
+    line-height: 1.4 !important;
+  }
+
+  /* Callout/ChefTip */
+  .callout,
+  .chef-tip {
+    padding: 0.75rem !important;
+    font-size: 0.875rem !important;
+  }
+
+  /* Текстовый контент */
+  article ul,
+  article ol {
+    padding-left: 1.25rem !important;
+    margin-bottom: 1rem !important;
+  }
+
+  article li {
+    font-size: 1rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  article p {
+    font-size: 1rem !important;
+    line-height: 1.6 !important;
+    margin-bottom: 1rem !important;
+  }
+
+  article h2 {
+    font-size: 1.5rem !important;
+    margin-top: 2rem !important;
+    margin-bottom: 1rem !important;
+    padding-top: 2rem !important;
+  }
+
+  article h3 {
+    font-size: 1.25rem !important;
+    margin-top: 1.5rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+
+  /* Footer */
+  article footer {
+    margin-top: 3rem !important;
+    padding-top: 2rem !important;
+  }
+
+  article footer .flex {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 1.5rem !important;
+  }
+}
+
+/* Маленькие экраны (< 375px) */
+@media (max-width: 374px) {
+  article header h1 {
+    font-size: 1.5rem !important;
+  }
+
+  .tech-table {
+    font-size: 10px !important;
+  }
+
+  .tech-table thead th,
+  .tech-table tbody td {
+    padding: 4px 2px !important;
+    font-size: 9px !important;
+  }
+
+  .print-button-container {
+    padding: 0.75rem !important;
+  }
+
+  #recipe-pdf {
+    padding: 0.75rem !important;
+  }
+}
+
+/* Планшеты (768px - 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+  article header h1 {
+    font-size: 2.25rem !important;
+  }
+
+  .tech-table {
+    font-size: 12px !important;
+  }
+
+  #recipe-pdf {
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+}
