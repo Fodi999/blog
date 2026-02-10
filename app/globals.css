@@ -208,6 +208,111 @@ article.group {
   font-size: 1.05em;
 }
 
+/* Технологическая карта */
+.techcard {
+  margin: 32px 0;
+}
+
+.tech-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin: 20px 0;
+}
+
+.tech-table thead th {
+  text-align: left;
+  font-weight: 600;
+  padding: 8px 10px;
+  border-bottom: 2px solid #000;
+}
+
+.dark .tech-table thead th {
+  border-bottom-color: #fff;
+}
+
+.tech-table tbody td {
+  padding: 8px 10px;
+  border-bottom: 1px solid #e5e5e5;
+  vertical-align: top;
+}
+
+.dark .tech-table tbody td {
+  border-bottom-color: #333;
+}
+
+.tech-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.tech-table th:nth-child(1),
+.tech-table td:nth-child(1) {
+  width: 60px;
+}
+
+.tech-table th:nth-child(3),
+.tech-table td:nth-child(3) {
+  width: 90px;
+}
+
+.tech-note {
+  margin-top: 24px;
+  padding-left: 12px;
+  border-left: 3px solid #c00;
+  font-size: 12px;
+  color: #333;
+}
+
+.dark .tech-note {
+  color: #e5e5e5;
+  border-left-color: #ef4444;
+}
+
+/* PDF контейнер для A4 формата */
+#recipe-pdf {
+  width: 794px;
+  max-width: 100%;
+  padding: 24px;
+  background: #fff;
+  margin: 0 auto;
+}
+
+.dark #recipe-pdf {
+  background: #fff;
+  color: #000;
+}
+
+.dark #recipe-pdf .tech-table thead th {
+  border-bottom-color: #000;
+}
+
+.dark #recipe-pdf .tech-table tbody td {
+  border-bottom-color: #e5e5e5;
+}
+
+/* PDF-safe стили - переопределяем все lab/oklch на HEX */
+.pdf-safe,
+.pdf-safe * {
+  color: #000 !important;
+  background-color: #fff !important;
+  border-color: #e5e5e5 !important;
+}
+
+.pdf-safe h2,
+.pdf-safe h3 {
+  color: #000 !important;
+}
+
+.pdf-safe .tech-table thead th {
+  background-color: #f9f9f9 !important;
+  border-bottom-color: #000 !important;
+}
+
+.pdf-safe .tech-note {
+  border-left-color: #cc0000 !important;
+  color: #333 !important;
+}
+
 
 .animate-in {
   animation-fill-mode: both;

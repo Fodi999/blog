@@ -2,6 +2,7 @@ import { MDXRemote } from 'next-mdx-remote/rsc';
 import { ReactNode } from 'react';
 import Image from 'next/image';
 import { Callout, ChefTip } from './MDXComponents';
+import { PrintButton } from './PrintButton';
 
 interface MDXContentProps {
   source: string;
@@ -105,6 +106,7 @@ const components = {
   // Custom Components
   Callout,
   ChefTip,
+  PrintButton,
   
   // Next.js Image (optimized)
   img: ({ src, alt }: { src?: string; alt?: string }) => {
