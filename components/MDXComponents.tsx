@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import { AlertCircle, Lightbulb, Info } from 'lucide-react';
 import Image from 'next/image';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 interface CalloutProps {
   children: ReactNode;
@@ -8,25 +9,32 @@ interface CalloutProps {
 }
 
 export function Callout({ children, type = 'info' }: CalloutProps) {
-  const styles = {
-    info: 'bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-900 text-blue-900 dark:text-blue-100',
-    warning: 'bg-yellow-50 dark:bg-yellow-950/30 border-yellow-200 dark:border-yellow-900 text-yellow-900 dark:text-yellow-100',
-    tip: 'bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-900 text-green-900 dark:text-green-100',
+  const icons = {
+    info: <Info className="h-4 w-4" />,
+    warning: <AlertCircle className="h-4 w-4 text-destructive" />,
+    tip: <Lightbulb className="h-4 w-4 text-primary" />,
   };
 
-  const icons = {
-    info: <Info className="h-5 w-5" />,
-    warning: <AlertCircle className="h-5 w-5" />,
-    tip: <Lightbulb className="h-5 w-5" />,
+  const variants = {
+    info: 'default' as const,
+    warning: 'destructive' as const,
+    tip: 'default' as const,
   };
 
   return (
-    <div className={`border-l-4 p-4 my-4 rounded-r-lg ${styles[type]}`}>
-      <div className="flex gap-3">
-        <div className="flex-shrink-0">{icons[type]}</div>
-        <div className="flex-1">{children}</div>
+    <Alert variant={variants[type]} className={`my-6 rounded-2xl border-2 ${
+      type === 'tip' ? 'border-primary/20 bg-primary/5' : 
+      type === 'info' ? 'border-border/50 bg-muted/30' : ''
+    }`}>
+      <div className="flex gap-4">
+        <div className="mt-0.5">{icons[type]}</div>
+        <div>
+          <AlertDescription className="text-foreground/90 leading-relaxed italic">
+            {children}
+          </AlertDescription>
+        </div>
       </div>
-    </div>
+    </Alert>
   );
 }
 
@@ -36,30 +44,27 @@ interface ChefTipProps {
 
 export function ChefTip({ children }: ChefTipProps) {
   return (
-    <div className="my-8 p-6 rounded-xl border-2 relative overflow-hidden" style={{
-      backgroundColor: 'rgb(var(--primary) / 0.05)',
-      borderColor: 'rgb(var(--primary) / 0.3)'
-    }}>
-      <div className="absolute top-0 left-0 w-1 h-full" style={{
-        backgroundColor: 'rgb(var(--primary))'
-      }} />
-      <div className="flex gap-4">
+    <div className="my-10 p-8 rounded-[2rem] border-2 relative overflow-hidden bg-zinc-950/5 dark:bg-zinc-100/5 backdrop-blur-sm border-primary/20">
+      <div className="absolute top-0 left-0 w-1.5 h-full bg-primary" />
+      <div className="flex flex-col sm:flex-row gap-6">
         <div className="flex-shrink-0">
-          <div className="w-12 h-12 rounded-full overflow-hidden border-2" style={{
-            borderColor: 'rgb(var(--primary))'
-          }}>
+          <div className="w-16 h-16 rounded-2xl overflow-hidden ring-4 ring-primary/10 shadow-xl rotate-3 transform transition-transform hover:rotate-0 duration-500">
             <Image
               src="https://i.postimg.cc/W1KV4b43/logo1.webp"
               alt="Chef Dima Fomin"
-              width={48}
-              height={48}
-              className="object-cover"
+              width={64}
+              height={64}
+              className="object-cover w-full h-full scale-110"
             />
           </div>
         </div>
         <div className="flex-1">
-          <div className="font-bold text-foreground mb-2 text-lg">Rada od Szefa</div>
-          <div className="text-foreground leading-relaxed">{children}</div>
+          <div className="font-black text-primary mb-3 text-xl tracking-tight uppercase italic flex items-center gap-2">
+            Chef's Tip <span className="h-px bg-primary/20 flex-1 ml-2" />
+          </div>
+          <div className="text-foreground/80 leading-relaxed font-medium">
+            {children}
+          </div>
         </div>
       </div>
     </div>

@@ -1,7 +1,6 @@
-'use client';
-
 import { PostCard } from '@/components/PostCard';
 import { useTranslations } from 'next-intl';
+import { Button } from '@/components/ui/button';
 
 interface Post {
   slug: string;
@@ -28,19 +27,20 @@ export function BlogList({ posts, searchQuery, onClearFilters }: BlogListProps) 
 
   if (posts.length === 0) {
     return (
-      <div className="text-center py-12">
-        <p className="text-lg text-muted mb-4">
+      <div className="text-center py-16 bg-muted/20 rounded-3xl border border-dashed border-border/60">
+        <p className="text-xl font-medium text-foreground/60 mb-6">
           {searchQuery 
             ? t('noResultsSearch', { query: searchQuery })
             : t('noResultsCategory')
           }
         </p>
-        <button
+        <Button
+          variant="outline"
           onClick={onClearFilters}
-          className="text-primary hover:underline"
+          className="rounded-xl border-2 px-8 hover:bg-primary hover:text-primary-foreground transition-all duration-300"
         >
           {t('clearFilters')}
-        </button>
+        </Button>
       </div>
     );
   }

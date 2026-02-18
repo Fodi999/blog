@@ -53,7 +53,12 @@
     "allArticles": "See all articles",
     "aboutSection": {
       "title": "About Me",
-      "description": "I'm a sushi chef with experience in Europe's finest restaurants, passionate about Japanese cuisine and modern culinary technology. Now sharing practical knowledge and professional expertise."
+      "description": "I'm a sushi chef with experience in Europe's finest restaurants, passionate about Japanese cuisine and modern culinary technology. Now sharing practical knowledge and professional expertise.",
+      "cta": "Read My Story"
+    },
+    "gallery": {
+      "title": "Kitchen Atmosphere",
+      "description": "Authentic moments from the kitchen where tradition meets technology."
     },
     "restaurantsTeaser": {
       "title": "Technologies for Restaurants",
@@ -63,12 +68,17 @@
   },
   "blog": {
     "title": "Blog",
+    "home": "Home",
+    "blog": "Blog",
     "subtitle": "Professional articles about sushi, Japanese cuisine, and culinary techniques",
     "allPosts": "All Articles",
     "postsTotal": "articles",
     "of": "of",
     "readMore": "Read more",
     "backToBlog": "Back to blog",
+    "downloadPdfTitle": "Download Tech Card",
+    "downloadPdfDesc": "A4 Format • Professional Standard",
+    "downloadBtn": "Download PDF",
     "authorRole": "Sushi Chef & Culinary Expert",
     "moreFromCategory": "→ More from",
     "allArticles": "All articles",

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getTranslations } from 'next-intl/server';
 import { Inter, Noto_Sans_JP } from 'next/font/google';
@@ -9,6 +9,12 @@ import { Analytics } from '@vercel/analytics/react';
 import { notFound } from 'next/navigation';
 import { locales } from '@/i18n';
 import '../globals.css';
+
+export const viewport: Viewport = {
+  themeColor: '#ef4444',
+  width: 'device-width',
+  initialScale: 1,
+};
 
 export async function generateMetadata({
   params,
@@ -22,26 +28,32 @@ export async function generateMetadata({
     title: t('title'),
     description: t('description'),
     metadataBase: new URL('https://dima-fomin.pl'),
-    openGraph: {
-      title: t('title'),
-      description: t('description'),
-      images: ['https://i.postimg.cc/RCf8VLFn/DSCF4639.jpg'],
-      locale: locale,
-      type: 'website',
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: t('title'),
-      description: t('description'),
-      images: ['https://i.postimg.cc/RCf8VLFn/DSCF4639.jpg'],
-    },
     alternates: {
+      canonical: `/${locale}`,
       languages: {
         'pl': '/pl',
         'en': '/en',
         'ru': '/ru',
         'uk': '/uk',
       },
+    },
+    verification: {
+      google: 'google-site-verification-id',
+    },
+    openGraph: {
+      title: t('title'),
+      description: t('description'),
+      images: ['https://i.postimg.cc/RCf8VLFn/DSCF4639.jpg'],
+      locale: locale,
+      type: 'website',
+      siteName: 'Dima Fomin',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: t('title'),
+      description: t('description'),
+      images: ['https://i.postimg.cc/RCf8VLFn/DSCF4639.jpg'],
+      creator: '@dimafomin',
     },
   };
 }

@@ -2,54 +2,63 @@
 
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { FileDown, Download } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 
 export function PrintButton() {
+  const t = useTranslations('blog');
+
   const downloadPdf = async () => {
     const element = document.getElementById('recipe-pdf');
     if (!element) return;
 
+    // Add loading state or feedback if needed
     const canvas = await html2canvas(element, {
       scale: 2,
       backgroundColor: '#ffffff',
       useCORS: true,
+      logging: false,
       ignoreElements: (el) => {
         return el.classList?.contains('no-pdf');
       },
     });
 
     const imgData = canvas.toDataURL('image/png');
-
     const pdf = new jsPDF('p', 'mm', 'a4');
-
     const pdfWidth = 210;
-    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-
-    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-    pdf.save('sushi-rice-tech-card.pdf');
+    const canvasHeightInMm = (canvas.height * pdfWidth) / canvas.width;
+    
+    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, canvasHeightInMm);
+    pdf.save('tech-card.pdf');
   };
 
   return (
-    <div className="print-button-container flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 rounded-lg border border-blue-200 dark:border-blue-800 mb-6">
-      <div className="flex items-center gap-3">
-        <div className="flex items-center justify-center w-10 h-10 bg-blue-600 rounded-lg">
-          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
+    <Card className="my-8 overflow-hidden border-primary/10 bg-gradient-to-br from-primary/5 to-transparent p-6 dark:from-primary/10">
+      <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
+        <div className="flex items-center gap-4">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/20">
+            <FileDown className="h-6 w-6" />
+          </div>
+          <div>
+            <h4 className="text-lg font-bold tracking-tight text-foreground">
+              {t('downloadPdfTitle') || 'Download Tech Card'}
+            </h4>
+            <p className="text-sm text-muted-foreground">
+              {t('downloadPdfDesc') || 'A4 Format • Professional Layout'}
+            </p>
+          </div>
         </div>
-        <div>
-          <div className="font-semibold text-gray-900 dark:text-gray-100">Скачать технологическую карту</div>
-          <div className="text-sm text-gray-600 dark:text-gray-400">PDF файл — сохраните на устройство</div>
-        </div>
+        <Button 
+          onClick={downloadPdf} 
+          size="lg"
+          className="group relative flex items-center gap-2 rounded-xl bg-foreground px-6 py-6 text-sm font-bold text-background transition-all hover:bg-foreground/90 hover:shadow-xl active:scale-95"
+        >
+          <Download className="h-4 w-4 transition-transform group-hover:-translate-y-0.5" />
+          <span>{t('downloadBtn') || 'Download PDF'}</span>
+        </Button>
       </div>
-      <button 
-        onClick={downloadPdf} 
-        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200 flex items-center gap-2"
-      >
-        <span>Скачать PDF</span>
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-        </svg>
-      </button>
-    </div>
+    </Card>
   );
 }

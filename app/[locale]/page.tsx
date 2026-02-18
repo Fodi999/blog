@@ -3,8 +3,12 @@ import { Link } from '@/i18n/routing';
 import { PostCard } from '@/components/PostCard';
 import { HeroImage } from '@/components/HeroImage';
 import { ImageGallery } from '@/components/ImageGallery';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Sparkles } from 'lucide-react';
 import { getLatestPosts } from '@/lib/posts';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { JsonLd } from '@/components/JsonLd';
 
 export default async function HomePage({
   params,
@@ -15,6 +19,16 @@ export default async function HomePage({
   const t = await getTranslations({ locale, namespace: 'home' });
   
   const latestPosts = await getLatestPosts(locale, 3);
+
+  const personJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: 'Dima Fomin',
+    jobTitle: 'Sushi Chef & Food Technologist',
+    url: 'https://dima-fomin.pl',
+    image: 'https://i.postimg.cc/W1KV4b43/logo1.webp',
+    description: t('aboutSection.description'),
+  };
 
   const galleryImages = [
     {
@@ -32,140 +46,162 @@ export default async function HomePage({
   ];
 
   return (
-    <div className="max-w-6xl mx-auto">
-      {/* Hero Section - Powerful & Authoritative */}
-      <section className="py-12 md:py-16 lg:py-24">
-        <div className="text-left mb-8 md:mb-12 px-4">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-3 md:mb-4 text-foreground">
-            {t('hero.title')}
-          </h1>
-          <p className="text-base md:text-lg lg:text-xl text-primary mb-4 md:mb-6 font-medium">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <JsonLd data={personJsonLd} />
+      {/* Hero Section - 2026 Premium Editorial */}
+      <section className="relative py-20 lg:py-40 overflow-hidden">
+        <div className="relative z-10 max-w-4xl">
+          <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-black uppercase tracking-[0.2em] mb-10 border border-primary/20 backdrop-blur-md">
+            <Sparkles className="h-3.5 w-3.5 fill-primary" />
             {t('hero.subtitle')}
-          </p>
-          <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-3 md:mb-4 leading-tight max-w-4xl">
+          </div>
+          
+          <h1 className="text-6xl md:text-8xl lg:text-9xl font-black tracking-tighter text-foreground mb-10 leading-[0.85] uppercase italic">
+            {t('hero.title')}<span className="text-primary not-italic">.</span>
+          </h1>
+          
+          <p className="text-2xl md:text-3xl font-bold text-foreground/80 mb-10 leading-tight max-w-2xl tracking-tight">
             {t('hero.tagline')}
           </p>
-          <p className="text-base md:text-lg lg:text-xl text-muted italic max-w-2xl">
-            {t('hero.philosophy')}
-          </p>
+          
+          <div className="relative pl-8 mb-16 group">
+            <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-primary/20 group-hover:bg-primary transition-colors rounded-full" />
+            <p className="text-xl text-muted-foreground italic font-medium leading-relaxed max-w-xl">
+              "{t('hero.philosophy')}"
+            </p>
+          </div>
+          
+          <div className="flex flex-wrap gap-6">
+            <Button asChild size="lg" className="h-16 px-10 rounded-2xl text-lg font-black uppercase tracking-wider group">
+              <Link href="/restaurants">
+                {t('hero.cta')}
+                <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+              </Link>
+            </Button>
+          </div>
         </div>
         
-        <HeroImage 
-          src="https://i.postimg.cc/RCf8VLFn/DSCF4639.jpg"
-          alt="Dima Fomin - Sushi Chef"
-          priority
-        />
-        
-        {/* CTA Button */}
-        <div className="mt-8 md:mt-12 px-4 flex justify-center">
-          <Link 
-            href="/restaurants"
-            className="inline-flex items-center gap-2 px-6 md:px-8 py-3 md:py-4 bg-primary text-white font-bold text-base md:text-lg rounded-lg hover:bg-primary/90 transition-all duration-200 shadow-lg hover:shadow-xl"
-          >
-            {t('hero.cta')}
-            <ArrowRight className="h-5 w-5" />
-          </Link>
+        <div className="mt-24 lg:mt-32">
+          <HeroImage 
+            src="https://i.postimg.cc/RCf8VLFn/DSCF4639.jpg"
+            alt="Dima Fomin - Sushi Chef"
+            priority
+          />
         </div>
       </section>
 
-      {/* Featured Article - Large & Prominent */}
-      <section className="py-8 md:py-12">
-        <div className="mb-4 md:mb-6 px-4">
-          <h2 className="text-xl md:text-2xl font-bold text-foreground flex items-center gap-2">
-            <span className="text-red-500">★</span>
+      {/* Featured Article - Cinematic Look */}
+      <section className="py-32 border-t border-border/40">
+        <div className="flex items-center gap-6 mb-16">
+          <h2 className="text-4xl md:text-5xl font-black tracking-tighter text-foreground uppercase italic px-2">
             {t('featuredArticle')}
           </h2>
+          <Separator className="flex-1 h-px bg-gradient-to-r from-border/80 to-transparent" />
         </div>
         
         {latestPosts.length > 0 && (
-          <div className="mb-8 md:mb-12 px-4">
-            <Link href={`/blog/${latestPosts[0].slug}`} className="block group">
-              <div className="bg-card border border-border rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300">
-                {latestPosts[0].coverImage && (
-                  <div className="relative h-[250px] sm:h-[300px] md:h-[400px] overflow-hidden">
-                    <HeroImage 
-                      src={latestPosts[0].coverImage}
+          <div className="mb-24">
+            <Link href={`/blog/${latestPosts[0].slug}`} className="group block">
+              <div className="relative overflow-hidden rounded-[3rem] border-2 border-border/60 bg-muted/10 transition-all duration-500 hover:border-primary/40 hover:shadow-[0_0_50px_-12px_rgba(var(--primary),0.2)]">
+                <div className="grid grid-cols-1 lg:grid-cols-2 lg:min-h-[600px]">
+                  <div className="relative h-[400px] lg:h-auto overflow-hidden">
+                    <img 
+                      src={latestPosts[0].coverImage || ''}
                       alt={latestPosts[0].title}
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
                     />
+                    <div className="absolute inset-0 bg-black/10 transition-opacity group-hover:opacity-0" />
                   </div>
-                )}
-                <div className="p-5 md:p-8">
-                  <div className="flex items-center gap-2 md:gap-3 mb-3 md:mb-4 flex-wrap">
-                    <span className="px-2.5 md:px-3 py-1 bg-primary/10 text-primary text-xs md:text-sm font-medium rounded-full">
-                      {latestPosts[0].category}
-                    </span>
-                    <span className="text-xs md:text-sm text-muted">{latestPosts[0].readTime}</span>
-                  </div>
-                  <h3 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2 md:mb-3 text-foreground group-hover:text-primary transition-colors">
-                    {latestPosts[0].title}
-                  </h3>
-                  <p className="text-base md:text-lg text-muted mb-3 md:mb-4">
-                    {latestPosts[0].excerpt}
-                  </p>
-                  <div className="flex items-center gap-2 text-primary font-medium text-sm md:text-base">
-                    {t('readMore')}
-                    <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                  <div className="p-10 lg:p-20 flex flex-col justify-center">
+                    <div className="flex items-center gap-4 mb-10">
+                      <Badge className="px-5 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-black uppercase tracking-widest italic hover:bg-primary transition-colors">
+                        {latestPosts[0].category}
+                      </Badge>
+                      <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
+                        {latestPosts[0].readTime}
+                      </span>
+                    </div>
+                    <h3 className="text-4xl lg:text-6xl font-black mb-10 text-foreground leading-[0.9] tracking-tighter uppercase italic group-hover:text-primary transition-colors">
+                      {latestPosts[0].title}
+                    </h3>
+                    <p className="text-xl text-muted-foreground mb-12 line-clamp-3 leading-relaxed font-medium">
+                      {latestPosts[0].excerpt}
+                    </p>
+                    <div className="flex items-center gap-3 text-primary text-xl font-black uppercase tracking-tighter group-hover:gap-5 transition-all">
+                      {t('readMore')} 
+                      <ArrowRight className="h-6 w-6 stroke-[3px]" />
+                    </div>
                   </div>
                 </div>
               </div>
             </Link>
           </div>
         )}
-      </section>
 
-      {/* Restaurant Solutions Teaser - B2B Section */}
-      <section className="py-8 md:py-12 bg-gradient-to-br from-red-500/10 to-orange-500/10 rounded-xl md:rounded-2xl px-5 md:px-8 mb-8 md:mb-12 mx-4">
-        <div className="max-w-3xl">
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold mb-2 md:mb-3 text-foreground">
-            {t('restaurantsTeaser.title')}
-          </h2>
-          <p className="text-base md:text-lg text-muted mb-4 md:mb-6">
-            {t('restaurantsTeaser.description')}
-          </p>
-          <Link
-            href="/restaurants"
-            className="inline-flex items-center gap-2 text-primary font-semibold text-base md:text-lg hover:gap-3 transition-all group"
-          >
-            {t('restaurantsTeaser.link')}
-            <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
-          </Link>
-        </div>
-      </section>
-
-      {/* Latest Posts Grid */}
-      <section className="py-8 md:py-12 px-4">
-        <div className="flex items-center justify-between mb-6 md:mb-8">
-          <h2 className="text-2xl md:text-3xl font-bold text-foreground">{t('latestPosts')}</h2>
-          <Link 
-            href="/blog"
-            className="flex items-center gap-2 text-primary link-hover font-medium text-sm md:text-base"
-          >
-            {t('allArticles')}
-            <ArrowRight className="h-4 w-4" />
-          </Link>
+        {/* Latest Posts Bento Grid */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
+          <div>
+            <h2 className="text-4xl md:text-5xl font-black tracking-tighter text-foreground uppercase italic mb-2">
+              {t('latestPosts')}
+            </h2>
+            <div className="h-1.5 w-24 bg-primary rounded-full" />
+          </div>
+          <Button variant="ghost" asChild className="text-primary font-black uppercase tracking-widest px-0 hover:bg-transparent hover:text-primary/80 group">
+            <Link href="/blog">
+              {t('allArticles')} <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </Link>
+          </Button>
         </div>
         
-        <div className="grid md:grid-cols-2 gap-4 md:gap-6">
-          {latestPosts.slice(1).map((post) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-32">
+          {latestPosts.slice(1, 4).map((post) => (
             <PostCard key={post.slug} {...post} />
           ))}
         </div>
       </section>
 
-      {/* About Section - Below Content */}
-      <section className="py-8 md:py-12 bg-card border border-border rounded-xl px-5 md:px-8 mt-8 md:mt-12 mx-4">
-        <h2 className="text-2xl md:text-3xl font-bold mb-4 md:mb-6 text-foreground">{t('aboutSection.title')}</h2>
-        <p className="text-base md:text-lg text-muted mb-6 md:mb-8">
-          {t('aboutSection.description')}
-        </p>
-        
-        <Link 
-          href="/about"
-          className="inline-flex items-center gap-2 text-primary font-semibold hover:gap-3 transition-all mb-6 md:mb-8 text-sm md:text-base"
-        >
-          {t('readMore')} <ArrowRight className="h-4 w-4" />
-        </Link>
-        
+      {/* About Section - Premium Card */}
+      <section className="py-40 border-t border-border/40">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
+          <div className="order-2 lg:order-1">
+            <h2 className="text-5xl md:text-7xl font-black tracking-tighter text-foreground mb-10 uppercase italic leading-[0.85]">
+              {t('aboutSection.title')}
+            </h2>
+            <p className="text-2xl text-muted-foreground leading-relaxed mb-12 font-medium tracking-tight">
+              {t('aboutSection.description')}
+            </p>
+            <Button asChild size="lg" variant="outline" className="h-16 px-10 rounded-2xl border-2 text-lg font-black uppercase tracking-wider group transition-all hover:bg-primary hover:text-white hover:border-primary">
+              <Link href="/about">
+                {t('aboutSection.cta')}
+                <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+              </Link>
+            </Button>
+          </div>
+          <div className="order-1 lg:order-2">
+            <div className="relative">
+              <div className="absolute -inset-4 bg-primary/10 rounded-[4rem] -rotate-3 transition-transform group-hover:rotate-0" />
+              <div className="relative aspect-square rounded-[3.5rem] overflow-hidden border-2 border-border/60 shadow-2xl">
+                <img 
+                  src="https://i.postimg.cc/K8QChcY9/DSCF4689.jpg" 
+                  alt="Dima Fomin" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Gallery Section */}
+      <section className="py-32 border-t border-border/40">
+        <div className="flex flex-col items-center text-center mb-16">
+          <h2 className="text-5xl md:text-7xl font-black tracking-tighter text-foreground uppercase italic mb-4">
+            {t('gallery.title')}
+          </h2>
+          <p className="text-xl text-muted-foreground max-w-2xl font-medium">
+            {t('gallery.description')}
+          </p>
+        </div>
         <ImageGallery images={galleryImages} />
       </section>
     </div>

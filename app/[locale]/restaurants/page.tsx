@@ -3,8 +3,12 @@ import { Link } from '@/i18n/routing';
 import { ExternalLink, ShoppingCart, Smartphone, CheckCircle, Zap, Globe, Cloud, Clock, Briefcase, Package, ChefHat, TrendingUp, Brain } from 'lucide-react';
 import type { Metadata } from 'next';
 
-export async function generateMetadata(): Promise<Metadata> {
-  const locale = await getLocale();
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'metadata' });
 
   return {
@@ -17,12 +21,12 @@ export async function generateMetadata(): Promise<Metadata> {
       type: 'website',
     },
     alternates: {
-      canonical: `https://dima-fomin.pl/${locale}/restaurants`,
+      canonical: `/${locale}/restaurants`,
       languages: {
-        'pl': 'https://dima-fomin.pl/pl/restaurants',
-        'en': 'https://dima-fomin.pl/en/restaurants',
-        'ru': 'https://dima-fomin.pl/ru/restaurants',
-        'uk': 'https://dima-fomin.pl/uk/restaurants',
+        'pl': '/pl/restaurants',
+        'en': '/en/restaurants',
+        'ru': '/ru/restaurants',
+        'uk': '/uk/restaurants',
       },
     },
   };

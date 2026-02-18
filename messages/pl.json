@@ -53,7 +53,12 @@
     "allArticles": "Zobacz wszystkie artykuły",
     "aboutSection": {
       "title": "O mnie",
-      "description": "Jestem sushi chefem z doświadczeniem w najlepszych restauracjach Europy, pasjonatem japońskiej kuchni i nowoczesnych technologii kulinarnych. Teraz dzielę się praktyczną wiedzą i profesjonalnym doświadczeniem."
+      "description": "Jestem sushi chefem z doświadczeniem w najlepszych restauracjach Europy, pasjonatem japońskiej kuchni i nowoczesnych technologii kulinarnych. Teraz dzielę się praktyczną wiedzą i profesjonalnym doświadczeniem.",
+      "cta": "Poznaj moją historię"
+    },
+    "gallery": {
+      "title": "Atmosfera Kuchni",
+      "description": "Autentyczne momenty z kuchni, gdzie tradycja spotyka się z technologią."
     },
     "restaurantsTeaser": {
       "title": "Technologie dla restauracji",
@@ -63,12 +68,17 @@
   },
   "blog": {
     "title": "Blog",
+    "home": "Home",
+    "blog": "Blog",
     "subtitle": "Profesjonalne artykuły o sushi, kuchni japońskiej i technikach kulinarnych",
     "allPosts": "Wszystkie artykuły",
     "postsTotal": "artykułów",
     "of": "z",
     "readMore": "Czytaj więcej",
     "backToBlog": "Powrót do bloga",
+    "downloadPdfTitle": "Pobierz kartę tech.",
+    "downloadPdfDesc": "Format A4 • Standard Profesjonalny",
+    "downloadBtn": "Pobierz PDF",
     "authorRole": "Sushi Chef & Culinary Expert",
     "moreFromCategory": "→ Więcej z kategorii",
     "allArticles": "Wszystkie artykuły",

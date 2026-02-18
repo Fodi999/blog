@@ -2,6 +2,9 @@
 
 import { useTranslations } from 'next-intl';
 import { BLOG_CATEGORIES } from '@/lib/blog-categories';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { X } from 'lucide-react';
 
 interface BlogFiltersProps {
   categories: string[];
@@ -27,8 +30,8 @@ export function BlogFilters({
   return (
     <div className="space-y-6">
       {/* Posts count */}
-      <div>
-        <p className="text-sm text-muted">
+      <div className="flex items-center justify-between">
+        <p className="text-sm font-medium text-muted-foreground uppercase tracking-widest italic">
           {filteredCount === totalPosts 
             ? `${totalPosts} ${t('postsTotal')}`
             : `${filteredCount} ${t('of')} ${totalPosts} ${t('postsTotal')}`
@@ -38,59 +41,64 @@ export function BlogFilters({
 
       {/* Category filters (chips) */}
       <div className="flex flex-wrap gap-2">
-        <button
+        <Button
+          variant={selectedCategory === 'all' ? 'default' : 'outline'}
+          size="sm"
           onClick={() => onCategoryChange('all')}
-          className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-            selectedCategory === 'all'
-              ? 'bg-primary text-white shadow-md'
-              : 'bg-card border-2 border-border text-foreground hover:border-primary/30'
+          className={`rounded-full px-5 py-5 text-sm font-bold transition-all ${
+            selectedCategory === 'all' ? 'shadow-lg shadow-primary/20' : 'hover:border-primary/50'
           }`}
         >
           {t('categories.all')}
-        </button>
+        </Button>
         {BLOG_CATEGORIES.map((cat) => {
           const isActive = categories.includes(cat.key);
           if (!isActive) return null;
           
           return (
-            <button
+            <Button
               key={cat.key}
+              variant={selectedCategory === cat.key ? 'default' : 'outline'}
+              size="sm"
               onClick={() => onCategoryChange(cat.key)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                selectedCategory === cat.key
-                  ? 'bg-primary text-white shadow-md'
-                  : 'bg-card border-2 border-border text-foreground hover:border-primary/30'
+              className={`rounded-full px-5 py-5 text-sm font-bold transition-all ${
+                selectedCategory === cat.key ? 'shadow-lg shadow-primary/20' : 'hover:border-primary/50'
               }`}
             >
-              {cat.emoji} {t(`categories.${cat.i18nKey}`)}
-            </button>
+              <span className="mr-2 text-base">{cat.emoji}</span> {t(`categories.${cat.i18nKey}`)}
+            </Button>
           );
         })}
       </div>
 
       {/* Active filters indicator */}
       {(selectedCategory !== 'all' || searchQuery) && (
-        <div className="flex items-center gap-2 text-sm text-muted">
-          <span>{t('activeFilters')}:</span>
+        <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-border/50">
+          <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground mr-1">
+            {t('activeFilters')}:
+          </span>
           {selectedCategory !== 'all' && (
-            <span className="px-2 py-1 rounded bg-primary/10 text-primary">
+            <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20 hover:bg-primary/20 font-bold px-3 py-1 rounded-lg">
               {t(`categories.${selectedCategory.toLowerCase().replace(/\s+/g, '')}`)}
-            </span>
+            </Badge>
           )}
           {searchQuery && (
-            <span className="px-2 py-1 rounded bg-primary/10 text-primary">
+            <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20 hover:bg-primary/20 font-bold px-3 py-1 rounded-lg">
               &quot;{searchQuery}&quot;
-            </span>
+            </Badge>
           )}
-          <button
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={() => {
               onCategoryChange('all');
               onSearchChange('');
             }}
-            className="ml-2 text-primary hover:underline"
+            className="text-muted-foreground hover:text-primary font-bold h-8 px-2 hover:bg-transparent"
           >
+            <X className="mr-1 h-3 w-3" />
             {t('clearFilters')}
-          </button>
+          </Button>
         </div>
       )}
     </div>
