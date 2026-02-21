@@ -6,6 +6,7 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Providers } from '@/components/Providers';
 import { Analytics } from '@vercel/analytics/react';
+import { Toaster } from 'sonner';
 import { notFound } from 'next/navigation';
 import { locales } from '@/i18n';
 import '../globals.css';
@@ -98,6 +99,7 @@ export default async function LocaleLayout({
               {children}
             </main>
             <Footer />
+            <Toaster position="top-right" richColors />
           </NextIntlClientProvider>
         </Providers>
         <Analytics />

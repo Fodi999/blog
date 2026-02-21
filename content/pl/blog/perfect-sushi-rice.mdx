@@ -80,129 +80,227 @@ Sprzęt nie zastępuje techniki, ale ją wspiera.
 
 ---
 
-## Karta Technologiczna: Ryż do Sushi
+## KARTA TECHNOLOGICZNA NR RC-001
 
 <PrintButton />
 
-<div id="recipe-pdf" className="pdf-safe">
+<div id="recipe-pdf" className="haccp-container no-pdf-scroll">
 
-<section className="techcard">
+<header className="haccp-header">
+  <div className="flex justify-between items-start">
+    <div>
+      <h1 className="haccp-title uppercase">KARTA TECHNOLOGICZNA NR RC-001</h1>
+      <p className="text-lg font-bold">Nazwa: Ryż do sushi – baza</p>
+    </div>
+    <div className="text-right text-[8pt] uppercase">
+      <p>Kategoria: Półprodukt</p>
+      <p>Wersja: 1.0</p>
+    </div>
+  </div>
+  <div className="haccp-meta">
+    <div>
+      <p>Data zatwierdzenia: 21.02.2026</p>
+      <p>Odpowiedzialny: ____________________</p>
+    </div>
+    <div className="text-right">
+      <p><strong>ID produktu:</strong> RZ-001</p>
+      <p><strong>Kod wewnętrzny:</strong> ____________________</p>
+    </div>
+  </div>
+</header>
 
-### Składniki (na 1 kg suchego ryżu)
-
-<table className="tech-table">
-  <thead>
-    <tr>
-      <th>Komponent</th>
-      <th>Ilość</th>
-      <th>Jedn.</th>
-      <th>Uwaga</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Japoński ryż krótkozłożysty</td>
-      <td>1</td>
-      <td>kg</td>
-      <td>Jedna marka, stabilnie</td>
-    </tr>
-    <tr>
-      <td>Woda</td>
-      <td>1,150–1,200</td>
-      <td>ml</td>
-      <td>Zależy od odmiany i świeżości</td>
-    </tr>
-    <tr>
-      <td>Przyprawa ryżowa (sushi-zu)</td>
-      <td>0,300</td>
-      <td>ml</td>
-      <td>Gotowa lub przygotuj sam</td>
-    </tr>
-  </tbody>
-</table>
-
-### Proces Technologiczny
-
-<table className="tech-table">
-  <thead>
-    <tr>
-      <th>Etap</th>
-      <th>Działanie</th>
-      <th>Czas</th>
-      <th>Kontrola</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>1</td>
-      <td>Płukać ryż zimną wodą 4–6 razy do prawie przezroczystej wody</td>
-      <td>3–5 min</td>
-      <td>Natychmiast spuszczać wodę</td>
-    </tr>
-    <tr>
-      <td>2</td>
-      <td>Zostawić ryż do osuszenia w durszlaku</td>
-      <td>15–30 min</td>
-      <td>Według timera</td>
-    </tr>
-    <tr>
-      <td>3</td>
-      <td>Przełożyć ryż do garnka, dodać wodę</td>
-      <td>—</td>
-      <td>Szczelnie zamknąć pokrywką</td>
-    </tr>
-    <tr>
-      <td>4</td>
-      <td>Doprowadzić do wrzenia na średnim ogniu</td>
-      <td>5–7 min</td>
-      <td>Nie otwierać pokrywki</td>
-    </tr>
-    <tr>
-      <td>5</td>
-      <td>Zmniejszyć ogień do minimum i gotować</td>
-      <td>15 min</td>
-      <td>Według timera, nie otwierać pokrywki</td>
-    </tr>
-    <tr>
-      <td>6</td>
-      <td>Zdjąć z ognia, zostawić pod pokrywką</td>
-      <td>15–20 min</td>
-      <td>Według timera, nie otwierać pokrywki</td>
-    </tr>
-    <tr>
-      <td>7</td>
-      <td>Przełożyć do szerokiej miski, dodać 300 ml przyprawy</td>
-      <td>3–5 min</td>
-      <td>Ruchy cięcia łopatką</td>
-    </tr>
-    <tr>
-      <td>8</td>
-      <td>Wietrzyć ryż wachlarzem do docelowej temperatury</td>
-      <td>do 36°C</td>
-      <td>Kontrola temperatury</td>
-    </tr>
-  </tbody>
-</table>
-
-<div className="tech-note">
-  <strong>Uwaga:</strong> Ryż powinien być lekko błyszczący, aromatyczny, ale nie mokry. Przyprawa powinna się wchłonąć, a nie gromadzić na dnie.
-</div>
-
-<div className="tech-note">
-  <strong>Wydajność:</strong> ~2,3–2,5 kg gotowego ryżu do sushi<br />
-  <strong>Okres przydatności:</strong> użyć w ciągu 2–3 godzin, nie przechowywać w lodówce
-</div>
-
+<section className="haccp-section">
+  <h2 className="haccp-section-title">1. Skład i normy zużycia (na 1000 g ryżu)</h2>
+  <table className="haccp-table">
+    <thead>
+      <tr>
+        <th>Składnik</th>
+        <th>Brutto (g)</th>
+        <th>Netto (g)</th>
+        <th>Jedn.</th>
+        <th>Alergeny</th>
+        <th>Uwagi</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Ryż krótkoziarnisty (typ japoński)</td>
+        <td>1000</td>
+        <td>1000</td>
+        <td>g</td>
+        <td>Brak</td>
+        <td>Odmiana Koshihikari lub równoważna</td>
+      </tr>
+      <tr>
+        <td>Woda pitna filtrowana</td>
+        <td>1150–1200</td>
+        <td>1150–1200</td>
+        <td>g</td>
+        <td>Brak</td>
+        <td>W zależności od wilgotności ziarna</td>
+      </tr>
+      <tr>
+        <td>Zaprawa sushi-zu</td>
+        <td>300</td>
+        <td>300</td>
+        <td>g</td>
+        <td>Brak</td>
+        <td>Temperatura ≤40°C</td>
+      </tr>
+    </tbody>
+  </table>
+  <p className="text-[8pt] italic mt-1 text-right">Brak alergenów zgodnie z Rozporządzeniem UE 1169/2011</p>
 </section>
+
+<section className="haccp-section">
+  <h2 className="haccp-section-title">2. Proces technologiczny</h2>
+  <table className="haccp-table">
+    <thead>
+      <tr>
+        <th className="text-center">Nr</th>
+        <th>Operacja</th>
+        <th>T (°C)</th>
+        <th>Czas</th>
+        <th>Sprzęt</th>
+        <th>Kontrola</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td className="text-center">1</td>
+        <td>Płukanie ryżu</td>
+        <td>≤15°C</td>
+        <td>3–5 min</td>
+        <td>Zlew / Cedzak</td>
+        <td>Woda przejrzysta</td>
+      </tr>
+      <tr>
+        <td className="text-center">2</td>
+        <td>Odsączenie / odpoczynek</td>
+        <td>20°C</td>
+        <td>15–30 min</td>
+        <td>Sito</td>
+        <td>Kontrola czasu – timer</td>
+      </tr>
+      <tr>
+        <td className="text-center">3</td>
+        <td>Gotowanie – doprowadzenie</td>
+        <td>100°C</td>
+        <td>5–7 min</td>
+        <td>Garnek / Płyta</td>
+        <td>Nie otwierać pokrywki</td>
+      </tr>
+      <tr>
+        <td className="text-center">4</td>
+        <td>Gotowanie właściwe</td>
+        <td>95°C</td>
+        <td>15 min</td>
+        <td>Ryżowar / Płyta</td>
+        <td>Kontrola czasu</td>
+      </tr>
+      <tr>
+        <td className="text-center">5</td>
+        <td>Odpoczynek pod przykryciem</td>
+        <td>—</td>
+        <td>15–20 min</td>
+        <td>Garnek</td>
+        <td>Nie otwierać</td>
+      </tr>
+      <tr>
+        <td className="text-center">6</td>
+        <td>Dodanie zaprawy sushi-zu</td>
+        <td>≤40°C</td>
+        <td>3–5 min</td>
+        <td>Hangiri / Łopatka</td>
+        <td>Ruchy tnące</td>
+      </tr>
+      <tr>
+        <td className="text-center">7</td>
+        <td>Chłodzenie</td>
+        <td>do 36°C</td>
+        <td>—</td>
+        <td>Wentylator</td>
+        <td>Kontrola temperatury</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section className="haccp-section haccp-ccp !mt-4">
+  <h2 className="haccp-section-title bg-black text-white border-black">3. Krytyczne Punkty Kontrolne (CCP)</h2>
+  <table className="haccp-table border-black">
+    <thead>
+      <tr className="bg-neutral-200">
+        <th>Punkt</th>
+        <th>Zagrożenie</th>
+        <th>Limit krytyczny</th>
+        <th>Monitorowanie</th>
+        <th>Działania korygujące</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>CCP-1</strong></td>
+        <td>Rozmnażanie mikroorganizmów</td>
+        <td>Temperatura zaprawy ≤40°C</td>
+        <td>Termometr</td>
+        <td>Schłodzić zaprawę</td>
+      </tr>
+      <tr>
+        <td><strong>CCP-2</strong></td>
+        <td>Rozmnażanie mikroorganizmów</td>
+        <td>Czas przechowywania ≤3 godzin<br />Temperatura 20–25°C</td>
+        <td>Termometr / Timer</td>
+        <td>Utylizacja po 3 h</td>
+      </tr>
+      <tr>
+        <td><strong>CCP-3</strong></td>
+        <td>Kontaminacja krzyżowa</td>
+        <td>Obowiązkowe mycie i dezynfekcja rąk przed kontaktem z produktem</td>
+        <td>Kontrola wizualna</td>
+        <td>Ponowne mycie / szkolenie</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section className="haccp-section">
+  <h2 className="haccp-section-title">4. Wydajność i przechowywanie</h2>
+  <div className="grid grid-cols-2 gap-8 text-[10pt]">
+    <div className="border border-black p-4">
+      <strong>Wydajność końcowa:</strong><br />
+      2,3–2,5 kg
+    </div>
+    <div className="border border-black p-4">
+      <strong>Warunki przechowywania:</strong><br />
+      Produkt przeznaczony do bezpośredniego użycia. Nie podlega magazynowaniu w warunkach chłodniczych. Temperatura 20–25°C. Maksymalny czas przechowywania: 3 godziny.
+    </div>
+  </div>
+  <p className="text-[7pt] mt-2 italic text-gray-500">Dokument podlega okresowej weryfikacji.</p>
+</section>
+
+<footer className="haccp-footer">
+  <div>
+    <div className="haccp-sign-line">Opracował:</div>
+    <p className="text-[7pt] mt-1 text-center">Data: ______________</p>
+  </div>
+  <div>
+    <div className="haccp-sign-line">Zatwierdził:</div>
+    <p className="text-[7pt] mt-1 text-center italic">Podpis i pieczątka</p>
+  </div>
+  <div>
+    <div className="haccp-sign-line">Weryfikacja:</div>
+    <p className="text-[7pt] mt-1 text-center italic">Następna: ______________</p>
+  </div>
+</footer>
 
 </div>
 
 <Callout type="warning">
-**Krytyczne Punkty Kontroli:**
+**Krytyczne Punkty Kontrolne (HACCP):**
 
-- Timer na etapach 2, 5, 6 — obowiązkowy
-- Nie otwierać pokrywki na etapach 4, 5, 6
-- Docelowa temperatura gotowego ryżu: ~36°C (temperatura ciała)
+- **CCP-1:** Temperatura zaprawy przy dodawaniu nie może przekraczać 40°C.
+- **CCP-2:** Gotowy produkt musi być przechowywany w temperaturze pokojowej (20-25°C) nie dłużej niż 3 godziny.
 </Callout>
 
 ---

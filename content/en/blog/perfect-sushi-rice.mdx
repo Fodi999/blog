@@ -80,159 +80,218 @@ Equipment doesn't replace technique but supports it.
 
 ---
 
-## Technology Card: Sushi Rice
+## TECHNICAL CARD № RC-001
 
 <PrintButton />
 
-<div id="recipe-pdf" className="pdf-safe">
+<div id="recipe-pdf" className="haccp-container no-pdf-scroll">
 
-<section className="techcard">
+<header className="haccp-header">
+  <div className="flex justify-between items-start">
+    <div>
+      <h1 className="haccp-title uppercase">TECHNICAL CARD № RC-001</h1>
+      <p className="text-lg font-bold">Name: Sushi Rice – Base</p>
+    </div>
+    <div className="text-right text-[8pt] uppercase">
+      <p>Category: Semi-finished product</p>
+      <p>Version: 1.0</p>
+    </div>
+  </div>
+  <div className="haccp-meta">
+    <div>
+      <p>Approved date: 21.02.2026</p>
+      <p>Responsible: ____________________</p>
+    </div>
+    <div className="text-right">
+      <p><strong>Product ID:</strong> RZ-001</p>
+      <p><strong>Internal Code:</strong> ____________________</p>
+    </div>
+  </div>
+</header>
 
-### Ingredients (per 1 kg dry rice)
-
-<table className="tech-table">
-  <thead>
-    <tr>
-      <th>Component</th>
-      <th>Amount</th>
-      <th>Unit</th>
-      <th>Note</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Japanese short-grain rice</td>
-      <td>1</td>
-      <td>kg</td>
-      <td>One brand, consistently</td>
-    </tr>
-    <tr>
-      <td>Water</td>
-      <td>1,150–1,200</td>
-      <td>ml</td>
-      <td>Depends on variety and freshness</td>
-    </tr>
-    <tr>
-      <td>Rice seasoning (sushi-zu)</td>
-      <td>0,300</td>
-      <td>ml</td>
-      <td>Ready-made or prepare yourself</td>
-    </tr>
-  </tbody>
-</table>
-
-### Process
-
-<table className="tech-table">
-  <thead>
-    <tr>
-      <th>Stage</th>
-      <th>Action</th>
-      <th>Time</th>
-      <th>Control</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>1</td>
-      <td>Rinse rice with cold water 4–6 times until almost clear</td>
-      <td>3–5 min</td>
-      <td>Drain immediately</td>
-    </tr>
-    <tr>
-      <td>2</td>
-      <td>Let rice dry in colander</td>
-      <td>15–30 min</td>
-      <td>Use timer</td>
-    </tr>
-    <tr>
-      <td>3</td>
-      <td>Transfer rice to pot, add water</td>
-      <td>—</td>
-      <td>Close lid tightly</td>
-    </tr>
-    <tr>
-      <td>4</td>
-      <td>Bring to boil on medium heat</td>
-      <td>5–7 min</td>
-      <td>Don't open lid</td>
-    </tr>
-    <tr>
-      <td>5</td>
-      <td>Reduce heat to minimum and cook</td>
-      <td>15 min</td>
-      <td>Use timer, don't open lid</td>
-    </tr>
-    <tr>
-      <td>6</td>
-      <td>Remove from heat, keep covered</td>
-      <td>15–20 min</td>
-      <td>Use timer, don't open lid</td>
-    </tr>
-    <tr>
-      <td>7</td>
-      <td>Transfer to wide container, add 300 ml seasoning</td>
-      <td>3–5 min</td>
-      <td>Cutting motions with spatula</td>
-    </tr>
-    <tr>
-      <td>8</td>
-      <td>Fan rice to target temperature</td>
-      <td>to 36°C</td>
-      <td>Temperature control</td>
-    </tr>
-  </tbody>
-</table>
-
-<div className="tech-note">
-  <strong>Note:</strong> Rice should be slightly glossy, aromatic, but not wet. Seasoning should absorb, not pool at the bottom.
-</div>
-
-<div className="tech-note">
-  <strong>Yield:</strong> ~2.3–2.5 kg finished sushi rice<br />
-  <strong>Shelf life:</strong> use within 2–3 hours, don't refrigerate
-</div>
-
+<section className="haccp-section">
+  <h2 className="haccp-section-title">1. Composition and Norms (per 1000 g rice)</h2>
+  <table className="haccp-table">
+    <thead>
+      <tr>
+        <th>Ingredient</th>
+        <th>Gross (g)</th>
+        <th>Net (g)</th>
+        <th>Unit</th>
+        <th>Allergens</th>
+        <th>Note</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Japanese short-grain rice (sushi type)</td>
+        <td>1000</td>
+        <td>1000</td>
+        <td>g</td>
+        <td>None</td>
+        <td>Koshihikari or equivalent</td>
+      </tr>
+      <tr>
+        <td>Drinking filtered water</td>
+        <td>1150–1200</td>
+        <td>1150–1200</td>
+        <td>g</td>
+        <td>None</td>
+        <td>Depends on grain humidity</td>
+      </tr>
+      <tr>
+        <td>Sushi-zu seasoning</td>
+        <td>300</td>
+        <td>300</td>
+        <td>g</td>
+        <td>None</td>
+        <td>Temperature ≤40°C</td>
+      </tr>
+    </tbody>
+  </table>
+  <p className="text-[8pt] italic mt-1 text-right">No allergens as per EU Regulation 1169/2011</p>
 </section>
 
+<section className="haccp-section">
+  <h2 className="haccp-section-title">2. Technological Process</h2>
+  <table className="haccp-table">
+    <thead>
+      <tr>
+        <th className="text-center">No.</th>
+        <th>Operation</th>
+        <th>T (°C)</th>
+        <th>Time</th>
+        <th>Equipment</th>
+        <th>Control</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td className="text-center">1</td>
+        <td>Washing rice</td>
+        <td>≤15°C</td>
+        <td>3–5 min</td>
+        <td>Sink / Colander</td>
+        <td>Water is clear</td>
+      </tr>
+      <tr>
+        <td className="text-center">2</td>
+        <td>Drying / Resting</td>
+        <td>20°C</td>
+        <td>15–30 min</td>
+        <td>Colander</td>
+        <td>By timer</td>
+      </tr>
+      <tr>
+        <td className="text-center">3</td>
+        <td>Boiling – until boil</td>
+        <td>100°C</td>
+        <td>5–7 min</td>
+        <td>Pot / Stove</td>
+        <td>Do not open lid</td>
+      </tr>
+      <tr>
+        <td className="text-center">4</td>
+        <td>Main cooking</td>
+        <td>95°C</td>
+        <td>15 min</td>
+        <td>Rice cooker / Stove</td>
+        <td>Timer control</td>
+      </tr>
+      <tr>
+        <td className="text-center">5</td>
+        <td>Resting under lid</td>
+        <td>—</td>
+        <td>15–20 min</td>
+        <td>Pot</td>
+        <td>Do not open</td>
+      </tr>
+      <tr>
+        <td className="text-center">6</td>
+        <td>Adding sushi-zu seasoning</td>
+        <td>≤40°C</td>
+        <td>3–5 min</td>
+        <td>Hangiri / Spatula</td>
+        <td>Cutting motions</td>
+      </tr>
+      <tr>
+        <td className="text-center">7</td>
+        <td>Cooling</td>
+        <td>to 36°C</td>
+        <td>—</td>
+        <td>Fan</td>
+        <td>Temperature control</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section className="haccp-section haccp-ccp !mt-4">
+  <h2 className="haccp-section-title bg-black text-white border-black">3. Critical Control Points (CCP)</h2>
+  <table className="haccp-table border-black">
+    <thead>
+      <tr className="bg-neutral-200">
+        <th>Point</th>
+        <th>Hazard</th>
+        <th>Critical Limit</th>
+        <th>Monitoring</th>
+        <th>Corrective Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>CCP-1</strong></td>
+        <td>Proliferation of microorganisms</td>
+        <td>Seasoning temperature ≤40°C</td>
+        <td>Thermometer</td>
+        <td>Cool the seasoning</td>
+      </tr>
+      <tr>
+        <td><strong>CCP-2</strong></td>
+        <td>Proliferation of microorganisms</td>
+        <td>Storage time ≤3 hours<br />Temperature 20–25°C</td>
+        <td>Thermometer / Timer</td>
+        <td>Dispose after 3 hrs</td>
+      </tr>
+      <tr>
+        <td><strong>CCP-3</strong></td>
+        <td>Cross-contamination</td>
+        <td>Mandatory hand washing and disinfection before contact with the product</td>
+        <td>Visual control</td>
+        <td>Re-washing / training</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section className="haccp-section">
+  <h2 className="haccp-section-title">4. Yield and Storage</h2>
+  <div className="grid grid-cols-2 gap-8 text-[10pt]">
+    <div className="border border-black p-4">
+      <strong>Final Yield:</strong><br />
+      2,3–2,5 kg
+    </div>
+    <div className="border border-black p-4">
+      <strong>Storage Conditions:</strong><br />
+      Product for immediate use. Not subject to refrigerated storage. Temp 20–25°C. Max storage time: 3 hours.
+    </div>
+  </div>
+  <p className="text-[7pt] mt-2 italic text-gray-500">This document is subject to periodic verification.</p>
+</section>
+
+<footer className="haccp-footer">
+  <div>
+    <div className="haccp-sign-line">Developed by:</div>
+    <p className="text-[7pt] mt-1 text-center">Date: ______________</p>
+  </div>
+  <div>
+    <div className="haccp-sign-line">Approved by:</div>
+    <p className="text-[7pt] mt-1 text-center italic">Signature and stamp</p>
+  </div>
+  <div>
+    <div className="haccp-sign-line">Verification:</div>
+    <p className="text-[7pt] mt-1 text-center italic">Next: ______________</p>
+  </div>
+</footer>
+
 </div>
-
-<Callout type="warning">
-**Critical Control Points:**
-
-- Timer at stages 2, 5, 6 — mandatory
-- Don't open lid at stages 4, 5, 6
-- Target temperature of finished rice: ~36°C (body temperature)
-</Callout>
-
----
-
-## Professional Tips
-
-<Callout type="tip">
-- Use only **Japanese short-grain** rice
-- **Stick to one rice brand** — each variety behaves differently, consistency starts with product consistency
-- **Cook by timer** — not "by eye." Precise cooking and "rest" time is the foundation of repeatable results
-- Don't reheat sushi rice — structure breaks down
-- Target temperature: **warm rice ~36°C**
-- Don't open lid while cooking (breaks steam mode)
-- If rice is slightly firmer — that's easier to fix than overcooked
-</Callout>
-
-## Common Mistakes
-
-**❌ Too much water**  
-Rice becomes mushy, heavy, harder to shape.
-
-**❌ Opened lid during cooking**  
-Breaks steam mode, rice cooks unevenly.
-
-**❌ Weak/wrong seasoning**  
-No characteristic "sushi taste," rice seems flat.
-
-**❌ Cold rice**  
-Poor plasticity, unpleasant mouthfeel.
-
-## Conclusion
-
-Perfect sushi rice is the result of understanding the process: washing, drying, steam mode, "rest," and proper seasoning. Master this basic technology, and you'll elevate everything — from simple maki to nigiri and signature rolls.

@@ -80,159 +80,218 @@ coverImage: "https://i.postimg.cc/wBs209mQ/fodifood-Top-down-editorial-food-phot
 
 ---
 
-## Технологическая карта: Рис для суши
+## ТЕХНОЛОГИЧЕСКАЯ КАРТА № RC-001
 
 <PrintButton />
 
-<div id="recipe-pdf" className="pdf-safe">
+<div id="recipe-pdf" className="haccp-container no-pdf-scroll">
 
-<section className="techcard">
+<header className="haccp-header">
+  <div className="flex justify-between items-start">
+    <div>
+      <h1 className="haccp-title uppercase">ТЕХНОЛОГИЧЕСКАЯ КАРТА № RC-001</h1>
+      <p className="text-lg font-bold">Название: Рис для суши – база</p>
+    </div>
+    <div className="text-right text-[8pt] uppercase">
+      <p>Категория: Полуфабрикат</p>
+      <p>Версия: 1.0</p>
+    </div>
+  </div>
+  <div className="haccp-meta">
+    <div>
+      <p>Дата утверждения: 21.02.2026</p>
+      <p>Ответственный: ____________________</p>
+    </div>
+    <div className="text-right">
+      <p><strong>ID продукта:</strong> RZ-001</p>
+      <p><strong>Внутренний код:</strong> ____________________</p>
+    </div>
+  </div>
+</header>
 
-### Ингредиенты (на 1 кг сухого риса)
-
-<table className="tech-table">
-  <thead>
-    <tr>
-      <th>Компонент</th>
-      <th>Количество</th>
-      <th>Ед.</th>
-      <th>Примечание</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Японский короткозёрный рис</td>
-      <td>1</td>
-      <td>кг</td>
-      <td>Одна марка, стабильно</td>
-    </tr>
-    <tr>
-      <td>Вода</td>
-      <td>1,150–1,200</td>
-      <td>мл</td>
-      <td>Зависит от сорта и свежести</td>
-    </tr>
-    <tr>
-      <td>Рисовая заправка (sushi-zu)</td>
-      <td>0,300</td>
-      <td>мл</td>
-      <td>Готовая или приготовить самостоятельно</td>
-    </tr>
-  </tbody>
-</table>
-
-### Технологический процесс
-
-<table className="tech-table">
-  <thead>
-    <tr>
-      <th>Этап</th>
-      <th>Действие</th>
-      <th>Время</th>
-      <th>Контроль</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>1</td>
-      <td>Промыть рис холодной водой 4–6 раз до почти прозрачной воды</td>
-      <td>3–5 мин</td>
-      <td>Сразу сливать воду</td>
-    </tr>
-    <tr>
-      <td>2</td>
-      <td>Оставить рис обсохнуть в дуршлаге</td>
-      <td>15–30 мин</td>
-      <td>По таймеру</td>
-    </tr>
-    <tr>
-      <td>3</td>
-      <td>Переложить рис в кастрюлю, добавить воду</td>
-      <td>—</td>
-      <td>Плотно закрыть крышкой</td>
-    </tr>
-    <tr>
-      <td>4</td>
-      <td>Довести до кипения на среднем огне</td>
-      <td>5–7 мин</td>
-      <td>Крышку не открывать</td>
-    </tr>
-    <tr>
-      <td>5</td>
-      <td>Убавить огонь до минимума и варить</td>
-      <td>15 мин</td>
-      <td>По таймеру, крышку не открывать</td>
-    </tr>
-    <tr>
-      <td>6</td>
-      <td>Снять с огня, оставить под крышкой</td>
-      <td>15–20 мин</td>
-      <td>По таймеру, крышку не открывать</td>
-    </tr>
-    <tr>
-      <td>7</td>
-      <td>Переложить в широкую ёмкость, ввести 300 мл заправки</td>
-      <td>3–5 мин</td>
-      <td>Режущие движения лопаткой</td>
-    </tr>
-    <tr>
-      <td>8</td>
-      <td>Проветривать рис веером до целевой температуры</td>
-      <td>до 36°C</td>
-      <td>Контроль температуры</td>
-    </tr>
-  </tbody>
-</table>
-
-<div className="tech-note">
-  <strong>Примечание:</strong> Рис должен быть слегка блестящим, ароматным, но не мокрым. Заправка должна впитаться, а не собираться на дне.
-</div>
-
-<div className="tech-note">
-  <strong>Выход:</strong> ~2,3–2,5 кг готового риса для суши<br />
-  <strong>Срок хранения:</strong> использовать в течение 2–3 часов, не хранить в холодильнике
-</div>
-
+<section className="haccp-section">
+  <h2 className="haccp-section-title">1. Состав и нормы расхода (на 1000 г риса)</h2>
+  <table className="haccp-table">
+    <thead>
+      <tr>
+        <th>Ингредиент</th>
+        <th>Брутто (г)</th>
+        <th>Нетто (г)</th>
+        <th>Ед.</th>
+        <th>Аллергены</th>
+        <th>Примечание</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Рис короткозернистый (японский тип)</td>
+        <td>1000</td>
+        <td>1000</td>
+        <td>г</td>
+        <td>Нет</td>
+        <td>Сорт Кошихикари или аналог</td>
+      </tr>
+      <tr>
+        <td>Вода питьевая фильтрованная</td>
+        <td>1150–1200</td>
+        <td>1150–1200</td>
+        <td>г</td>
+        <td>Нет</td>
+        <td>В зависимости от влажности зерна</td>
+      </tr>
+      <tr>
+        <td>Заправка sushi-zu</td>
+        <td>300</td>
+        <td>300</td>
+        <td>г</td>
+        <td>Нет</td>
+        <td>Температура ≤40°C</td>
+      </tr>
+    </tbody>
+  </table>
+  <p className="text-[8pt] italic mt-1 text-right">Отсутствие аллергенов согласно Регламенту ЕС 1169/2011</p>
 </section>
 
+<section className="haccp-section">
+  <h2 className="haccp-section-title">2. Технологический процесс</h2>
+  <table className="haccp-table">
+    <thead>
+      <tr>
+        <th className="text-center">№</th>
+        <th>Операция</th>
+        <th>T (°C)</th>
+        <th>Время</th>
+        <th>Оборудование</th>
+        <th>Контроль</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td className="text-center">1</td>
+        <td>Промывка риса</td>
+        <td>≤15°C</td>
+        <td>3–5 мин</td>
+        <td>Мойка / Сито</td>
+        <td>Вода прозрачная</td>
+      </tr>
+      <tr>
+        <td className="text-center">2</td>
+        <td>Осушение / отдых</td>
+        <td>20°C</td>
+        <td>15–30 мин</td>
+        <td>Сито</td>
+        <td>Контроль времени – таймер</td>
+      </tr>
+      <tr>
+        <td className="text-center">3</td>
+        <td>Варка – до закипания</td>
+        <td>100°C</td>
+        <td>5–7 мин</td>
+        <td>Кастрюля / Плита</td>
+        <td>Не открывать крышку</td>
+      </tr>
+      <tr>
+        <td className="text-center">4</td>
+        <td>Варка основная</td>
+        <td>95°C</td>
+        <td>15 мин</td>
+        <td>Рисоварка / Плита</td>
+        <td>Контроль времени</td>
+      </tr>
+      <tr>
+        <td className="text-center">5</td>
+        <td>Отдых под крышкой</td>
+        <td>—</td>
+        <td>15–20 мин</td>
+        <td>Кастрюля</td>
+        <td>Не открывать</td>
+      </tr>
+      <tr>
+        <td className="text-center">6</td>
+        <td>Внесение заправки sushi-zu</td>
+        <td>≤40°C</td>
+        <td>3–5 мин</td>
+        <td>Хангири / Лопатка</td>
+        <td>Режущие движения</td>
+      </tr>
+      <tr>
+        <td className="text-center">7</td>
+        <td>Охлаждение</td>
+        <td>до 36°C</td>
+        <td>—</td>
+        <td>Вентилятор</td>
+        <td>Контроль температуры</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section className="haccp-section haccp-ccp !mt-4">
+  <h2 className="haccp-section-title bg-black text-white border-black">3. Критические контрольные точки (CCP)</h2>
+  <table className="haccp-table border-black">
+    <thead>
+      <tr className="bg-neutral-200">
+        <th>Точка</th>
+        <th>Опасность</th>
+        <th>Критический предел</th>
+        <th>Мониторинг</th>
+        <th>Корректирующие действия</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>CCP-1</strong></td>
+        <td>Размножение микроорганизмов</td>
+        <td>Температура заправки ≤40°C</td>
+        <td>Термометр</td>
+        <td>Охладить заправку</td>
+      </tr>
+      <tr>
+        <td><strong>CCP-2</strong></td>
+        <td>Размножение микроорганизмов</td>
+        <td>Время хранения ≤3 часов<br />Температура 20–25°C</td>
+        <td>Термометр / Таймер</td>
+        <td>Утилизация спустя 3 ч</td>
+      </tr>
+      <tr>
+        <td><strong>CCP-3</strong></td>
+        <td>Кросс-контаминация</td>
+        <td>Обязательное мытье и дезинфекция рук перед контактом с продуктом</td>
+        <td>Визуальный контроль</td>
+        <td>Повторное мытье / обучение</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section className="haccp-section">
+  <h2 className="haccp-section-title">4. Выход и хранение</h2>
+  <div className="grid grid-cols-2 gap-8 text-[10pt]">
+    <div className="border border-black p-4">
+      <strong>Конечный выход:</strong><br />
+      2,3–2,5 кг
+    </div>
+    <div className="border border-black p-4">
+      <strong>Условия хранения:</strong><br />
+      Продукт для немедленного употребления. Не подлежит хранению в холодильнике. Температура 20–25°C. Максимальное время хранения: 3 часа.
+    </div>
+  </div>
+  <p className="text-[7pt] mt-2 italic text-gray-500">Документ подлежит периодической проверке.</p>
+</section>
+
+<footer className="haccp-footer">
+  <div>
+    <div className="haccp-sign-line">Разработал:</div>
+    <p className="text-[7pt] mt-1 text-center">Дата: ______________</p>
+  </div>
+  <div>
+    <div className="haccp-sign-line">Утвердил:</div>
+    <p className="text-[7pt] mt-1 text-center italic">Подпись и печать</p>
+  </div>
+  <div>
+    <div className="haccp-sign-line">Верификация:</div>
+    <p className="text-[7pt] mt-1 text-center italic">Следующая: ______________</p>
+  </div>
+</footer>
+
 </div>
-
-<Callout type="warning">
-**Критические точки контроля:**
-
-- Таймер на этапах 2, 5, 6 — обязателен
-- Крышку не открывать на этапах 4, 5, 6
-- Целевая температура готового риса: ~36°C (температура тела)
-</Callout>
-
----
-
-## Советы профессионала
-
-<Callout type="tip">
-- Используйте только **японский короткозёрный** рис
-- **Придерживайтесь одной марки риса** — каждый сорт ведёт себя по-своему, стабильность начинается с постоянства продукта
-- **Готовьте по таймеру** — не «на глаз». Точное время варки и «покоя» — основа повторяемого результата
-- Не разогревайте рис для суши повторно — структура разрушится
-- Целевая температура: **тёплый рис ~36°C**
-- Крышку во время варки **не открывать** (это ломает паровой режим)
-- Если рис получился чуть плотнее — это легче исправить, чем разваренный
-</Callout>
-
-## Частые ошибки
-
-**❌ Слишком много воды**  
-Рис разварится, станет тяжёлым, хуже формуется.
-
-**❌ Открывали крышку во время варки**  
-Сбивается паровой режим, рис варится неравномерно.
-
-**❌ Слабая/неправильная заправка**  
-Нет характерного «суши-вкуса», рис кажется плоским.
-
-**❌ Холодный рис**  
-Плохая пластика, неприятное ощущение во рту.
-
-## Вывод
-
-Идеальный рис для суши — это результат понимания процесса: промывка, сушка, паровой режим, «покой» и грамотная заправка. Освоив эту базовую технологию, вы поднимаете на новый уровень всё — от простого маки до нигири и авторских роллов.
