@@ -11,6 +11,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '/about',
     '/contact',
     '/restaurants',
+    '/demos/sushi-delivery',
+    '/demos/restaurant-ai',
   ];
 
   const staticUrls: MetadataRoute.Sitemap = [];

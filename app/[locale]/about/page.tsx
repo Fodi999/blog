@@ -16,12 +16,12 @@ export async function generateMetadata({
     title: t('about.title'),
     description: t('about.description'),
     alternates: {
-      canonical: `/${locale}/about`,
+      canonical: `https://dima-fomin.pl/${locale}/about`,
       languages: {
-        'pl': '/pl/about',
-        'en': '/en/about',
-        'ru': '/ru/about',
-        'uk': '/uk/about',
+        'pl': `https://dima-fomin.pl/pl/about`,
+        'en': `https://dima-fomin.pl/en/about`,
+        'ru': `https://dima-fomin.pl/ru/about`,
+        'uk': `https://dima-fomin.pl/uk/about`,
       },
     },
     openGraph: {

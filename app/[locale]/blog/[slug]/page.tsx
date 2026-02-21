@@ -80,12 +80,12 @@ export async function generateMetadata({
       creator: '@dimafomin',
     },
     alternates: {
-      canonical: `/${locale}/blog/${slug}`,
+      canonical: `https://dima-fomin.pl/${locale}/blog/${slug}`,
       languages: {
-        'pl': `/pl/blog/${slug}`,
-        'en': `/en/blog/${slug}`,
-        'uk': `/uk/blog/${slug}`,
-        'ru': `/ru/blog/${slug}`,
+        'pl': `https://dima-fomin.pl/pl/blog/${slug}`,
+        'en': `https://dima-fomin.pl/en/blog/${slug}`,
+        'uk': `https://dima-fomin.pl/uk/blog/${slug}`,
+        'ru': `https://dima-fomin.pl/ru/blog/${slug}`,
       },
     },
   };

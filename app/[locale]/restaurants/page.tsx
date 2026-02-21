@@ -21,12 +21,12 @@ export async function generateMetadata({
       type: 'website',
     },
     alternates: {
-      canonical: `/${locale}/restaurants`,
+      canonical: `https://dima-fomin.pl/${locale}/restaurants`,
       languages: {
-        'pl': '/pl/restaurants',
-        'en': '/en/restaurants',
-        'ru': '/ru/restaurants',
-        'uk': '/uk/restaurants',
+        'pl': `https://dima-fomin.pl/pl/restaurants`,
+        'en': `https://dima-fomin.pl/en/restaurants`,
+        'ru': `https://dima-fomin.pl/ru/restaurants`,
+        'uk': `https://dima-fomin.pl/uk/restaurants`,
       },
     },
   };
