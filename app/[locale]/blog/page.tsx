@@ -4,6 +4,8 @@ import type { Metadata } from 'next';
 import { BlogContent } from './BlogContent';
 import { JsonLd } from '@/components/JsonLd';
 
+export const dynamic = 'force-static';
+
 export async function generateMetadata({
   params,
 }: {
@@ -22,6 +24,7 @@ export async function generateMetadata({
         'en': `https://dima-fomin.pl/en/blog`,
         'ru': `https://dima-fomin.pl/ru/blog`,
         'uk': `https://dima-fomin.pl/uk/blog`,
+        'x-default': `https://dima-fomin.pl/pl/blog`,
       },
     },
     openGraph: {

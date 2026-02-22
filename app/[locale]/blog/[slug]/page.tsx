@@ -19,6 +19,8 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { JsonLd } from '@/components/JsonLd';
 
+export const dynamic = 'force-static';
+
 export async function generateStaticParams() {
   const locales = ['pl', 'en', 'uk', 'ru'];
   const params = [];
@@ -39,16 +41,42 @@ export async function generateMetadata({
   params: Promise<{ locale: string; slug: string }>;
 }): Promise<Metadata> {
   const { locale, slug } = await params;
-  const post = await getPostBySlug(locale, slug);
+  
+  const locales = ['pl', 'en', 'uk', 'ru'] as const;
+  const postsByLocale = await Promise.all(
+    locales.map(async (l) => [l, await getPostBySlug(l, slug)] as const)
+  );
+
+  const post = postsByLocale.find(([l]) => l === locale)?.[1];
 
   if (!post) {
     return {
       title: 'Post Not Found',
+      robots: { index: false, follow: false },
     };
   }
 
+  const ogLocaleMap: Record<string, string> = {
+    pl: 'pl_PL',
+    en: 'en_US',
+    ru: 'ru_RU',
+    uk: 'uk_UA',
+  };
+
   const publishedTime = post.publishedAt || post.date;
   const defaultImage = 'https://i.postimg.cc/RCf8VLFn/DSCF4639.jpg';
+
+  // Build alternate languages maps only for existing translations
+  const alternateLanguages: Record<string, string> = {};
+  
+  for (const [l, p] of postsByLocale) {
+    if (p) {
+      alternateLanguages[l] = `https://dima-fomin.pl/${l}/blog/${slug}`;
+    }
+  }
+  
+  // Set x-default to PL version if exists, otherwise the requested locale
+  alternateLanguages['x-default'] = alternateLanguages['pl'] || `https://dima-fomin.pl/${locale}/blog/${slug}`;
 
   return {
     title: `${post.title} | Dima Fomin`,
@@ -70,7 +98,7 @@ export async function generateMetadata({
       section: post.category,
       tags: [post.category, ...(post.series ? [post.series] : [])],
       images: post.coverImage ? [post.coverImage] : [defaultImage],
-      locale,
+      locale: ogLocaleMap[locale] || 'pl_PL',
     },
     twitter: {
       card: 'summary_large_image',
@@ -81,12 +109,7 @@ export async function generateMetadata({
     },
     alternates: {
       canonical: `https://dima-fomin.pl/${locale}/blog/${slug}`,
-      languages: {
-        'pl': `https://dima-fomin.pl/pl/blog/${slug}`,
-        'en': `https://dima-fomin.pl/en/blog/${slug}`,
-        'uk': `https://dima-fomin.pl/uk/blog/${slug}`,
-        'ru': `https://dima-fomin.pl/ru/blog/${slug}`,
-      },
+      languages: alternateLanguages,
     },
   };
 }
@@ -117,6 +140,19 @@ export default async function BlogPostPage({
       name: 'Dima Fomin',
       url: 'https://dima-fomin.pl',
     },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Dima Fomin',
+      logo: {
+        '@type': 'ImageObject',
+        url: 'https://i.postimg.cc/W1KV4b43/logo1.webp',
+      },
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `https://dima-fomin.pl/${locale}/blog/${slug}`,
+    },
+    inLanguage: locale,
   };
 
   const breadcrumbJsonLd = {

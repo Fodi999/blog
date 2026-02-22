@@ -82,6 +82,7 @@
     "pdfContentNotFound": "Nie znaleziono zawartości",
     "downloadPdfTitle": "Pobierz kartę tech.",
     "downloadPdfDesc": "Format A4 • Standard Profesjonalny",
+    "desktopOnly": "Dostępne tylko na komputerach (PC)",
     "downloadBtn": "Pobierz PDF",
     "authorRole": "Sushi Chef & Culinary Expert",
     "moreFromCategory": "→ Więcej z kategorii",
@@ -94,12 +95,12 @@
     "noResultsCategory": "Brak artykułów w tej kategorii",
     "categories": {
       "all": "Wszystkie",
-      "sushimastery": "🍣 Sushi Mastery",
-      "kitchentech": "🔪 Kitchen Tech",
-      "chefmindset": "🧠 Doświadczenie szefa",
-      "restaurants": "🏪 Dla restauracji",
-      "products": "📦 Produkty",
-      "ai": "🤖 AI i Technologie"
+      "sushimastery": "Sushi Mastery",
+      "kitchentech": "Kitchen Tech",
+      "chefmindset": "Doświadczenie szefa",
+      "restaurants": "Dla restauracji",
+      "products": "Produkty",
+      "ai": "AI i Technologie"
     }
   },
   "about": {

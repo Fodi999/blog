@@ -107,8 +107,12 @@ export function PrintButton() {
             <h4 className="text-lg font-bold tracking-tight text-foreground">
               {t('downloadPdfTitle') || 'Download Tech Card'}
             </h4>
-            <p className="text-sm text-muted-foreground">
-              {t('downloadPdfDesc') || 'A4 Format • Professional Layout'}
+            <p className="text-sm text-muted-foreground flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+              <span>{t('downloadPdfDesc') || 'A4 Format • Professional Standard'}</span>
+              <span className="hidden sm:inline text-muted-foreground/30">•</span>
+              <span className="text-primary font-bold text-[10px] uppercase tracking-wider bg-primary/10 px-2 py-0.5 rounded-md w-fit">
+                {t('desktopOnly') || 'Desktop Only'}
+              </span>
             </p>
           </div>
         </div>
@@ -116,6 +120,7 @@ export function PrintButton() {
           onClick={downloadPdf} 
           disabled={isLoading}
           size="lg"
+          title={t('desktopOnly') || 'Desktop Only'}
           className="group relative flex items-center gap-2 rounded-xl bg-foreground px-6 py-6 text-sm font-bold text-background transition-all hover:bg-foreground/90 hover:shadow-xl active:scale-95 disabled:opacity-70"
         >
           {isLoading ? (

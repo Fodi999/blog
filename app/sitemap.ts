@@ -25,9 +25,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         changeFrequency: page === '/blog' ? 'daily' : 'weekly',
         priority: page === '' ? 1.0 : 0.8,
         alternates: {
-          languages: Object.fromEntries(
-            locales.map((l) => [l, `${baseUrl}/${l}${page}`])
-          ),
+          languages: {
+            ...Object.fromEntries(
+              locales.map((l) => [l, `${baseUrl}/${l}${page}`])
+            ),
+            'x-default': `${baseUrl}/pl${page}`,
+          },
         },
       });
     }
@@ -44,9 +47,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         changeFrequency: 'monthly',
         priority: 0.6,
         alternates: {
-          languages: Object.fromEntries(
-            locales.map((l) => [l, `${baseUrl}/${l}/blog/${post.slug}`])
-          ),
+          languages: {
+            ...Object.fromEntries(
+              locales.map((l) => [l, `${baseUrl}/${l}/blog/${post.slug}`])
+            ),
+            'x-default': `${baseUrl}/pl/blog/${post.slug}`,
+          },
         },
       });
     }

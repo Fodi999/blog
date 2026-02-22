@@ -10,6 +10,8 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { JsonLd } from '@/components/JsonLd';
 
+export const dynamic = 'force-static';
+
 export default async function HomePage({
   params,
 }: {

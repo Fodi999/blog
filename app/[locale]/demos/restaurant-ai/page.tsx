@@ -3,6 +3,8 @@ import { Link } from '@/i18n/routing';
 import { ExternalLink, ArrowLeft, Package, ChefHat, TrendingUp, Brain, CheckCircle, BarChart3, DollarSign, AlertTriangle, Star, Construction } from 'lucide-react';
 import type { Metadata } from 'next';
 
+export const dynamic = 'force-static';
+
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
   const t = await getTranslations({ locale, namespace: 'metadata' });
@@ -23,6 +25,7 @@ export async function generateMetadata(): Promise<Metadata> {
         'en': 'https://dima-fomin.pl/en/demos/restaurant-ai',
         'ru': 'https://dima-fomin.pl/ru/demos/restaurant-ai',
         'uk': 'https://dima-fomin.pl/uk/demos/restaurant-ai',
+        'x-default': 'https://dima-fomin.pl/pl/demos/restaurant-ai',
       },
     },
   };

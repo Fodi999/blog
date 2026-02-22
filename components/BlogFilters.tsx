@@ -4,7 +4,16 @@ import { useTranslations } from 'next-intl';
 import { BLOG_CATEGORIES } from '@/lib/blog-categories';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { X } from 'lucide-react';
+import { X, LayoutGrid, ChefHat, Fish, Brain, Store, Package, Bot, LucideIcon } from 'lucide-react';
+
+const ICON_MAP: Record<string, LucideIcon> = {
+  'chef-hat': ChefHat,
+  'fish': Fish,
+  'brain': Brain,
+  'store': Store,
+  'package': Package,
+  'bot': Bot,
+};
 
 interface BlogFiltersProps {
   categories: string[];
@@ -49,11 +58,13 @@ export function BlogFilters({
             selectedCategory === 'all' ? 'shadow-lg shadow-primary/20' : 'hover:border-primary/50'
           }`}
         >
-          {t('categories.all')}
+          <LayoutGrid className="mr-2 h-4 w-4" /> {t('categories.all')}
         </Button>
         {BLOG_CATEGORIES.map((cat) => {
           const isActive = categories.includes(cat.key);
           if (!isActive) return null;
+          
+          const Icon = ICON_MAP[cat.iconName];
           
           return (
             <Button
@@ -65,7 +76,7 @@ export function BlogFilters({
                 selectedCategory === cat.key ? 'shadow-lg shadow-primary/20' : 'hover:border-primary/50'
               }`}
             >
-              <span className="mr-2 text-base">{cat.emoji}</span> {t(`categories.${cat.i18nKey}`)}
+              {Icon && <Icon className="mr-2 h-4 w-4" />} {t(`categories.${cat.i18nKey}`)}
             </Button>
           );
         })}

@@ -3,6 +3,8 @@ import { Link } from '@/i18n/routing';
 import { ExternalLink, ArrowLeft, ShoppingCart, Smartphone, CheckCircle, Zap, Globe, Cloud, Package, CreditCard, MapPin, Bell, ChefHat } from 'lucide-react';
 import type { Metadata } from 'next';
 
+export const dynamic = 'force-static';
+
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
   const t = await getTranslations({ locale, namespace: 'metadata' });
@@ -23,6 +25,7 @@ export async function generateMetadata(): Promise<Metadata> {
         'en': 'https://dima-fomin.pl/en/demos/sushi-delivery',
         'ru': 'https://dima-fomin.pl/ru/demos/sushi-delivery',
         'uk': 'https://dima-fomin.pl/uk/demos/sushi-delivery',
+        'x-default': 'https://dima-fomin.pl/pl/demos/sushi-delivery',
       },
     },
   };

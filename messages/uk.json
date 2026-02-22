@@ -82,6 +82,7 @@
     "pdfContentNotFound": "Вміст не знайдено",
     "downloadPdfTitle": "Завантажити техкарту",
     "downloadPdfDesc": "Формат А4 • Професійний стандарт",
+    "desktopOnly": "Доступно лише на ПК",
     "downloadBtn": "PDF",
     "authorRole": "Sushi Chef & Кулінарний експерт",
     "moreFromCategory": "→ Більше з категорії",
@@ -94,12 +95,12 @@
     "noResultsCategory": "Немає статей у цій категорії",
     "categories": {
       "all": "Всі",
-      "sushimastery": "🍣 Sushi Mastery",
-      "kitchentech": "🔪 Kitchen Tech",
-      "chefmindset": "🧠 Досвід шефа",
-      "restaurants": "🏪 Для ресторанів",
-      "products": "📦 Продукти",
-      "ai": "🤖 AI та Технології"
+      "sushimastery": "Sushi Mastery",
+      "kitchentech": "Kitchen Tech",
+      "chefmindset": "Досвід шефа",
+      "restaurants": "Для ресторанів",
+      "products": "Продукти",
+      "ai": "AI та Технології"
     }
   },
   "about": {
