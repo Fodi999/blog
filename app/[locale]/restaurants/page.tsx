@@ -2,6 +2,7 @@ import { getTranslations, getLocale } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
 import { ExternalLink, ShoppingCart, Smartphone, CheckCircle, Zap, Globe, Cloud, Clock, Briefcase, Package, ChefHat, TrendingUp, Brain } from 'lucide-react';
 import type { Metadata } from 'next';
+import { generateMetadata as sharedGenerateMetadata } from '@/lib/metadata';
 
 export const dynamic = 'force-static';
 
@@ -10,29 +11,16 @@ export async function generateMetadata({
 }: {
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
-  const { locale } = await params;
+  const { locale: l } = await params;
+  const locale = l as 'pl' | 'en' | 'uk' | 'ru';
   const t = await getTranslations({ locale, namespace: 'metadata' });
 
-  return {
+  return sharedGenerateMetadata({
     title: t('restaurants.title'),
     description: t('restaurants.description'),
-    openGraph: {
-      title: t('restaurants.title'),
-      description: t('restaurants.description'),
-      url: `https://dima-fomin.pl/${locale}/restaurants`,
-      type: 'website',
-    },
-    alternates: {
-      canonical: `https://dima-fomin.pl/${locale}/restaurants`,
-      languages: {
-        'pl': `https://dima-fomin.pl/pl/restaurants`,
-        'en': `https://dima-fomin.pl/en/restaurants`,
-        'ru': `https://dima-fomin.pl/ru/restaurants`,
-        'uk': `https://dima-fomin.pl/uk/restaurants`,
-        'x-default': `https://dima-fomin.pl/pl/restaurants`,
-      },
-    },
-  };
+    locale,
+    path: '/restaurants',
+  });
 }
 
 export default async function RestaurantsPage() {

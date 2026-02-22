@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/breadcrumb';
 import { Separator } from '@/components/ui/separator';
 import { JsonLd } from '@/components/JsonLd';
+import { generateMetadata as sharedGenerateMetadata } from '@/lib/metadata';
 
 export const dynamic = 'force-static';
 
@@ -56,62 +57,20 @@ export async function generateMetadata({
     };
   }
 
-  const ogLocaleMap: Record<string, string> = {
-    pl: 'pl_PL',
-    en: 'en_US',
-    ru: 'ru_RU',
-    uk: 'uk_UA',
-  };
-
-  const publishedTime = post.publishedAt || post.date;
   const defaultImage = 'https://i.postimg.cc/RCf8VLFn/DSCF4639.jpg';
 
-  // Build alternate languages maps only for existing translations
-  const alternateLanguages: Record<string, string> = {};
-  
-  for (const [l, p] of postsByLocale) {
-    if (p) {
-      alternateLanguages[l] = `https://dima-fomin.pl/${l}/blog/${slug}`;
-    }
-  }
-  
-  // Set x-default to PL version if exists, otherwise the requested locale
-  alternateLanguages['x-default'] = alternateLanguages['pl'] || `https://dima-fomin.pl/${locale}/blog/${slug}`;
+  const availableLocales = postsByLocale
+    .filter(([_, p]) => !!p)
+    .map(([l]) => l as 'pl' | 'en' | 'uk' | 'ru');
 
-  return {
-    title: `${post.title} | Dima Fomin`,
+  return sharedGenerateMetadata({
+    title: post.title,
     description: post.excerpt,
-    authors: [{ name: 'Dima Fomin' }],
-    keywords: [
-      post.category,
-      'sushi',
-      'japanese cuisine',
-      'culinary techniques',
-      ...(post.series ? [post.series] : []),
-    ],
-    openGraph: {
-      title: post.title,
-      description: post.excerpt,
-      type: 'article',
-      publishedTime,
-      authors: ['Dima Fomin'],
-      section: post.category,
-      tags: [post.category, ...(post.series ? [post.series] : [])],
-      images: post.coverImage ? [post.coverImage] : [defaultImage],
-      locale: ogLocaleMap[locale] || 'pl_PL',
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: post.title,
-      description: post.excerpt,
-      images: post.coverImage ? [post.coverImage] : [defaultImage],
-      creator: '@dimafomin',
-    },
-    alternates: {
-      canonical: `https://dima-fomin.pl/${locale}/blog/${slug}`,
-      languages: alternateLanguages,
-    },
-  };
+    locale: locale as 'pl' | 'en' | 'uk' | 'ru',
+    path: `/blog/${slug}`,
+    image: post.coverImage || defaultImage,
+    availableLocales,
+  });
 }
 
 export default async function BlogPostPage({

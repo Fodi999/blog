@@ -3,6 +3,7 @@ import { HeroImage } from '@/components/HeroImage';
 import { ImageGallery } from '@/components/ImageGallery';
 import type { Metadata } from 'next';
 import { JsonLd } from '@/components/JsonLd';
+import { generateMetadata as sharedGenerateMetadata } from '@/lib/metadata';
 
 export const dynamic = 'force-static';
 
@@ -11,28 +12,16 @@ export async function generateMetadata({
 }: {
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
-  const { locale } = await params;
+  const { locale: l } = await params;
+  const locale = l as 'pl' | 'en' | 'uk' | 'ru';
   const t = await getTranslations({ locale, namespace: 'metadata' });
 
-  return {
+  return sharedGenerateMetadata({
     title: t('about.title'),
     description: t('about.description'),
-    alternates: {
-      canonical: `https://dima-fomin.pl/${locale}/about`,
-      languages: {
-        'pl': `https://dima-fomin.pl/pl/about`,
-        'en': `https://dima-fomin.pl/en/about`,
-        'ru': `https://dima-fomin.pl/ru/about`,
-        'uk': `https://dima-fomin.pl/uk/about`,
-        'x-default': `https://dima-fomin.pl/pl/about`,
-      },
-    },
-    openGraph: {
-      title: t('about.title'),
-      description: t('about.description'),
-      images: ['https://i.postimg.cc/RCf8VLFn/DSCF4639.jpg'],
-    },
-  };
+    locale,
+    path: '/about',
+  });
 }
 
 export default async function AboutPage() {

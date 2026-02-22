@@ -3,6 +3,7 @@ import { getAllPosts } from '@/lib/posts';
 import type { Metadata } from 'next';
 import { BlogContent } from './BlogContent';
 import { JsonLd } from '@/components/JsonLd';
+import { generateMetadata as sharedGenerateMetadata } from '@/lib/metadata';
 
 export const dynamic = 'force-static';
 
@@ -11,27 +12,16 @@ export async function generateMetadata({
 }: {
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
-  const { locale } = await params;
+  const { locale: l } = await params;
+  const locale = l as 'pl' | 'en' | 'uk' | 'ru';
   const t = await getTranslations({ locale, namespace: 'metadata' });
 
-  return {
+  return sharedGenerateMetadata({
     title: t('blog.title'),
     description: t('blog.description'),
-    alternates: {
-      canonical: `https://dima-fomin.pl/${locale}/blog`,
-      languages: {
-        'pl': `https://dima-fomin.pl/pl/blog`,
-        'en': `https://dima-fomin.pl/en/blog`,
-        'ru': `https://dima-fomin.pl/ru/blog`,
-        'uk': `https://dima-fomin.pl/uk/blog`,
-        'x-default': `https://dima-fomin.pl/pl/blog`,
-      },
-    },
-    openGraph: {
-      title: t('blog.title'),
-      description: t('blog.description'),
-    },
-  };
+    locale,
+    path: '/blog',
+  });
 }
 
 export default async function BlogPage({

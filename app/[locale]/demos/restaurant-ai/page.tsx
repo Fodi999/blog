@@ -2,33 +2,21 @@ import { getTranslations, getLocale } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
 import { ExternalLink, ArrowLeft, Package, ChefHat, TrendingUp, Brain, CheckCircle, BarChart3, DollarSign, AlertTriangle, Star, Construction } from 'lucide-react';
 import type { Metadata } from 'next';
+import { generateMetadata as sharedGenerateMetadata } from '@/lib/metadata';
 
 export const dynamic = 'force-static';
 
 export async function generateMetadata(): Promise<Metadata> {
-  const locale = await getLocale();
+  const l = await getLocale();
+  const locale = l as 'pl' | 'en' | 'uk' | 'ru';
   const t = await getTranslations({ locale, namespace: 'metadata' });
 
-  return {
+  return sharedGenerateMetadata({
     title: t('restaurantai.title'),
     description: t('restaurantai.description'),
-    openGraph: {
-      title: t('restaurantai.title'),
-      description: t('restaurantai.description'),
-      url: `https://dima-fomin.pl/${locale}/demos/restaurant-ai`,
-      type: 'website',
-    },
-    alternates: {
-      canonical: `https://dima-fomin.pl/${locale}/demos/restaurant-ai`,
-      languages: {
-        'pl': 'https://dima-fomin.pl/pl/demos/restaurant-ai',
-        'en': 'https://dima-fomin.pl/en/demos/restaurant-ai',
-        'ru': 'https://dima-fomin.pl/ru/demos/restaurant-ai',
-        'uk': 'https://dima-fomin.pl/uk/demos/restaurant-ai',
-        'x-default': 'https://dima-fomin.pl/pl/demos/restaurant-ai',
-      },
-    },
-  };
+    locale,
+    path: '/demos/restaurant-ai',
+  });
 }
 
 export default async function RestaurantAIDemoPage() {

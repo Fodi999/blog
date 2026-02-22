@@ -10,6 +10,7 @@ import { Toaster } from 'sonner';
 import { notFound } from 'next/navigation';
 import { locales } from '@/i18n';
 import '../globals.css';
+import { generateMetadata as sharedGenerateMetadata } from '@/lib/metadata';
 
 export const viewport: Viewport = {
   themeColor: '#ef4444',
@@ -22,54 +23,16 @@ export async function generateMetadata({
 }: {
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
-  const { locale } = await params;
+  const { locale: l } = await params;
+  const locale = l as 'pl' | 'en' | 'uk' | 'ru';
   const t = await getTranslations({ locale, namespace: 'metadata' });
 
-  return {
+  return sharedGenerateMetadata({
     title: t('title'),
     description: t('description'),
-    metadataBase: new URL('https://dima-fomin.pl'),
-    alternates: {
-      canonical: `https://dima-fomin.pl/${locale}`,
-      languages: {
-        'pl': `https://dima-fomin.pl/pl`,
-        'en': `https://dima-fomin.pl/en`,
-        'ru': `https://dima-fomin.pl/ru`,
-        'uk': `https://dima-fomin.pl/uk`,
-        'x-default': `https://dima-fomin.pl/pl`,
-      },
-    },
-    robots: {
-      index: true,
-      follow: true,
-      googleBot: {
-        index: true,
-        follow: true,
-        'max-video-preview': -1,
-        'max-image-preview': 'large',
-        'max-snippet': -1,
-      },
-    },
-    verification: {
-      google: 'M4v_s4_X3W9f7z6-placeholder-change-me',
-    },
-    openGraph: {
-      title: t('title'),
-      description: t('description'),
-      url: `https://dima-fomin.pl/${locale}`,
-      images: ['https://i.postimg.cc/RCf8VLFn/DSCF4639.jpg'],
-      locale: locale,
-      type: 'website',
-      siteName: 'Dima Fomin',
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: t('title'),
-      description: t('description'),
-      images: ['https://i.postimg.cc/RCf8VLFn/DSCF4639.jpg'],
-      creator: '@dimafomin',
-    },
-  };
+    locale,
+    path: '',
+  });
 }
 
 const inter = Inter({ 

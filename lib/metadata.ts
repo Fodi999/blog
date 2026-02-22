@@ -1,11 +1,24 @@
 import { Metadata } from 'next';
 
+const BASE_URL = 'https://dima-fomin.pl';
+
+const ogLocaleMap: Record<string, string> = {
+  pl: 'pl_PL',
+  en: 'en_US',
+  ru: 'ru_RU',
+  uk: 'uk_UA',
+};
+
 interface GenerateMetadataParams {
   title: string;
   description: string;
-  locale: string;
-  path?: string;
+  locale: 'pl' | 'en' | 'uk' | 'ru';
+  path?: string;               // e.g. '' | '/blog' | `/blog/${slug}`
   image?: string;
+  // If omitted => assume page exists in all locales
+  availableLocales?: Array<'pl' | 'en' | 'uk' | 'ru'>;
+  // Optional: choose x-default locale
+  xDefaultLocale?: 'pl' | 'en' | 'uk' | 'ru';
 }
 
 export function generateMetadata({
@@ -14,22 +27,29 @@ export function generateMetadata({
   locale,
   path = '',
   image = 'https://i.postimg.cc/RCf8VLFn/DSCF4639.jpg',
+  availableLocales,
+  xDefaultLocale = 'pl',
 }: GenerateMetadataParams): Metadata {
-  const baseUrl = 'https://dima-fomin.pl';
-  const url = `${baseUrl}/${locale}${path}`;
+  const url = `${BASE_URL}/${locale}${path}`;
+
+  const langs = (availableLocales ?? (['pl', 'en', 'uk', 'ru'] as const)).reduce<Record<string, string>>(
+    (acc, l) => {
+      acc[l] = `${BASE_URL}/${l}${path}`;
+      return acc;
+    },
+    {}
+  );
+
+  // Add x-default (recommended)
+  langs['x-default'] = `${BASE_URL}/${xDefaultLocale}${path}`;
 
   return {
     title: `${title} | Dima Fomin`,
     description,
-    metadataBase: new URL(baseUrl),
+    metadataBase: new URL(BASE_URL),
     alternates: {
       canonical: url,
-      languages: {
-        'pl': `${baseUrl}/pl${path}`,
-        'en': `${baseUrl}/en${path}`,
-        'uk': `${baseUrl}/uk${path}`,
-        'ru': `${baseUrl}/ru${path}`,
-      },
+      languages: langs,
     },
     openGraph: {
       title: `${title} | Dima Fomin`,
@@ -44,7 +64,7 @@ export function generateMetadata({
           alt: title,
         },
       ],
-      locale,
+      locale: ogLocaleMap[locale] ?? 'pl_PL',
       type: 'website',
     },
     twitter: {
@@ -85,6 +105,6 @@ export const jsonLdBlog = {
   '@type': 'Blog',
   name: 'Dima Fomin Blog',
   description: 'Articles about sushi, Japanese cuisine, and culinary technology',
-  url: 'https://dima-fomin.pl/blog',
+  url: 'https://dima-fomin.pl/pl/blog',
   author: jsonLdPerson,
 };

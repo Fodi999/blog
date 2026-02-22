@@ -1,34 +1,22 @@
 import { getTranslations, getLocale } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
-import { ExternalLink, ArrowLeft, ShoppingCart, Smartphone, CheckCircle, Zap, Globe, Cloud, Package, CreditCard, MapPin, Bell, ChefHat } from 'lucide-react';
+import { ShoppingCart, Smartphone, Globe, Cloud, Clock, CheckCircle, Zap, Star, ArrowLeft, ExternalLink, Package, MapPin, Bell, ChefHat } from 'lucide-react';
 import type { Metadata } from 'next';
+import { generateMetadata as sharedGenerateMetadata } from '@/lib/metadata';
 
 export const dynamic = 'force-static';
 
 export async function generateMetadata(): Promise<Metadata> {
-  const locale = await getLocale();
+  const l = await getLocale();
+  const locale = l as 'pl' | 'en' | 'uk' | 'ru';
   const t = await getTranslations({ locale, namespace: 'metadata' });
 
-  return {
+  return sharedGenerateMetadata({
     title: t('sushidelivery.title'),
     description: t('sushidelivery.description'),
-    openGraph: {
-      title: t('sushidelivery.title'),
-      description: t('sushidelivery.description'),
-      url: `https://dima-fomin.pl/${locale}/demos/sushi-delivery`,
-      type: 'website',
-    },
-    alternates: {
-      canonical: `https://dima-fomin.pl/${locale}/demos/sushi-delivery`,
-      languages: {
-        'pl': 'https://dima-fomin.pl/pl/demos/sushi-delivery',
-        'en': 'https://dima-fomin.pl/en/demos/sushi-delivery',
-        'ru': 'https://dima-fomin.pl/ru/demos/sushi-delivery',
-        'uk': 'https://dima-fomin.pl/uk/demos/sushi-delivery',
-        'x-default': 'https://dima-fomin.pl/pl/demos/sushi-delivery',
-      },
-    },
-  };
+    locale,
+    path: '/demos/sushi-delivery',
+  });
 }
 
 export default async function SushiDeliveryDemoPage() {

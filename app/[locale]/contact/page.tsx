@@ -2,6 +2,7 @@ import { getTranslations, getLocale } from 'next-intl/server';
 import { Mail, MessageSquare, ArrowUpRight } from 'lucide-react';
 import type { Metadata } from 'next';
 import { JsonLd } from '@/components/JsonLd';
+import { generateMetadata as sharedGenerateMetadata } from '@/lib/metadata';
 
 export const dynamic = 'force-static';
 
@@ -10,27 +11,16 @@ export async function generateMetadata({
 }: {
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
-  const { locale } = await params;
+  const { locale: l } = await params;
+  const locale = l as 'pl' | 'en' | 'uk' | 'ru';
   const t = await getTranslations({ locale, namespace: 'metadata' });
 
-  return {
+  return sharedGenerateMetadata({
     title: t('contact.title'),
     description: t('contact.description'),
-    alternates: {
-      canonical: `https://dima-fomin.pl/${locale}/contact`,
-      languages: {
-        'pl': `https://dima-fomin.pl/pl/contact`,
-        'en': `https://dima-fomin.pl/en/contact`,
-        'ru': `https://dima-fomin.pl/ru/contact`,
-        'uk': `https://dima-fomin.pl/uk/contact`,
-        'x-default': `https://dima-fomin.pl/pl/contact`,
-      },
-    },
-    openGraph: {
-      title: t('contact.title'),
-      description: t('contact.description'),
-    },
-  };
+    locale,
+    path: '/contact',
+  });
 }
 
 export default async function ContactPage() {
