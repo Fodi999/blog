@@ -29,19 +29,19 @@ export default async function RestaurantsPage() {
 
   return (
     <main className="max-w-6xl mx-auto space-y-12 md:space-y-16 px-4 sm:px-6">
-      
+
       {/* HERO with subtle gradient */}
       <section className="max-w-3xl relative pt-4 md:pt-0">
         {/* Subtle noise texture overlay */}
         <div className="absolute inset-0 opacity-[0.015] pointer-events-none" style={{
           backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 400 400\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'4\' /%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\' /%3E%3C/svg%3E")',
         }}></div>
-        
+
         <div className="relative">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-foreground bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text">
             {t('title')}
           </h1>
-          <p className="text-lg md:text-xl text-muted leading-relaxed">
+          <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
             {t('subtitle')}
           </p>
         </div>
@@ -56,7 +56,7 @@ export default async function RestaurantsPage() {
               <blockquote className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground leading-tight">
                 "{t('trust.mainMessage')}"
               </blockquote>
-              
+
               {/* Key points */}
               <div className="grid sm:grid-cols-2 gap-3 md:gap-4 pt-4">
                 <div className="flex items-start gap-3">
@@ -82,24 +82,24 @@ export default async function RestaurantsPage() {
         <div className="mb-6 md:mb-8">
           <h2 className="text-2xl md:text-3xl font-bold text-foreground">{t('whyWorks.title')}</h2>
         </div>
-        
+
         <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
           <div className="p-4 md:p-6 rounded-xl border border-border bg-card">
             <Smartphone className="h-7 w-7 md:h-8 md:w-8 text-primary mb-3 md:mb-4" />
             <h3 className="text-base md:text-lg font-semibold mb-2">{t('features.mobile.title')}</h3>
-            <p className="text-sm text-muted">{t('features.mobile.description')}</p>
+            <p className="text-sm text-muted-foreground">{t('features.mobile.description')}</p>
           </div>
-          
+
           <div className="p-4 md:p-6 rounded-xl border border-border bg-card">
             <ShoppingCart className="h-7 w-7 md:h-8 md:w-8 text-primary mb-3 md:mb-4" />
             <h3 className="text-base md:text-lg font-semibold mb-2">{t('features.orders.title')}</h3>
-            <p className="text-sm text-muted">{t('features.orders.description')}</p>
+            <p className="text-sm text-muted-foreground">{t('features.orders.description')}</p>
           </div>
-          
+
           <div className="p-4 md:p-6 rounded-xl border border-border bg-card sm:col-span-2 md:col-span-1">
             <CheckCircle className="h-7 w-7 md:h-8 md:w-8 text-primary mb-3 md:mb-4" />
             <h3 className="text-base md:text-lg font-semibold mb-2">{t('features.tested.title')}</h3>
-            <p className="text-sm text-muted">{t('features.tested.description')}</p>
+            <p className="text-sm text-muted-foreground">{t('features.tested.description')}</p>
           </div>
         </div>
       </section>
@@ -108,7 +108,7 @@ export default async function RestaurantsPage() {
       <section className="pt-12 md:pt-24 pb-16 md:pb-32 space-y-6 md:space-y-8">
         <div className="text-center mb-8 md:mb-12">
           <h2 className="text-2xl md:text-3xl font-bold mb-3 md:mb-4 text-foreground">{t('demos.title')}</h2>
-          <p className="text-base md:text-lg text-muted">{t('demos.subtitle')}</p>
+          <p className="text-base md:text-lg text-muted-foreground">{t('demos.subtitle')}</p>
         </div>
 
         {/* Product Cards */}
@@ -120,19 +120,19 @@ export default async function RestaurantsPage() {
                 <span className="inline-block px-2.5 md:px-3 py-1 md:py-1.5 rounded-full text-[10px] md:text-xs font-bold bg-red-500 text-white shadow-md">
                   ✓ {t('demos.sushi.badge')}
                 </span>
-                <span className="text-[10px] md:text-xs text-muted font-mono">v2.1.0</span>
+                <span className="text-[10px] md:text-xs text-muted-foreground font-mono">v2.1.0</span>
               </div>
-              
+
               <h3 className="text-xl md:text-2xl font-bold text-foreground">
                 {t('demos.sushi.title')}
               </h3>
-              
-              <p className="text-sm md:text-base text-muted leading-relaxed">
+
+              <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
                 {t('demos.sushi.description')}
               </p>
 
               {/* Product Facts */}
-              <div className="flex flex-wrap gap-3 md:gap-4 pt-2 text-[10px] md:text-xs text-muted">
+              <div className="flex flex-wrap gap-3 md:gap-4 pt-2 text-[10px] md:text-xs text-muted-foreground">
                 <div className="flex items-center gap-1.5">
                   <Zap className="h-3 w-3 md:h-3.5 md:w-3.5 text-primary" />
                   <span>7–14 dni</span>
@@ -194,19 +194,19 @@ export default async function RestaurantsPage() {
                 <span className="inline-block px-2.5 md:px-3 py-1 md:py-1.5 rounded-full text-[10px] md:text-xs font-bold bg-blue-500 text-white shadow-md">
                   ✓ {t('demos.restaurantai.badge')}
                 </span>
-                <span className="text-[10px] md:text-xs text-muted font-mono">v1.0.0</span>
+                <span className="text-[10px] md:text-xs text-muted-foreground font-mono">v1.0.0</span>
               </div>
-              
+
               <h3 className="text-xl md:text-2xl font-bold text-foreground">
                 {t('demos.restaurantai.title')}
               </h3>
-              
-              <p className="text-sm md:text-base text-muted leading-relaxed">
+
+              <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
                 {t('demos.restaurantai.description')}
               </p>
 
               {/* Product Facts */}
-              <div className="flex flex-wrap gap-3 md:gap-4 pt-2 text-[10px] md:text-xs text-muted">
+              <div className="flex flex-wrap gap-3 md:gap-4 pt-2 text-[10px] md:text-xs text-muted-foreground">
                 <div className="flex items-center gap-1.5">
                   <Package className="h-3 w-3 md:h-3.5 md:w-3.5 text-blue-500" />
                   <span>{t('demos.restaurantai.facts.inventory')}</span>
@@ -269,18 +269,18 @@ export default async function RestaurantsPage() {
         <div className="absolute inset-0 opacity-[0.02]" style={{
           backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23000000\' fill-opacity=\'1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")',
         }}></div>
-        
+
         <div className="relative z-10">
           <div className="inline-flex items-center gap-1.5 mb-3 md:mb-4 px-3 md:px-4 py-1.5 md:py-2 bg-red-500/20 rounded-full">
             <Briefcase className="h-3 w-3 md:h-3.5 md:w-3.5 text-primary" />
             <span className="text-xs md:text-sm font-bold text-primary">{t('cta.badge')}</span>
           </div>
-          
+
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-3 md:mb-4">
             {t('cta.title')}
           </h2>
-          
-          <p className="text-base md:text-lg text-muted max-w-2xl mx-auto mb-6 md:mb-8 px-2">
+
+          <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-6 md:mb-8 px-2">
             {t('cta.description')}
           </p>
 
@@ -291,7 +291,7 @@ export default async function RestaurantsPage() {
             >
               {t('cta.button')}
             </Link>
-            
+
             <Link
               href="/contact"
               className="inline-flex items-center justify-center gap-2 px-6 md:px-8 py-3 md:py-4 rounded-xl border-2 border-foreground/20 text-foreground font-semibold hover:border-primary hover:bg-primary/5 transition-all text-base md:text-lg"
@@ -301,7 +301,7 @@ export default async function RestaurantsPage() {
           </div>
 
           {/* Trust indicators */}
-          <div className="flex flex-wrap justify-center gap-4 md:gap-6 mt-6 md:mt-8 text-xs md:text-sm text-muted px-2">
+          <div className="flex flex-wrap justify-center gap-4 md:gap-6 mt-6 md:mt-8 text-xs md:text-sm text-muted-foreground px-2">
             <div className="flex items-center gap-1.5 md:gap-2">
               <CheckCircle className="h-3.5 w-3.5 md:h-4 md:w-4 text-primary flex-shrink-0" />
               <span>✔ {t('cta.benefits.noHiddenCosts')}</span>
