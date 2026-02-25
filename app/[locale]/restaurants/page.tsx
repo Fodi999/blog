@@ -41,7 +41,7 @@ export default async function RestaurantsPage() {
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-foreground bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text">
             {t('title')}
           </h1>
-          <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
+          <p className="text-lg md:text-xl text-foreground/80 leading-relaxed">
             {t('subtitle')}
           </p>
         </div>
@@ -84,22 +84,22 @@ export default async function RestaurantsPage() {
         </div>
 
         <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-          <div className="p-4 md:p-6 rounded-xl border border-border bg-card">
+          <div className="p-4 md:p-6 rounded-xl border border-border bg-card dark:bg-muted/10">
             <Smartphone className="h-7 w-7 md:h-8 md:w-8 text-primary mb-3 md:mb-4" />
             <h3 className="text-base md:text-lg font-semibold mb-2">{t('features.mobile.title')}</h3>
-            <p className="text-sm text-muted-foreground">{t('features.mobile.description')}</p>
+            <p className="text-sm text-foreground/70">{t('features.mobile.description')}</p>
           </div>
 
-          <div className="p-4 md:p-6 rounded-xl border border-border bg-card">
+          <div className="p-4 md:p-6 rounded-xl border border-border bg-card dark:bg-muted/10">
             <ShoppingCart className="h-7 w-7 md:h-8 md:w-8 text-primary mb-3 md:mb-4" />
             <h3 className="text-base md:text-lg font-semibold mb-2">{t('features.orders.title')}</h3>
-            <p className="text-sm text-muted-foreground">{t('features.orders.description')}</p>
+            <p className="text-sm text-foreground/70">{t('features.orders.description')}</p>
           </div>
 
-          <div className="p-4 md:p-6 rounded-xl border border-border bg-card sm:col-span-2 md:col-span-1">
+          <div className="p-4 md:p-6 rounded-xl border border-border bg-card dark:bg-muted/10 sm:col-span-2 md:col-span-1">
             <CheckCircle className="h-7 w-7 md:h-8 md:w-8 text-primary mb-3 md:mb-4" />
             <h3 className="text-base md:text-lg font-semibold mb-2">{t('features.tested.title')}</h3>
-            <p className="text-sm text-muted-foreground">{t('features.tested.description')}</p>
+            <p className="text-sm text-foreground/70">{t('features.tested.description')}</p>
           </div>
         </div>
       </section>
@@ -108,31 +108,31 @@ export default async function RestaurantsPage() {
       <section className="pt-12 md:pt-24 pb-16 md:pb-32 space-y-6 md:space-y-8">
         <div className="text-center mb-8 md:mb-12">
           <h2 className="text-2xl md:text-3xl font-bold mb-3 md:mb-4 text-foreground">{t('demos.title')}</h2>
-          <p className="text-base md:text-lg text-muted-foreground">{t('demos.subtitle')}</p>
+          <p className="text-base md:text-lg text-foreground/70">{t('demos.subtitle')}</p>
         </div>
 
         {/* Product Cards */}
         <div className="grid md:grid-cols-2 gap-6 md:gap-8">
           {/* Demo card 1 - Sushi Delivery - PRIMARY */}
-          <div className="rounded-2xl border-2 border-primary/20 p-5 md:p-8 space-y-4 md:space-y-6 bg-gradient-to-br from-red-500/5 to-orange-500/5 hover:shadow-2xl transition-all hover:border-primary/40">
+          <div className="rounded-2xl border-2 border-primary/20 p-5 md:p-8 space-y-4 md:space-y-6 bg-gradient-to-br from-red-500/5 to-orange-500/5 dark:bg-primary/5 hover:shadow-2xl transition-all hover:border-primary/40">
             <div className="space-y-3 md:space-y-4">
               <div className="flex items-center justify-between flex-wrap gap-2">
                 <span className="inline-block px-2.5 md:px-3 py-1 md:py-1.5 rounded-full text-[10px] md:text-xs font-bold bg-red-500 text-white shadow-md">
                   ✓ {t('demos.sushi.badge')}
                 </span>
-                <span className="text-[10px] md:text-xs text-muted-foreground font-mono">v2.1.0</span>
+                <span className="text-[10px] md:text-xs text-foreground/60 font-mono">v2.1.0</span>
               </div>
 
               <h3 className="text-xl md:text-2xl font-bold text-foreground">
                 {t('demos.sushi.title')}
               </h3>
 
-              <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
+              <p className="text-sm md:text-base text-foreground/80 leading-relaxed">
                 {t('demos.sushi.description')}
               </p>
 
               {/* Product Facts */}
-              <div className="flex flex-wrap gap-3 md:gap-4 pt-2 text-[10px] md:text-xs text-muted-foreground">
+              <div className="flex flex-wrap gap-3 md:gap-4 pt-2 text-[10px] md:text-xs text-foreground/60">
                 <div className="flex items-center gap-1.5">
                   <Zap className="h-3 w-3 md:h-3.5 md:w-3.5 text-primary" />
                   <span>7–14 dni</span>
@@ -188,25 +188,25 @@ export default async function RestaurantsPage() {
           </div>
 
           {/* Demo card 2 - RestaurantAI - SECONDARY */}
-          <div className="rounded-2xl border-2 border-blue-500/20 p-5 md:p-8 space-y-4 md:space-y-6 bg-gradient-to-br from-blue-500/5 to-purple-500/5 hover:shadow-2xl transition-all hover:border-blue-500/40">
+          <div className="rounded-2xl border-2 border-blue-500/20 p-5 md:p-8 space-y-4 md:space-y-6 bg-gradient-to-br from-blue-500/5 to-purple-500/5 dark:bg-blue-500/5 hover:shadow-2xl transition-all hover:border-blue-500/40">
             <div className="space-y-3 md:space-y-4">
               <div className="flex items-center justify-between flex-wrap gap-2">
                 <span className="inline-block px-2.5 md:px-3 py-1 md:py-1.5 rounded-full text-[10px] md:text-xs font-bold bg-blue-500 text-white shadow-md">
                   ✓ {t('demos.restaurantai.badge')}
                 </span>
-                <span className="text-[10px] md:text-xs text-muted-foreground font-mono">v1.0.0</span>
+                <span className="text-[10px] md:text-xs text-foreground/60 font-mono">v1.0.0</span>
               </div>
 
               <h3 className="text-xl md:text-2xl font-bold text-foreground">
                 {t('demos.restaurantai.title')}
               </h3>
 
-              <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
+              <p className="text-sm md:text-base text-foreground/80 leading-relaxed">
                 {t('demos.restaurantai.description')}
               </p>
 
               {/* Product Facts */}
-              <div className="flex flex-wrap gap-3 md:gap-4 pt-2 text-[10px] md:text-xs text-muted-foreground">
+              <div className="flex flex-wrap gap-3 md:gap-4 pt-2 text-[10px] md:text-xs text-foreground/60">
                 <div className="flex items-center gap-1.5">
                   <Package className="h-3 w-3 md:h-3.5 md:w-3.5 text-blue-500" />
                   <span>{t('demos.restaurantai.facts.inventory')}</span>
@@ -280,7 +280,7 @@ export default async function RestaurantsPage() {
             {t('cta.title')}
           </h2>
 
-          <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-6 md:mb-8 px-2">
+          <p className="text-base md:text-lg text-foreground/80 max-w-2xl mx-auto mb-6 md:mb-8 px-2">
             {t('cta.description')}
           </p>
 
@@ -301,7 +301,7 @@ export default async function RestaurantsPage() {
           </div>
 
           {/* Trust indicators */}
-          <div className="flex flex-wrap justify-center gap-4 md:gap-6 mt-6 md:mt-8 text-xs md:text-sm text-muted-foreground px-2">
+          <div className="flex flex-wrap justify-center gap-4 md:gap-6 mt-6 md:mt-8 text-xs md:text-sm text-foreground/60 px-2">
             <div className="flex items-center gap-1.5 md:gap-2">
               <CheckCircle className="h-3.5 w-3.5 md:h-4 md:w-4 text-primary flex-shrink-0" />
               <span>✔ {t('cta.benefits.noHiddenCosts')}</span>
