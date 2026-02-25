@@ -35,12 +35,12 @@ export async function generateMetadata({
   });
 }
 
-const inter = Inter({ 
+const inter = Inter({
   subsets: ["latin", "cyrillic"],
   variable: '--font-inter',
 });
 
-const notoSansJP = Noto_Sans_JP({ 
+const notoSansJP = Noto_Sans_JP({
   subsets: ["latin"],
   variable: '--font-noto-sans-jp',
   weight: ['400', '500', '700'],
@@ -58,7 +58,7 @@ export default async function LocaleLayout({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  
+
   if (!locales.includes(locale as any)) {
     notFound();
   }
@@ -69,12 +69,12 @@ export default async function LocaleLayout({
     <html lang={locale} suppressHydrationWarning className={`${inter.variable} ${notoSansJP.variable}`}>
       <body className="antialiased min-h-screen">
         <Providers>
-          <NextIntlClientProvider messages={messages}>
-            <Header />
+          <NextIntlClientProvider locale={locale} messages={messages}>
+            <Header locale={locale} />
             <main className="container mx-auto px-4 py-8">
               {children}
             </main>
-            <Footer />
+            <Footer locale={locale} />
             <Toaster position="top-right" richColors />
           </NextIntlClientProvider>
         </Providers>

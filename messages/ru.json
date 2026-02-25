@@ -7,7 +7,7 @@
       "description": "Профессиональные статьи о суши, японских ножах и кулинарных техниках от шеф-повара с европейским опытом."
     },
     "about": {
-      "title": "О мне - Дима Фомин | Суши-шеф",
+      "title": "Обо мне - Дима Фомин | Суши-шеф",
       "description": "Моя история, опыт работы в лучших ресторанах Европы и подход к японской кухне."
     },
     "contact": {
@@ -30,8 +30,8 @@
   "nav": {
     "home": "Главная",
     "blog": "Блог",
-    "about": "О мне",
-    "contact": "Контакт",
+    "about": "Обо мне",
+    "contact": "Контакты",
     "restaurants": "Для ресторанов",
     "homeDesc": "Профессиональная кухня",
     "blogDesc": "Статьи и знания",
@@ -52,7 +52,7 @@
     "readMore": "Читать далее",
     "allArticles": "Все статьи",
     "aboutSection": {
-      "title": "О мне",
+      "title": "Обо мне",
       "description": "Я суши-шеф с опытом работы в лучших ресторанах Европы, увлечённый японской кухней и современными кулинарными технологиями. Теперь делюсь практическими знаниями и профессиональным опытом.",
       "cta": "Моя история"
     },
@@ -84,7 +84,7 @@
     "downloadPdfDesc": "Формат А4 • Профориентированный стандарт",
     "desktopOnly": "Доступно только на ПК",
     "downloadBtn": "PDF",
-    "authorRole": "Sushi Chef & Кулинарный эксперт",
+    "authorRole": "Суши-шеф и кулинарный эксперт",
     "moreFromCategory": "→ Больше по категории",
     "allArticles": "Все статьи",
     "searchPlaceholder": "Поиск по статьям, ингредиентам, техникам…",
@@ -101,7 +101,11 @@
       "restaurants": "Для ресторанов",
       "products": "Продукты",
       "ai": "AI & Технологии"
-    }
+    },
+    "share": "Поделиться",
+    "shareTitle": "Поделиться статьей",
+    "shareSuccess": "Успешно!",
+    "linkCopied": "Ссылка скопирована"
   },
   "about": {
     "title": "Обо мне",
@@ -140,17 +144,17 @@
       },
       "miodMalina": {
         "title": "Restauracja Autorska \"Miód Malina\" — Zgorzelec, Polska",
-        "role": "Кухarz",
+        "role": "Повар",
         "period": "2017 – 2018"
       },
       "charlemagne": {
         "title": "Restaurant Charlemagne — Agde, France",
-        "role": "Кухarz, owoce morza",
+        "role": "Повар, морепродукты",
         "period": "2022"
       },
       "wawel": {
         "title": "Boulangerie Pâtisserie WAWEL — Montreal, Canada",
-        "role": "Kucharz",
+        "role": "Повар",
         "period": "2022 – 2023"
       }
     },

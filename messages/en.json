@@ -101,7 +101,11 @@
       "restaurants": "For Restaurants",
       "products": "Products",
       "ai": "AI & Technology"
-    }
+    },
+    "share": "Share",
+    "shareTitle": "Share article",
+    "shareSuccess": "Success!",
+    "linkCopied": "Link copied to clipboard"
   },
   "about": {
     "title": "About Me",

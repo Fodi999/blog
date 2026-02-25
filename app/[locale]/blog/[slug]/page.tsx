@@ -3,6 +3,7 @@ import { Link } from '@/i18n/routing';
 import { ArrowLeft, Calendar, Clock, Share2, Printer } from 'lucide-react';
 import { getPostBySlug, getAllPosts } from '@/lib/posts';
 import { MDXContent } from '@/components/MDXContent';
+import { ShareButton } from '@/components/ShareButton';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import type { Metadata } from 'next';
@@ -42,7 +43,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string; slug: string }>;
 }): Promise<Metadata> {
   const { locale, slug } = await params;
-  
+
   const locales = ['pl', 'en', 'uk', 'ru'] as const;
   const postsByLocale = await Promise.all(
     locales.map(async (l) => [l, await getPostBySlug(l, slug)] as const)
@@ -183,11 +184,11 @@ export default async function BlogPostPage({
               )}
             </div>
           </div>
-          
+
           <h1 className="text-5xl md:text-7xl font-black mb-8 text-foreground leading-[0.95] tracking-tighter">
             {post.title}
           </h1>
-          
+
           {post.excerpt && (
             <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed font-medium mb-10 max-w-3xl border-l-4 border-primary/30 pl-6 italic">
               {post.excerpt}
@@ -195,10 +196,16 @@ export default async function BlogPostPage({
           )}
 
           <div className="flex items-center gap-3">
-             <Button variant="outline" size="sm" className="rounded-xl h-10 px-6 font-bold border-2 hover:bg-primary hover:text-white transition-all shadow-sm">
-                <Share2 className="h-4 w-4 mr-2" />
-                Share
-             </Button>
+            <ShareButton
+              title={post.title}
+              url={`/${locale}/blog/${slug}`}
+              labels={{
+                share: t('share'),
+                shareTitle: t('shareTitle'),
+                shareSuccess: t('shareSuccess'),
+                linkCopied: t('linkCopied')
+              }}
+            />
           </div>
         </header>
 
@@ -225,7 +232,7 @@ export default async function BlogPostPage({
           prose-li:text-lg prose-li:text-foreground/80">
           <MDXContent source={post.content} />
         </div>
-        
+
         {/* Footer with author & CTA */}
         <footer className="mt-24 pt-16 border-t border-border/50">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-10">
@@ -245,7 +252,7 @@ export default async function BlogPostPage({
                 <div className="text-sm font-bold text-primary uppercase tracking-[0.2em]">{t('authorRole')}</div>
               </div>
             </div>
-            
+
             {/* CTA */}
             <div className="flex flex-col items-start md:items-end gap-3">
               <Link
@@ -254,7 +261,7 @@ export default async function BlogPostPage({
               >
                 {t('moreFromCategory')} {post.category}
               </Link>
-              <Link 
+              <Link
                 href="/blog"
                 className="text-sm font-black text-muted-foreground hover:text-primary transition-colors uppercase tracking-widest pl-2"
               >

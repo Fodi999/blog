@@ -6,8 +6,7 @@ import { MobileMenu } from './MobileMenu';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 
-export async function Header() {
-  const locale = await getLocale();
+export async function Header({ locale }: { locale: string }) {
   const t = await getTranslations({ locale, namespace: 'nav' });
 
   return (
@@ -25,7 +24,7 @@ export async function Header() {
           </div>
           <span className="hidden sm:inline tracking-tighter uppercase italic text-primary">Dima Fomin</span>
         </Link>
-        
+
         {/* Desktop Navigation */}
         <div className="hidden lg:flex items-center gap-2">
           {[
@@ -39,7 +38,7 @@ export async function Header() {
               <Link href={item.href}>{item.label}</Link>
             </Button>
           ))}
-          
+
           <div className="flex items-center gap-3 ml-6 border-l border-border/60 pl-6 h-8">
             <ThemeToggle />
             <LanguageSwitcher />

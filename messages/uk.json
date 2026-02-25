@@ -31,7 +31,7 @@
     "home": "Головна",
     "blog": "Блог",
     "about": "Про мене",
-    "contact": "Контакт",
+    "contact": "Контакти",
     "restaurants": "Для ресторанів",
     "homeDesc": "Професійна кухня",
     "blogDesc": "Статті та знання",
@@ -84,7 +84,7 @@
     "downloadPdfDesc": "Формат А4 • Професійний стандарт",
     "desktopOnly": "Доступно лише на ПК",
     "downloadBtn": "PDF",
-    "authorRole": "Sushi Chef & Кулінарний експерт",
+    "authorRole": "Суші-шеф і кулінарний експерт",
     "moreFromCategory": "→ Більше з категорії",
     "allArticles": "Усі статті",
     "searchPlaceholder": "Пошук статей, інгредієнтів, технік…",
@@ -101,7 +101,11 @@
       "restaurants": "Для ресторанів",
       "products": "Продукти",
       "ai": "AI та Технології"
-    }
+    },
+    "share": "Поділитися",
+    "shareTitle": "Поділитися статтею",
+    "shareSuccess": "Успішно!",
+    "linkCopied": "Посилання скопійовано"
   },
   "about": {
     "title": "Про мене",

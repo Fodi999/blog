@@ -1,7 +1,6 @@
 import { getTranslations, getLocale } from 'next-intl/server';
 
-export async function Footer() {
-  const locale = await getLocale();
+export async function Footer({ locale }: { locale: string }) {
   const t = await getTranslations({ locale, namespace: 'footer' });
 
   return (

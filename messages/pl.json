@@ -84,7 +84,7 @@
     "downloadPdfDesc": "Format A4 • Standard Profesjonalny",
     "desktopOnly": "Dostępne tylko na komputerach (PC)",
     "downloadBtn": "Pobierz PDF",
-    "authorRole": "Sushi Chef & Culinary Expert",
+    "authorRole": "Sushi Chef i Ekspert Kulinarny",
     "moreFromCategory": "→ Więcej z kategorii",
     "allArticles": "Wszystkie artykuły",
     "searchPlaceholder": "Szukaj artykułów, składników, technik…",
@@ -101,7 +101,11 @@
       "restaurants": "Dla restauracji",
       "products": "Produkty",
       "ai": "AI i Technologie"
-    }
+    },
+    "share": "Udostępnij",
+    "shareTitle": "Udostępnij artykuł",
+    "shareSuccess": "Sukces!",
+    "linkCopied": "Link skopiowany"
   },
   "about": {
     "title": "O mnie",
