@@ -110,12 +110,31 @@
   "about": {
     "title": "O mnie",
     "subtitle": "Sushi Chef i Technolog Żywności",
+    "hero": {
+      "lead": "Jestem sushi chefem i technologiem żywności. Pomagam restauracjom budować jakość, procesy i menu oparte na produkcie, sezonowości i precyzji techniki.",
+      "cta": {
+        "contact": "Kontakt",
+        "restaurants": "Dla restauracji"
+      },
+      "badges": [
+        "Sushi Chef",
+        "Technolog żywności",
+        "HACCP"
+      ],
+      "metrics": [
+        "20+ lat",
+        "6 krajów",
+        "Sushi & seafood",
+        "HACCP"
+      ]
+    },
     "journey": {
       "title": "Moja Droga",
       "content": "Jestem profesjonalnym sushi chefem i technologiem żywności z ponad 20-letnim doświadczeniem w gastronomii. Moja droga rozpoczęła się od klasycznego wykształcenia kulinarnego i doprowadziła do pracy w restauracjach i kuchniach produkcyjnych w Polsce, Litwie, Estonii, Niemczech, Francji i Kanadzie.\n\nPrzez lata praktyki zbudowałem głębokie zrozumienie kuchni japońskiej, pracy z produktem i procesów profesjonalnej kuchni — od tradycyjnych technik po nowoczesne rozwiązania technologiczne."
     },
     "expertise": {
       "title": "Ekspertyza",
+      "subtitle": "Kluczowe obszary specjalizacji i technik",
       "items": [
         "Tradycyjne przygotowanie i podanie sushi",
         "Profesjonalna praca z japońskimi nożami",
@@ -129,6 +148,7 @@
     },
     "experience": {
       "title": "Doświadczenie zawodowe",
+      "haccp": "Praca według standardów HACCP",
       "fishInHouse": {
         "title": "FISH in HOUSE — Dniepr",
         "role": "Szef kuchni / Technolog",
@@ -168,7 +188,21 @@
     },
     "mission": {
       "title": "Moja Misja",
-      "content": "Poprzez ten blog i projekty dzielę się praktyczną wiedzą z profesjonalnej kuchni. Moim celem jest pomoc kucharzom, restauracjom i entuzjastom jedzenia w zrozumieniu produktu, techniki i technologii, na których opiera się współczesna gastronomia.\n\nWierzę, że silna kuchnia zaczyna się nie od przepisu, ale od zrozumienia procesu."
+      "content": "Poprzez ten blog i projekty dzielę się praktyczną wiedzą z profesjonalnej kuchni. Moim celem jest pomoc kucharzom, restauracjom i entuzjastom jedzenia w zrozumieniu produktu, techniki i technologii, na których opiera się współczesna gastronomia.\n\nWierzę, że silna kuchnia zaczyna się nie od przepisu, ale od zrozumienia procesu.",
+      "values": [
+        {
+          "label": "Jakość",
+          "desc": "Zrozumienie produktu"
+        },
+        {
+          "label": "Proces",
+          "desc": "Optymalizacja pracy"
+        },
+        {
+          "label": "Technika",
+          "desc": "Precyzja japońska"
+        }
+      ]
     },
     "gallery": "Galeria"
   },

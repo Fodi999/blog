@@ -110,12 +110,31 @@
   "about": {
     "title": "About Me",
     "subtitle": "Sushi Chef & Food Technologist",
+    "hero": {
+      "lead": "I am a sushi chef and food technologist. I help restaurants build quality, processes, and menus based on product, seasonality, and precision of technique.",
+      "cta": {
+        "contact": "Contact",
+        "restaurants": "For Restaurants"
+      },
+      "badges": [
+        "Sushi Chef",
+        "Food Technologist",
+        "HACCP"
+      ],
+      "metrics": [
+        "20+ years",
+        "6 countries",
+        "Sushi & seafood",
+        "HACCP"
+      ]
+    },
     "journey": {
       "title": "My Journey",
       "content": "I am a professional sushi chef and food technologist with over 20 years of experience in gastronomy. My journey began with classical culinary education and led to work in restaurants and production kitchens across Poland, Lithuania, Estonia, Germany, France, and Canada.\n\nOver the years of practice, I have built a deep understanding of Japanese cuisine, product handling, and professional kitchen processes — from traditional techniques to modern technological solutions."
     },
     "expertise": {
       "title": "Expertise",
+      "subtitle": "Key areas of specialization and techniques",
       "items": [
         "Traditional sushi preparation and presentation",
         "Professional Japanese knife work",
@@ -129,6 +148,7 @@
     },
     "experience": {
       "title": "Work Experience",
+      "haccp": "Work according to HACCP standards",
       "fishInHouse": {
         "title": "FISH in HOUSE — Dnipro",
         "role": "Head Chef / Technologist",
@@ -168,7 +188,21 @@
     },
     "mission": {
       "title": "My Mission",
-      "content": "Through this blog and projects, I share practical knowledge of professional kitchens. My goal is to help chefs, restaurants, and food enthusiasts understand the product, technique, and technology that modern gastronomy is built on.\n\nI believe that a strong kitchen starts not with a recipe, but with understanding the process."
+      "content": "Through this blog and projects, I share practical knowledge of professional kitchens. My goal is to help chefs, restaurants, and food enthusiasts understand the product, technique, and technology that modern gastronomy is built on.\n\nI believe that a strong kitchen starts not with a recipe, but with understanding the process.",
+      "values": [
+        {
+          "label": "Quality",
+          "desc": "Product understanding"
+        },
+        {
+          "label": "Process",
+          "desc": "Work optimization"
+        },
+        {
+          "label": "Technique",
+          "desc": "Japanese precision"
+        }
+      ]
     },
     "gallery": "Gallery"
   },
