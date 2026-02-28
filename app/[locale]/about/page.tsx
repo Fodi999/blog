@@ -1,4 +1,4 @@
-import { getTranslations, getLocale } from 'next-intl/server';
+import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';
 import { Link } from '@/i18n/routing';
 import { JsonLd } from '@/components/JsonLd';
@@ -40,8 +40,12 @@ export async function generateMetadata({
   });
 }
 
-export default async function AboutPage() {
-  const locale = await getLocale();
+export default async function AboutPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'about' });
 
   const galleryImages = [
