@@ -1,4 +1,4 @@
-import { getTranslations, getLocale } from 'next-intl/server';
+import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
 import { ExternalLink, ShoppingCart, Smartphone, CheckCircle, Zap, Globe, Cloud, Clock, Briefcase, Package, ChefHat, TrendingUp, Brain } from 'lucide-react';
 import type { Metadata } from 'next';
@@ -23,8 +23,12 @@ export async function generateMetadata({
   });
 }
 
-export default async function RestaurantsPage() {
-  const locale = await getLocale();
+export default async function RestaurantsPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'restaurants' });
 
   return (

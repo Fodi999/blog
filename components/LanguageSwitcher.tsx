@@ -20,7 +20,7 @@ const localeNames: Record<string, string> = {
   ru: 'Русский',
 };
 
-export function LanguageSwitcher() {
+function LanguageSwitcherInner() {
   const locale = useLocale();
   const pathname = usePathname();
 
@@ -53,4 +53,28 @@ export function LanguageSwitcher() {
       </DropdownMenuContent>
     </DropdownMenu>
   );
+}
+
+export function LanguageSwitcher() {
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <Button
+        variant="outline"
+        size="icon"
+        className="h-10 w-10 rounded-xl border-border/60 bg-background/50 backdrop-blur-sm"
+        aria-label="Change language"
+        disabled
+      >
+        <Globe className="h-4.5 w-4.5 text-foreground/80" />
+      </Button>
+    );
+  }
+
+  return <LanguageSwitcherInner />;
 }

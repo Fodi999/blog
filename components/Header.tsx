@@ -1,5 +1,5 @@
 import { Link } from '@/i18n/routing';
-import { getTranslations, getLocale } from 'next-intl/server';
+import { getTranslations } from 'next-intl/server';
 import { ThemeToggle } from './ThemeToggle';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { MobileMenu } from './MobileMenu';
@@ -12,7 +12,7 @@ export async function Header({ locale }: { locale: string }) {
   return (
     <header className="glass-nav border-b border-border/40">
       <nav className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-3 text-xl font-black text-foreground transition-all hover:opacity-80 group">
+        <Link href="/" locale={locale} className="flex items-center gap-3 text-xl font-black text-foreground transition-all hover:opacity-80 group">
           <div className="w-10 h-10 rounded-2xl overflow-hidden ring-2 ring-primary/20 bg-muted/10 transition-transform group-hover:scale-105 group-hover:rotate-3 shadow-xl">
             <Image
               src="https://i.postimg.cc/W1KV4b43/logo1.webp"
@@ -35,7 +35,7 @@ export async function Header({ locale }: { locale: string }) {
             { href: '/contact', label: t('contact') },
           ].map((item) => (
             <Button key={item.href} variant="ghost" asChild className="text-sm font-black uppercase tracking-widest hover:text-primary transition-colors hover:bg-transparent">
-              <Link href={item.href}>{item.label}</Link>
+              <Link href={item.href} locale={locale}>{item.label}</Link>
             </Button>
           ))}
 

@@ -1,4 +1,4 @@
-import { getTranslations, getLocale } from 'next-intl/server';
+import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
 import { ExternalLink, ArrowLeft, Package, ChefHat, TrendingUp, Brain, CheckCircle, BarChart3, DollarSign, AlertTriangle, Star, Construction } from 'lucide-react';
 import type { Metadata } from 'next';
@@ -6,8 +6,12 @@ import { generateMetadata as sharedGenerateMetadata } from '@/lib/metadata';
 
 export const dynamic = 'force-static';
 
-export async function generateMetadata(): Promise<Metadata> {
-  const l = await getLocale();
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale: l } = await params;
   const locale = l as 'pl' | 'en' | 'uk' | 'ru';
   const t = await getTranslations({ locale, namespace: 'metadata' });
 
@@ -19,8 +23,12 @@ export async function generateMetadata(): Promise<Metadata> {
   });
 }
 
-export default async function RestaurantAIDemoPage() {
-  const locale = await getLocale();
+export default async function RestaurantAIDemoPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'restaurantai' });
 
   return (

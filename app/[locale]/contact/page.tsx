@@ -1,4 +1,4 @@
-import { getTranslations, getLocale } from 'next-intl/server';
+import { getTranslations } from 'next-intl/server';
 import { Mail, MessageSquare, ArrowUpRight } from 'lucide-react';
 import type { Metadata } from 'next';
 import { JsonLd } from '@/components/JsonLd';
@@ -23,8 +23,12 @@ export async function generateMetadata({
   });
 }
 
-export default async function ContactPage() {
-  const locale = await getLocale();
+export default async function ContactPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'contact' });
 
   return (
@@ -107,7 +111,7 @@ export default async function ContactPage() {
           
           <div className="p-6 md:p-8 border-l-4 border-primary bg-muted/30">
             <p className="text-sm md:text-base font-bold uppercase tracking-widest text-muted-foreground italic">
-              Based in Krakow, Poland. Working Globally.
+              {t('location')}
             </p>
           </div>
         </div>

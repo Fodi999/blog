@@ -1,10 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Link } from '@/i18n/routing';
-import { useTranslations } from 'next-intl';
-import { usePathname } from 'next/navigation';
-import { Menu, X } from 'lucide-react';
+import { Link, usePathname } from '@/i18n/routing';
+import { useTranslations, useLocale } from 'next-intl';
+import { Menu } from 'lucide-react';
 import {
   Sheet,
   SheetContent,
@@ -18,14 +17,13 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 export function MobileMenu() {
   const [isOpen, setIsOpen] = useState(false);
   const t = useTranslations('nav');
+  const locale = useLocale();
   const pathname = usePathname();
 
   // Close menu when route changes
   useEffect(() => {
     setIsOpen(false);
   }, [pathname]);
-
-  const cleanPathname = pathname?.replace(/^\/(ru|en|pl|uk)/, '') || '/';
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -47,16 +45,17 @@ export function MobileMenu() {
           <nav className="flex flex-col p-4 space-y-2">
             {[
               { href: '/', label: t('home'), desc: t('homeDesc') },
-              { href: '/blog', label: t('blog'), desc: t('blogDesc'), active: cleanPathname.startsWith('/blog') },
+              { href: '/blog', label: t('blog'), desc: t('blogDesc'), active: pathname.startsWith('/blog') },
               { href: '/restaurants', label: t('restaurants'), desc: t('restaurantsDesc') },
               { href: '/about', label: t('about'), desc: t('aboutDesc') },
               { href: '/contact', label: t('contact'), desc: t('contactDesc') },
             ].map((item) => {
-              const isActive = item.active ?? (item.href === '/' ? cleanPathname === '/' : cleanPathname.startsWith(item.href));
+              const isActive = item.active ?? (item.href === '/' ? pathname === '/' : pathname.startsWith(item.href));
               return (
                 <Link
                   key={item.href}
                   href={item.href}
+                  locale={locale}
                   className={`flex flex-col py-4 px-5 rounded-2xl transition-all ${
                     isActive 
                       ? 'bg-primary/10 text-primary border-2 border-primary/20 shadow-sm' 
