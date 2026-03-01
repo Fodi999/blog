@@ -223,7 +223,7 @@ export default async function SushiDeliveryDemoPage({
               <h3 className="text-xl md:text-2xl font-bold text-foreground">{t('features.menu.title')}</h3>
             </div>
 
-            <p className="text-sm md:text-base text-muted leading-relaxed">
+            <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
               {t('features.menu.description')}
             </p>
 
@@ -246,7 +246,7 @@ export default async function SushiDeliveryDemoPage({
               <h3 className="text-xl md:text-2xl font-bold text-foreground">{t('features.cart.title')}</h3>
             </div>
 
-            <p className="text-sm md:text-base text-muted leading-relaxed">
+            <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
               {t('features.cart.description')}
             </p>
 
@@ -269,7 +269,7 @@ export default async function SushiDeliveryDemoPage({
               <h3 className="text-xl md:text-2xl font-bold text-foreground">{t('features.delivery.title')}</h3>
             </div>
 
-            <p className="text-sm md:text-base text-muted leading-relaxed">
+            <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
               {t('features.delivery.description')}
             </p>
 

@@ -37,7 +37,7 @@ export default async function RestaurantAIDemoPage({
       {/* Back Button */}
       <Link 
         href="/restaurants"
-        className="inline-flex items-center gap-2 text-muted hover:text-foreground transition-colors"
+        className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
       >
         <ArrowLeft className="h-4 w-4" />
         <span className="text-sm md:text-base">{t('backToRestaurants')}</span>
@@ -52,14 +52,14 @@ export default async function RestaurantAIDemoPage({
                 <Construction className="h-3 w-3" />
                 {t('badge')}
               </span>
-              <span className="text-xs md:text-sm text-muted font-mono">v1.0.0 • B2B SaaS</span>
+              <span className="text-xs md:text-sm text-muted-foreground font-mono">v1.0.0 • B2B SaaS</span>
             </div>
             
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground">
               {t('title')}
             </h1>
             
-            <p className="text-base md:text-lg text-muted max-w-3xl leading-relaxed">
+            <p className="text-base md:text-lg text-muted-foreground max-w-3xl leading-relaxed">
               {t('subtitle')}
             </p>
           </div>
@@ -80,25 +80,25 @@ export default async function RestaurantAIDemoPage({
           <div className="p-4 md:p-6 rounded-xl border-2 border-border bg-card space-y-2">
             <Package className="h-6 w-6 md:h-8 md:w-8 text-blue-500" />
             <div className="text-2xl md:text-3xl font-bold text-foreground">{t('metrics.inventory')}</div>
-            <p className="text-xs md:text-sm text-muted">{t('metrics.inventoryDesc')}</p>
+            <p className="text-xs md:text-sm text-muted-foreground">{t('metrics.inventoryDesc')}</p>
           </div>
 
           <div className="p-4 md:p-6 rounded-xl border-2 border-border bg-card space-y-2">
             <ChefHat className="h-6 w-6 md:h-8 md:w-8 text-blue-500" />
             <div className="text-2xl md:text-3xl font-bold text-foreground">{t('metrics.recipes')}</div>
-            <p className="text-xs md:text-sm text-muted">{t('metrics.recipesDesc')}</p>
+            <p className="text-xs md:text-sm text-muted-foreground">{t('metrics.recipesDesc')}</p>
           </div>
 
           <div className="p-4 md:p-6 rounded-xl border-2 border-border bg-card space-y-2">
             <BarChart3 className="h-6 w-6 md:h-8 md:w-8 text-blue-500" />
             <div className="text-2xl md:text-3xl font-bold text-foreground">{t('metrics.menu')}</div>
-            <p className="text-xs md:text-sm text-muted">{t('metrics.menuDesc')}</p>
+            <p className="text-xs md:text-sm text-muted-foreground">{t('metrics.menuDesc')}</p>
           </div>
 
           <div className="p-4 md:p-6 rounded-xl border-2 border-border bg-card space-y-2">
             <Brain className="h-6 w-6 md:h-8 md:w-8 text-blue-500" />
             <div className="text-2xl md:text-3xl font-bold text-foreground">{t('metrics.ai')}</div>
-            <p className="text-xs md:text-sm text-muted">{t('metrics.aiDesc')}</p>
+            <p className="text-xs md:text-sm text-muted-foreground">{t('metrics.aiDesc')}</p>
           </div>
         </div>
       </section>
@@ -107,7 +107,7 @@ export default async function RestaurantAIDemoPage({
       <section className="space-y-6">
         <div className="text-center space-y-2">
           <h2 className="text-2xl md:text-3xl font-bold text-foreground">{t('preview.title')}</h2>
-          <p className="text-sm md:text-base text-muted">{t('preview.subtitle')}</p>
+          <p className="text-sm md:text-base text-muted-foreground">{t('preview.subtitle')}</p>
         </div>
 
         {/* Desktop Preview with Mobile Overlay */}
@@ -236,7 +236,7 @@ export default async function RestaurantAIDemoPage({
       <section className="space-y-8 md:space-y-12">
         <div className="text-center space-y-3 md:space-y-4">
           <h2 className="text-2xl md:text-3xl font-bold text-foreground">{t('solution.title')}</h2>
-          <p className="text-base md:text-lg text-muted max-w-3xl mx-auto">
+          <p className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto">
             {t('solution.subtitle')}
           </p>
         </div>
@@ -252,7 +252,7 @@ export default async function RestaurantAIDemoPage({
                 <h3 className="text-xl md:text-2xl font-bold text-foreground">{t('modules.inventory.title')}</h3>
               </div>
 
-              <p className="text-sm md:text-base text-muted leading-relaxed">
+              <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
                 {t('modules.inventory.description')}
               </p>
 
@@ -297,7 +297,7 @@ export default async function RestaurantAIDemoPage({
                 <h3 className="text-xl md:text-2xl font-bold text-foreground">{t('modules.recipes.title')}</h3>
               </div>
 
-              <p className="text-sm md:text-base text-muted leading-relaxed">
+              <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
                 {t('modules.recipes.description')}
               </p>
 
@@ -322,7 +322,7 @@ export default async function RestaurantAIDemoPage({
                 <h3 className="text-xl md:text-2xl font-bold text-foreground">{t('modules.menu.title')}</h3>
               </div>
 
-              <p className="text-sm md:text-base text-muted leading-relaxed">
+              <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
                 {t('modules.menu.description')}
               </p>
 
@@ -330,25 +330,25 @@ export default async function RestaurantAIDemoPage({
                 <div className="p-3 md:p-4 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
                   <Star className="h-5 w-5 text-yellow-500 mb-2" />
                   <div className="text-sm font-bold text-foreground">Star</div>
-                  <p className="text-xs text-muted">{t('modules.menu.star')}</p>
+                  <p className="text-xs text-muted-foreground">{t('modules.menu.star')}</p>
                 </div>
 
                 <div className="p-3 md:p-4 rounded-lg bg-green-500/10 border border-green-500/20">
                   <DollarSign className="h-5 w-5 text-green-500 mb-2" />
                   <div className="text-sm font-bold text-foreground">Cash Cow</div>
-                  <p className="text-xs text-muted">{t('modules.menu.cashcow')}</p>
+                  <p className="text-xs text-muted-foreground">{t('modules.menu.cashcow')}</p>
                 </div>
 
                 <div className="p-3 md:p-4 rounded-lg bg-orange-500/10 border border-orange-500/20">
                   <AlertTriangle className="h-5 w-5 text-orange-500 mb-2" />
                   <div className="text-sm font-bold text-foreground">Question</div>
-                  <p className="text-xs text-muted">{t('modules.menu.question')}</p>
+                  <p className="text-xs text-muted-foreground">{t('modules.menu.question')}</p>
                 </div>
 
                 <div className="p-3 md:p-4 rounded-lg bg-red-500/10 border border-red-500/20">
                   <TrendingUp className="h-5 w-5 text-red-500 mb-2 rotate-180" />
                   <div className="text-sm font-bold text-foreground">Dog</div>
-                  <p className="text-xs text-muted">{t('modules.menu.dog')}</p>
+                  <p className="text-xs text-muted-foreground">{t('modules.menu.dog')}</p>
                 </div>
               </div>
             </div>
@@ -384,7 +384,7 @@ export default async function RestaurantAIDemoPage({
                 <h3 className="text-xl md:text-2xl font-bold text-foreground">{t('modules.ai.title')}</h3>
               </div>
 
-              <p className="text-sm md:text-base text-muted leading-relaxed">
+              <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
                 {t('modules.ai.description')}
               </p>
 
@@ -393,7 +393,7 @@ export default async function RestaurantAIDemoPage({
                   <Brain className="h-5 w-5 text-indigo-500 mt-0.5 flex-shrink-0" />
                   <div>
                     <p className="text-sm font-medium text-foreground mb-1">{t('modules.ai.example')}</p>
-                    <p className="text-xs md:text-sm text-muted italic">
+                    <p className="text-xs md:text-sm text-muted-foreground italic">
                       "{t('modules.ai.exampleText')}"
                     </p>
                   </div>
@@ -424,7 +424,7 @@ export default async function RestaurantAIDemoPage({
             <div key={i} className="p-4 md:p-6 rounded-xl bg-white/50 dark:bg-gray-900/50 border border-blue-200/50 dark:border-blue-900/30 space-y-3">
               <CheckCircle className="h-6 w-6 md:h-8 md:w-8 text-blue-500" />
               <h4 className="text-base md:text-lg font-bold text-foreground">{t(`why.point${i}.title`)}</h4>
-              <p className="text-xs md:text-sm text-muted">{t(`why.point${i}.description`)}</p>
+              <p className="text-xs md:text-sm text-muted-foreground">{t(`why.point${i}.description`)}</p>
             </div>
           ))}
         </div>
@@ -434,7 +434,7 @@ export default async function RestaurantAIDemoPage({
       <section className="space-y-6 md:space-y-8">
         <div className="text-center space-y-3 md:space-y-4">
           <h2 className="text-2xl md:text-3xl font-bold text-foreground">{t('target.title')}</h2>
-          <p className="text-base md:text-lg text-muted max-w-2xl mx-auto">
+          <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
             {t('target.subtitle')}
           </p>
         </div>
@@ -465,7 +465,7 @@ export default async function RestaurantAIDemoPage({
               <div className="text-3xl md:text-4xl font-bold text-green-600 dark:text-green-400">
                 {t(`results.metric${i}.value`)}
               </div>
-              <p className="text-xs md:text-sm text-muted">{t(`results.metric${i}.label`)}</p>
+              <p className="text-xs md:text-sm text-muted-foreground">{t(`results.metric${i}.label`)}</p>
             </div>
           ))}
         </div>
@@ -479,7 +479,7 @@ export default async function RestaurantAIDemoPage({
               {t('cta.title')}
             </h2>
             
-            <p className="text-base md:text-lg text-muted max-w-2xl mx-auto">
+            <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
               {t('cta.description')}
             </p>
           </div>
@@ -504,7 +504,7 @@ export default async function RestaurantAIDemoPage({
           </div>
 
           {/* Trust indicators */}
-          <div className="flex flex-wrap justify-center gap-4 md:gap-6 text-xs md:text-sm text-muted">
+          <div className="flex flex-wrap justify-center gap-4 md:gap-6 text-xs md:text-sm text-muted-foreground">
             <div className="flex items-center gap-1.5 md:gap-2">
               <CheckCircle className="h-3.5 w-3.5 md:h-4 md:w-4 text-blue-500 flex-shrink-0" />
               <span>✔ {t('cta.benefit1')}</span>
