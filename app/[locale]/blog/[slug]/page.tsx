@@ -20,6 +20,7 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { JsonLd } from '@/components/JsonLd';
 import { generateMetadata as sharedGenerateMetadata, generateArticleJsonLd, generateBreadcrumbJsonLd } from '@/lib/metadata';
+import { ReadingProgress } from '@/components/ReadingProgress';
 
 export const dynamic = 'force-static';
 
@@ -111,6 +112,7 @@ export default async function BlogPostPage({
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+      <ReadingProgress />
       <JsonLd data={jsonLd} />
       <JsonLd data={breadcrumbJsonLd} />
       <Breadcrumb className="mb-8 md:mb-12">
