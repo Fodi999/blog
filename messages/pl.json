@@ -80,11 +80,42 @@
         "quickExamples": {
           "title": "Popularne przeliczenia",
           "items": [
-            "1 funt = 453,592 g",
-            "1 uncja = 28,35 g",
-            "1 szklanka = 236,6 ml",
-            "1 l = 33,814 fl oz",
-            "1 łyżka = 3 łyżeczki"
+            {
+              "label": "100 g → oz",
+              "value": "100",
+              "from": "g",
+              "to": "oz"
+            },
+            {
+              "label": "1 szklanka → ml",
+              "value": "1",
+              "from": "cup",
+              "to": "ml"
+            },
+            {
+              "label": "1 funt → g",
+              "value": "1",
+              "from": "lb",
+              "to": "g"
+            },
+            {
+              "label": "1 uncja → g",
+              "value": "1",
+              "from": "oz",
+              "to": "g"
+            },
+            {
+              "label": "500 ml → l",
+              "value": "500",
+              "from": "ml",
+              "to": "l"
+            },
+            {
+              "label": "1 łyżka → łyżeczki",
+              "value": "1",
+              "from": "tbsp",
+              "to": "tsp"
+            }
           ]
         },
         "seoText": {
@@ -115,7 +146,11 @@
             }
           ]
         },
-        "placeholder": "Wpisz wartość"
+        "placeholder": "Wpisz wartość",
+        "closingText": {
+          "title": "Kalkulator jednostek dla kucharzy",
+          "text": "Przelicznik jednostek kuchennych pomaga szybko konwertować miary używane w różnych krajach. W przepisach europejskich dominują gramy i mililitry, natomiast w amerykańskich — uncje, funty i szklanki. Dzięki temu narzędziu możesz szybko przeliczyć składniki podczas gotowania."
+        }
       },
       "fishSeason": {
         "title": "Kalendarz Sezonowości Ryb",

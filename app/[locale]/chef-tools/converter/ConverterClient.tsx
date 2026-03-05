@@ -21,6 +21,8 @@ export type UnitGroups = {
   kitchen: UnitItem[];
 };
 
+export type QuickFill = { value: string; from: string; to: string };
+
 const FALLBACK: UnitGroups = {
   mass: [
     { code: 'g', label: 'g' },
@@ -128,11 +130,15 @@ function UnitGroup({
   units,
   unsupportedMsg,
   placeholder,
+  quickFill,
+  onQuickFillConsumed,
 }: {
   groupLabel: string;
   units: UnitItem[];
   unsupportedMsg: string;
   placeholder: string;
+  quickFill: QuickFill | null;
+  onQuickFillConsumed: () => void;
 }) {
   const locale = useLocale();
   const [value, setValue] = useState('');
@@ -142,6 +148,20 @@ function UnitGroup({
   const [unsupported, setUnsupported] = useState(false);
   const [isPending, startTransition] = useTransition();
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Apply quick-fill when parent sends a preset
+  useEffect(() => {
+    if (!quickFill) return;
+    const unitCodes = units.map((u) => u.code);
+    if (unitCodes.includes(quickFill.from) && unitCodes.includes(quickFill.to)) {
+      setValue(quickFill.value);
+      setFromCode(quickFill.from);
+      setToCode(quickFill.to);
+      setRes(null);
+      setUnsupported(false);
+      onQuickFillConsumed();
+    }
+  }, [quickFill, units, onQuickFillConsumed]);
 
   // Smart formatting: more decimals for small numbers
   const formatNum = (n: number) =>
@@ -316,6 +336,8 @@ function UnitGroup({
 
 interface Props {
   groups?: UnitGroups;
+  initialQuickFill?: QuickFill | null;
+  onQuickFillReady?: (fn: (qf: QuickFill) => void) => void;
 }
 
 export default function ConverterClient({ groups }: Props) {
@@ -325,11 +347,22 @@ export default function ConverterClient({ groups }: Props) {
   const labels = GROUP_LABELS[locale] ?? GROUP_LABELS.en;
   const unsupportedMsg = UNSUPPORTED_MSG[locale] ?? UNSUPPORTED_MSG.en;
   const placeholder = t('tools.converter.placeholder');
+  const [quickFill, setQuickFill] = useState<QuickFill | null>(null);
 
   const displayGroups = [
     { key: 'mass', label: labels.mass, units: g.mass },
     { key: 'volume', label: labels.volume, units: [...g.volume, ...g.kitchen] },
   ];
+
+  // Expose fill function via a stable ref so sibling QuickExamples can call it
+  const fillRef = useRef(setQuickFill);
+  fillRef.current = setQuickFill;
+
+  // Attach to window so QuickExamplesClient can call it without prop drilling
+  useEffect(() => {
+    (window as Window & { __converterFill?: (qf: QuickFill) => void }).__converterFill = (qf) => fillRef.current(qf);
+    return () => { delete (window as Window & { __converterFill?: (qf: QuickFill) => void }).__converterFill; };
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -340,6 +373,8 @@ export default function ConverterClient({ groups }: Props) {
           units={grp.units}
           unsupportedMsg={unsupportedMsg}
           placeholder={placeholder}
+          quickFill={quickFill}
+          onQuickFillConsumed={() => setQuickFill(null)}
         />
       ))}
     </div>

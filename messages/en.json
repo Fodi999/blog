@@ -80,11 +80,42 @@
         "quickExamples": {
           "title": "Common conversions",
           "items": [
-            "1 lb = 453.592 g",
-            "1 oz = 28.35 g",
-            "1 cup = 236.6 ml",
-            "1 l = 33.814 fl oz",
-            "1 tbsp = 3 tsp"
+            {
+              "label": "100 g → oz",
+              "value": "100",
+              "from": "g",
+              "to": "oz"
+            },
+            {
+              "label": "1 cup → ml",
+              "value": "1",
+              "from": "cup",
+              "to": "ml"
+            },
+            {
+              "label": "1 lb → g",
+              "value": "1",
+              "from": "lb",
+              "to": "g"
+            },
+            {
+              "label": "1 oz → g",
+              "value": "1",
+              "from": "oz",
+              "to": "g"
+            },
+            {
+              "label": "500 ml → l",
+              "value": "500",
+              "from": "ml",
+              "to": "l"
+            },
+            {
+              "label": "1 tbsp → tsp",
+              "value": "1",
+              "from": "tbsp",
+              "to": "tsp"
+            }
           ]
         },
         "seoText": {
@@ -115,7 +146,11 @@
             }
           ]
         },
-        "placeholder": "Enter amount"
+        "placeholder": "Enter amount",
+        "closingText": {
+          "title": "Unit calculator for cooks",
+          "text": "This kitchen unit converter helps you quickly convert measurements used in different countries. European recipes use grams and milliliters, while American recipes use ounces, pounds, and cups. Use this tool to convert ingredients on the fly while cooking."
+        }
       },
       "fishSeason": {
         "title": "Fish Season Calendar",

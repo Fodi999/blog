@@ -3,6 +3,7 @@ import { Link } from '@/i18n/routing';
 import { generateMetadata as genMeta } from '@/lib/metadata';
 import { ChevronLeft } from 'lucide-react';
 import ConverterClient, { type UnitGroups } from './ConverterClient';
+import { QuickExamplesClient } from './QuickExamplesClient';
 import { getUnits } from './action';
 import { JsonLd } from '@/components/JsonLd';
 
@@ -112,22 +113,10 @@ export default async function ConverterPage({
         </p>
       </section>
 
-      {/* Quick examples */}
-      <section className="mt-10 sm:mt-14">
-        <h2 className="text-xl sm:text-2xl font-black tracking-tight uppercase italic mb-5">
-          {t('tools.converter.quickExamples.title')}<span className="text-primary">.</span>
-        </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
-          {(t.raw('tools.converter.quickExamples.items') as string[]).map((ex) => (
-            <div
-              key={ex}
-              className="border-2 border-border/60 rounded-2xl px-3 py-3 sm:px-5 sm:py-4 font-black text-xs sm:text-sm text-foreground tracking-tight text-center hover:border-primary/50 transition-colors"
-            >
-              {ex}
-            </div>
-          ))}
-        </div>
-      </section>
+      <QuickExamplesClient
+        title={t('tools.converter.quickExamples.title')}
+        items={t.raw('tools.converter.quickExamples.items') as Array<{ label: string; value: string; from: string; to: string }>}
+      />
 
       {/* SEO text */}
       <section className="mt-12 sm:mt-16 border-t border-border/40 pt-10 sm:pt-12">
@@ -163,6 +152,16 @@ export default async function ConverterPage({
             </details>
           ))}
         </div>
+      </section>
+
+      {/* Closing SEO text */}
+      <section className="mt-10 sm:mt-14 mb-8">
+        <h2 className="text-xl sm:text-2xl font-black tracking-tight uppercase italic mb-4">
+          {t('tools.converter.closingText.title')}<span className="text-primary">.</span>
+        </h2>
+        <p className="text-sm sm:text-base text-muted-foreground font-medium leading-relaxed">
+          {t('tools.converter.closingText.text')}
+        </p>
       </section>
     </div>
   );
