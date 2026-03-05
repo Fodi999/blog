@@ -53,7 +53,7 @@
     "back": "Back to Kitchen Reference",
     "tools": {
       "converter": {
-        "title": "Unit Converter",
+        "title": "Kitchen Unit Converter",
         "description": "Convert grams, ounces, liters, tablespoons and other kitchen measurements instantly.",
         "weight": "Weight",
         "volume": "Volume",
@@ -114,7 +114,8 @@
               "a": "1 tablespoon = 3 teaspoons."
             }
           ]
-        }
+        },
+        "placeholder": "Enter amount"
       },
       "fishSeason": {
         "title": "Fish Season Calendar",

@@ -55,7 +55,7 @@ export default async function ConverterPage({
         {t('back')}
       </Link>
 
-      <h1 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tighter text-foreground uppercase italic leading-tight sm:leading-[0.9] mb-3 sm:mb-4">
+      <h1 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tighter text-foreground leading-tight sm:leading-[0.9] mb-3 sm:mb-4">
         {t('tools.converter.title')}<span className="text-primary">.</span>
       </h1>
       <p className="text-base sm:text-lg text-muted-foreground font-medium mb-8 sm:mb-12">

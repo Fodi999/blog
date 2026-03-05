@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useTransition, useEffect, useRef } from 'react';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { ArrowLeftRight, ChevronDown } from 'lucide-react';
 import { convertUnits, type ConvertResult } from './action';
 import { Input } from '@/components/ui/input';
@@ -55,6 +55,36 @@ const UNSUPPORTED_MSG: Record<string, string> = {
   uk: 'Пара не підтримується',
 };
 
+// ── Local conversion factors (base: grams for mass, ml for volume) ────────────
+const LOCAL_MASS: Record<string, number> = {
+  g: 1,
+  kg: 1000,
+  mg: 0.001,
+  oz: 28.3495,
+  lb: 453.592,
+};
+
+const LOCAL_VOLUME: Record<string, number> = {
+  ml: 1,
+  l: 1000,
+  fl_oz: 29.5735,
+  tsp: 4.92892,
+  tbsp: 14.7868,
+  cup: 236.588,
+};
+
+function localConvert(num: number, from: string, to: string): number | null {
+  if (LOCAL_MASS[from] !== undefined && LOCAL_MASS[to] !== undefined) {
+    return (num * LOCAL_MASS[from]) / LOCAL_MASS[to];
+  }
+  if (LOCAL_VOLUME[from] !== undefined && LOCAL_VOLUME[to] !== undefined) {
+    return (num * LOCAL_VOLUME[from]) / LOCAL_VOLUME[to];
+  }
+  return null; // cross-category — needs API
+}
+
+const MAX_INPUT = 1_000_000;
+
 // ── Reusable unit picker built on shadcn DropdownMenu ─────────────────────────
 function UnitSelect({
   units,
@@ -97,13 +127,15 @@ function UnitGroup({
   groupLabel,
   units,
   unsupportedMsg,
+  placeholder,
 }: {
   groupLabel: string;
   units: UnitItem[];
   unsupportedMsg: string;
+  placeholder: string;
 }) {
   const locale = useLocale();
-  const [value, setValue] = useState('100');
+  const [value, setValue] = useState('');
   const [fromCode, setFromCode] = useState(units[0]?.code ?? 'g');
   const [toCode, setToCode] = useState(units[1]?.code ?? 'kg');
   const [res, setRes] = useState<ConvertResult | null>(null);
@@ -111,20 +143,37 @@ function UnitGroup({
   const [isPending, startTransition] = useTransition();
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Smart formatting: more decimals for small numbers
   const formatNum = (n: number) =>
-    new Intl.NumberFormat(locale, { maximumFractionDigits: 6 }).format(n);
+    new Intl.NumberFormat(locale, {
+      maximumFractionDigits: n !== 0 && Math.abs(n) < 1 ? 4 : 2,
+    }).format(n);
 
   const handleConvert = useCallback((val: string, from: string, to: string) => {
-    const num = parseFloat(val);
-    if (isNaN(num) || val === '') return;
+    // Support comma as decimal separator (Polish/Ukrainian keyboards)
+    const num = parseFloat(val.replace(',', '.'));
+    if (isNaN(num) || val === '') {
+      setRes(null);
+      setUnsupported(false);
+      return;
+    }
 
-    // Same unit: return value immediately, no API call
+    // Same unit: instant, no calculation needed
     if (from === to) {
       setUnsupported(false);
       setRes({ result: num, fromLabel: from, toLabel: to });
       return;
     }
 
+    // Try local conversion first — instant, no API call
+    const local = localConvert(num, from, to);
+    if (local !== null) {
+      setUnsupported(false);
+      setRes({ result: local, fromLabel: from, toLabel: to });
+      return;
+    }
+
+    // Fall back to API for cross-category or exotic pairs
     setUnsupported(false);
     startTransition(async () => {
       const data = await convertUnits(num, from, to, locale);
@@ -137,20 +186,22 @@ function UnitGroup({
     });
   }, [locale]);
 
-  // Debounced auto-convert on any input change
+  // Debounced auto-convert (only hits API for cross-category pairs)
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
       handleConvert(value, fromCode, toCode);
-    }, 400);
+    }, 300);
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
   }, [value, fromCode, toCode, handleConvert]);
 
+  // Safe swap using temp variable
   const swap = useCallback(() => {
+    const temp = fromCode;
     setFromCode(toCode);
-    setToCode(fromCode);
+    setToCode(temp);
     setRes(null);
     setUnsupported(false);
   }, [fromCode, toCode]);
@@ -168,13 +219,28 @@ function UnitGroup({
         <div className="flex gap-3">
           <div className="flex-1">
             <Input
-              type="number"
+              type="text"
               inputMode="decimal"
-              step="any"
               value={value}
-              onChange={(e) => { setValue(e.target.value); setRes(null); setUnsupported(false); }}
-              onKeyDown={(e) => e.key === 'Enter' && handleConvert(value, fromCode, toCode)}
-              className="h-12 sm:h-14 rounded-2xl border-2 border-border/60 bg-muted/30 font-black text-lg sm:text-xl focus-visible:border-primary/60 focus-visible:ring-0 px-4"
+              placeholder={placeholder}
+              aria-label="Convert value"
+              onChange={(e) => {
+                const raw = e.target.value;
+                // Allow only digits, dot, comma, minus
+                if (raw !== '' && !/^-?[\d]*[.,]?[\d]*$/.test(raw)) return;
+                // Limit decimal places to 6
+                const normalized = raw.replace(',', '.');
+                const dotIdx = normalized.indexOf('.');
+                if (dotIdx !== -1 && normalized.length - dotIdx - 1 > 6) return;
+                // Limit max value
+                const num = parseFloat(normalized);
+                if (!isNaN(num) && Math.abs(num) > MAX_INPUT) return;
+                setValue(raw);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleConvert(value, fromCode, toCode);
+              }}
+              className="h-12 sm:h-14 rounded-2xl border-2 border-border/60 bg-muted/30 font-black text-lg sm:text-xl focus-visible:border-primary/60 focus-visible:ring-0 px-4 placeholder:font-medium placeholder:text-muted-foreground/50"
             />
           </div>
           <UnitSelect
@@ -191,10 +257,10 @@ function UnitGroup({
             variant="outline"
             size="icon"
             onClick={swap}
-            className="h-12 w-12 sm:h-14 sm:w-14 rounded-2xl border-2 border-border/60 bg-muted/30 hover:bg-primary/10 hover:border-primary/40 shrink-0"
+            className="h-12 w-12 sm:h-14 sm:w-14 rounded-2xl border-2 border-primary/40 bg-primary/5 hover:bg-primary/15 hover:border-primary/60 shrink-0 transition-all"
             aria-label="Swap units"
           >
-            <ArrowLeftRight className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+            <ArrowLeftRight className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
           </Button>
 
           {/* To unit dropdown */}
@@ -206,6 +272,7 @@ function UnitGroup({
 
           {/* Result box */}
           <div
+            aria-live="polite"
             className={`flex-1 h-12 sm:h-14 px-4 rounded-2xl border-2 flex items-center gap-2 transition-colors min-w-0 ${
               unsupported
                 ? 'border-orange-400/40 bg-orange-500/5'
@@ -234,9 +301,9 @@ function UnitGroup({
       </div>
 
       {/* Equation line */}
-      {res !== null && !unsupported && (
+      {res !== null && !unsupported && value !== '' && (
         <p className="mt-3 text-xs sm:text-sm text-muted-foreground font-medium">
-          {value}{' '}
+          {value.replace(',', '.')}{' '}
           <span className="text-foreground font-black">{res.fromLabel}</span>
           {' = '}
           {formatNum(res.result)}{' '}
@@ -253,9 +320,11 @@ interface Props {
 
 export default function ConverterClient({ groups }: Props) {
   const locale = useLocale();
+  const t = useTranslations('chefTools');
   const g = groups ?? FALLBACK;
   const labels = GROUP_LABELS[locale] ?? GROUP_LABELS.en;
   const unsupportedMsg = UNSUPPORTED_MSG[locale] ?? UNSUPPORTED_MSG.en;
+  const placeholder = t('tools.converter.placeholder');
 
   const displayGroups = [
     { key: 'mass', label: labels.mass, units: g.mass },
@@ -270,11 +339,9 @@ export default function ConverterClient({ groups }: Props) {
           groupLabel={grp.label}
           units={grp.units}
           unsupportedMsg={unsupportedMsg}
+          placeholder={placeholder}
         />
       ))}
-      <p className="text-xs text-muted-foreground text-right font-medium">
-        Powered by api.dima-fomin.pl
-      </p>
     </div>
   );
 }

@@ -53,7 +53,7 @@
     "back": "Powrót do pomocnika",
     "tools": {
       "converter": {
-        "title": "Przelicznik Jednostek",
+        "title": "Przelicznik jednostek kuchennych",
         "description": "Przelicz gramy, uncje, litry, łyżki i inne miary kuchenne natychmiast.",
         "weight": "Waga",
         "volume": "Objętość",
@@ -114,7 +114,8 @@
               "a": "1 łyżka = 3 łyżeczki."
             }
           ]
-        }
+        },
+        "placeholder": "Wpisz wartość"
       },
       "fishSeason": {
         "title": "Kalendarz Sezonowości Ryb",
