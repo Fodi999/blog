@@ -2,7 +2,7 @@ import { Link } from '@/i18n/routing';
 import { getTranslations } from 'next-intl/server';
 import { ThemeToggle } from './ThemeToggle';
 import { LanguageSwitcher } from './LanguageSwitcher';
-import { MobileMenu } from './MobileMenu';
+import { MobileMenuWrapper } from './MobileMenuWrapper';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 
@@ -30,7 +30,7 @@ export async function Header({ locale }: { locale: string }) {
           {[
             { href: '/', label: t('home') },
             { href: '/blog', label: t('blog') },
-            { href: '/restaurants', label: t('restaurants') },
+            { href: '/chef-tools', label: t('chefTools') },
             { href: '/about', label: t('about') },
             { href: '/contact', label: t('contact') },
           ].map((item) => (
@@ -49,7 +49,7 @@ export async function Header({ locale }: { locale: string }) {
         <div className="flex lg:hidden items-center gap-3">
           <ThemeToggle />
           <LanguageSwitcher />
-          <MobileMenu />
+          <MobileMenuWrapper />
         </div>
       </nav>
     </header>

@@ -30,14 +30,130 @@
   "nav": {
     "home": "Strona główna",
     "blog": "Blog",
+    "chefTools": "Pomocnik Kulinarny",
     "about": "O mnie",
     "contact": "Kontakt",
     "restaurants": "Dla restauracji",
     "homeDesc": "Profesjonalna kuchnia",
     "blogDesc": "Artykuły i wiedza",
+    "chefToolsDesc": "Narzędzia dla kucharzy",
     "aboutDesc": "20+ lat doświadczenia",
     "contactDesc": "Skontaktuj się",
     "restaurantsDesc": "Rozwiązania biznesowe"
+  },
+  "chefTools": {
+    "meta": {
+      "title": "Pomocnik Kulinarny — Narzędzia dla Kucharzy",
+      "description": "Praktyczne narzędzia kuchenne dla domowych i profesjonalnych kucharzy: przelicznik jednostek, kalendarz sezonowości ryb, tabela wartości odżywczych. Gotuj właściwie, gotuj pewnie."
+    },
+    "badge": "Pomocnik Kulinarny",
+    "title": "Pomocnik Kulinarny",
+    "description": "Praktyczne narzędzia dla każdego, kto chce gotować poprawnie i rozumieć swoje składniki. Od przeliczania jednostek po sezonowość ryb — wszystko czego potrzebuje świadomy kucharz.",
+    "open": "Otwórz narzędzie",
+    "back": "Powrót do pomocnika",
+    "tools": {
+      "converter": {
+        "title": "Przelicznik Jednostek",
+        "description": "Przelicz gramy, uncje, litry, łyżki i inne miary kuchenne natychmiast.",
+        "weight": "Waga",
+        "volume": "Objętość",
+        "howToUse": {
+          "title": "Jak korzystać",
+          "steps": [
+            "Wpisz wartość",
+            "Wybierz jednostkę źródłową",
+            "Wybierz jednostkę docelową",
+            "Wynik pojawia się natychmiast"
+          ]
+        },
+        "forWhom": {
+          "title": "Dla kogo",
+          "text": "Szczególnie przydatne przy pracy z międzynarodowymi przepisami, które używają różnych systemów miar: metrycznego (gramy, litry) i imperialnego (uncje, funty).",
+          "items": [
+            "Profesjonalni kucharze",
+            "Cukiernicy",
+            "Food blogerzy",
+            "Domowi kucharze",
+            "Studenci szkół kulinarnych"
+          ]
+        },
+        "quickExamples": {
+          "title": "Popularne przeliczenia",
+          "items": [
+            "1 funt = 453,592 g",
+            "1 uncja = 28,35 g",
+            "1 szklanka = 236,6 ml",
+            "1 l = 33,814 fl oz",
+            "1 łyżka = 3 łyżeczki"
+          ]
+        },
+        "seoText": {
+          "title": "Przelicznik jednostek kuchennych",
+          "p1": "Precyzja w kuchni jest kluczowa. Różne kraje używają różnych systemów miar — metrycznego i imperialnego — co może powodować zamieszanie przy pracy z zagranicznymi przepisami.",
+          "p2": "W europejskich przepisach dominują gramy i mililitry, natomiast w amerykańskich — uncje, funty, szklanki i łyżki. Ten przelicznik łączy oba światy.",
+          "p3": "Przelicz: gramy na uncje, kilogramy na funty, mililitry na litry, litry na uncje ciekłe, szklanki na mililitry, łyżki na łyżeczki.",
+          "p4": "Narzędzie szczególnie przydatne dla kucharzy pracujących z międzynarodowymi menu, studentów kulinarnych, food blogerów i wszystkich, którzy chcą gotować precyzyjnie."
+        },
+        "faq": {
+          "title": "FAQ",
+          "items": [
+            {
+              "q": "Jak przeliczyć gramy na uncje?",
+              "a": "1 uncja = 28,35 grama. Podziel gramy przez 28,35."
+            },
+            {
+              "q": "Ile gramów w funcie?",
+              "a": "1 funt = 453,592 grama."
+            },
+            {
+              "q": "Ile ml w szklance?",
+              "a": "1 szklanka (US) = 236,6 ml."
+            },
+            {
+              "q": "Ile łyżeczek w łyżce?",
+              "a": "1 łyżka = 3 łyżeczki."
+            }
+          ]
+        }
+      },
+      "fishSeason": {
+        "title": "Kalendarz Sezonowości Ryb",
+        "description": "Kiedy ryba jest najlepsza? Miesięczny przewodnik po świeżości i dostępności ryb i owoców morza."
+      },
+      "ingredients": {
+        "title": "Wartości Odżywcze Składników",
+        "description": "Kalorie, białko, tłuszcze i węglowodany dla typowych składników — od łososia po sos sojowy."
+      }
+    },
+    "season": {
+      "peak": "Szczyt sezonu",
+      "good": "Dostępne",
+      "poor": "Ograniczone",
+      "none": "Niedostępne"
+    },
+    "fishColumn": "Ryba / Owoce morza",
+    "months": {
+      "jan": "Sty",
+      "feb": "Lut",
+      "mar": "Mar",
+      "apr": "Kwi",
+      "may": "Maj",
+      "jun": "Cze",
+      "jul": "Lip",
+      "aug": "Sie",
+      "sep": "Wrz",
+      "oct": "Paź",
+      "nov": "Lis",
+      "dec": "Gru"
+    },
+    "ingredients": {
+      "name": "Składnik",
+      "per": "Na",
+      "calories": "kcal",
+      "protein": "Białko",
+      "fat": "Tłuszcze",
+      "carbs": "Węglowodany"
+    }
   },
   "home": {
     "hero": {
@@ -65,6 +181,11 @@
       "title": "Technologie dla restauracji",
       "description": "Sprawdź systemy dla restauracji, które projektuję i testuję w rzeczywistych warunkach kuchni.",
       "link": "Zobacz demo →"
+    },
+    "chefToolsSection": {
+      "title": "Pomocnik Kulinarny",
+      "description": "Praktyczne narzędzia dla każdego, kto chce gotować poprawnie — przelicznik jednostek, kalendarz sezonowości ryb, tabela wartości odżywczych.",
+      "link": "Otwórz wszystkie narzędzia"
     }
   },
   "blog": {

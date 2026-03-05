@@ -30,14 +30,130 @@
   "nav": {
     "home": "Home",
     "blog": "Blog",
+    "chefTools": "Kitchen Reference",
     "about": "About",
     "contact": "Contact",
     "restaurants": "For Restaurants",
     "homeDesc": "Professional kitchen",
     "blogDesc": "Articles & knowledge",
+    "chefToolsDesc": "Tools for cooks",
     "aboutDesc": "20+ years experience",
     "contactDesc": "Get in touch",
     "restaurantsDesc": "Business solutions"
+  },
+  "chefTools": {
+    "meta": {
+      "title": "Kitchen Reference — Tools for Cooks",
+      "description": "Practical kitchen tools for home cooks and professionals: unit converter, fish season calendar, ingredient nutrition guide. Cook correctly, cook confidently."
+    },
+    "badge": "Kitchen Reference",
+    "title": "Kitchen Reference",
+    "description": "Practical tools for anyone who wants to cook correctly and understand their ingredients. From unit conversions to fish seasonality — everything a serious cook needs at hand.",
+    "open": "Open tool",
+    "back": "Back to Kitchen Reference",
+    "tools": {
+      "converter": {
+        "title": "Unit Converter",
+        "description": "Convert grams, ounces, liters, tablespoons and other kitchen measurements instantly.",
+        "weight": "Weight",
+        "volume": "Volume",
+        "howToUse": {
+          "title": "How to use",
+          "steps": [
+            "Enter the amount",
+            "Select the source unit",
+            "Select the target unit",
+            "Result appears instantly"
+          ]
+        },
+        "forWhom": {
+          "title": "Who is this for",
+          "text": "Especially useful when working with international recipes that use different measurement systems: metric (grams, liters) and imperial (ounces, pounds).",
+          "items": [
+            "Professional cooks",
+            "Pastry chefs",
+            "Food bloggers",
+            "Home cooks",
+            "Culinary students"
+          ]
+        },
+        "quickExamples": {
+          "title": "Common conversions",
+          "items": [
+            "1 lb = 453.592 g",
+            "1 oz = 28.35 g",
+            "1 cup = 236.6 ml",
+            "1 l = 33.814 fl oz",
+            "1 tbsp = 3 tsp"
+          ]
+        },
+        "seoText": {
+          "title": "Kitchen Unit Converter",
+          "p1": "Precision in measurement is a cornerstone of professional cooking. Different countries use different systems — metric and imperial — which can cause confusion when working with international recipes.",
+          "p2": "European recipes typically use grams and milliliters, while American recipes rely on ounces, pounds, cups, and tablespoons. This converter bridges both worlds instantly.",
+          "p3": "Convert: grams to ounces, kilograms to pounds, milliliters to liters, liters to fluid ounces, cups to milliliters, tablespoons to teaspoons — all in one place.",
+          "p4": "The tool is especially useful for chefs working with international menus, culinary students, food bloggers, and anyone who wants to cook precisely."
+        },
+        "faq": {
+          "title": "FAQ",
+          "items": [
+            {
+              "q": "How to convert grams to ounces?",
+              "a": "1 ounce = 28.35 grams. Divide grams by 28.35 to get ounces."
+            },
+            {
+              "q": "How many grams in a pound?",
+              "a": "1 pound = 453.592 grams."
+            },
+            {
+              "q": "How many ml in a cup?",
+              "a": "1 US cup = 236.6 ml."
+            },
+            {
+              "q": "How many teaspoons in a tablespoon?",
+              "a": "1 tablespoon = 3 teaspoons."
+            }
+          ]
+        }
+      },
+      "fishSeason": {
+        "title": "Fish Season Calendar",
+        "description": "When is fish at its best? Monthly guide to freshness and availability of fish and seafood."
+      },
+      "ingredients": {
+        "title": "Ingredient Nutrition",
+        "description": "Calories, protein, fat and carbs for common cooking ingredients — from salmon to soy sauce."
+      }
+    },
+    "season": {
+      "peak": "Peak season",
+      "good": "Good",
+      "poor": "Limited",
+      "none": "Not available"
+    },
+    "fishColumn": "Fish / Seafood",
+    "months": {
+      "jan": "Jan",
+      "feb": "Feb",
+      "mar": "Mar",
+      "apr": "Apr",
+      "may": "May",
+      "jun": "Jun",
+      "jul": "Jul",
+      "aug": "Aug",
+      "sep": "Sep",
+      "oct": "Oct",
+      "nov": "Nov",
+      "dec": "Dec"
+    },
+    "ingredients": {
+      "name": "Ingredient",
+      "per": "Per",
+      "calories": "kcal",
+      "protein": "Protein",
+      "fat": "Fat",
+      "carbs": "Carbs"
+    }
   },
   "home": {
     "hero": {
@@ -65,6 +181,11 @@
       "title": "Technologies for Restaurants",
       "description": "Check out the restaurant systems I design and test in real kitchen conditions.",
       "link": "View Demo →"
+    },
+    "chefToolsSection": {
+      "title": "Kitchen Reference",
+      "description": "Practical tools for anyone who wants to cook correctly — unit converter, fish season calendar, ingredient nutrition guide.",
+      "link": "Open all tools"
     }
   },
   "blog": {
