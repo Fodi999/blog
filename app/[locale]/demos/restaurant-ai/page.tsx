@@ -131,6 +131,15 @@ export default async function RestaurantAIDemoPage({
                       </svg>
                       b2b-saas-tau.vercel.app
                     </div>
+                    <a
+                      href="https://b2b-saas-tau.vercel.app"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1 px-2.5 py-1 rounded bg-blue-500 hover:bg-blue-400 text-white text-[11px] font-semibold transition-colors"
+                    >
+                      <ExternalLink className="w-3 h-3" />
+                      Open
+                    </a>
                   </div>
 
                   {/* LIVE DEMO Badge */}

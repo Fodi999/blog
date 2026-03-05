@@ -19,7 +19,7 @@ import {
 } from '@/components/ui/breadcrumb';
 import { Separator } from '@/components/ui/separator';
 import { JsonLd } from '@/components/JsonLd';
-import { generateMetadata as sharedGenerateMetadata } from '@/lib/metadata';
+import { generateMetadata as sharedGenerateMetadata, generateArticleJsonLd, generateBreadcrumbJsonLd } from '@/lib/metadata';
 
 export const dynamic = 'force-static';
 
@@ -71,6 +71,11 @@ export async function generateMetadata({
     path: `/blog/${slug}`,
     image: post.coverImage || defaultImage,
     availableLocales,
+    article: {
+      publishedTime: post.date,
+      modifiedTime: post.publishedAt || post.date,
+      section: post.category,
+    },
   });
 }
 
@@ -87,58 +92,22 @@ export default async function BlogPostPage({
     notFound();
   }
 
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'BlogPosting',
-    headline: post.title,
+  const jsonLd = generateArticleJsonLd({
+    title: post.title,
     description: post.excerpt,
+    url: `https://dima-fomin.pl/${locale}/blog/${slug}`,
     image: post.coverImage || 'https://i.postimg.cc/RCf8VLFn/DSCF4639.jpg',
-    datePublished: post.date,
-    dateModified: post.publishedAt || post.date,
-    author: {
-      '@type': 'Person',
-      name: 'Dima Fomin',
-      url: 'https://dima-fomin.pl',
-    },
-    publisher: {
-      '@type': 'Organization',
-      name: 'Dima Fomin',
-      logo: {
-        '@type': 'ImageObject',
-        url: 'https://i.postimg.cc/W1KV4b43/logo1.webp',
-      },
-    },
-    mainEntityOfPage: {
-      '@type': 'WebPage',
-      '@id': `https://dima-fomin.pl/${locale}/blog/${slug}`,
-    },
-    inLanguage: locale,
-  };
+    publishedTime: post.date,
+    modifiedTime: post.publishedAt || post.date,
+  });
 
-  const breadcrumbJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      {
-        '@type': 'ListItem',
-        position: 1,
-        name: t('home'),
-        item: `https://dima-fomin.pl/${locale}`,
-      },
-      {
-        '@type': 'ListItem',
-        position: 2,
-        name: t('blog'),
-        item: `https://dima-fomin.pl/${locale}/blog`,
-      },
-      {
-        '@type': 'ListItem',
-        position: 3,
-        name: post.title,
-        item: `https://dima-fomin.pl/${locale}/blog/${slug}`,
-      },
+  const breadcrumbJsonLd = generateBreadcrumbJsonLd({
+    items: [
+      { name: t('home'), url: `https://dima-fomin.pl/${locale}` },
+      { name: t('blog'), url: `https://dima-fomin.pl/${locale}/blog` },
+      { name: post.title, url: `https://dima-fomin.pl/${locale}/blog/${slug}` },
     ],
-  };
+  });
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">

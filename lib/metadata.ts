@@ -9,6 +9,13 @@ const ogLocaleMap: Record<string, string> = {
   uk: 'uk_UA',
 };
 
+interface ArticleMeta {
+  publishedTime: string;
+  modifiedTime?: string;
+  tags?: string[];
+  section?: string;
+}
+
 interface GenerateMetadataParams {
   title: string;
   description: string;
@@ -19,7 +26,15 @@ interface GenerateMetadataParams {
   availableLocales?: Array<'pl' | 'en' | 'uk' | 'ru'>;
   // Optional: choose x-default locale
   xDefaultLocale?: 'pl' | 'en' | 'uk' | 'ru';
+  article?: ArticleMeta;
 }
+
+const articleTitleSuffix: Record<string, string> = {
+  pl: 'Blog gastronomiczny dla restauratorów | Dima Fomin',
+  en: 'Restaurant & Sushi Blog | Dima Fomin',
+  ru: 'Гастрономический блог для рестораторов | Dima Fomin',
+  uk: 'Гастрономічний блог для рестораторів | Dima Fomin',
+};
 
 export function generateMetadata({
   title,
@@ -29,22 +44,34 @@ export function generateMetadata({
   image = 'https://i.postimg.cc/RCf8VLFn/DSCF4639.jpg',
   availableLocales,
   xDefaultLocale = 'pl',
+  article,
 }: GenerateMetadataParams): Metadata {
-  const url = `${BASE_URL}/${locale}${path}`;
+  const normalizedPath = path.endsWith('/') && path !== '/' ? path.slice(0, -1) : path;
+  const url = `${BASE_URL}/${locale}${normalizedPath}`;
 
-  const langs = (availableLocales ?? (['pl', 'en', 'uk', 'ru'] as const)).reduce<Record<string, string>>(
+  const allLocales = availableLocales ?? (['pl', 'en', 'uk', 'ru'] as const);
+
+  const langs = [...allLocales].reduce<Record<string, string>>(
     (acc, l) => {
-      acc[l] = `${BASE_URL}/${l}${path}`;
+      acc[l] = `${BASE_URL}/${l}${normalizedPath}`;
       return acc;
     },
     {}
   );
 
   // Add x-default (recommended)
-  langs['x-default'] = `${BASE_URL}/${xDefaultLocale}${path}`;
+  langs['x-default'] = `${BASE_URL}/${xDefaultLocale}${normalizedPath}`;
+
+  const titleSuffix = article ? articleTitleSuffix[locale] ?? 'Blog | Dima Fomin' : 'Dima Fomin';
+  const fullTitle = article ? `${title} – ${titleSuffix}` : `${title} | ${titleSuffix}`;
+
+  const alternateLocale = allLocales
+    .filter((l) => l !== locale)
+    .map((l) => ogLocaleMap[l])
+    .filter(Boolean);
 
   return {
-    title: `${title} | Dima Fomin`,
+    title: fullTitle,
     description,
     metadataBase: new URL(BASE_URL),
     alternates: {
@@ -52,7 +79,7 @@ export function generateMetadata({
       languages: langs,
     },
     openGraph: {
-      title: `${title} | Dima Fomin`,
+      title: fullTitle,
       description,
       url,
       siteName: 'Dima Fomin - Sushi Chef',
@@ -65,11 +92,17 @@ export function generateMetadata({
         },
       ],
       locale: ogLocaleMap[locale] ?? 'pl_PL',
-      type: 'website',
+      alternateLocale,
+      type: article ? 'article' : 'website',
+      publishedTime: article?.publishedTime,
+      modifiedTime: article?.modifiedTime,
+      authors: article ? ['Dima Fomin'] : undefined,
+      section: article?.section,
+      tags: article?.tags,
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${title} | Dima Fomin`,
+      title: fullTitle,
       description,
       images: [image],
     },
@@ -108,3 +141,60 @@ export const jsonLdBlog = {
   url: 'https://dima-fomin.pl/pl/blog',
   author: jsonLdPerson,
 };
+
+export function generateArticleJsonLd({
+  title,
+  description,
+  url,
+  image,
+  publishedTime,
+  modifiedTime,
+}: {
+  title: string;
+  description: string;
+  url: string;
+  image: string;
+  publishedTime: string;
+  modifiedTime?: string;
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: title,
+    description,
+    image,
+    author: {
+      '@type': 'Person',
+      name: 'Dima Fomin',
+      url: BASE_URL,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Dima Fomin',
+      logo: {
+        '@type': 'ImageObject',
+        url: `${BASE_URL}/logo.png`,
+      },
+    },
+    datePublished: publishedTime,
+    dateModified: modifiedTime ?? publishedTime,
+    mainEntityOfPage: url,
+  };
+}
+
+export function generateBreadcrumbJsonLd({
+  items,
+}: {
+  items: Array<{ name: string; url: string }>;
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: items.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.name,
+      item: item.url,
+    })),
+  };
+}
