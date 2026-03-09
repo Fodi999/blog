@@ -309,7 +309,8 @@
         "viewProduct": "Zobacz szczegóły",
         "noResults": "Nie znaleziono składników.",
         "totalCount": "składników",
-        "perPage": "na 100g"
+        "perPage": "na 100g",
+        "resetFilters": "Resetuj"
       }
     },
     "nutrition": {

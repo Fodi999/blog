@@ -72,6 +72,7 @@ export default async function IngredientsPage({
     noResults: t('ingredients.catalog.noResults'),
     totalCount: t('ingredients.catalog.totalCount'),
     perPage: t('ingredients.catalog.perPage'),
+    resetFilters: t('ingredients.catalog.resetFilters'),
     calories: t('ingredients.calories'),
     protein: t('ingredients.protein'),
     fat: t('ingredients.fat'),
@@ -99,6 +100,7 @@ export default async function IngredientsPage({
   const items = ingredients.map((ing) => ({
     slug: ing.slug ?? ing.name.toLowerCase().replace(/\s+/g, '-'),
     name: localizedName(ing, locale),
+    nameEn: ing.name_en ?? ing.name,
     image: ing.image_url ?? null,
     category: resolveCategory(ing.slug ?? '', ing.category),
     calories: ing.calories,

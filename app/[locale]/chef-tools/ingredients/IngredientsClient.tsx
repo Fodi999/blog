@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import Image from 'next/image';
 import { Link } from '@/i18n/routing';
-import { Search, Package, Flame, Beef, Droplets, Wheat, ChevronRight } from 'lucide-react';
+import { Search, Package, Flame, Beef, Droplets, Wheat, ChevronRight, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
@@ -12,6 +12,7 @@ import { CATEGORY_ORDER } from './ingredient-utils';
 export type IngredientItem = {
   slug: string;
   name: string;
+  nameEn: string;
   image: string | null;
   category: string;
   calories: number;
@@ -30,6 +31,7 @@ type I18n = {
   noResults: string;
   totalCount: string;
   perPage: string;
+  resetFilters: string;
   calories: string;
   protein: string;
   fat: string;
@@ -58,55 +60,82 @@ export function IngredientsClient({
 
   const filtered = useMemo(() => {
     return items.filter((item) => {
-      const matchSearch = !search || item.name.toLowerCase().includes(search.toLowerCase());
+      const q = search.toLowerCase();
+      const matchSearch =
+        !search ||
+        item.name.toLowerCase().includes(q) ||
+        item.nameEn.toLowerCase().includes(q) ||
+        item.slug.includes(q);
       const matchCat = activeCategory === 'all' || item.category === activeCategory;
       return matchSearch && matchCat;
     });
   }, [items, search, activeCategory]);
 
   return (
-    <div className="space-y-6">
-      {/* Search + category filter */}
-      <div className="flex flex-col sm:flex-row gap-3">
-        {/* Search */}
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
+    <div className="space-y-5">
+      {/* Search */}
+      <div className="sticky top-16 z-10 bg-background/95 backdrop-blur-sm pb-3 -mx-1 px-1 border-b border-border/30">
+        <div className="relative max-w-md">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={i18n.searchPlaceholder}
-            className="pl-9 h-9 text-xs"
+            className="pl-10 pr-9 h-10 text-sm rounded-xl border-border/60 focus-visible:ring-primary/30"
           />
-        </div>
-
-        {/* Category filter */}
-        <div className="flex gap-1.5 flex-wrap items-center">
-          <Badge
-            variant={activeCategory === 'all' ? 'default' : 'outline'}
-            className="cursor-pointer text-[10px] font-black uppercase tracking-wider px-2.5 py-1 h-auto"
-            onClick={() => setActiveCategory('all')}
-          >
-            {i18n.allCategories}
-          </Badge>
-          {categories.map((cat) => (
-            <Badge
-              key={cat}
-              variant={activeCategory === cat ? 'default' : 'outline'}
-              className="cursor-pointer text-[10px] font-black uppercase tracking-wider px-2.5 py-1 h-auto"
-              onClick={() => setActiveCategory(cat)}
+          {search && (
+            <button
+              onClick={() => setSearch('')}
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+              type="button"
             >
-              {i18n.categoryLabels[cat] ?? cat}
-            </Badge>
-          ))}
+              <X className="h-3.5 w-3.5" />
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Results count */}
-      {(search || activeCategory !== 'all') && (
+      {/* Category filter */}
+      <div className="flex gap-1.5 flex-wrap">
+        <Badge
+          variant={activeCategory === 'all' ? 'default' : 'outline'}
+          className="cursor-pointer text-[10px] font-black uppercase tracking-wider px-3 py-1.5 h-auto rounded-lg transition-all hover:scale-105"
+          onClick={() => setActiveCategory('all')}
+        >
+          {i18n.allCategories}
+        </Badge>
+        {categories.map((cat) => (
+          <Badge
+            key={cat}
+            variant={activeCategory === cat ? 'default' : 'outline'}
+            className="cursor-pointer text-[10px] font-black uppercase tracking-wider px-3 py-1.5 h-auto rounded-lg transition-all hover:scale-105"
+            onClick={() => setActiveCategory(cat)}
+          >
+            {i18n.categoryLabels[cat] ?? cat}
+          </Badge>
+        ))}
+      </div>
+
+      {/* Results count + reset */}
+      <div className="flex items-center justify-between">
         <p className="text-[11px] text-muted-foreground font-medium">
           {filtered.length} {i18n.totalCount}
+          {activeCategory !== 'all' && (
+            <span className="ml-1.5 text-foreground/70">
+              · {i18n.categoryLabels[activeCategory] ?? activeCategory}
+            </span>
+          )}
         </p>
-      )}
+        {(search || activeCategory !== 'all') && (
+          <button
+            onClick={() => { setSearch(''); setActiveCategory('all'); }}
+            className="text-[10px] font-bold uppercase tracking-wider text-primary hover:text-primary/80 transition-colors"
+            type="button"
+          >
+            ✕ {i18n.resetFilters}
+          </button>
+        )}
+      </div>
 
       {/* Grid */}
       {filtered.length === 0 ? (

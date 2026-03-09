@@ -309,7 +309,8 @@
         "viewProduct": "Детальніше",
         "noResults": "Інгредієнти не знайдено.",
         "totalCount": "інгредієнтів",
-        "perPage": "на 100г"
+        "perPage": "на 100г",
+        "resetFilters": "Скинути"
       }
     },
     "nutrition": {
