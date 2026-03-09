@@ -4,8 +4,10 @@ import { generateMetadata as genMeta } from '@/lib/metadata';
 import { ChevronLeft } from 'lucide-react';
 import ConverterClient, { type UnitGroups } from './ConverterClient';
 import { QuickExamplesClient } from './QuickExamplesClient';
+import { IngredientConverterClient, type IngredientOption, type I18nIngConverter } from './IngredientConverterClient';
 import { getUnits } from './action';
 import { JsonLd } from '@/components/JsonLd';
+import { fetchIngredients } from '@/lib/api';
 
 export const revalidate = 86400;
 
@@ -32,9 +34,44 @@ export default async function ConverterPage({
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'chefTools' });
 
-  // Load localized unit groups from API (falls back to static in ConverterClient)
-  const apiUnits = await getUnits(locale);
+  // Load localized unit groups from API + ingredient list in parallel
+  const [apiUnits, allIngredients] = await Promise.all([
+    getUnits(locale),
+    fetchIngredients(),
+  ]);
   const groups: UnitGroups | undefined = apiUnits ?? undefined;
+
+  // Build ingredient list for the smart converter
+  const nameKey = `name_${locale}` as 'name_en' | 'name_pl' | 'name_ru' | 'name_uk';
+  const ingredientOptions: IngredientOption[] = (allIngredients ?? []).map((item) => ({
+    slug:   item.slug ?? item.name,
+    name:   item[nameKey] ?? item.name_en ?? item.name,
+    nameEn: item.name_en ?? item.name,
+    image:  item.image_url ?? null,
+  }));
+
+  const ingI18n: I18nIngConverter = {
+    title:                 t('tools.ingredientConverter.title'),
+    description:           t('tools.ingredientConverter.description'),
+    ingredientPlaceholder: t('tools.ingredientConverter.ingredientPlaceholder'),
+    valuePlaceholder:      t('tools.ingredientConverter.valuePlaceholder'),
+    selectUnit:            t('tools.ingredientConverter.selectUnit'),
+    noIngredient:          t('tools.ingredientConverter.noIngredient'),
+    noResult:              t('tools.ingredientConverter.noResult'),
+    result:                t('tools.ingredientConverter.result'),
+    allUnits:              t('tools.ingredientConverter.allUnits'),
+    kcal:                  t('tools.ingredientConverter.kcal'),
+    protein:               t('tools.ingredientConverter.protein'),
+    fat:                   t('tools.ingredientConverter.fat'),
+    carbs:                 t('tools.ingredientConverter.carbs'),
+    per:                   t('tools.ingredientConverter.per'),
+    searchNoResults:       t('tools.ingredientConverter.searchNoResults'),
+    quickIngredients:      t('tools.ingredientConverter.quickIngredients'),
+    popularQueries:        t('tools.ingredientConverter.popularQueries'),
+    density:               t('tools.ingredientConverter.density'),
+    nutritionResult:       t('tools.ingredientConverter.nutritionResult'),
+    contains:              t('tools.ingredientConverter.contains'),
+  };
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 lg:py-24">
@@ -64,6 +101,11 @@ export default async function ConverterPage({
       </p>
 
       <ConverterClient groups={groups} />
+
+      {/* Ingredient-aware smart converter */}
+      <div className="mt-6">
+        <IngredientConverterClient ingredients={ingredientOptions} i18n={ingI18n} />
+      </div>
 
       {/* FAQ JsonLd */}
       <JsonLd data={{

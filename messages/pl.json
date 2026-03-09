@@ -172,6 +172,28 @@
         "title": "Katalog Składników",
         "description": "Przeglądaj ponad 100 składników ze zdjęciami, kaloriami i makroelementami. Kliknij dowolny produkt, aby zobaczyć pełne wartości odżywcze."
       },
+      "ingredientConverter": {
+        "title": "Kalkulator Składników",
+        "description": "1 szklanka mąki w gramach? 2 łyżki masła w uncjach? Wybierz składnik i jednostki — kalkulator uwzględnia gęstość produktu.",
+        "ingredientPlaceholder": "Szukaj składnika (mąka, masło, ryż...)",
+        "valuePlaceholder": "Ilość",
+        "selectUnit": "Jednostka",
+        "noIngredient": "Wybierz składnik, aby przeliczyć",
+        "noResult": "Przeliczenie niedostępne",
+        "result": "Wynik",
+        "allUnits": "Wszystkie jednostki",
+        "kcal": "kcal",
+        "protein": "Białko",
+        "fat": "Tłuszcze",
+        "carbs": "Węglowodany",
+        "per": "na",
+        "searchNoResults": "Nie znaleziono składnika",
+        "quickIngredients": "Szybki wybór",
+        "popularQueries": "Popularne przeliczenia",
+        "density": "Gęstość",
+        "nutritionResult": "Wartość odżywcza",
+        "contains": "zawiera"
+      },
       "popularConversions": {
         "title": "Popularne przeliczenia kuchenne",
         "description": "1 szklanka mąki w gramach, 1 łyżka masła w gramach i inne popularne przeliczenia kuchenne.",

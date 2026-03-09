@@ -30,9 +30,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       { path: '/demos/restaurant-ai', priority: 0.6, changeFrequency: 'monthly' },
       { path: '/chef-tools', priority: 0.8, changeFrequency: 'monthly' },
       { path: '/chef-tools/ingredients', priority: 0.9, changeFrequency: 'daily' },
+      { path: '/chef-tools/nutrition', priority: 0.85, changeFrequency: 'weekly' },
       { path: '/chef-tools/ingredient-analyzer', priority: 0.8, changeFrequency: 'weekly' },
       { path: '/chef-tools/fish-season', priority: 0.8, changeFrequency: 'weekly' },
-      { path: '/chef-tools/converter', priority: 0.7, changeFrequency: 'monthly' },
+      { path: '/chef-tools/converter', priority: 0.75, changeFrequency: 'monthly' },
     ];
 
   // Static pages exist in ALL locales (same Next.js route handles all).
