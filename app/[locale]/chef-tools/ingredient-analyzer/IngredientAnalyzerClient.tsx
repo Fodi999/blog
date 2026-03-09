@@ -211,7 +211,8 @@ interface SeasonalityResponse {
 
 /* ═══════════════════════════ Constants ═══════════════════════════ */
 
-const BASE = 'https://ministerial-yetta-fodi999-c58d8823.koyeb.app';
+// All client-side fetches go through Next.js API proxy to avoid CORS
+const PROXY = '/api/analyzer';
 
 const SEASON_BG: Record<string, string> = {
   peak: 'bg-green-500',
@@ -290,7 +291,7 @@ const IngredientAPI = {
     limit = 10,
   ): Promise<{ total: number; items: AnalyzerIngredient[] }> => {
     const r = await fetch(
-      `${BASE}/public/tools/ingredients?search=${encodeURIComponent(query)}&lang=${lang}&limit=${limit}`,
+      `${PROXY}/search?search=${encodeURIComponent(query)}&lang=${lang}&limit=${limit}`,
     );
     return r.json();
   },
@@ -302,7 +303,7 @@ const IngredientAPI = {
     lang = 'en',
   ): Promise<NutritionResponse> => {
     const r = await fetch(
-      `${BASE}/public/tools/nutrition?name=${encodeURIComponent(name)}&amount=${amount}&unit=${unit}&lang=${lang}`,
+      `${PROXY}/nutrition?name=${encodeURIComponent(name)}&amount=${amount}&unit=${unit}&lang=${lang}`,
     );
     return r.json();
   },
@@ -313,7 +314,7 @@ const IngredientAPI = {
     lang = 'en',
   ): Promise<CompareResponse> => {
     const r = await fetch(
-      `${BASE}/public/tools/compare?food1=${encodeURIComponent(food1)}&food2=${encodeURIComponent(food2)}&lang=${lang}`,
+      `${PROXY}/compare?food1=${encodeURIComponent(food1)}&food2=${encodeURIComponent(food2)}&lang=${lang}`,
     );
     return r.json();
   },
@@ -324,7 +325,7 @@ const IngredientAPI = {
     region = 'PL',
   ): Promise<SeasonalityResponse> => {
     const r = await fetch(
-      `${BASE}/public/tools/product-seasonality?slug=${slug}&lang=${lang}&region=${region}`,
+      `${PROXY}/seasonality?slug=${slug}&lang=${lang}&region=${region}`,
     );
     return r.json();
   },

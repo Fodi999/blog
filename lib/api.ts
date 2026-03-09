@@ -794,3 +794,16 @@ export async function fetchCompare(
     `/public/tools/compare?food1=${encodeURIComponent(food1)}&food2=${encodeURIComponent(food2)}&lang=${encodeURIComponent(lang)}`,
   );
 }
+
+/**
+ * GET /public/tools/product-seasonality?slug=salmon&lang=en&region=PL
+ */
+export async function fetchProductSeasonality(
+  slug: string,
+  lang = 'en',
+  region = 'PL',
+): Promise<Record<string, unknown> | null> {
+  return apiFetchFresh<Record<string, unknown>>(
+    `/public/tools/product-seasonality?slug=${encodeURIComponent(slug)}&lang=${encodeURIComponent(lang)}&region=${encodeURIComponent(region)}`,
+  );
+}
