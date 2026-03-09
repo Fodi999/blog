@@ -149,11 +149,10 @@ export default async function IngredientAnalyzerPage({
       {/* SEO footer */}
       <div className="mt-16 pt-8 border-t border-border/30 space-y-3">
         <p className="text-xs text-muted-foreground font-medium max-w-2xl">
-          Search from {allIngredients.length} ingredients — calories, protein, fat, carbohydrates,
-          vitamins and nutrition score. Compare two foods side by side to find the healthier option.
+          {t('tools.ingredientAnalyzer.seoFooter', { count: allIngredients.length })}
         </p>
         <p className="text-[10px] text-muted-foreground/50 font-medium uppercase tracking-wider">
-          {allIngredients.length} ingredients · Updated live
+          {t('tools.ingredientAnalyzer.updatedLive', { count: allIngredients.length })}
         </p>
       </div>
     </div>

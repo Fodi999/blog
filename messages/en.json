@@ -391,7 +391,9 @@
       "tabAnalyzer": "Analyzer",
       "tableSearchPlaceholder": "Search ingredient...",
       "tableName": "Ingredient",
-      "allCategories": "All"
+      "allCategories": "All",
+      "seoFooter": "Search from {count} ingredients — calories, protein, fat, carbohydrates, vitamins and nutrition score. Compare two foods side by side to find the healthier option.",
+      "updatedLive": "{count} ingredients · Updated live"
     }
   },
   "home": {

@@ -391,7 +391,9 @@
       "tabAnalyzer": "Analizator",
       "tableSearchPlaceholder": "Szukaj składnika...",
       "tableName": "Składnik",
-      "allCategories": "Wszystkie"
+      "allCategories": "Wszystkie",
+      "seoFooter": "Przeszukuj {count} składników — kalorie, białko, tłuszcz, węglowodany, witaminy i punktacja odżywcza. Porównaj dwa produkty obok siebie, aby znaleźć zdrowszą opcję.",
+      "updatedLive": "{count} składników · Aktualizowane na żywo"
     }
   },
   "home": {
