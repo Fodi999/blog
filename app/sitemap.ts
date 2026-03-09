@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next';
 import { getAllPosts } from '@/lib/posts';
+import { fetchIngredients } from '@/lib/api';
 import { locales } from '@/i18n';
 
 const BASE_URL = 'https://dima-fomin.pl';
@@ -27,6 +28,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       { path: '/restaurants', priority: 0.7, changeFrequency: 'weekly' },
       { path: '/demos/sushi-delivery', priority: 0.6, changeFrequency: 'monthly' },
       { path: '/demos/restaurant-ai', priority: 0.6, changeFrequency: 'monthly' },
+      { path: '/chef-tools', priority: 0.8, changeFrequency: 'monthly' },
+      { path: '/chef-tools/ingredients', priority: 0.9, changeFrequency: 'daily' },
+      { path: '/chef-tools/ingredient-analyzer', priority: 0.8, changeFrequency: 'weekly' },
+      { path: '/chef-tools/fish-season', priority: 0.8, changeFrequency: 'weekly' },
+      { path: '/chef-tools/converter', priority: 0.7, changeFrequency: 'monthly' },
     ];
 
   // Static pages exist in ALL locales (same Next.js route handles all).
@@ -97,5 +103,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       },
     }));
 
-  return [...staticUrls, ...postUrls];
+  // ─── Ingredient pages ────────────────────────────────────────────────
+  const ingredientList = await fetchIngredients();
+  const ingredientUrls: MetadataRoute.Sitemap = ingredientList
+    ? ingredientList
+        .filter((ing) => ing.slug)
+        .map((ing) => ({
+          url: `${BASE_URL}/${canonicalLocale}/chef-tools/nutrition/${ing.slug}`,
+          lastModified: new Date(),
+          changeFrequency: 'monthly' as const,
+          priority: 0.8,
+          alternates: {
+            languages: {
+              ...Object.fromEntries(
+                locales.map((l) => [l, `${BASE_URL}/${l}/chef-tools/nutrition/${ing.slug}`])
+              ),
+              'x-default': `${BASE_URL}/${canonicalLocale}/chef-tools/nutrition/${ing.slug}`,
+            },
+          },
+        }))
+    : [];
+
+  return [...staticUrls, ...postUrls, ...ingredientUrls];
 }

@@ -6,6 +6,7 @@
 
 @layer base {
   :root {
+    /* ── Core palette (RGB channels, space-separated for opacity modifier support) ── */
     --background: 255 255 255;
     --foreground: 9 9 11;
     --muted: 244 244 245;
@@ -26,6 +27,19 @@
     --input: 228 228 231;
     --ring: 239 68 68;
     --radius: 1rem;
+
+    /* ── Semantic data tokens ── */
+    --success: 34 197 94;       /* green-500  */
+    --success-fg: 255 255 255;
+    --warning: 245 158 11;      /* amber-500  */
+    --warning-fg: 255 255 255;
+    --danger: 239 68 68;        /* red-500    */
+    --danger-fg: 255 255 255;
+
+    /* ── Macro colors ── */
+    --macro-protein: 239 68 68;   /* primary / red   */
+    --macro-fat: 245 158 11;      /* amber-500       */
+    --macro-carbs: 132 204 22;    /* lime-500        */
   }
 
   .dark {
@@ -48,32 +62,59 @@
     --border: 39 39 42;
     --input: 39 39 42;
     --ring: 239 68 68;
+
+    /* ── Semantic data tokens (dark) ── */
+    --success: 74 222 128;      /* green-400  */
+    --warning: 251 191 36;      /* amber-400  */
+    --danger: 248 113 113;      /* red-400    */
+
+    /* ── Macro colors (dark — slightly lighter) ── */
+    --macro-protein: 248 113 113; /* red-400    */
+    --macro-fat: 251 191 36;      /* amber-400  */
+    --macro-carbs: 163 230 53;    /* lime-400   */
   }
 }
 
 @theme inline {
+  /* ── Layout colors ── */
   --color-background: rgb(var(--background));
   --color-foreground: rgb(var(--foreground));
-  --color-muted: rgb(var(--muted));
-  --color-muted-foreground: rgb(var(--muted-foreground));
   --color-card: rgb(var(--card));
   --color-card-foreground: rgb(var(--card-foreground));
+  --color-popover: rgb(var(--popover));
+  --color-popover-foreground: rgb(var(--popover-foreground));
+  --color-input: rgb(var(--input));
+
+  /* ── Interactive colors (with opacity support via channel vars) ── */
   --color-primary: rgb(var(--primary));
   --color-primary-foreground: rgb(var(--primary-foreground));
+  --color-secondary: rgb(var(--secondary));
+  --color-secondary-foreground: rgb(var(--secondary-foreground));
   --color-accent: rgb(var(--accent));
   --color-accent-foreground: rgb(var(--accent-foreground));
+  --color-destructive: rgb(var(--destructive));
+
+  /* ── Muted (needs opacity modifier support) ── */
+  --color-muted: rgb(var(--muted));
+  --color-muted-foreground: rgb(var(--muted-foreground));
   --color-border: rgb(var(--border));
+  --color-ring: rgb(var(--ring));
+
+  /* ── Semantic data tokens ── */
+  --color-success: rgb(var(--success));
+  --color-warning: rgb(var(--warning));
+  --color-danger: rgb(var(--danger));
+
+  /* ── Macro colors ── */
+  --color-macro-protein: rgb(var(--macro-protein));
+  --color-macro-fat: rgb(var(--macro-fat));
+  --color-macro-carbs: rgb(var(--macro-carbs));
+
+  /* ── Radius scale ── */
   --radius-xl: calc(var(--radius) + 0.5rem);
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 0.25rem);
   --radius-sm: calc(var(--radius) - 0.5rem);
-  --color-ring: rgb(var(--ring));
-  --color-input: rgb(var(--input));
-  --color-destructive: rgb(var(--destructive));
-  --color-secondary-foreground: rgb(var(--secondary-foreground));
-  --color-secondary: rgb(var(--secondary));
-  --color-popover-foreground: rgb(var(--popover-foreground));
-  --color-popover: rgb(var(--popover));
 }
 
 *::selection {
@@ -89,7 +130,130 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* 2026 Layout Utilities */
+/* ═══════════════════════════════════════════
+   DESIGN SYSTEM — Typography scale
+   Used consistently across all pages/tools
+   ═══════════════════════════════════════════ */
+
+/* Page titles */
+.ds-h1 {
+  font-size: clamp(1.875rem, 5vw, 3rem);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+  text-transform: uppercase;
+  font-style: italic;
+}
+
+/* Section titles */
+.ds-h2 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+/* Card / panel titles */
+.ds-h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* Label / overline — small caps above sections */
+.ds-label {
+  font-size: 0.625rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgb(var(--muted-foreground));
+}
+
+/* Body copy */
+.ds-body {
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.6;
+}
+
+/* Small / meta */
+.ds-small {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: rgb(var(--muted-foreground));
+}
+
+/* ═══════════════════════════════════════════
+   DESIGN SYSTEM — Semantic color utilities
+   Opacity modifiers applied via inline style
+   where CSS var channels don't support /N
+   ═══════════════════════════════════════════ */
+
+/* Season status */
+.ds-season-peak    { color: rgb(var(--success)); }
+.ds-season-good    { color: #65a30d; }   /* lime-600 */
+.ds-season-limited { color: rgb(var(--warning)); }
+.ds-season-off     { color: rgb(var(--muted-foreground)); }
+
+.dark .ds-season-good { color: #a3e635; } /* lime-400 */
+
+/* Score badge */
+.ds-score-high   { background: rgba(34,197,94,0.1);  color: #16a34a; border: 1px solid rgba(34,197,94,0.2); }
+.ds-score-mid    { background: rgba(245,158,11,0.1); color: #d97706; border: 1px solid rgba(245,158,11,0.2); }
+.ds-score-low    { background: rgba(239,68,68,0.1);  color: #dc2626; border: 1px solid rgba(239,68,68,0.2); }
+
+.dark .ds-score-high  { color: #4ade80; }
+.dark .ds-score-mid   { color: #fbbf24; }
+.dark .ds-score-low   { color: #f87171; }
+
+/* Macro bars */
+.ds-bar-protein { background-color: rgb(var(--macro-protein)); }
+.ds-bar-fat     { background-color: rgb(var(--macro-fat)); }
+.ds-bar-carbs   { background-color: rgb(var(--macro-carbs)); }
+
+/* ═══════════════════════════════════════════
+   DESIGN SYSTEM — Layout primitives
+   ═══════════════════════════════════════════ */
+
+/* Standard page container */
+.ds-container {
+  max-width: 80rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 640px) {
+  .ds-container { padding-left: 1.5rem; padding-right: 1.5rem; }
+}
+
+@media (min-width: 1024px) {
+  .ds-container { padding-left: 2rem; padding-right: 2rem; }
+}
+
+/* Standard tool container (narrower) */
+.ds-tool-container {
+  max-width: 64rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 640px) {
+  .ds-tool-container { padding-left: 1.5rem; padding-right: 1.5rem; }
+}
+
+/* Section vertical spacing */
+.ds-section { padding-top: 2.5rem; padding-bottom: 2.5rem; }
+
+@media (min-width: 1024px) {
+  .ds-section { padding-top: 4rem; padding-bottom: 4rem; }
+}
+
+
 .glass-nav {
   position: sticky;
   top: 0;

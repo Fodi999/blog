@@ -19,6 +19,18 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'pub-aca11a32217e46129dd78b17f017d0a1.r2.dev',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cdn.dima-fomin.pl',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
 };

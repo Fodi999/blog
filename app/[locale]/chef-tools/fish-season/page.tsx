@@ -1,10 +1,12 @@
 import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
 import { generateMetadata as genMeta } from '@/lib/metadata';
+import { JsonLd } from '@/components/JsonLd';
 import { ChevronLeft, Wifi, WifiOff } from 'lucide-react';
-import { fetchFishSeason } from '@/lib/api';
+import { fetchFishSeasonTable, fetchBestRightNow } from '@/lib/api';
+import { FishSeasonClient, type FishRow, type I18n, type Availability, type RegionRows } from './FishSeasonClient';
 
-export const revalidate = 86400;
+export const revalidate = 0; // dynamic — region can change per request
 
 export async function generateMetadata({
   params,
@@ -21,156 +23,268 @@ export async function generateMetadata({
   });
 }
 
-type Availability = 'peak' | 'good' | 'poor' | 'none';
+const VALID_REGIONS = ['GLOBAL', 'PL', 'EU', 'ES', 'UA'] as const;
+type Region = (typeof VALID_REGIONS)[number];
 
-type FishRow = {
-  name: string;
-  months: Availability[];
+const REGION_NAMES: Record<Region, string> = {
+  GLOBAL: 'Global',
+  PL: 'Poland',
+  EU: 'EU',
+  ES: 'Spain',
+  UA: 'Ukraine',
 };
 
-const STATIC_FISH: FishRow[] = [
-  { name: 'Salmon',     months: ['good','good','good','good','peak','peak','peak','peak','good','good','good','good'] },
-  { name: 'Tuna',       months: ['good','good','peak','peak','peak','good','good','good','good','good','good','good'] },
-  { name: 'Sea Bass',   months: ['none','none','poor','good','peak','peak','peak','good','poor','none','none','none'] },
-  { name: 'Mackerel',   months: ['poor','poor','poor','poor','good','peak','peak','peak','good','poor','poor','poor'] },
-  { name: 'Shrimp',     months: ['good','good','peak','peak','peak','good','good','good','good','peak','peak','good'] },
-  { name: 'Scallop',    months: ['peak','peak','good','good','none','none','none','none','good','good','peak','peak'] },
-  { name: 'Squid',      months: ['poor','poor','good','peak','peak','peak','good','good','poor','poor','poor','poor'] },
-  { name: 'Eel',        months: ['good','good','good','good','good','good','peak','peak','peak','good','good','good'] },
-  { name: 'Crab',       months: ['peak','peak','good','good','none','none','none','none','good','peak','peak','peak'] },
-  { name: 'Yellowtail', months: ['peak','peak','peak','good','good','good','poor','poor','good','good','peak','peak'] },
-  { name: 'Cod',        months: ['peak','peak','good','good','none','none','none','none','good','good','peak','peak'] },
-];
-
-const STATIC_MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-
-function boolToAvailability(available: boolean): Availability {
-  return available ? 'good' : 'none';
+/** Map API boolean season array + fish's current status → Availability per month */
+function buildMonths(
+  season: { month: number; available: boolean }[],
+  currentStatus: Availability,
+): Availability[] {
+  const currentMonthIdx = new Date().getMonth();
+  return Array.from({ length: 12 }, (_, i) => {
+    const s = season.find((m) => m.month === i + 1);
+    if (!s || !s.available) return 'off';
+    if (i === currentMonthIdx) return currentStatus;
+    return 'good';
+  });
 }
-
-const dotMap: Record<Availability, string> = {
-  peak: 'bg-primary',
-  good: 'bg-primary/40',
-  poor: 'bg-muted-foreground/30',
-  none: 'bg-transparent border border-border/30',
-};
 
 export default async function FishSeasonPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<{ region?: string }>;
 }) {
   const { locale } = await params;
+  const { region: regionParam } = await searchParams;
+  const region: Region = VALID_REGIONS.includes(regionParam as Region)
+    ? (regionParam as Region)
+    : 'PL';
+
   const t = await getTranslations({ locale, namespace: 'chefTools' });
 
-  const [salmonApi, tunaApi, codApi] = await Promise.all([
-    fetchFishSeason('salmon', locale),
-    fetchFishSeason('tuna', locale),
-    fetchFishSeason('cod', locale),
+  // Fetch the selected region + all other regions + bestRightNow in parallel
+  const allRegionCodes = VALID_REGIONS.filter((r) => r !== region);
+  const [tableData, bestRightNow, ...otherTables] = await Promise.all([
+    fetchFishSeasonTable(locale, region),
+    fetchBestRightNow('seafood', locale, region),
+    ...allRegionCodes.map((r) => fetchFishSeasonTable('en', r)),
   ]);
 
-  const fromApi = salmonApi !== null;
+  const isLive = tableData !== null;
 
-  // Month headers: localized by API via month_name, sliced to 3 chars
-  const monthHeaders: string[] = fromApi
-    ? salmonApi!.season.map((m) => m.month_name.slice(0, 3))
-    : STATIC_MONTHS;
+  // Use localized month abbreviations from translations
+  const monthHeaders: string[] = [
+    t('months.jan'), t('months.feb'), t('months.mar'), t('months.apr'),
+    t('months.may'), t('months.jun'), t('months.jul'), t('months.aug'),
+    t('months.sep'), t('months.oct'), t('months.nov'), t('months.dec'),
+  ];
 
-  const fishRows: FishRow[] = STATIC_FISH.map((row) => {
-    let apiData = null;
-    if (fromApi) {
-      if (row.name === 'Salmon') apiData = salmonApi;
-      if (row.name === 'Tuna')   apiData = tunaApi;
-      if (row.name === 'Cod')    apiData = codApi;
-    }
-    if (apiData) {
-      return {
-        name: row.name,
-        months: apiData.season.map((m) => boolToAvailability(m.available)),
+  const rows: FishRow[] = (tableData?.fish ?? []).map((fish) => ({
+    slug: fish.slug,
+    name: fish.name,
+    image: fish.image_url,
+    months: buildMonths(fish.season, fish.status),
+    currentStatus: fish.status,
+    live: true,
+    isSushi: fish.sushi_grade ?? false,
+    waterType: fish.water_type ?? 'both',
+    wildFarmed: fish.wild_farmed ?? null,
+  }));
+
+  /** Build peak-month range label: "Apr–Sep" or "—" */
+  function peakRangeLabel(season: { month: number; available: boolean }[]): string {
+    const available = season.filter((m) => m.available).map((m) => m.month);
+    if (available.length === 0) return '—';
+    const SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const first = SHORT[available[0] - 1];
+    const last  = SHORT[available[available.length - 1] - 1];
+    return first === last ? first : `${first}–${last}`;
+  }
+
+  // Build regionRows: slug → region → { status, peakRange }
+  const allTables: [string, typeof tableData][] = [
+    [region, tableData],
+    ...allRegionCodes.map((r, i) => [r, otherTables[i]] as [string, typeof tableData]),
+  ];
+
+  const regionRows: RegionRows = {};
+  for (const [r, table] of allTables) {
+    if (!table) continue;
+    for (const fish of table.fish) {
+      if (!regionRows[fish.slug]) regionRows[fish.slug] = {};
+      regionRows[fish.slug][r] = {
+        status: fish.status,
+        peakRange: peakRangeLabel(fish.season),
       };
     }
-    return row;
-  });
+  }
+
+  const i18n: I18n = {
+    fishColumn: t('fishColumn'),
+    searchPlaceholder: t('fishSeason.search'),
+    bestNow: t('fishSeason.bestNow'),
+    bestNowSubtitle: t('fishSeason.bestNowSubtitle'),
+    filterAll: t('fishSeason.filterAll'),
+    filterSea: t('fishSeason.filterSea'),
+    filterFresh: t('fishSeason.filterFresh'),
+    filterSushi: t('fishSeason.filterSushi'),
+    filterType: '',
+    peakOnly: t('fishSeason.peakOnly'),
+    sortPeakFirst: t('fishSeason.sortPeakFirst'),
+    sortAlpha: t('fishSeason.sortAlpha'),
+    tableView: t('fishSeason.tableView'),
+    cardView: t('fishSeason.cardView'),
+    shareBtn: t('fishSeason.shareBtn'),
+    shareCopied: t('fishSeason.shareCopied'),
+    allYearLabel: t('fishSeason.allYear'),
+    season: {
+      peak: t('season.peak'),
+      good: t('season.good'),
+      limited: t('season.limited'),
+      off: t('season.off'),
+    },
+    months: monthHeaders,
+  };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-16">
+      <JsonLd
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'Table',
+          name: t('tools.fishSeason.title'),
+          description: t('tools.fishSeason.description'),
+          url: `https://dima-fomin.pl/${locale}/chef-tools/fish-season`,
+        }}
+      />
+
       <Link
         href="/chef-tools"
-        className="inline-flex items-center gap-2 text-sm font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors mb-10"
+        className="inline-flex items-center gap-2 text-sm font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors mb-8"
       >
         <ChevronLeft className="h-4 w-4" />
         {t('back')}
       </Link>
 
-      <div className="flex items-start justify-between flex-wrap gap-4 mb-12">
+      {/* Header */}
+      <div className="flex items-start justify-between flex-wrap gap-4 mb-6">
         <div>
-          <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-foreground uppercase italic leading-[0.85] mb-4">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tighter text-foreground uppercase italic leading-tight mb-2">
             {t('tools.fishSeason.title')}<span className="text-primary">.</span>
           </h1>
-          <p className="text-lg text-muted-foreground font-medium">
+          <p className="text-sm md:text-base text-muted-foreground font-medium max-w-xl">
             {t('tools.fishSeason.description')}
           </p>
         </div>
-        <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-widest border ${
-          fromApi
+        <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-widest border shrink-0 ${
+          isLive
             ? 'bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20'
             : 'bg-muted text-muted-foreground border-border/60'
         }`}>
-          {fromApi ? <Wifi className="h-3 w-3" /> : <WifiOff className="h-3 w-3" />}
-          {fromApi ? 'Live API' : 'Static data'}
+          {isLive ? <Wifi className="h-3 w-3" /> : <WifiOff className="h-3 w-3" />}
+          {isLive ? `Live · ${rows.length} fish` : 'Offline'}
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-6 mb-10">
-        {(['peak','good','poor','none'] as Availability[]).map((a) => (
-          <div key={a} className="flex items-center gap-2">
-            <div className={`w-4 h-4 rounded-full ${dotMap[a]}`} />
-            <span className="text-xs font-black uppercase tracking-widest text-muted-foreground">
-              {t(`season.${a}`)}
-            </span>
-          </div>
-        ))}
+      {/* Legend + Region selector row */}
+      <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
+        {/* Legend */}
+        <div className="flex flex-wrap gap-4">
+          {(['peak','good','limited','off'] as Availability[]).map((a) => (
+            <div key={a} className="flex items-center gap-2">
+              <div className={`w-3.5 h-3.5 rounded-full shrink-0 ${
+                a === 'peak'    ? 'bg-primary shadow-sm shadow-primary/50' :
+                a === 'good'    ? 'bg-lime-500/70' :
+                a === 'limited' ? 'bg-amber-400/70' :
+                'bg-transparent border border-border/40'
+              }`} />
+              <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                {i18n.season[a]}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        {/* Region picker (server-rendered links) */}
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mr-1">
+            🌍
+          </span>
+          {VALID_REGIONS.map((r) => (
+            <Link
+              key={r}
+              href={`/chef-tools/fish-season?region=${r}`}
+              className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider border transition-colors ${
+                region === r
+                  ? 'bg-primary text-primary-foreground border-primary'
+                  : 'bg-background border-border/50 text-muted-foreground hover:border-primary/40 hover:text-foreground'
+              }`}
+            >
+              {REGION_NAMES[r]}
+            </Link>
+          ))}
+        </div>
       </div>
 
-      <div className="overflow-x-auto rounded-3xl border-2 border-border/60">
-        <table className="w-full">
-          <thead>
-            <tr className="border-b-2 border-border/60 bg-muted/30">
-              <th className="text-left py-4 px-6 font-black uppercase tracking-widest text-sm text-foreground whitespace-nowrap">
-                {t('fishColumn')}
-              </th>
-              {monthHeaders.map((m, i) => (
-                <th key={i} className="py-4 px-2 font-black uppercase tracking-widest text-xs text-muted-foreground text-center min-w-[40px]">
-                  {m}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {fishRows.map((fish, i) => (
-              <tr
-                key={fish.name}
-                className={`border-b border-border/40 transition-colors hover:bg-muted/20 ${i % 2 === 0 ? '' : 'bg-muted/10'}`}
+      {/* Month quick-links */}
+      <div className="flex flex-wrap gap-1.5 mb-6">
+        {['january','february','march','april','may','june','july','august','september','october','november','december'].map((m, i) => {
+          const isCurrent = i === new Date().getMonth();
+          return (
+            <Link
+              key={m}
+              href={`/chef-tools/fish-season/${m}`}
+              className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider border transition-colors ${
+                isCurrent
+                  ? 'bg-primary text-primary-foreground border-primary'
+                  : 'bg-background border-border/50 text-muted-foreground hover:border-primary/40 hover:text-foreground'
+              }`}
+            >
+              {m.slice(0, 3)}
+            </Link>
+          );
+        })}
+      </div>
+
+      {/* Interactive client table */}
+      <FishSeasonClient
+        rows={rows}
+        monthHeaders={monthHeaders}
+        i18n={i18n}
+        bestRightNow={bestRightNow}
+        regionRows={regionRows}
+        activeRegion={region}
+      />
+
+      {/* All-year items */}
+      {tableData?.all_year && tableData.all_year.length > 0 && (
+        <div className="mt-6 p-4 rounded-2xl border border-border/40 bg-muted/20">
+          <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2">
+            {i18n.allYearLabel}
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {tableData.all_year.map((item) => (
+              <span
+                key={item.slug}
+                className="text-xs font-medium text-muted-foreground bg-background border border-border/40 rounded-lg px-2.5 py-1"
               >
-                <td className="py-4 px-6 font-black text-foreground text-sm uppercase tracking-tight whitespace-nowrap">
-                  {fish.name}
-                </td>
-                {fish.months.map((avail, mi) => (
-                  <td key={mi} className="py-4 px-2 text-center">
-                    <div className={`w-5 h-5 mx-auto rounded-full ${dotMap[avail]}`} />
-                  </td>
-                ))}
-              </tr>
+                {item.name}
+              </span>
             ))}
-          </tbody>
-        </table>
-      </div>
-
-      {fromApi && (
-        <p className="text-xs text-muted-foreground mt-4 text-right font-medium">
-          Salmon, Tuna, Cod — live data · api.dima-fomin.pl · Updated every 24h
-        </p>
+          </div>
+          {tableData.note_all_year && (
+            <p className="text-[10px] text-muted-foreground mt-2 italic">{tableData.note_all_year}</p>
+          )}
+        </div>
       )}
+
+      {/* Footer */}
+      <p className="text-[10px] text-muted-foreground mt-4 text-right font-medium uppercase tracking-wider">
+        {isLive
+          ? `${rows.length} fish · ${REGION_NAMES[region]} · Updated live`
+          : 'api.dima-fomin.pl'}
+      </p>
     </div>
   );
 }

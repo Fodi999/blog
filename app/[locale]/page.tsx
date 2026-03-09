@@ -7,8 +7,27 @@ import { ArrowRight, Sparkles, BookOpen, Scale } from 'lucide-react';
 import { getLatestPosts } from '@/lib/posts';
 import { Button } from '@/components/ui/button';
 import { JsonLd } from '@/components/JsonLd';
+import { generateMetadata as sharedGenerateMetadata } from '@/lib/metadata';
+import type { Metadata } from 'next';
 
 export const dynamic = 'force-static';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale: l } = await params;
+  const locale = l as 'pl' | 'en' | 'uk' | 'ru';
+  const t = await getTranslations({ locale, namespace: 'metadata' });
+
+  return sharedGenerateMetadata({
+    title: t('title'),
+    description: t('description'),
+    locale,
+    path: '',
+  });
+}
 
 export default async function HomePage({
   params,
@@ -161,11 +180,11 @@ export default async function HomePage({
             </Link>
           </Button>
         </div>
-        <div className="flex justify-center">
+        <div className="grid md:grid-cols-1 max-w-md gap-6">
           {[
-            { href: '/chef-tools/converter', icon: Scale, title: 'Kitchen Converter', desc: 'Convert grams, ounces, liters and kitchen units instantly.' },
+            { href: '/chef-tools/converter', icon: Scale, title: t('chefToolsSection.converterTitle'), desc: t('chefToolsSection.converterDesc') },
           ].map(({ href, icon: Icon, title, desc }) => (
-            <Link key={href} href={href} className="max-w-sm w-full">
+            <Link key={href} href={href}>
               <div className="group border-2 border-border/60 rounded-3xl p-8 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 bg-background h-full">
                 <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
                   <Icon className="h-6 w-6 text-primary" />

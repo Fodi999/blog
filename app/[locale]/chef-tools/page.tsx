@@ -1,7 +1,7 @@
 import { getTranslations } from 'next-intl/server';
-import { Link } from '@/i18n/routing';
 import { generateMetadata as genMeta } from '@/lib/metadata';
-import { ArrowRight, Scale } from 'lucide-react';
+import { JsonLd } from '@/components/JsonLd';
+import { ChefToolsTabs } from './ChefToolsTabs';
 
 export const dynamic = 'force-static';
 
@@ -20,13 +20,34 @@ export async function generateMetadata({
   });
 }
 
-const tools = [
+/* ── Tab definitions ─────────────────────────────────────────────────────── */
+
+const tabDefs = [
   {
-    href: '/chef-tools/converter',
-    icon: Scale,
-    key: 'converter',
+    id: 'tools',
+    iconKey: 'tools',
+    items: [
+      { href: '/chef-tools/converter', iconKey: 'converter', key: 'converter' },
+    ],
+  },
+  {
+    id: 'tables',
+    iconKey: 'tables',
+    items: [
+      { href: '/chef-tools/fish-season', iconKey: 'fishSeason', key: 'fishSeason' },
+      { href: '/chef-tools/ingredient-analyzer', iconKey: 'ingredientAnalyzer', key: 'ingredientAnalyzer' },
+    ],
+  },
+  {
+    id: 'products',
+    iconKey: 'products',
+    items: [
+      { href: '/chef-tools/ingredients', iconKey: 'ingredientsCatalog', key: 'ingredientsCatalog' },
+    ],
   },
 ];
+
+/* ── Page ─────────────────────────────────────────────────────────────────── */
 
 export default async function ChefToolsPage({
   params,
@@ -36,43 +57,51 @@ export default async function ChefToolsPage({
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'chefTools' });
 
+  /* Build serializable tab data for the client component */
+  const tabs = tabDefs.map(({ id, iconKey, items }) => ({
+    id,
+    label: t(`tabs.${id}`),
+    desc: t(`tabs.${id}Desc`),
+    iconKey,
+    items: items.map(({ href, iconKey: ik, key }) => ({
+      href,
+      iconKey: ik,
+      title: t(`tools.${key}.title`),
+      description: t(`tools.${key}.description`),
+      openLabel: t('open'),
+    })),
+  }));
+
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
-      {/* Header */}
-      <div className="mb-16">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-black uppercase tracking-[0.2em] mb-8 border border-primary/20">
-          {t('badge')}
-        </div>
-        <h1 className="text-5xl md:text-7xl font-black tracking-tighter text-foreground uppercase italic leading-[0.85] mb-6">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Schema.org */}
+      <JsonLd
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'CollectionPage',
+          name: t('title'),
+          description: t('description'),
+          url: `https://dima-fomin.pl/${locale}/chef-tools`,
+          isPartOf: {
+            '@type': 'WebSite',
+            name: 'Dima Fomin',
+            url: 'https://dima-fomin.pl',
+          },
+        }}
+      />
+
+      {/* Header — same pattern as /blog */}
+      <div className="mb-16 md:mb-24 border-t border-primary/20 pt-12">
+        <h1 className="text-6xl md:text-8xl font-black mb-6 text-foreground tracking-tighter uppercase italic">
           {t('title')}<span className="text-primary">.</span>
         </h1>
-        <p className="text-xl text-muted-foreground max-w-2xl font-medium leading-relaxed">
+        <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl font-medium tracking-tight">
           {t('description')}
         </p>
       </div>
 
-      {/* Tools Grid */}
-      <div className="grid md:grid-cols-3 gap-6">
-        {tools.map(({ href, icon: Icon, key }) => (
-          <Link key={href} href={href}>
-            <div className="group border-2 border-border/60 rounded-3xl p-8 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 bg-background h-full">
-              <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
-                <Icon className="h-6 w-6 text-primary" />
-              </div>
-              <h2 className="text-xl font-black uppercase tracking-tight text-foreground mb-3 group-hover:text-primary transition-colors italic">
-                {t(`tools.${key}.title`)}
-              </h2>
-              <p className="text-muted-foreground font-medium leading-relaxed mb-6">
-                {t(`tools.${key}.description`)}
-              </p>
-              <div className="flex items-center gap-1.5 text-primary text-xs font-black uppercase tracking-widest group-hover:gap-3 transition-all">
-                {t('open')}
-                <ArrowRight className="h-3.5 w-3.5 stroke-[3px]" />
-              </div>
-            </div>
-          </Link>
-        ))}
-      </div>
+      {/* Horizontal Tabs */}
+      <ChefToolsTabs tabs={tabs} />
     </div>
   );
 }
