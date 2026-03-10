@@ -10,7 +10,7 @@ import { JsonLd } from '@/components/JsonLd';
 import { fetchIngredients } from '@/lib/api';
 import { ChefToolsNav } from '../ChefToolsNav';
 
-export const revalidate = 86400;
+export const revalidate = 3600;
 
 export async function generateMetadata({
   params,

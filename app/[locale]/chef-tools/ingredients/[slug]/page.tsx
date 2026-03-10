@@ -350,28 +350,7 @@ export default async function IngredientProfilePage({
           </Link>
         </div>
 
-        {/* Conversion links */}
-        <div className="rounded-2xl border border-border/60 p-5 mb-8">
-          <h2 className="text-sm font-black uppercase tracking-widest text-foreground mb-3">
-            {locale === 'pl' ? 'Przeliczniki jednostek' :
-             locale === 'ru' ? 'Конвертация единиц' :
-             locale === 'uk' ? 'Конвертація одиниць' :
-             'Unit Conversions'}
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {TOP_CONVERSIONS.map((conv) => (
-              <Link
-                key={conv}
-                href={`/chef-tools/${conv}/${slug}` as never}
-                className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors group py-1"
-              >
-                <ArrowRight className="h-3.5 w-3.5 text-primary/50 group-hover:text-primary transition-colors shrink-0" />
-                <span className="font-medium">{conversionLabel(conv, locale)}</span>
-                <span className="text-muted-foreground/50 ml-auto font-medium">{name}</span>
-              </Link>
-            ))}
-          </div>
-        </div>
+
       </div>
     </div>
   );
