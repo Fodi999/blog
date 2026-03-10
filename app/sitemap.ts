@@ -6,6 +6,9 @@ import { locales } from '@/i18n';
 const BASE_URL = 'https://dima-fomin.pl';
 const canonicalLocale = 'pl';
 
+/** Fixed at build time — avoids marking every page as "updated today" on every deploy */
+const BUILD_DATE = new Date();
+
 /** Normalize any date string to a valid Date. Falls back to yesterday (not a fixed date). */
 function toDate(raw?: string): Date {
   const d = raw ? new Date(raw) : null;
@@ -42,7 +45,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticUrls: MetadataRoute.Sitemap = staticPages.map(
     ({ path, priority, changeFrequency }) => ({
       url: `${BASE_URL}/${canonicalLocale}${path}`,
-      lastModified: new Date(), // Static pages: today is fine
+      lastModified: BUILD_DATE, // Same for all static pages — stable across deploys
       changeFrequency,
       priority,
       alternates: {
@@ -106,12 +109,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // ─── Ingredient pages ────────────────────────────────────────────────
   const ingredientList = await fetchIngredients();
+
+  // /chef-tools/nutrition/{slug} — nutrition detail pages
   const ingredientUrls: MetadataRoute.Sitemap = ingredientList
     ? ingredientList
         .filter((ing) => ing.slug)
         .map((ing) => ({
           url: `${BASE_URL}/${canonicalLocale}/chef-tools/nutrition/${ing.slug}`,
-          lastModified: new Date(),
+          lastModified: BUILD_DATE,
           changeFrequency: 'monthly' as const,
           priority: 0.8,
           alternates: {
@@ -125,5 +130,90 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         }))
     : [];
 
-  return [...staticUrls, ...postUrls, ...ingredientUrls];
+  // /chef-tools/ingredients/{slug} — ingredient profile pages (SEO cluster: catalog → profile → nutrition → conversions)
+  const ingredientProfileUrls: MetadataRoute.Sitemap = ingredientList
+    ? ingredientList
+        .filter((ing) => ing.slug)
+        .map((ing) => ({
+          url: `${BASE_URL}/${canonicalLocale}/chef-tools/ingredients/${ing.slug}`,
+          lastModified: BUILD_DATE,
+          changeFrequency: 'monthly' as const,
+          priority: 0.75,
+          alternates: {
+            languages: {
+              ...Object.fromEntries(
+                locales.map((l) => [l, `${BASE_URL}/${l}/chef-tools/ingredients/${ing.slug}`])
+              ),
+              'x-default': `${BASE_URL}/${canonicalLocale}/chef-tools/ingredients/${ing.slug}`,
+            },
+          },
+        }))
+    : [];
+
+  // ─── Conversion SEO pages ────────────────────────────────────────────
+  // /chef-tools/[conversion]/[slug] — unit notation (cup-to-grams/rice)
+  const TOP_CONVERSIONS = [
+    'cup-to-grams',
+    'tbsp-to-grams',
+    'tsp-to-grams',
+    'oz-to-grams',
+    'grams-to-oz',
+  ];
+
+  const conversionUrls: MetadataRoute.Sitemap = ingredientList
+    ? ingredientList
+        .filter((ing) => ing.slug)
+        .flatMap((ing) =>
+          TOP_CONVERSIONS.map((conv) => ({
+            url: `${BASE_URL}/${canonicalLocale}/chef-tools/${conv}/${ing.slug}`,
+            lastModified: BUILD_DATE,
+            changeFrequency: 'monthly' as const,
+            priority: 0.7,
+            alternates: {
+              languages: {
+                ...Object.fromEntries(
+                  locales.map((l) => [l, `${BASE_URL}/${l}/chef-tools/${conv}/${ing.slug}`])
+                ),
+                'x-default': `${BASE_URL}/${canonicalLocale}/chef-tools/${conv}/${ing.slug}`,
+              },
+            },
+          }))
+        )
+    : [];
+
+  // ─── Natural-language "how many" pages ───────────────────────────────
+  // /chef-tools/how-many-grams-in-a-cup-of-rice — matches Google search queries
+  const HOW_MANY_COMBOS = [
+    { unit: 'grams', measure: 'cup'  },
+    { unit: 'grams', measure: 'tbsp' },
+    { unit: 'grams', measure: 'tsp'  },
+    { unit: 'grams', measure: 'oz'   },
+    { unit: 'oz',    measure: 'cup'  },
+  ];
+
+  const howManyUrls: MetadataRoute.Sitemap = ingredientList
+    ? ingredientList
+        .filter((ing) => ing.slug)
+        .flatMap((ing) =>
+          HOW_MANY_COMBOS.map(({ unit, measure }) => ({
+            url: `${BASE_URL}/${canonicalLocale}/chef-tools/how-many/how-many-${unit}-in-a-${measure}-of-${ing.slug}`,
+            lastModified: BUILD_DATE,
+            changeFrequency: 'monthly' as const,
+            priority: 0.8,   // higher priority — matches exact user queries
+            alternates: {
+              languages: {
+                ...Object.fromEntries(
+                  locales.map((l) => [
+                    l,
+                    `${BASE_URL}/${l}/chef-tools/how-many/how-many-${unit}-in-a-${measure}-of-${ing.slug}`,
+                  ])
+                ),
+                'x-default': `${BASE_URL}/${canonicalLocale}/chef-tools/how-many/how-many-${unit}-in-a-${measure}-of-${ing.slug}`,
+              },
+            },
+          }))
+        )
+    : [];
+
+  return [...staticUrls, ...postUrls, ...ingredientUrls, ...ingredientProfileUrls, ...conversionUrls, ...howManyUrls];
 }

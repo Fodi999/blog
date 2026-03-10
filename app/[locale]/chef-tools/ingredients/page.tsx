@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import type { Metadata } from 'next';
 import { ChevronRight, Search, Package } from 'lucide-react';
 import { IngredientsClient } from './IngredientsClient';
+import { ChefToolsNav } from '../ChefToolsNav';
 import { resolveCategory } from './ingredient-utils';
 
 export const revalidate = 86400;
@@ -120,30 +121,33 @@ export default async function IngredientsPage({
       '@type': 'ListItem',
       position: idx + 1,
       name: item.name,
-      url: `https://dima-fomin.pl/${locale}/chef-tools/nutrition/${item.slug}`,
+      url: `https://dima-fomin.pl/${locale}/chef-tools/ingredients/${item.slug}`,
     })),
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
-      <JsonLd data={catalogJsonLd} />
-
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center gap-2 text-[11px] text-muted-foreground font-medium uppercase tracking-wider mb-4">
-          <Link href="/chef-tools" className="hover:text-foreground transition-colors">Chef Tools</Link>
-          <ChevronRight className="h-3 w-3" />
-          <span className="text-foreground">{i18n.title}</span>
-        </div>
-        <h1 className="text-3xl sm:text-4xl font-black uppercase tracking-tight text-foreground mb-3">
-          {i18n.title}
-        </h1>
-        <p className="text-muted-foreground text-sm max-w-2xl leading-relaxed">
-          {i18n.description}
-        </p>
-        <p className="mt-2 text-[11px] text-muted-foreground/60 font-medium">
-          {items.length} {i18n.totalCount}
-        </p>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12">
+      <ChefToolsNav 
+        locale={locale} 
+        translations={{
+          back: t('back'),
+          tabs: {
+            tools: t('tabs.tools'),
+            tables: t('tabs.tables'),
+            products: t('tabs.products'),
+          },
+          tools: {
+            converter: { title: t('tools.converter.title') },
+            fishSeason: { title: t('tools.fishSeason.title') },
+            ingredientAnalyzer: { title: t('tools.ingredientAnalyzer.title') },
+            ingredientsCatalog: { title: t('ingredients.catalog.title') },
+            nutrition: { title: t('nutrition.title') },
+          }
+        }} 
+      />
+      {/* Search & Header */}
+      <div className="mb-12 border-t border-primary/20 pt-10">
+        {/* ...existing header code... */}
       </div>
 
       <IngredientsClient items={items} i18n={i18n} locale={locale} />

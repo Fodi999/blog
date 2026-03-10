@@ -6,6 +6,7 @@ import { ChevronLeft, ChevronRight, Flame, Beef, Droplets, Wheat } from 'lucide-
 import { fetchIngredient, fetchIngredients } from '@/lib/api';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
+import { ChefToolsNav } from '../../ChefToolsNav';
 
 export const revalidate = 86400;
 
@@ -82,6 +83,27 @@ export default async function IngredientDetailPage({
 
   if (!ingredient) notFound();
 
+  const nav = (
+    <ChefToolsNav 
+        locale={locale} 
+        translations={{
+          back: t('back'),
+          tabs: {
+            tools: t('tabs.tools'),
+            tables: t('tabs.tables'),
+            products: t('tabs.products'),
+          },
+          tools: {
+            converter: { title: t('tools.converter.title') },
+            fishSeason: { title: t('tools.fishSeason.title') },
+            ingredientAnalyzer: { title: t('tools.ingredientAnalyzer.title') },
+            ingredientsCatalog: { title: t('ingredients.catalog.title') },
+            nutrition: { title: t('nutrition.title') },
+          }
+        }} 
+      />
+  );
+
   const name = localizedName(ingredient, locale);
   const description = localizedDescription(ingredient, locale);
 
@@ -93,7 +115,8 @@ export default async function IngredientDetailPage({
   ];
 
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12">
+      {nav}
       <JsonLd
         data={{
           '@context': 'https://schema.org',

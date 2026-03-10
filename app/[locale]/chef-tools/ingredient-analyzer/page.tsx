@@ -6,6 +6,7 @@ import { ChevronLeft } from 'lucide-react';
 import { fetchIngredientSearch, fetchFishSeasonTable } from '@/lib/api';
 // @ts-ignore
 import { IngredientAnalyzerClient, type I18n, type SeasonMap } from './IngredientAnalyzerClient';
+import { ChefToolsNav } from '../ChefToolsNav';
 
 export const revalidate = 3600; // pre-fetched list is stable
 
@@ -109,34 +110,54 @@ export default async function IngredientAnalyzerPage({
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-16">
-      <JsonLd
-        data={{
-          '@context': 'https://schema.org',
-          '@type': 'WebApplication',
-          name: t('tools.ingredientAnalyzer.title'),
-          description: t('tools.ingredientAnalyzer.description'),
-          url: `https://dima-fomin.pl/${locale}/chef-tools/ingredient-analyzer`,
-          applicationCategory: 'HealthApplication',
-        }}
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-24">
+      <ChefToolsNav 
+        locale={locale} 
+        translations={{
+          back: t('back'),
+          tabs: {
+            tools: t('tabs.tools'),
+            tables: t('tabs.tables'),
+            products: t('tabs.products'),
+          },
+          tools: {
+            converter: { title: t('tools.converter.title') },
+            fishSeason: { title: t('tools.fishSeason.title') },
+            ingredientAnalyzer: { title: t('tools.ingredientAnalyzer.title') },
+            ingredientsCatalog: { title: t('ingredients.catalog.title') },
+            nutrition: { title: t('nutrition.title') },
+          }
+        }} 
       />
+      <div className="mb-12 border-t border-primary/20 pt-10 text-center md:text-left">
+        <JsonLd
+          data={{
+            '@context': 'https://schema.org',
+            '@type': 'WebApplication',
+            name: t('tools.ingredientAnalyzer.title'),
+            description: t('tools.ingredientAnalyzer.description'),
+            url: `https://dima-fomin.pl/${locale}/chef-tools/ingredient-analyzer`,
+            applicationCategory: 'HealthApplication',
+          }}
+        />
 
-      <Link
-        href="/chef-tools"
-        className="inline-flex items-center gap-2 text-sm font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors mb-8"
-      >
-        <ChevronLeft className="h-4 w-4" />
-        {t('back')}
-      </Link>
+        <Link
+          href="/chef-tools"
+          className="inline-flex items-center gap-2 text-sm font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors mb-8"
+        >
+          <ChevronLeft className="h-4 w-4" />
+          {t('back')}
+        </Link>
 
-      {/* Header */}
-      <div className="mb-10">
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tighter text-foreground uppercase italic leading-tight mb-3">
-          {t('tools.ingredientAnalyzer.title')}<span className="text-primary">.</span>
-        </h1>
-        <p className="text-sm md:text-base text-muted-foreground font-medium max-w-xl">
-          {t('tools.ingredientAnalyzer.description')}
-        </p>
+        {/* Header */}
+        <div className="mb-10">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tighter text-foreground uppercase italic leading-tight mb-3">
+            {t('tools.ingredientAnalyzer.title')}<span className="text-primary">.</span>
+          </h1>
+          <p className="text-sm md:text-base text-muted-foreground font-medium max-w-xl">
+            {t('tools.ingredientAnalyzer.description')}
+          </p>
+        </div>
       </div>
 
       <IngredientAnalyzerClient
@@ -149,10 +170,10 @@ export default async function IngredientAnalyzerPage({
       {/* SEO footer */}
       <div className="mt-16 pt-8 border-t border-border/30 space-y-3">
         <p className="text-xs text-muted-foreground font-medium max-w-2xl">
-          {t('tools.ingredientAnalyzer.seoFooter', { count: allIngredients.length })}
+          {t('ingredientAnalyzer.seoFooter', { count: allIngredients.length })}
         </p>
         <p className="text-[10px] text-muted-foreground/50 font-medium uppercase tracking-wider">
-          {t('tools.ingredientAnalyzer.updatedLive', { count: allIngredients.length })}
+          {t('ingredientAnalyzer.updatedLive', { count: allIngredients.length })}
         </p>
       </div>
     </div>

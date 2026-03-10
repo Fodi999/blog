@@ -162,7 +162,8 @@
       },
       "fishSeason": {
         "title": "Fish Season Calendar",
-        "description": "When is fish at its best? Monthly guide to freshness and availability of fish and seafood."
+        "description": "When is fish at its best? Monthly guide to freshness and availability of fish and seafood.",
+        "itemsCount": "items"
       },
       "ingredientAnalyzer": {
         "title": "Nutrition Table & Ingredient Analyzer",

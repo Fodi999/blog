@@ -280,14 +280,14 @@ export async function fetchIngredients(): Promise<ApiIngredient[] | null> {
     } | null;
   };
 
-  const details = await Promise.all(
+  const details = await Promise.allSettled(
     filtered.map((item) =>
-      apiFetchFresh<RawDetail>(`/public/ingredients/${encodeURIComponent(item.slug)}`),
+      apiFetch<RawDetail>(`/public/ingredients/${encodeURIComponent(item.slug)}`, 86400),
     ),
   );
 
   return filtered.map((item, i) => {
-    const d = details[i];
+    const d = details[i].status === 'fulfilled' ? details[i].value : null;
     return {
       slug: item.slug,
       name: item.name_en,

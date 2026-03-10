@@ -162,7 +162,8 @@
       },
       "fishSeason": {
         "title": "Kalendarz Sezonowości Ryb",
-        "description": "Kiedy ryba jest najlepsza? Miesięczny przewodnik po świeżości i dostępności ryb i owoców morza."
+        "description": "Kiedy ryba jest najlepsza? Miesięczny przewodnik po świeżości i dostępności ryb i owoców morza.",
+        "itemsCount": "pozycji"
       },
       "ingredientAnalyzer": {
         "title": "Tabela Wartości Odżywczych & Analizator Składników",

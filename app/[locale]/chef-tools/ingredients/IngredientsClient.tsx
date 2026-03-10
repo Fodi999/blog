@@ -147,7 +147,7 @@ export function IngredientsClient({
           {filtered.map((item) => (
             <Link
               key={item.slug}
-              href={`/chef-tools/nutrition/${item.slug}?from=catalog` as any}
+              href={`/chef-tools/ingredients/${item.slug}` as any}
               className="group"
             >
               <Card className="h-full hover:border-primary/30 hover:shadow-md transition-all cursor-pointer overflow-hidden">

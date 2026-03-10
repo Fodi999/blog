@@ -8,6 +8,7 @@ import { IngredientConverterClient, type IngredientOption, type I18nIngConverter
 import { getUnits } from './action';
 import { JsonLd } from '@/components/JsonLd';
 import { fetchIngredients } from '@/lib/api';
+import { ChefToolsNav } from '../ChefToolsNav';
 
 export const revalidate = 86400;
 
@@ -74,31 +75,42 @@ export default async function ConverterPage({
   };
 
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 lg:py-24">
-      <JsonLd data={{
-        '@context': 'https://schema.org',
-        '@type': 'SoftwareApplication',
-        name: t('tools.converter.title'),
-        description: t('tools.converter.description'),
-        applicationCategory: 'UtilitiesApplication',
-        operatingSystem: 'Web',
-        url: `https://dima-fomin.pl/${locale}/chef-tools/converter`,
-        offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-      }} />
-      <Link
-        href="/chef-tools"
-        className="inline-flex items-center gap-2 text-sm font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors mb-8"
-      >
-        <ChevronLeft className="h-4 w-4" />
-        {t('back')}
-      </Link>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-24">
+      <ChefToolsNav 
+        locale={locale} 
+        translations={{
+          back: t('back'),
+          tabs: {
+            tools: t('tabs.tools'),
+            tables: t('tabs.tables'),
+            products: t('tabs.products'),
+          },
+          tools: {
+            converter: { title: t('tools.converter.title') },
+            fishSeason: { title: t('tools.fishSeason.title') },
+            ingredientAnalyzer: { title: t('tools.ingredientAnalyzer.title') },
+            ingredientsCatalog: { title: t('ingredients.catalog.title') },
+            nutrition: { title: t('nutrition.title') },
+          }
+        }} 
+      />
+      {/* Header — same style as /blog and tools home */}
+      <div className="mb-12 border-t border-primary/20 pt-10">
+        <Link
+          href="/chef-tools"
+          className="inline-flex items-center gap-2 text-sm font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors mb-8"
+        >
+          <ChevronLeft className="h-4 w-4" />
+          {t('back')}
+        </Link>
 
-      <h1 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tighter text-foreground leading-tight sm:leading-[0.9] mb-3 sm:mb-4">
-        {t('tools.converter.title')}<span className="text-primary">.</span>
-      </h1>
-      <p className="text-base sm:text-lg text-muted-foreground font-medium mb-8 sm:mb-12">
-        {t('tools.converter.description')}
-      </p>
+        <h1 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tighter text-foreground leading-tight sm:leading-[0.9] mb-3 sm:mb-4">
+          {t('tools.converter.title')}<span className="text-primary">.</span>
+        </h1>
+        <p className="text-base sm:text-lg text-muted-foreground font-medium mb-8 sm:mb-12">
+          {t('tools.converter.description')}
+        </p>
+      </div>
 
       <ConverterClient groups={groups} />
 
