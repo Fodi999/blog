@@ -21,7 +21,60 @@ import {
   Calendar
 } from 'lucide-react';
 
-export const dynamic = 'force-static';
+// ── API helpers ───────────────────────────────────────────────────────────────
+const API = process.env.NEXT_PUBLIC_API_URL ?? 'https://ministerial-yetta-fodi999-c58d8823.koyeb.app';
+
+async function apiFetch<T>(path: string): Promise<T | null> {
+  try {
+    const res = await fetch(`${API}${path}`, { cache: 'no-store' });
+    if (!res.ok) return null;
+    return res.json() as Promise<T>;
+  } catch {
+    return null;
+  }
+}
+
+type Locale = 'en' | 'pl' | 'ru' | 'uk';
+
+function pick(obj: Record<string, unknown>, field: string, locale: Locale): string {
+  return (obj[`${field}_${locale}`] ?? obj[`${field}_en`] ?? '') as string;
+}
+
+interface AboutData {
+  id: string;
+  image_url?: string;
+  title_en: string; title_pl: string; title_ru: string; title_uk: string;
+  content_en: string; content_pl: string; content_ru: string; content_uk: string;
+}
+interface ExpertiseItem {
+  id: string; icon: string; order_index: number;
+  title_en: string; title_pl: string; title_ru: string; title_uk: string;
+}
+interface ExperienceItem {
+  id: string; restaurant: string; country: string; position: string;
+  start_year?: number; end_year?: number;
+  description_en: string; description_pl: string;
+  description_ru: string; description_uk: string;
+  order_index: number;
+}
+interface GalleryItem {
+  id: string; image_url: string; order_index: number;
+  category_id?: string; category_slug?: string;
+  slug?: string; status?: string;
+  title_en: string; title_pl: string; title_ru: string; title_uk: string;
+  alt_en?: string; alt_pl?: string; alt_ru?: string; alt_uk?: string;
+  description_en?: string; description_pl?: string;
+  description_ru?: string; description_uk?: string;
+  instagram_url?: string; pinterest_url?: string;
+  facebook_url?: string; tiktok_url?: string; website_url?: string;
+}
+interface GalleryCategoryItem {
+  id: string; slug: string; order_index: number;
+  title_en: string; title_pl: string; title_ru: string; title_uk: string;
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const revalidate = 0;
 
 export async function generateMetadata({
   params,
@@ -32,11 +85,15 @@ export async function generateMetadata({
   const locale = l as 'pl' | 'en' | 'uk' | 'ru';
   const t = await getTranslations({ locale, namespace: 'metadata' });
 
+  const aboutData = await apiFetch<AboutData>('/public/about');
+  const ogImage = aboutData?.image_url;
+
   return sharedGenerateMetadata({
     title: t('about.title'),
     description: t('about.description'),
     locale,
     path: '/about',
+    ...(ogImage && { image: ogImage }),
   });
 }
 
@@ -45,62 +102,73 @@ export default async function AboutPage({
 }: {
   params: Promise<{ locale: string }>;
 }) {
-  const { locale } = await params;
+  const { locale: l } = await params;
+  const locale = l as Locale;
   const t = await getTranslations({ locale, namespace: 'about' });
 
-  const galleryImages = [
-    {
-      src: 'https://images.unsplash.com/photo-1553621042-f6e147245754?q=80&w=1000&auto=format&fit=crop',
-      alt: 'Art of Japanese Prep',
-    },
-    {
-      src: 'https://i.postimg.cc/V5QZwGRX/IMG_4239.jpg',
-      alt: 'Sushi preparation at the counter',
-    },
-    {
-      src: 'https://i.postimg.cc/K8QChcY9/DSCF4689.jpg',
-      alt: 'Precision and texture',
-    },
-    {
-      src: 'https://images.unsplash.com/photo-1611143669185-af224c5e3252?q=80&w=1000&auto=format&fit=crop',
-      alt: 'Omakase details',
-    },
-    {
-      src: 'https://i.postimg.cc/XqFtRwZJ/DSCF4697.jpg',
-      alt: 'Culinary mastery in practice',
-    },
-    {
-      src: 'https://i.postimg.cc/RCf8VLFn/DSCF4639.jpg',
-      alt: 'Dima Fomin Portrait',
-    },
-  ];
+  // ── Fetch API data in parallel ─────────────────────────────────────────────
+  const [aboutData, expertiseFromApi, experienceFromApi, galleryFromApi, galleryCatsFromApi] = await Promise.all([
+    apiFetch<AboutData>('/public/about'),
+    apiFetch<ExpertiseItem[]>('/public/expertise'),
+    apiFetch<ExperienceItem[]>('/public/experience'),
+    apiFetch<GalleryItem[]>('/public/gallery'),
+    apiFetch<GalleryCategoryItem[]>('/public/gallery-categories'),
+  ]);
 
-  const experiences = [
-    {
-      title: t('experience.fishInHouse.title'),
-      role: t('experience.fishInHouse.role'),
-      period: t('experience.fishInHouse.period'),
-      responsibilities: t.raw('experience.fishInHouse.responsibilities'),
-    },
-    {
-      title: t('experience.miodMalina.title'),
-      role: t('experience.miodMalina.role'),
-      period: t('experience.miodMalina.period'),
-    },
-    {
-      title: t('experience.charlemagne.title'),
-      role: t('experience.charlemagne.role'),
-      period: t('experience.charlemagne.period'),
-    },
-    {
-      title: t('experience.wawel.title'),
-      role: t('experience.wawel.role'),
-      period: t('experience.wawel.period'),
-    },
-  ];
+  // ── Hero image & lead text from API ──────────────────────────────────────
+  const heroImage = aboutData!.image_url!;
+  const heroLead = pick(aboutData as unknown as Record<string, unknown>, 'content', locale);
 
+  // ── Category labels from API ─────────────────────────────────────────────
+  const categoryLabels: Record<string, string> = { all: pick({ all_en: 'All', all_pl: 'Wszystkie', all_ru: 'Все', all_uk: 'Всі' }, 'all', locale) };
+  for (const cat of (galleryCatsFromApi ?? []).sort((a, b) => a.order_index - b.order_index)) {
+    categoryLabels[cat.slug] = pick(cat as unknown as Record<string, unknown>, 'title', locale);
+  }
+
+  // ── Gallery from API ──────────────────────────────────────────────────────
+  const galleryImages = (galleryFromApi ?? [])
+    .sort((a, b) => a.order_index - b.order_index)
+    .map(item => ({
+      src: item.image_url,
+      alt: pick(item as unknown as Record<string, unknown>, 'alt', locale)
+        || pick(item as unknown as Record<string, unknown>, 'title', locale)
+        || '',
+      title: pick(item as unknown as Record<string, unknown>, 'title', locale) || undefined,
+      description: pick(item as unknown as Record<string, unknown>, 'description', locale) || undefined,
+      category: item.category_slug || undefined,
+      slug: item.slug || undefined,
+      instagram_url: item.instagram_url || undefined,
+      pinterest_url: item.pinterest_url || undefined,
+      facebook_url: item.facebook_url || undefined,
+      tiktok_url: item.tiktok_url || undefined,
+      website_url: item.website_url || undefined,
+    }));
+
+  // ── Experience from API ───────────────────────────────────────────────────
+  const presentLabel = locale === 'ru' || locale === 'uk' ? 'по сей день' : 'present';
+  const experiences = (experienceFromApi ?? [])
+    .sort((a, b) => a.order_index - b.order_index)
+    .map(e => {
+      const raw = pick(e as unknown as Record<string, unknown>, 'description', locale);
+      const responsibilities: string[] = raw
+        .split('\n')
+        .map(l => l.replace(/^[·\-•]\s*/, '').trim())
+        .filter(Boolean);
+      return {
+        title: e.restaurant,
+        role: e.position,
+        period: e.end_year
+          ? `${e.start_year} — ${e.end_year}`
+          : `${e.start_year} — ${presentLabel}`,
+        responsibilities,
+      };
+    });
+
+  // ── Expertise from API ────────────────────────────────────────────────────
   const expertiseIcons = [ChefHat, Flame, Scale, Target, Zap, Leaf, Award, CheckCircle2];
-  const expertiseItems = t.raw('expertise.items');
+  const expertiseItems: string[] = (expertiseFromApi ?? [])
+    .sort((a, b) => a.order_index - b.order_index)
+    .map(e => pick(e as unknown as Record<string, unknown>, 'title', locale));
 
   return (
     <div className="min-h-screen bg-background selection:bg-primary/10 selection:text-primary">
@@ -113,10 +181,29 @@ export default async function AboutPage({
             "name": "Dmitrij Fomin",
             "jobTitle": "Sushi Chef & Food Technologist",
             "url": "https://dima-fomin.pl",
-            "image": "https://i.postimg.cc/RCf8VLFn/DSCF4639.jpg"
+            "image": heroImage
           }
         }}
       />
+
+      {/* ── ImageObject structured data for gallery (Google Images SEO) ── */}
+      {galleryImages.map((img, i) => (
+        <JsonLd
+          key={i}
+          data={{
+            "@context": "https://schema.org",
+            "@type": "ImageObject",
+            "contentUrl": img.src,
+            "name": img.title || img.alt,
+            "description": img.description || img.alt,
+            "url": `https://dima-fomin.pl/${locale}/about`,
+            "author": {
+              "@type": "Person",
+              "name": "Dmitrij Fomin"
+            }
+          }}
+        />
+      ))}
 
       <main className="mx-auto max-w-6xl px-6">
 
@@ -131,11 +218,13 @@ export default async function AboutPage({
 
                 <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem] bg-muted/20">
                   <Image
-                    src="https://i.postimg.cc/RCf8VLFn/DSCF4639.jpg"
+                    src={heroImage}
                     alt="Dima Fomin"
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
                     priority
+                    loading="eager"
+                    sizes="(max-width: 1024px) 100vw, 33vw"
                   />
                 </div>
 
@@ -161,11 +250,17 @@ export default async function AboutPage({
               </div>
 
               <h1 className="text-5xl font-black tracking-tight md:text-6xl lg:text-7xl italic uppercase leading-[0.9]">
-                {t('title')}<span className="text-primary">.</span>
+                Dima Fomin<span className="text-primary">.</span>
               </h1>
 
+              <div className="mt-4 mb-8">
+                <h2 className="text-xl md:text-2xl font-black uppercase text-foreground/90 italic tracking-tight">
+                  {t('subtitle')}
+                </h2>
+              </div>
+
               <p className="mt-8 max-w-prose text-lg md:text-xl leading-relaxed text-foreground/80 font-medium">
-                {t('hero.lead')}
+                {heroLead.split('\n\n')[0]}
               </p>
 
               <div className="mt-10 flex flex-wrap gap-4">
@@ -198,26 +293,27 @@ export default async function AboutPage({
         </section>
 
         {/* ── Mission ── */}
-        <section className="py-14 border-t border-border/40">
-          <div className="bg-primary/5 rounded-[3rem] p-8 md:p-14 border border-primary/10 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
-              <Sparkles className="w-24 h-24 text-primary" />
-            </div>
+        <section className="py-10 border-t border-border/40">
+          <div className="bg-primary/[0.03] rounded-[2rem] p-6 md:p-10 border border-primary/5 relative overflow-hidden group">
+            <div className="max-w-4xl relative z-10 flex flex-col md:flex-row gap-8 lg:gap-12 items-start">
+              <div className="flex-1">
+                <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary mb-4 flex items-center gap-3">
+                  <div className="w-8 h-0.5 bg-primary" />
+                  {t('mission.title')}
+                </h2>
+                <p className="text-xl md:text-2xl font-black italic tracking-tighter leading-tight text-foreground/90">
+                  {t('mission.content')}
+                </p>
+              </div>
 
-            <div className="max-w-3xl relative z-10">
-              <h2 className="text-sm font-black uppercase tracking-[0.4em] text-primary mb-8 flex items-center gap-3">
-                <div className="w-10 h-0.5 bg-primary" />
-                {t('mission.title')}
-              </h2>
-              <p className="text-2xl md:text-3xl lg:text-4xl font-black italic tracking-tighter leading-tight text-foreground">
-                {t('mission.content')}
-              </p>
-
-              <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="shrink-0 grid grid-cols-1 gap-4 min-w-[240px]">
                 {(t.raw('mission.values') as { label: string; desc: string }[]).map((item) => (
-                  <div key={item.label} className="space-y-2">
-                    <div className="text-lg font-black uppercase italic text-primary">{item.label}</div>
-                    <div className="text-xs font-bold text-muted-foreground uppercase tracking-widest">{item.desc}</div>
+                  <div key={item.label} className="flex items-start gap-3 p-3 rounded-xl bg-background/50 border border-border/40">
+                    <div className="mt-1 w-1.5 h-1.5 rounded-full bg-primary" />
+                    <div className="space-y-0.5">
+                      <div className="text-[11px] font-black uppercase italic text-primary leading-none">{item.label}</div>
+                      <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none">{item.desc}</div>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -239,7 +335,7 @@ export default async function AboutPage({
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {(expertiseItems as string[]).map((item: string, index: number) => {
+            {expertiseItems.map((item: string, index: number) => {
               const Icon = expertiseIcons[index % expertiseIcons.length];
               return (
                 <div
@@ -320,20 +416,27 @@ export default async function AboutPage({
               {t('gallery')}<span className="text-primary">.</span>
             </h2>
             <div className="flex flex-col items-end gap-2 text-right">
-              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Visual Journal</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">{t('gallery_journal')}</p>
               <p className="text-xs text-muted-foreground uppercase tracking-widest font-bold max-w-xs border-r-2 border-primary/50 pr-4">
-                Selected works &amp; moments in the kitchen
+                {t('gallery_subtitle')}
               </p>
             </div>
           </div>
-          <ImageGallery images={galleryImages} />
+          {galleryImages.length > 0 ? (
+            <ImageGallery
+              images={galleryImages}
+              categoryLabels={categoryLabels}
+            />
+          ) : (
+            <p className="text-center text-sm text-muted-foreground py-12">Gallery coming soon.</p>
+          )}
 
           <div className="mt-20 text-center">
             <Link
               href="/contact"
               className="inline-flex items-center gap-3 text-sm font-black uppercase tracking-[0.3em] text-foreground hover:text-primary transition-colors group"
             >
-              Start Collaboration
+              {t('collaboration')}
               <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-2" />
             </Link>
           </div>

@@ -1,81 +1,307 @@
 "use client"
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import Image from 'next/image';
-import { Dialog, DialogContent, DialogTrigger, DialogTitle } from '@/components/ui/dialog';
-import { Expand } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
+import { Expand, Instagram, Globe, Facebook, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface ImageGalleryProps {
   images: Array<{
     src: string;
     alt: string;
+    title?: string;
+    description?: string;
+    category?: string;
+    slug?: string;
+    instagram_url?: string;
+    pinterest_url?: string;
+    facebook_url?: string;
+    tiktok_url?: string;
+    website_url?: string;
     colSpan?: string;
     aspectRatio?: string;
   }>;
+  categoryLabels?: Record<string, string>;
 }
 
-export function ImageGallery({ images }: ImageGalleryProps) {
+export function ImageGallery({ images, categoryLabels = {} }: ImageGalleryProps) {
   const [mounted, setMounted] = useState(false);
+  const [activeCategory, setActiveCategory] = useState<string>('all');
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   useEffect(() => setMounted(true), []);
 
+  // Build unique sorted category list
+  const categories = useMemo(
+    () => ['all', ...Array.from(new Set(images.map(i => i.category).filter(Boolean) as string[])).sort()],
+    [images]
+  );
+  const filtered = useMemo(
+    () => activeCategory === 'all' ? images : images.filter(i => i.category === activeCategory),
+    [images, activeCategory]
+  );
+
+  const label = (cat: string) => categoryLabels[cat] ?? cat;
+
+  const openDialog = useCallback((index: number) => setSelectedIndex(index), []);
+  const closeDialog = useCallback(() => setSelectedIndex(null), []);
+  const goPrev = useCallback(() => {
+    setSelectedIndex(i => i !== null ? (i - 1 + filtered.length) % filtered.length : null);
+  }, [filtered.length]);
+  const goNext = useCallback(() => {
+    setSelectedIndex(i => i !== null ? (i + 1) % filtered.length : null);
+  }, [filtered.length]);
+
+  // Keyboard navigation
+  useEffect(() => {
+    if (selectedIndex === null) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') goPrev();
+      else if (e.key === 'ArrowRight') goNext();
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [selectedIndex, goPrev, goNext]);
+
+  const image = selectedIndex !== null ? filtered[selectedIndex] : null;
+  const dialogDescId = selectedIndex !== null
+    ? `gallery-desc-${selectedIndex}-${filtered[selectedIndex]?.src.split('/').pop()?.split('.')[0]}`
+    : 'gallery-desc';
+
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-      {images.map((image, index) => (
-        <div
-          key={image.src || index}
-          className="group relative cursor-pointer overflow-hidden rounded-3xl border border-border/40 bg-muted/20 transition-all duration-500 hover:border-primary/40 hover:shadow-2xl aspect-[4/5]"
-        >
-          {mounted ? (
-            /* Client-only: full interactive Dialog */
-            <Dialog>
-              <DialogTrigger asChild>
-                <div className="absolute inset-0">
-                  <Image
-                    src={image.src}
-                    alt={image.alt}
-                    fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-110"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-                  <div className="absolute inset-0 flex flex-col items-center justify-center opacity-0 transition-all duration-500 group-hover:opacity-100">
-                    <div className="rounded-full bg-white/10 p-3 backdrop-blur-md border border-white/20 transform scale-50 group-hover:scale-100 transition-transform duration-500">
-                      <Expand className="h-6 w-6 text-white" />
+    <div>
+      {/* ── Category filter tabs ── */}
+      {categories.length > 1 && (
+        <div className="flex flex-wrap gap-2 mb-10">
+          {categories.map(cat => (
+            <button
+              key={cat}
+              type="button"
+              onClick={() => setActiveCategory(cat)}
+              className={`px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.3em] border transition-all duration-300 ${
+                activeCategory === cat
+                  ? 'bg-primary text-white border-primary shadow-lg shadow-primary/20 scale-105'
+                  : 'bg-card text-foreground/60 border-border/40 hover:border-primary/30 hover:text-foreground'
+              }`}
+            >
+              {label(cat)}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* ── Single Dialog for navigation ── */}
+      {mounted && image && (
+        <Dialog open={selectedIndex !== null} onOpenChange={open => !open && closeDialog()}>
+          <DialogContent
+            aria-describedby={dialogDescId}
+            className="max-w-[95vw] md:max-w-4xl border-none bg-zinc-950 p-0 shadow-2xl ring-0 focus:outline-none overflow-hidden rounded-2xl backdrop-blur-2xl [&>button]:!hidden"
+          >
+            <DialogTitle className="sr-only">{image.title || image.alt}</DialogTitle>
+            <DialogDescription id={dialogDescId} className="sr-only">
+              {image.description || image.title || image.alt}
+            </DialogDescription>
+
+            <div className="flex flex-col md:flex-row max-h-[90vh] md:max-h-[85vh]">
+
+              {/* ── Left: Photo ── */}
+              <div className="relative md:w-[55%] shrink-0 bg-zinc-900 flex items-center justify-center min-h-[280px] md:min-h-0 overflow-hidden">
+                <Image
+                  src={image.src}
+                  alt={image.alt}
+                  width={900}
+                  height={900}
+                  className="w-full h-full object-contain max-h-[50vh] md:max-h-[85vh]"
+                  sizes="(max-width: 768px) 95vw, 55vw"
+                  priority
+                />
+                {/* Category badge */}
+                {image.category && (
+                  <div className="absolute top-4 left-4">
+                    <span className="px-3 py-1 rounded-full bg-black/60 backdrop-blur-sm text-[9px] font-black uppercase tracking-[0.3em] text-primary border border-primary/30">
+                      {categoryLabels[image.category] ?? image.category}
+                    </span>
+                  </div>
+                )}
+
+
+              </div>
+
+              {/* ── Right: Info ── */}
+              <div className="flex-1 flex flex-col overflow-y-auto">
+
+                {/* Header */}
+                <div className="p-6 pb-4 border-b border-white/8">
+                  <p className="text-[9px] font-black uppercase tracking-[0.4em] text-primary mb-2">Detail View</p>
+                  <h3 className="text-xl font-black text-white uppercase italic tracking-tighter leading-tight">
+                    {image.title || image.alt}
+                  </h3>
+                </div>
+
+                {/* Description */}
+                {image.description && (
+                  <div className="px-6 py-4 border-b border-white/8">
+                    <p className="text-zinc-400 text-sm leading-relaxed">
+                      {image.description}
+                    </p>
+                  </div>
+                )}
+
+                {/* Social links */}
+                {(image.instagram_url || image.pinterest_url || image.facebook_url || image.tiktok_url || image.website_url) && (
+                  <div className="px-6 py-4 border-b border-white/8">
+                    <p className="text-[9px] font-black uppercase tracking-[0.3em] text-zinc-500 mb-3">Links</p>
+                    <div className="flex flex-wrap gap-2">
+                      {image.instagram_url && (
+                        <a href={image.instagram_url} target="_blank" rel="noopener noreferrer"
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 hover:border-primary/40 text-zinc-400 hover:text-white transition-all text-[10px] font-bold uppercase tracking-wider">
+                          <Instagram className="w-3 h-3" />Instagram
+                        </a>
+                      )}
+                      {image.pinterest_url && (
+                        <a href={image.pinterest_url} target="_blank" rel="noopener noreferrer"
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 hover:border-primary/40 text-zinc-400 hover:text-white transition-all text-[10px] font-bold uppercase tracking-wider">
+                          <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 0 1 .083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.632-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>
+                          Pinterest
+                        </a>
+                      )}
+                      {image.facebook_url && (
+                        <a href={image.facebook_url} target="_blank" rel="noopener noreferrer"
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 hover:border-primary/40 text-zinc-400 hover:text-white transition-all text-[10px] font-bold uppercase tracking-wider">
+                          <Facebook className="w-3 h-3" />Facebook
+                        </a>
+                      )}
+                      {image.tiktok_url && (
+                        <a href={image.tiktok_url} target="_blank" rel="noopener noreferrer"
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 hover:border-primary/40 text-zinc-400 hover:text-white transition-all text-[10px] font-bold uppercase tracking-wider">
+                          <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/></svg>
+                          TikTok
+                        </a>
+                      )}
+                      {image.website_url && (
+                        <a href={image.website_url} target="_blank" rel="noopener noreferrer"
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 hover:border-primary/40 text-zinc-400 hover:text-white transition-all text-[10px] font-bold uppercase tracking-wider">
+                          <Globe className="w-3 h-3" />Website
+                        </a>
+                      )}
                     </div>
                   </div>
-                  <div className="absolute bottom-0 left-0 right-0 p-6 translate-y-4 opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
-                    <p className="text-white text-sm font-black uppercase tracking-widest italic">{image.alt}</p>
-                    <div className="mt-2 h-0.5 w-8 bg-primary transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500 delay-100" />
+                )}
+
+                {/* Footer: alt text (SEO info) + prev/next + close */}
+                <div className="mt-auto px-6 py-4 flex items-center justify-between gap-3">
+                  <p className="text-[9px] text-zinc-600 uppercase tracking-widest font-bold truncate flex-1">
+                    {image.alt}
+                  </p>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      type="button"
+                      onClick={goPrev}
+                      aria-label="Previous photo"
+                      className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 hover:border-primary/40 text-zinc-400 hover:text-white transition-all flex items-center justify-center active:scale-90"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                    </button>
+                    <span className="text-[10px] font-black text-zinc-500 tabular-nums min-w-[36px] text-center">
+                      {(selectedIndex ?? 0) + 1} / {filtered.length}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={goNext}
+                      aria-label="Next photo"
+                      className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 hover:border-primary/40 text-zinc-400 hover:text-white transition-all flex items-center justify-center active:scale-90"
+                    >
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={closeDialog}
+                      className="px-5 py-2 rounded-lg bg-primary hover:bg-primary/90 text-white text-[10px] font-black uppercase tracking-[0.3em] transition-all active:scale-95"
+                    >
+                      Close
+                    </button>
                   </div>
                 </div>
-              </DialogTrigger>
-              <DialogContent className="max-w-4xl border-none bg-transparent p-0 shadow-none ring-0 focus:outline-none overflow-hidden rounded-none sm:rounded-none">
-                <DialogTitle className="sr-only">{image.alt}</DialogTitle>
-                <div className="relative aspect-[4/5] md:aspect-auto md:h-[85vh] w-full overflow-hidden rounded-3xl">
-                  <Image src={image.src} alt={image.alt} fill className="object-contain" priority />
-                  <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-xl border border-white/10 px-6 py-3 rounded-full">
-                    <p className="text-white text-xs md:text-sm font-black uppercase tracking-[0.2em] italic">{image.alt}</p>
-                  </div>
-                </div>
-              </DialogContent>
-            </Dialog>
-          ) : (
-            /* SSR / pre-hydration: static image, no Radix IDs */
-            <>
-              <Image
-                src={image.src}
-                alt={image.alt}
-                fill
-                className="object-cover"
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              />
-              <div className="absolute bottom-0 left-0 right-0 p-6">
-                <p className="text-white text-sm font-black uppercase tracking-widest italic">{image.alt}</p>
+
               </div>
-            </>
-          )}
-        </div>
-      ))}
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* ── Pinterest masonry grid ── */}
+      <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 [column-fill:_balance]">
+        {filtered.map((img, index) => (
+          <article
+            key={img.src || index}
+            className="break-inside-avoid mb-4 group relative rounded-2xl overflow-hidden bg-card border border-border/40 transition-all duration-500 hover:border-primary/30 hover:shadow-xl hover:-translate-y-0.5"
+          >
+            {/* ── Photo with click-to-open ── */}
+            {mounted ? (
+              <figure
+                className="relative cursor-pointer focus:outline-none m-0 group/photo"
+                role="button"
+                tabIndex={0}
+                aria-label={img.alt}
+                onClick={() => openDialog(index)}
+                onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && openDialog(index)}
+              >
+                <img
+                  src={img.src}
+                  alt={img.alt}
+                  className="w-full h-auto block transition-transform duration-1000 group-hover/photo:scale-105"
+                  loading={index < 3 ? 'eager' : 'lazy'}
+                />
+
+                {/* Pinterest-style dynamic overlay */}
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/photo:opacity-100 transition-all duration-500 flex flex-col justify-end p-6 backdrop-blur-[2px]">
+                  <div className="translate-y-4 group-hover/photo:translate-y-0 transition-transform duration-500 space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Expand className="h-4 w-4 text-primary" />
+                      <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/90 drop-shadow-md">
+                        Details
+                      </span>
+                    </div>
+                    <h3 className="text-lg font-black text-white uppercase italic tracking-tighter leading-tight drop-shadow-lg">
+                      {img.title || img.alt}
+                    </h3>
+                  </div>
+                </div>
+              </figure>
+            ) : (
+              /* SSR fallback */
+              <figure className="relative overflow-hidden bg-muted/20 shrink-0 m-0">
+                <Image
+                  src={img.src}
+                  alt={img.alt}
+                  width={600}
+                  height={400}
+                  className="w-full h-auto object-cover"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                  priority={index === 0}
+                  loading={index === 0 ? 'eager' : 'lazy'}
+                />
+              </figure>
+            )}
+
+            {/* ── SEO title (visually hidden, shown on hover on mobile via footer) ── */}
+            <div className="px-3 py-2 flex items-center justify-between gap-2 border-t border-border/30">
+              <h3 className="text-[10px] font-black uppercase tracking-tight text-foreground/70 group-hover:text-primary transition-colors leading-tight truncate">
+                {img.title || img.alt}
+              </h3>
+              {img.category && categoryLabels[img.category] && (
+                <span className="shrink-0 text-[8px] font-black uppercase tracking-widest text-primary/60 border border-primary/20 rounded-full px-2 py-0.5 whitespace-nowrap">
+                  {categoryLabels[img.category]}
+                </span>
+              )}
+            </div>
+          </article>
+        ))}
+      </div>
     </div>
   );
 }

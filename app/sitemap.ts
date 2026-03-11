@@ -4,6 +4,7 @@ import { fetchIngredients } from '@/lib/api';
 import { locales } from '@/i18n';
 
 const BASE_URL = 'https://dima-fomin.pl';
+const API_URL = 'https://ministerial-yetta-fodi999-c58d8823.koyeb.app';
 const canonicalLocale = 'pl';
 
 /** Fixed at build time — avoids marking every page as "updated today" on every deploy */
@@ -17,6 +18,18 @@ function toDate(raw?: string): Date {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+
+  // ─── Gallery images from API (for sitemap image entries) ─────────────
+  let galleryItems: Array<{ image_url: string; title_en?: string; alt_en?: string }> = [];
+  try {
+    const res = await fetch(`${API_URL}/public/gallery`, { next: { revalidate: 3600 } });
+    if (res.ok) galleryItems = await res.json();
+  } catch { /* non-blocking */ }
+
+  const galleryImages = galleryItems.map(item => ({
+    url: item.image_url,
+    title: item.title_en || item.alt_en || '',
+  }));
 
   // ─── Static pages ────────────────────────────────────────────────────
   const staticPages: {
@@ -45,12 +58,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticUrls: MetadataRoute.Sitemap = staticPages.map(
     ({ path, priority, changeFrequency }) => ({
       url: `${BASE_URL}/${canonicalLocale}${path}`,
-      lastModified: BUILD_DATE, // Same for all static pages — stable across deploys
+      lastModified: BUILD_DATE,
       changeFrequency,
       priority,
+      // Attach gallery images to the /about page entry for Google Images sitemap
+      ...(path === '/about' && galleryImages.length > 0
+        ? { images: galleryImages.map(img => img.url) }
+        : {}),
       alternates: {
         languages: {
-          // All static pages exist in all locales (next-intl handles routing)
           ...Object.fromEntries(locales.map((l) => [l, `${BASE_URL}/${l}${path}`])),
           'x-default': `${BASE_URL}/${canonicalLocale}${path}`,
         },

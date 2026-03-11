@@ -600,7 +600,22 @@
         }
       ]
     },
-    "gallery": "Galeria"
+    "gallery": "Galeria",
+    "gallery_journal": "Dziennik wizualny",
+    "gallery_subtitle": "Wybrane prace i chwile w kuchni",
+    "collaboration": "Rozpocznij współpracę",
+    "gallery_categories": {
+      "all": "Wszystkie",
+      "fish": "Ryby",
+      "sushi": "Sushi",
+      "meat": "Mięso",
+      "vegetables": "Warzywa",
+      "desserts": "Desery",
+      "kitchen": "Kuchnia",
+      "restaurant": "Restauracja",
+      "knife": "Noże",
+      "ingredients": "Składniki"
+    }
   },
   "contact": {
     "title": "Kontakt",

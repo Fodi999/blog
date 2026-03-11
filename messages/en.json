@@ -600,7 +600,22 @@
         }
       ]
     },
-    "gallery": "Gallery"
+    "gallery": "Gallery",
+    "gallery_journal": "Visual Journal",
+    "gallery_subtitle": "Selected works & moments in the kitchen",
+    "collaboration": "Start Collaboration",
+    "gallery_categories": {
+      "all": "All",
+      "fish": "Fish",
+      "sushi": "Sushi",
+      "meat": "Meat",
+      "vegetables": "Vegetables",
+      "desserts": "Desserts",
+      "kitchen": "Kitchen",
+      "restaurant": "Restaurant",
+      "knife": "Knives",
+      "ingredients": "Ingredients"
+    }
   },
   "contact": {
     "title": "Contact",

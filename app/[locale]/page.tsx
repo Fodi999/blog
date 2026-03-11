@@ -10,7 +10,29 @@ import { JsonLd } from '@/components/JsonLd';
 import { generateMetadata as sharedGenerateMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
 
-export const dynamic = 'force-static';
+export const revalidate = 60;
+
+const API = process.env.NEXT_PUBLIC_API_URL ?? 'https://ministerial-yetta-fodi999-c58d8823.koyeb.app';
+
+type Locale = 'en' | 'pl' | 'ru' | 'uk';
+
+function pick(obj: Record<string, unknown>, field: string, locale: Locale): string {
+  return (obj[`${field}_${locale}`] ?? obj[`${field}_en`] ?? '') as string;
+}
+
+interface GalleryItem {
+  id: string; image_url: string; order_index: number;
+  category?: string;
+  title_en: string; title_pl: string; title_ru: string; title_uk: string;
+  alt_en?: string; alt_pl?: string; alt_ru?: string; alt_uk?: string;
+  description_en?: string; description_pl?: string;
+  description_ru?: string; description_uk?: string;
+}
+
+interface AboutData {
+  id: string;
+  image_url?: string;
+}
 
 export async function generateMetadata({
   params,
@@ -35,9 +57,32 @@ export default async function HomePage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
+  const loc = locale as Locale;
   const t = await getTranslations({ locale, namespace: 'home' });
   
-  const latestPosts = await getLatestPosts(locale, 6);
+  const [latestPosts, galleryFromApi, aboutFromApi] = await Promise.all([
+    getLatestPosts(locale, 6),
+    fetch(`${API}/public/gallery`, { next: { revalidate: 60 } })
+      .then(r => r.ok ? r.json() as Promise<GalleryItem[]> : [])
+      .catch(() => [] as GalleryItem[]),
+    fetch(`${API}/public/about`, { next: { revalidate: 60 } })
+      .then(r => r.ok ? r.json() as Promise<AboutData> : null)
+      .catch(() => null),
+  ]);
+
+  const aboutImage = (aboutFromApi as AboutData | null)?.image_url ?? null;
+
+  const galleryImages = (galleryFromApi as GalleryItem[])
+    .sort((a, b) => a.order_index - b.order_index)
+    .map(item => ({
+      src: item.image_url,
+      alt: pick(item as unknown as Record<string, unknown>, 'alt', loc)
+        || pick(item as unknown as Record<string, unknown>, 'title', loc)
+        || '',
+      title: pick(item as unknown as Record<string, unknown>, 'title', loc) || undefined,
+      description: pick(item as unknown as Record<string, unknown>, 'description', loc) || undefined,
+      category: item.category || undefined,
+    }));
 
   const personJsonLd = {
     '@context': 'https://schema.org',
@@ -48,21 +93,6 @@ export default async function HomePage({
     image: 'https://i.postimg.cc/W1KV4b43/logo1.webp',
     description: t('aboutSection.description'),
   };
-
-  const galleryImages = [
-    {
-      src: 'https://i.postimg.cc/V5QZwGRX/IMG_4239.jpg',
-      alt: 'Sushi preparation by Dima Fomin',
-    },
-    {
-      src: 'https://i.postimg.cc/K8QChcY9/DSCF4689.jpg',
-      alt: 'Japanese cuisine by Dima Fomin',
-    },
-    {
-      src: 'https://i.postimg.cc/XqFtRwZJ/DSCF4697.jpg',
-      alt: 'Culinary art by Dima Fomin',
-    },
-  ];
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -215,32 +245,36 @@ export default async function HomePage({
             </Button>
           </div>
           <div className="order-1 lg:order-2">
-            <div className="relative">
-              <div className="absolute -inset-4 bg-primary/10 rounded-[4rem] -rotate-3 transition-transform group-hover:rotate-0" />
-              <div className="relative aspect-square rounded-[3.5rem] overflow-hidden border-2 border-border/60 shadow-2xl">
-                <img 
-                  src="https://i.postimg.cc/K8QChcY9/DSCF4689.jpg" 
-                  alt="Dima Fomin" 
-                  className="w-full h-full object-cover"
-                />
+            {aboutImage && (
+              <div className="relative">
+                <div className="absolute -inset-4 bg-primary/10 rounded-[4rem] -rotate-3 transition-transform group-hover:rotate-0" />
+                <div className="relative aspect-square rounded-[3.5rem] overflow-hidden border-2 border-border/60 shadow-2xl">
+                  <img
+                    src={aboutImage}
+                    alt="Dima Fomin"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </section>
 
       {/* Gallery Section */}
-      <section className="py-32 border-t border-border/40">
-        <div className="flex flex-col items-center text-center mb-16">
-          <h2 className="text-5xl md:text-7xl font-black tracking-tighter text-foreground uppercase italic mb-4">
-            {t('gallery.title')}
-          </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl font-medium">
-            {t('gallery.description')}
-          </p>
-        </div>
-        <ImageGallery images={galleryImages} />
-      </section>
+      {galleryImages.length > 0 && (
+        <section className="py-32 border-t border-border/40">
+          <div className="flex flex-col items-center text-center mb-16">
+            <h2 className="text-5xl md:text-7xl font-black tracking-tighter text-foreground uppercase italic mb-4">
+              {t('gallery.title')}
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-2xl font-medium">
+              {t('gallery.description')}
+            </p>
+          </div>
+          <ImageGallery images={galleryImages} />
+        </section>
+      )}
     </div>
   );
 }

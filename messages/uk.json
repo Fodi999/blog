@@ -600,7 +600,22 @@
         }
       ]
     },
-    "gallery": "Галерея"
+    "gallery": "Галерея",
+    "gallery_journal": "Візуальний журнал",
+    "gallery_subtitle": "Вибрані роботи та моменти на кухні",
+    "collaboration": "Почати співпрацю",
+    "gallery_categories": {
+      "all": "Всі",
+      "fish": "Риба",
+      "sushi": "Суші",
+      "meat": "М'ясо",
+      "vegetables": "Овочі",
+      "desserts": "Десерти",
+      "kitchen": "Кухня",
+      "restaurant": "Ресторан",
+      "knife": "Ножі",
+      "ingredients": "Інгредієнти"
+    }
   },
   "contact": {
     "title": "Контакт",
