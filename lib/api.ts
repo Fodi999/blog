@@ -86,6 +86,14 @@ export type ApiIngredient = {
   culinary?: ApiIngredientCulinary | null;
   pairings?: ApiIngredientPairing[];
   availability_months?: boolean[] | null;
+  // SEO fields
+  seo_title?: string | null;
+  seo_description?: string | null;
+  seo_h1?: string | null;
+  canonical_url?: string | null;
+  og_title?: string | null;
+  og_description?: string | null;
+  og_image?: string | null;
 };
 
 /** GET /public/tools/convert response */
@@ -324,6 +332,13 @@ export async function fetchIngredients(): Promise<ApiIngredient[] | null> {
       fat_per_100g: number;
       carbs_per_100g: number;
     } | null;
+    seo_title?: string | null;
+    seo_description?: string | null;
+    seo_h1?: string | null;
+    canonical_url?: string | null;
+    og_title?: string | null;
+    og_description?: string | null;
+    og_image?: string | null;
   };
 
   const details = await Promise.allSettled(
@@ -384,6 +399,13 @@ export async function fetchIngredient(slug: string): Promise<ApiIngredient | nul
       fat_per_100g: number;
       carbs_per_100g: number;
     } | null;
+    seo_title?: string | null;
+    seo_description?: string | null;
+    seo_h1?: string | null;
+    canonical_url?: string | null;
+    og_title?: string | null;
+    og_description?: string | null;
+    og_image?: string | null;
   };
   type NutritionRaw = {
     slug: string;
@@ -434,6 +456,22 @@ export async function fetchIngredient(slug: string): Promise<ApiIngredient | nul
     culinary: nutr?.culinary ?? null,
     pairings: nutr?.pairings ?? [],
     availability_months: nutr?.availability_months ?? null,
+    // SEO
+    seo_title: raw.seo_title ?? null,
+    seo_description: raw.seo_description ?? null,
+    seo_h1: raw.seo_h1 ?? null,
+    canonical_url: raw.canonical_url ?? null,
+    og_title: raw.og_title ?? null,
+    og_description: raw.og_description ?? null,
+    og_image: raw.og_image ?? null,
+    // SEO
+    seo_title: raw.seo_title ?? null,
+    seo_description: raw.seo_description ?? null,
+    seo_h1: raw.seo_h1 ?? null,
+    canonical_url: raw.canonical_url ?? null,
+    og_title: raw.og_title ?? null,
+    og_description: raw.og_description ?? null,
+    og_image: raw.og_image ?? null,
   };
 }
 

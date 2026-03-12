@@ -76,7 +76,38 @@ export async function generateMetadata({
 
   const name = localName(item, locale);
   const desc = localDesc(item, locale);
-  return genMeta({ title: name, description: desc ?? `${name} — nutrition facts and kitchen conversions`, locale: locale as 'pl' | 'en' | 'uk' | 'ru', path: `/chef-tools/ingredients/${slug}` });
+
+  // Use AI-generated SEO data if available
+  const seoTitle = item.seo_title
+    ? item.seo_title
+    : `${name} — Nutrition Facts, Calories, Protein`;
+  const seoDesc = item.seo_description
+    ? item.seo_description
+    : desc ?? `${name} — nutrition facts and kitchen conversions`;
+
+  const meta = genMeta({
+    title: seoTitle,
+    description: seoDesc,
+    locale: locale as 'pl' | 'en' | 'uk' | 'ru',
+    path: `/chef-tools/ingredients/${slug}`,
+    image: item.og_image ?? undefined,
+  });
+
+  // Override OpenGraph with dedicated OG fields if available
+  if (item.og_title || item.og_description) {
+    meta.openGraph = {
+      ...meta.openGraph,
+      ...(item.og_title && { title: item.og_title }),
+      ...(item.og_description && { description: item.og_description }),
+    };
+    meta.twitter = {
+      ...meta.twitter,
+      ...(item.og_title && { title: item.og_title }),
+      ...(item.og_description && { description: item.og_description }),
+    };
+  }
+
+  return meta;
 }
 
 /* ─── Reusable section card ─────────────────────────────────────────────── */
@@ -137,6 +168,8 @@ export default async function IngredientSlugPage({
   const t = await getTranslations({ locale, namespace: 'chefTools' });
   const name = localName(item, locale);
   const description = localDesc(item, locale);
+
+  const seoH1 = item.seo_h1 || null;
 
   const macros = item.macros_full;
   const vitamins = item.vitamins;
@@ -289,6 +322,9 @@ export default async function IngredientSlugPage({
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tighter text-foreground uppercase italic mb-1 sm:mb-2">
               {name}<span className="text-primary">.</span>
             </h1>
+            {seoH1 && seoH1 !== name && (
+              <p className="text-[11px] sm:text-sm font-semibold text-muted-foreground/80 mb-1 sm:mb-2">{seoH1}</p>
+            )}
             {item.category && (
               <p className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2 sm:mb-3">{item.category}</p>
             )}
