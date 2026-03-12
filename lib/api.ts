@@ -464,14 +464,6 @@ export async function fetchIngredient(slug: string): Promise<ApiIngredient | nul
     og_title: raw.og_title ?? null,
     og_description: raw.og_description ?? null,
     og_image: raw.og_image ?? null,
-    // SEO
-    seo_title: raw.seo_title ?? null,
-    seo_description: raw.seo_description ?? null,
-    seo_h1: raw.seo_h1 ?? null,
-    canonical_url: raw.canonical_url ?? null,
-    og_title: raw.og_title ?? null,
-    og_description: raw.og_description ?? null,
-    og_image: raw.og_image ?? null,
   };
 }
 
