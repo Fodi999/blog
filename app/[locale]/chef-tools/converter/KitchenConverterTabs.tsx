@@ -31,20 +31,21 @@ export function KitchenConverterTabs({ groups, ingredients, i18n, labels }: Prop
   return (
     <div>
       {/* ── Tab bar ── */}
-      <div className="flex gap-1 p-1 rounded-2xl bg-muted/40 border border-border/40 w-fit mb-8">
+      <div className="flex gap-1 p-1 rounded-2xl bg-muted/40 border border-border/40 w-full sm:w-fit mb-6 sm:mb-8 overflow-x-auto scrollbar-hide">
         {tabConfig.map((tab) => (
           <button
             key={tab.id}
             type="button"
             onClick={() => setActive(tab.id)}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-[0.25em] transition-all duration-200 ${
+            className={`flex items-center justify-center gap-1.5 sm:gap-2 flex-1 sm:flex-initial px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl text-[10px] sm:text-[11px] font-black uppercase tracking-[0.15em] sm:tracking-[0.25em] transition-all duration-200 whitespace-nowrap ${
               active === tab.id
                 ? 'bg-primary text-white shadow-md shadow-primary/25 scale-[1.02]'
                 : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'
             }`}
           >
             {tab.icon}
-            {tab.label}
+            <span className="hidden xs:inline sm:inline">{tab.label}</span>
+            <span className="xs:hidden sm:hidden">{tab.label}</span>
           </button>
         ))}
       </div>

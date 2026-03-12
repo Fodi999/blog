@@ -35,7 +35,7 @@ const SLUG_CATEGORY: Record<string, string> = {
   'cottage-cheese': 'dairy', butter: 'dairy', 'chicken-eggs': 'dairy',
   // Grains & Bread
   rice: 'grains', pasta: 'grains', bread: 'grains', oatmeal: 'grains',
-  buckwheat: 'grains', 'wheat-flour': 'grains', breadcrumbs: 'grains',
+  buckwheat: 'grains', 'wheat-flour': 'grains', breadcrumbs: 'grains', quinoa: 'grains',
   // Legumes
   beans: 'legumes', lentils: 'legumes', chickpeas: 'legumes',
   // Nuts & Seeds
@@ -73,22 +73,27 @@ const API_CATEGORY_NAME_MAP: Record<string, string> = {
   'Dairy & Eggs': 'dairy',
   'Dairy': 'dairy',
   'Grains & Bread': 'grains',
+  'Grains & Pasta': 'grains',
   'Grains': 'grains',
   'Legumes': 'legumes',
   'Nuts & Seeds': 'nuts',
   'Oils & Fats': 'oils',
   'Oils': 'oils',
   'Sauces & Condiments': 'sauces',
+  'Condiments & Sauces': 'sauces',
   'Sauces': 'sauces',
   'Spices & Herbs': 'spices',
   'Spices': 'spices',
   'Herbs': 'spices',
   'Preserved': 'preserved',
+  'Canned & Preserved': 'preserved',
   'Drinks': 'drinks',
   'Beverages': 'drinks',
   'Sweets': 'sweets',
   'Sweets & Sugars': 'sweets',
+  'Sweets & Baking': 'sweets',
   'Mushrooms': 'other',
+  'Frozen': 'other',
 };
 
 /**

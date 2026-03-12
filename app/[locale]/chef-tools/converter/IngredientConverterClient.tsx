@@ -279,14 +279,14 @@ function IngredientCombobox({
   return (
     <div ref={containerRef} className="relative flex-1 min-w-0">
       <div className="relative">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none z-10" />
+        <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none z-10" />
         <Input
           ref={inputRef}
           value={open ? query : (value?.name ?? query)}
           onChange={(e) => { setQuery(e.target.value); setOpen(true); }}
           onFocus={() => setOpen(true)}
           placeholder={placeholder}
-          className="pl-10 pr-8 h-14 rounded-2xl border-2 border-border/60 bg-muted/30 font-medium text-sm focus-visible:border-primary/60 focus-visible:ring-0 w-full"
+          className="pl-9 sm:pl-10 pr-8 h-12 sm:h-14 rounded-xl sm:rounded-2xl border-2 border-border/60 bg-muted/30 font-medium text-sm focus-visible:border-primary/60 focus-visible:ring-0 w-full"
         />
         {(value || query) && (
           <button
@@ -546,13 +546,13 @@ export function IngredientConverterClient({ ingredients, i18n }: Props) {
 
   return (
     <Card className="border-2 border-border/60 rounded-3xl shadow-sm hover:shadow-lg transition-shadow">
-      <CardContent className="p-6 sm:p-10 space-y-6">
+      <CardContent className="p-4 sm:p-6 md:p-10 space-y-5 sm:space-y-6">
         {/* Header */}
         <div>
-          <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-black tracking-tight text-foreground">
             {i18n.title}<span className="text-primary">.</span>
           </h2>
-          <p className="text-base text-muted-foreground font-medium mt-2 leading-relaxed max-w-xl">
+          <p className="text-sm sm:text-base text-muted-foreground font-medium mt-1.5 sm:mt-2 leading-relaxed max-w-xl">
             {locale === 'ru' 
               ? '1 стакан муки в граммах? 2 ст.л. масла в унциях? Выберите ингредиент и единицы — конвертер учитывает реальную плотность продукта.'
               : i18n.description}
@@ -560,11 +560,11 @@ export function IngredientConverterClient({ ingredients, i18n }: Props) {
         </div>
 
         {/* Quick ingredient chips */}
-        <div className="space-y-3">
-          <p className="text-xs font-black uppercase tracking-wider text-muted-foreground/60">
+        <div className="space-y-2 sm:space-y-3">
+          <p className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-muted-foreground/60">
             {locale === 'ru' ? 'Быстрый выбор' : i18n.quickIngredients}
           </p>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1.5 sm:gap-2">
             {QUICK_SLUGS.map((slug) => {
               const opt = findBySlug(slug);
               if (!opt) return null;
@@ -577,7 +577,7 @@ export function IngredientConverterClient({ ingredients, i18n }: Props) {
                     setDescription(null);
                     setConvertResult(null);
                   }}
-                  className={`px-4 py-2 text-sm rounded-full border-2 transition-all font-bold ${ingredient?.slug === slug
+                  className={`px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm rounded-full border-2 transition-all font-bold ${ingredient?.slug === slug
                       ? 'bg-primary text-primary-foreground border-primary shadow-md shadow-primary/20'
                       : 'bg-muted/30 border-border/40 hover:bg-primary/10 hover:border-primary/30 hover:text-primary text-foreground/80'
                     }`}
@@ -591,8 +591,8 @@ export function IngredientConverterClient({ ingredients, i18n }: Props) {
 
         {/* Product Preview: photo + description */}
         {ingredient && (
-          <div className="flex items-start gap-4 bg-muted/20 border border-border/40 rounded-2xl p-4 animate-in fade-in slide-in-from-top-2 duration-300">
-            <div className="relative h-20 w-20 rounded-xl overflow-hidden bg-muted shrink-0 border border-border/40">
+          <div className="flex items-start gap-3 sm:gap-4 bg-muted/20 border border-border/40 rounded-xl sm:rounded-2xl p-3 sm:p-4 animate-in fade-in slide-in-from-top-2 duration-300">
+            <div className="relative h-14 w-14 sm:h-20 sm:w-20 rounded-lg sm:rounded-xl overflow-hidden bg-muted shrink-0 border border-border/40">
               {ingredient.image ? (
                 <Image
                   src={ingredient.image}
@@ -603,19 +603,19 @@ export function IngredientConverterClient({ ingredients, i18n }: Props) {
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
-                  <Package className="h-8 w-8 text-muted-foreground/30" />
+                  <Package className="h-6 w-6 sm:h-8 sm:w-8 text-muted-foreground/30" />
                 </div>
               )}
             </div>
             <div className="min-w-0 flex-1">
-              <h3 className="font-black text-sm uppercase tracking-tight text-foreground truncate">
+              <h3 className="font-black text-xs sm:text-sm uppercase tracking-tight text-foreground truncate">
                 {ingredient.name}
               </h3>
-              <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest mt-0.5 mb-2">
+              <p className="text-[9px] sm:text-[10px] text-muted-foreground font-bold uppercase tracking-widest mt-0.5 mb-1.5 sm:mb-2">
                 {ingredient.nameEn}
               </p>
               {description ? (
-                <p className="text-[11px] text-muted-foreground leading-relaxed line-clamp-3 border-l-2 border-primary/30 pl-2 italic">
+                <p className="text-[10px] sm:text-[11px] text-muted-foreground leading-relaxed line-clamp-2 sm:line-clamp-3 border-l-2 border-primary/30 pl-2 italic">
                   {description}
                 </p>
               ) : (
@@ -637,72 +637,75 @@ export function IngredientConverterClient({ ingredients, i18n }: Props) {
         </div>
 
         {/* Row 2: amount + from-unit → arrow → to-unit → result */}
-          <div className="flex items-center gap-2 flex-1 relative">
-            <div className="relative flex-1">
-              <Input
-                type="text"
-                inputMode="decimal"
-                value={amount}
-                onChange={(e) => {
-                  const raw = e.target.value;
-                  if (raw !== '' && !/^[\d]*[.,]?[\d]*$/.test(raw)) return;
-                  setAmount(raw);
-                  setConvertResult(null);
-                }}
-                placeholder={i18n.valuePlaceholder}
-                className="h-14 w-full rounded-2xl border-2 border-border/60 bg-muted/30 font-black text-xl focus-visible:border-primary/60 focus-visible:ring-0 pl-4 pr-16 placeholder:font-medium placeholder:text-muted-foreground/30"
-              />
-              <div className="absolute right-2 top-1/2 -translate-y-1/2">
-                <UnitPicker units={FROM_UNITS} value={fromUnit} onChange={(c) => { setFromUnit(c); setConvertResult(null); }} locale={locale} />
-              </div>
-            </div>
-            
-            <div className="flex items-center justify-center shrink-0">
-              <ArrowRight className="h-5 w-5 text-muted-foreground/40" />
-            </div>
-
-            <div className="relative flex-1">
-              <div
-                aria-live="polite"
-                className={`h-14 w-full px-4 pr-16 rounded-2xl border-2 flex items-center transition-colors min-w-0 ${error
-                    ? 'border-orange-400/40 bg-orange-500/5'
-                    : noDensity
-                      ? 'border-yellow-400/40 bg-yellow-500/5'
-                      : loading
-                        ? 'border-border/60 bg-muted/20'
-                        : targetValue != null
-                          ? 'border-primary/40 bg-primary/5'
-                          : 'border-border/40 bg-muted/10'
-                  }`}
-              >
-                {loading ? (
-                  <svg className="animate-spin h-4 w-4 text-muted-foreground" viewBox="0 0 24 24" fill="none">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-                  </svg>
-                ) : !ingredient ? (
-                  <span className="text-[10px] text-muted-foreground/40 font-bold uppercase tracking-tight leading-tight">
-                    {locale === 'ru' ? 'Выберите ингредиент' : i18n.noIngredient}
-                  </span>
-                ) : noDensity ? (
-                  <span className="text-[10px] text-yellow-600 font-bold leading-tight line-clamp-2">
-                    {locale === 'ru' ? '⚠ Нет плотности' : '⚠ No density'}
-                  </span>
-                ) : error ? (
-                  <span className="text-xs text-orange-500 font-medium line-clamp-2">{i18n.noResult}</span>
-                ) : targetValue != null ? (
-                  <span className="font-black text-xl text-primary truncate">
-                    {fmtFraction(convertResult!.result_fraction, toUnit)}
-                  </span>
-                ) : (
-                  <span className="font-black text-xl text-muted-foreground/20">—</span>
-                )}
-              </div>
-              <div className="absolute right-2 top-1/2 -translate-y-1/2">
-                <UnitPicker units={TO_UNITS} value={toUnit} onChange={(c) => { setToUnit(c); setConvertResult(null); }} locale={locale} />
-              </div>
+        <div className="space-y-3 sm:space-y-0 sm:flex sm:items-center sm:gap-2">
+          {/* Input + from unit */}
+          <div className="relative flex-1">
+            <Input
+              type="text"
+              inputMode="decimal"
+              value={amount}
+              onChange={(e) => {
+                const raw = e.target.value;
+                if (raw !== '' && !/^[\d]*[.,]?[\d]*$/.test(raw)) return;
+                setAmount(raw);
+                setConvertResult(null);
+              }}
+              placeholder={i18n.valuePlaceholder}
+              className="h-12 sm:h-14 w-full rounded-xl sm:rounded-2xl border-2 border-border/60 bg-muted/30 font-black text-lg sm:text-xl focus-visible:border-primary/60 focus-visible:ring-0 pl-4 pr-20 sm:pr-16 placeholder:font-medium placeholder:text-muted-foreground/30"
+            />
+            <div className="absolute right-2 top-1/2 -translate-y-1/2">
+              <UnitPicker units={FROM_UNITS} value={fromUnit} onChange={(c) => { setFromUnit(c); setConvertResult(null); }} locale={locale} />
             </div>
           </div>
+
+          {/* Arrow */}
+          <div className="flex items-center justify-center shrink-0 py-0.5 sm:py-0">
+            <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground/40 rotate-90 sm:rotate-0" />
+          </div>
+
+          {/* Result + to unit */}
+          <div className="relative flex-1">
+            <div
+              aria-live="polite"
+              className={`h-12 sm:h-14 w-full px-4 pr-20 sm:pr-16 rounded-xl sm:rounded-2xl border-2 flex items-center transition-colors min-w-0 ${error
+                  ? 'border-orange-400/40 bg-orange-500/5'
+                  : noDensity
+                    ? 'border-yellow-400/40 bg-yellow-500/5'
+                    : loading
+                      ? 'border-border/60 bg-muted/20'
+                      : targetValue != null
+                        ? 'border-primary/40 bg-primary/5'
+                        : 'border-border/40 bg-muted/10'
+                }`}
+            >
+              {loading ? (
+                <svg className="animate-spin h-4 w-4 text-muted-foreground" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                </svg>
+              ) : !ingredient ? (
+                <span className="text-[9px] sm:text-[10px] text-muted-foreground/40 font-bold uppercase tracking-tight leading-tight">
+                  {locale === 'ru' ? 'Выберите ингредиент' : i18n.noIngredient}
+                </span>
+              ) : noDensity ? (
+                <span className="text-[9px] sm:text-[10px] text-yellow-600 font-bold leading-tight line-clamp-2">
+                  {locale === 'ru' ? '⚠ Нет плотности' : '⚠ No density'}
+                </span>
+              ) : error ? (
+                <span className="text-[10px] sm:text-xs text-orange-500 font-medium line-clamp-2">{i18n.noResult}</span>
+              ) : targetValue != null ? (
+                <span className="font-black text-lg sm:text-xl text-primary truncate">
+                  {fmtFraction(convertResult!.result_fraction, toUnit)}
+                </span>
+              ) : (
+                <span className="font-black text-lg sm:text-xl text-muted-foreground/20">—</span>
+              )}
+            </div>
+            <div className="absolute right-2 top-1/2 -translate-y-1/2">
+              <UnitPicker units={TO_UNITS} value={toUnit} onChange={(c) => { setToUnit(c); setConvertResult(null); }} locale={locale} />
+            </div>
+          </div>
+        </div>
 
         {/* Results section */}
         {targetValue != null && ingredient && !loading && convertResult && (
@@ -755,37 +758,37 @@ export function IngredientConverterClient({ ingredients, i18n }: Props) {
             {/* Nutrition block */}
             {nutrition && (
               <Card className="border-2 border-border/40">
-                <CardContent className="p-4 space-y-3">
-                  <p className="text-[10px] font-black uppercase tracking-wider text-muted-foreground/70">
+                <CardContent className="p-3 sm:p-4 space-y-2 sm:space-y-3">
+                  <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-muted-foreground/70">
                     {i18n.nutritionResult}
                   </p>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    <div className="flex items-center gap-2">
-                      <Flame className="h-4 w-4 text-orange-500 shrink-0" />
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
+                    <div className="flex items-center gap-1.5 sm:gap-2">
+                      <Flame className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-orange-500 shrink-0" />
                       <div>
-                        <p className="text-sm font-black text-foreground">{Math.round(nutrition.calories)}</p>
-                        <p className="text-[9px] text-muted-foreground font-medium">{i18n.kcal}</p>
+                        <p className="text-xs sm:text-sm font-black text-foreground">{Math.round(nutrition.calories)}</p>
+                        <p className="text-[8px] sm:text-[9px] text-muted-foreground font-medium">{i18n.kcal}</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Beef className="h-4 w-4 text-red-500 shrink-0" />
+                    <div className="flex items-center gap-1.5 sm:gap-2">
+                      <Beef className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-red-500 shrink-0" />
                       <div>
-                        <p className="text-sm font-black text-foreground">{nutrition.protein} g</p>
-                        <p className="text-[9px] text-muted-foreground font-medium">{i18n.protein}</p>
+                        <p className="text-xs sm:text-sm font-black text-foreground">{nutrition.protein} g</p>
+                        <p className="text-[8px] sm:text-[9px] text-muted-foreground font-medium">{i18n.protein}</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Droplets className="h-4 w-4 text-yellow-500 shrink-0" />
+                    <div className="flex items-center gap-1.5 sm:gap-2">
+                      <Droplets className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-yellow-500 shrink-0" />
                       <div>
-                        <p className="text-sm font-black text-foreground">{nutrition.fat} g</p>
-                        <p className="text-[9px] text-muted-foreground font-medium">{i18n.fat}</p>
+                        <p className="text-xs sm:text-sm font-black text-foreground">{nutrition.fat} g</p>
+                        <p className="text-[8px] sm:text-[9px] text-muted-foreground font-medium">{i18n.fat}</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Wheat className="h-4 w-4 text-green-500 shrink-0" />
+                    <div className="flex items-center gap-1.5 sm:gap-2">
+                      <Wheat className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-green-500 shrink-0" />
                       <div>
-                        <p className="text-sm font-black text-foreground">{nutrition.carbs} g</p>
-                        <p className="text-[9px] text-muted-foreground font-medium">{i18n.carbs}</p>
+                        <p className="text-xs sm:text-sm font-black text-foreground">{nutrition.carbs} g</p>
+                        <p className="text-[8px] sm:text-[9px] text-muted-foreground font-medium">{i18n.carbs}</p>
                       </div>
                     </div>
                   </div>
@@ -810,15 +813,15 @@ export function IngredientConverterClient({ ingredients, i18n }: Props) {
         )}
 
         {/* Popular queries presets */}
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           <Separator />
           <div className="flex items-center gap-2 pt-1">
-            <Zap className="h-4 w-4 text-primary" />
-            <p className="text-sm font-black uppercase tracking-wider text-muted-foreground/70">
+            <Zap className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary" />
+            <p className="text-xs sm:text-sm font-black uppercase tracking-wider text-muted-foreground/70">
               {locale === 'ru' ? 'Популярные конвертации' : i18n.popularQueries}
             </p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3">
             {POPULAR_PRESETS.map((p) => {
               const opt = findBySlug(p.slug);
               if (!opt) return null;
@@ -827,7 +830,7 @@ export function IngredientConverterClient({ ingredients, i18n }: Props) {
                   key={`${p.slug}-${p.fromUnit}`}
                   type="button"
                   onClick={() => applyPreset(p)}
-                  className="text-left text-xs font-bold rounded-2xl border-2 border-border/40 bg-background hover:bg-primary/5 hover:border-primary/30 hover:scale-[1.02] shadow-sm transition-all px-4 py-3 leading-snug group"
+                  className="text-left text-[11px] sm:text-xs font-bold rounded-xl sm:rounded-2xl border-2 border-border/40 bg-background hover:bg-primary/5 hover:border-primary/30 hover:scale-[1.02] shadow-sm transition-all px-3 py-2.5 sm:px-4 sm:py-3 leading-snug group"
                 >
                   <span className="text-muted-foreground group-hover:text-primary transition-colors">{p.amount} {unitLabel(p.fromUnit, locale)} </span>
                   <span className="font-black text-foreground group-hover:text-primary transition-colors">{opt.name}</span>
