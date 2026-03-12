@@ -81,7 +81,6 @@ export default async function FishSeasonPage({
             fishSeason: { title: t('tools.fishSeason.title') },
             ingredientAnalyzer: { title: t('tools.ingredientAnalyzer.title') },
             ingredientsCatalog: { title: t('ingredients.catalog.title') },
-            nutrition: { title: t('nutrition.title') },
           }
         }} 
       />

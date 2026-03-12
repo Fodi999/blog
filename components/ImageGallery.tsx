@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import Image from 'next/image';
 import {
   Dialog,
@@ -67,6 +67,28 @@ export function ImageGallery({ images, categoryLabels = {} }: ImageGalleryProps)
     return () => window.removeEventListener('keydown', handler);
   }, [selectedIndex, goPrev, goNext]);
 
+  // Touch swipe navigation
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  }, []);
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    if (touchStartX.current === null || touchStartY.current === null) return;
+    const dx = e.changedTouches[0].clientX - touchStartX.current;
+    const dy = e.changedTouches[0].clientY - touchStartY.current;
+    const absDx = Math.abs(dx);
+    const absDy = Math.abs(dy);
+    // Only swipe if horizontal distance > 50px and dominant direction is horizontal
+    if (absDx > 50 && absDx > absDy * 1.5) {
+      if (dx > 0) goPrev();
+      else goNext();
+    }
+    touchStartX.current = null;
+    touchStartY.current = null;
+  }, [goPrev, goNext]);
+
   const image = selectedIndex !== null ? filtered[selectedIndex] : null;
   const dialogDescId = selectedIndex !== null
     ? `gallery-desc-${selectedIndex}-${filtered[selectedIndex]?.src.split('/').pop()?.split('.')[0]}`
@@ -76,13 +98,13 @@ export function ImageGallery({ images, categoryLabels = {} }: ImageGalleryProps)
     <div>
       {/* ── Category filter tabs ── */}
       {categories.length > 1 && (
-        <div className="flex flex-wrap gap-2 mb-10">
+        <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-8 sm:mb-10">
           {categories.map(cat => (
             <button
               key={cat}
               type="button"
               onClick={() => setActiveCategory(cat)}
-              className={`px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.3em] border transition-all duration-300 ${
+              className={`px-3 sm:px-5 py-1.5 sm:py-2 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] sm:tracking-[0.3em] border transition-all duration-300 ${
                 activeCategory === cat
                   ? 'bg-primary text-white border-primary shadow-lg shadow-primary/20 scale-105'
                   : 'bg-card text-foreground/60 border-border/40 hover:border-primary/30 hover:text-foreground'
@@ -99,53 +121,93 @@ export function ImageGallery({ images, categoryLabels = {} }: ImageGalleryProps)
         <Dialog open={selectedIndex !== null} onOpenChange={open => !open && closeDialog()}>
           <DialogContent
             aria-describedby={dialogDescId}
-            className="max-w-[95vw] md:max-w-4xl border-none bg-zinc-950 p-0 shadow-2xl ring-0 focus:outline-none overflow-hidden rounded-2xl backdrop-blur-2xl [&>button]:!hidden"
+            className="max-w-[100vw] sm:max-w-[95vw] md:max-w-4xl border-none bg-zinc-950 p-0 shadow-2xl ring-0 focus:outline-none overflow-hidden rounded-none sm:rounded-2xl backdrop-blur-2xl [&>button]:!hidden h-[100dvh] sm:h-auto block gap-0"
           >
             <DialogTitle className="sr-only">{image.title || image.alt}</DialogTitle>
             <DialogDescription id={dialogDescId} className="sr-only">
               {image.description || image.title || image.alt}
             </DialogDescription>
 
-            <div className="flex flex-col md:flex-row max-h-[90vh] md:max-h-[85vh]">
+            <div
+              className="flex flex-col md:flex-row h-full sm:h-auto max-h-[100dvh] sm:max-h-[90vh] md:max-h-[85vh]"
+              onTouchStart={handleTouchStart}
+              onTouchEnd={handleTouchEnd}
+            >
 
               {/* ── Left: Photo ── */}
-              <div className="relative md:w-[55%] shrink-0 bg-zinc-900 flex items-center justify-center min-h-[280px] md:min-h-0 overflow-hidden">
+              <div className="relative md:w-[55%] shrink-0 bg-zinc-900 flex items-center justify-center min-h-[200px] sm:min-h-[280px] md:min-h-0 overflow-hidden">
                 <Image
                   src={image.src}
                   alt={image.alt}
                   width={900}
                   height={900}
-                  className="w-full h-full object-contain max-h-[50vh] md:max-h-[85vh]"
-                  sizes="(max-width: 768px) 95vw, 55vw"
+                  className="w-full h-full object-contain max-h-[40vh] sm:max-h-[50vh] md:max-h-[85vh]"
+                  sizes="(max-width: 640px) 100vw, (max-width: 768px) 95vw, 55vw"
                   priority
                 />
                 {/* Category badge */}
                 {image.category && (
-                  <div className="absolute top-4 left-4">
-                    <span className="px-3 py-1 rounded-full bg-black/60 backdrop-blur-sm text-[9px] font-black uppercase tracking-[0.3em] text-primary border border-primary/30">
+                  <div className="absolute top-3 left-3 sm:top-4 sm:left-4">
+                    <span className="px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-black/60 backdrop-blur-sm text-[8px] sm:text-[9px] font-black uppercase tracking-[0.3em] text-primary border border-primary/30">
                       {categoryLabels[image.category] ?? image.category}
                     </span>
                   </div>
                 )}
 
+                {/* ── Mobile: overlay prev/next arrows on photo ── */}
+                <div className="absolute inset-y-0 left-0 right-0 flex items-center justify-between px-2 pointer-events-none md:hidden">
+                  <button
+                    type="button"
+                    onClick={goPrev}
+                    aria-label="Previous photo"
+                    className="pointer-events-auto w-9 h-9 rounded-full bg-black/50 backdrop-blur-sm border border-white/10 text-white/80 active:text-white flex items-center justify-center active:scale-90"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={goNext}
+                    aria-label="Next photo"
+                    className="pointer-events-auto w-9 h-9 rounded-full bg-black/50 backdrop-blur-sm border border-white/10 text-white/80 active:text-white flex items-center justify-center active:scale-90"
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                </div>
 
+                {/* ── Mobile: close button on photo ── */}
+                <button
+                  type="button"
+                  onClick={closeDialog}
+                  aria-label="Close"
+                  className="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/50 backdrop-blur-sm border border-white/10 text-white/80 active:text-white flex items-center justify-center active:scale-90 md:hidden"
+                >
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </button>
               </div>
 
               {/* ── Right: Info ── */}
-              <div className="flex-1 flex flex-col overflow-y-auto">
+              <div className="flex-1 flex flex-col overflow-y-auto min-h-0">
 
                 {/* Header */}
-                <div className="p-6 pb-4 border-b border-white/8">
-                  <p className="text-[9px] font-black uppercase tracking-[0.4em] text-primary mb-2">Detail View</p>
-                  <h3 className="text-xl font-black text-white uppercase italic tracking-tighter leading-tight">
-                    {image.title || image.alt}
-                  </h3>
+                <div className="px-4 py-3 sm:p-6 sm:pb-4 border-b border-white/8">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="text-[8px] sm:text-[9px] font-black uppercase tracking-[0.4em] text-primary mb-1 sm:mb-2">Detail View</p>
+                      <h3 className="text-base sm:text-xl font-black text-white uppercase italic tracking-tighter leading-tight truncate sm:whitespace-normal">
+                        {image.title || image.alt}
+                      </h3>
+                    </div>
+                    {/* Mobile: counter badge */}
+                    <span className="text-[10px] font-black text-zinc-500 tabular-nums whitespace-nowrap shrink-0 md:hidden">
+                      {(selectedIndex ?? 0) + 1}/{filtered.length}
+                    </span>
+                  </div>
                 </div>
 
                 {/* Description */}
                 {image.description && (
-                  <div className="px-6 py-4 border-b border-white/8">
-                    <p className="text-zinc-400 text-sm leading-relaxed">
+                  <div className="px-4 py-3 sm:px-6 sm:py-4 border-b border-white/8">
+                    <p className="text-zinc-400 text-xs sm:text-sm leading-relaxed line-clamp-3 sm:line-clamp-none">
                       {image.description}
                     </p>
                   </div>
@@ -153,9 +215,9 @@ export function ImageGallery({ images, categoryLabels = {} }: ImageGalleryProps)
 
                 {/* Social links */}
                 {(image.instagram_url || image.pinterest_url || image.facebook_url || image.tiktok_url || image.website_url) && (
-                  <div className="px-6 py-4 border-b border-white/8">
-                    <p className="text-[9px] font-black uppercase tracking-[0.3em] text-zinc-500 mb-3">Links</p>
-                    <div className="flex flex-wrap gap-2">
+                  <div className="px-4 py-3 sm:px-6 sm:py-4 border-b border-white/8">
+                    <p className="text-[9px] font-black uppercase tracking-[0.3em] text-zinc-500 mb-2 sm:mb-3">Links</p>
+                    <div className="flex flex-wrap gap-1.5 sm:gap-2">
                       {image.instagram_url && (
                         <a href={image.instagram_url} target="_blank" rel="noopener noreferrer"
                           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 hover:border-primary/40 text-zinc-400 hover:text-white transition-all text-[10px] font-bold uppercase tracking-wider">
@@ -193,11 +255,15 @@ export function ImageGallery({ images, categoryLabels = {} }: ImageGalleryProps)
                 )}
 
                 {/* Footer: alt text (SEO info) + prev/next + close */}
-                <div className="mt-auto px-6 py-4 flex items-center justify-between gap-3">
-                  <p className="text-[9px] text-zinc-600 uppercase tracking-widest font-bold truncate flex-1">
+                <div className="mt-auto px-4 py-3 sm:px-6 sm:py-4 flex items-center justify-between gap-2 sm:gap-3">
+                  <p className="text-[8px] sm:text-[9px] text-zinc-600 uppercase tracking-widest font-bold truncate flex-1 hidden sm:block">
                     {image.alt}
                   </p>
-                  <div className="flex items-center gap-2 shrink-0">
+                  {/* Mobile: swipe hint */}
+                  <p className="text-[9px] text-zinc-600 uppercase tracking-widest font-bold sm:hidden">
+                    Swipe to navigate
+                  </p>
+                  <div className="hidden md:flex items-center gap-2 shrink-0">
                     <button
                       type="button"
                       onClick={goPrev}
@@ -225,6 +291,14 @@ export function ImageGallery({ images, categoryLabels = {} }: ImageGalleryProps)
                       Close
                     </button>
                   </div>
+                  {/* Mobile: close button in footer */}
+                  <button
+                    type="button"
+                    onClick={closeDialog}
+                    className="md:hidden px-4 py-2 rounded-lg bg-primary hover:bg-primary/90 text-white text-[10px] font-black uppercase tracking-[0.2em] transition-all active:scale-95 shrink-0"
+                  >
+                    Close
+                  </button>
                 </div>
 
               </div>

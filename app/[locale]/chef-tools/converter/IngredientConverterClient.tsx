@@ -3,15 +3,18 @@
 import { useState, useEffect, useRef, useTransition, useCallback } from 'react';
 import { useLocale } from 'next-intl';
 import Image from 'next/image';
-import { Search, X, Flame, Beef, Droplets, Wheat, ArrowRight, ChevronDown, Zap, ExternalLink, Package } from 'lucide-react';
+import { Search, X, Flame, Beef, Droplets, Wheat, ArrowRight, Zap, Package } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -43,6 +46,7 @@ export type I18nIngConverter = {
   density: string;
   nutritionResult: string;
   contains: string;
+  microtrust: string;
 };
 
 type ConvertResult = {
@@ -64,31 +68,31 @@ type ConvertResult = {
 // ─── Kitchen units list ───────────────────────────────────────────────────────
 
 const FROM_UNITS = [
-  { code: 'cup',  label: 'cup' },
+  { code: 'cup', label: 'cup' },
   { code: 'tbsp', label: 'tbsp' },
-  { code: 'tsp',  label: 'tsp' },
-  { code: 'g',    label: 'g' },
-  { code: 'kg',   label: 'kg' },
-  { code: 'oz',   label: 'oz' },
-  { code: 'ml',   label: 'ml' },
-  { code: 'l',    label: 'l' },
+  { code: 'tsp', label: 'tsp' },
+  { code: 'g', label: 'g' },
+  { code: 'kg', label: 'kg' },
+  { code: 'oz', label: 'oz' },
+  { code: 'ml', label: 'ml' },
+  { code: 'l', label: 'l' },
 ];
 
 const TO_UNITS = [
-  { code: 'g',    label: 'g' },
-  { code: 'oz',   label: 'oz' },
-  { code: 'kg',   label: 'kg' },
-  { code: 'lb',   label: 'lb' },
-  { code: 'ml',   label: 'ml' },
-  { code: 'cup',  label: 'cup' },
+  { code: 'g', label: 'g' },
+  { code: 'oz', label: 'oz' },
+  { code: 'kg', label: 'kg' },
+  { code: 'lb', label: 'lb' },
+  { code: 'ml', label: 'ml' },
+  { code: 'cup', label: 'cup' },
   { code: 'tbsp', label: 'tbsp' },
-  { code: 'tsp',  label: 'tsp' },
+  { code: 'tsp', label: 'tsp' },
 ];
 
 // ─── Fraction formatter for local conversions ────────────────────────────────
 const FRACTIONS: [number, string][] = [
-  [1/8,  '⅛'], [1/4, '¼'], [1/3, '⅓'], [1/2, '½'],
-  [2/3, '⅔'], [3/4, '¾'], [7/8, '⅞'],
+  [1 / 8, '⅛'], [1 / 4, '¼'], [1 / 3, '⅓'], [1 / 2, '½'],
+  [2 / 3, '⅔'], [3 / 4, '¾'], [7 / 8, '⅞'],
 ];
 
 function toFraction(n: number): string {
@@ -113,8 +117,8 @@ const FRACTION_UNITS = new Set(['cup', 'tbsp', 'tsp']);
 
 // Smart decimal rounding: <10 → 2dp, <50 → 1dp, ≥50 → integer
 function smartRound(n: number): string {
-  if (n < 10)  return n.toFixed(2).replace(/\.?0+$/, '');
-  if (n < 50)  return n.toFixed(1).replace(/\.?0+$/, '');
+  if (n < 10) return n.toFixed(2).replace(/\.?0+$/, '');
+  if (n < 50) return n.toFixed(1).replace(/\.?0+$/, '');
   return String(Math.round(n));
 }
 
@@ -152,9 +156,9 @@ function localConvert(val: number, from: string, to: string): number | null {
 
 function needsDensity(from: string, to: string): boolean {
   const fromMass = from in MASS_TO_G;
-  const fromVol  = from in VOL_TO_ML;
-  const toMass   = to   in MASS_TO_G;
-  const toVol    = to   in VOL_TO_ML;
+  const fromVol = from in VOL_TO_ML;
+  const toMass = to in MASS_TO_G;
+  const toVol = to in VOL_TO_ML;
   return (fromMass && toVol) || (fromVol && toMass);
 }
 
@@ -184,15 +188,15 @@ function buildAllEquivalents(
 
 // ─── Unit label translations ──────────────────────────────────────────────────
 const UNIT_LABELS: Record<string, Record<string, string>> = {
-  cup:  { en: 'cup',  ru: 'стакан', pl: 'szklanka', uk: 'склянка' },
-  tbsp: { en: 'tbsp', ru: 'ст.л.',  pl: 'łyżka',    uk: 'ст.л.'  },
-  tsp:  { en: 'tsp',  ru: 'ч.л.',   pl: 'łyżeczka', uk: 'ч.л.'   },
-  g:    { en: 'g',    ru: 'г',      pl: 'g',         uk: 'г'      },
-  kg:   { en: 'kg',   ru: 'кг',     pl: 'kg',        uk: 'кг'     },
-  oz:   { en: 'oz',   ru: 'унц.',   pl: 'uncja',     uk: 'унц.'   },
-  lb:   { en: 'lb',   ru: 'фунт',   pl: 'funt',      uk: 'фунт'   },
-  ml:   { en: 'ml',   ru: 'мл',     pl: 'ml',        uk: 'мл'     },
-  l:    { en: 'l',    ru: 'л',      pl: 'l',         uk: 'л'      },
+  cup: { en: 'cup', ru: 'стакан', pl: 'szklanka', uk: 'склянка' },
+  tbsp: { en: 'tbsp', ru: 'ст.л.', pl: 'łyżka', uk: 'ст.л.' },
+  tsp: { en: 'tsp', ru: 'ч.л.', pl: 'łyżeczka', uk: 'ч.л.' },
+  g: { en: 'g', ru: 'г', pl: 'g', uk: 'г' },
+  kg: { en: 'kg', ru: 'кг', pl: 'kg', uk: 'кг' },
+  oz: { en: 'oz', ru: 'унц.', pl: 'uncja', uk: 'унц.' },
+  lb: { en: 'lb', ru: 'фунт', pl: 'funt', uk: 'фунт' },
+  ml: { en: 'ml', ru: 'мл', pl: 'ml', uk: 'мл' },
+  l: { en: 'l', ru: 'л', pl: 'l', uk: 'л' },
 };
 
 function unitLabel(code: string, locale: string): string {
@@ -201,14 +205,12 @@ function unitLabel(code: string, locale: string): string {
 
 // Popular preset queries — fill form on click
 const POPULAR_PRESETS: { slug: string; nameEn: string; fromUnit: string; toUnit: string; amount: string }[] = [
-  { slug: 'wheat-flour',     nameEn: 'Wheat Flour',  fromUnit: 'cup',  toUnit: 'g',  amount: '1' },
-  { slug: 'butter',          nameEn: 'Butter',        fromUnit: 'tbsp', toUnit: 'g',  amount: '1' },
-  { slug: 'sugar',           nameEn: 'Sugar',         fromUnit: 'cup',  toUnit: 'g',  amount: '1' },
-  { slug: 'rice',            nameEn: 'Rice',          fromUnit: 'cup',  toUnit: 'g',  amount: '1' },
-  { slug: 'pasteurized-milk',nameEn: 'Milk',          fromUnit: 'cup',  toUnit: 'ml', amount: '1' },
-  { slug: 'olive-oil',       nameEn: 'Olive Oil',     fromUnit: 'tbsp', toUnit: 'g',  amount: '1' },
-  { slug: 'honey',           nameEn: 'Honey',         fromUnit: 'tbsp', toUnit: 'g',  amount: '1' },
-  { slug: 'oats',            nameEn: 'Oats',          fromUnit: 'cup',  toUnit: 'g',  amount: '1' },
+  { slug: 'wheat-flour', nameEn: 'Wheat Flour', fromUnit: 'cup', toUnit: 'g', amount: '1' },
+  { slug: 'butter', nameEn: 'Butter', fromUnit: 'tbsp', toUnit: 'g', amount: '1' },
+  { slug: 'sugar', nameEn: 'Sugar', fromUnit: 'cup', toUnit: 'g', amount: '1' },
+  { slug: 'rice', nameEn: 'Rice', fromUnit: 'cup', toUnit: 'g', amount: '1' },
+  { slug: 'olive-oil', nameEn: 'Olive Oil', fromUnit: 'tbsp', toUnit: 'g', amount: '1' },
+  { slug: 'honey', nameEn: 'Honey', fromUnit: 'tbsp', toUnit: 'g', amount: '1' },
 ];
 
 // Quick ingredient shortcut chips
@@ -217,10 +219,8 @@ const QUICK_SLUGS = [
   'butter',
   'sugar',
   'rice',
-  'pasteurized-milk',
   'olive-oil',
   'honey',
-  'oats',
 ];
 
 // ─── Ingredient combobox ──────────────────────────────────────────────────────
@@ -246,13 +246,13 @@ function IngredientCombobox({
   const filtered = query.length < 1
     ? options.slice(0, 30)
     : options.filter((o) => {
-        const q = query.toLowerCase();
-        return (
-          o.name.toLowerCase().includes(q) ||
-          o.nameEn.toLowerCase().includes(q) ||
-          o.slug.includes(q)
-        );
-      }).slice(0, 20);
+      const q = query.toLowerCase();
+      return (
+        o.name.toLowerCase().includes(q) ||
+        o.nameEn.toLowerCase().includes(q) ||
+        o.slug.includes(q)
+      );
+    }).slice(0, 20);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -279,14 +279,14 @@ function IngredientCombobox({
   return (
     <div ref={containerRef} className="relative flex-1 min-w-0">
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none z-10" />
         <Input
           ref={inputRef}
           value={open ? query : (value?.name ?? query)}
           onChange={(e) => { setQuery(e.target.value); setOpen(true); }}
           onFocus={() => setOpen(true)}
           placeholder={placeholder}
-          className="pl-9 pr-8 h-12 sm:h-14 rounded-2xl border-2 border-border/60 bg-muted/30 font-medium text-sm focus-visible:border-primary/60 focus-visible:ring-0"
+          className="pl-10 pr-8 h-14 rounded-2xl border-2 border-border/60 bg-muted/30 font-medium text-sm focus-visible:border-primary/60 focus-visible:ring-0 w-full"
         />
         {(value || query) && (
           <button
@@ -343,37 +343,19 @@ function UnitPicker({
   onChange: (code: string) => void;
   locale: string;
 }) {
-  const current = units.find((u) => u.code === value) ?? units[0];
-  const loc = unitLabel(current?.code ?? '', locale);
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="outline"
-          className="h-12 sm:h-14 px-3 sm:px-4 rounded-2xl border-2 border-border/60 bg-muted/30 font-black text-sm hover:bg-primary/10 hover:border-primary/40 gap-1 min-w-[90px] shrink-0"
-        >
-          <span className="truncate">{loc}</span>
-          <ChevronDown className="h-3 w-3 opacity-60 shrink-0" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="rounded-2xl max-h-64 overflow-y-auto min-w-[160px]">
-        {units.map((u) => {
-          const lbl = unitLabel(u.code, locale);
-          return (
-            <DropdownMenuItem
-              key={u.code}
-              onSelect={() => onChange(u.code)}
-              className={`font-black cursor-pointer gap-2 ${u.code === value ? 'text-primary' : ''}`}
-            >
-              <span className="flex-1">{lbl}</span>
-              {lbl !== u.code && (
-                <span className="text-[10px] text-muted-foreground/60 font-medium">{u.code}</span>
-              )}
-            </DropdownMenuItem>
-          );
-        })}
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <Select value={value} onValueChange={onChange}>
+      <SelectTrigger className="h-10 rounded-xl border-0 bg-primary/10 text-primary font-black text-xs px-3 min-w-[70px] shrink-0 focus:ring-0 hover:bg-primary/20 transition-colors uppercase">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent className="rounded-2xl border-2 border-border/60 shadow-xl">
+        {units.map((u) => (
+          <SelectItem key={u.code} value={u.code} className="font-black text-sm cursor-pointer">
+            {unitLabel(u.code, locale)}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 }
 
@@ -396,13 +378,13 @@ export function IngredientConverterClient({ ingredients, i18n }: Props) {
     fat_per_100g: number;
     carbs_per_100g: number;
   } | null>(null);
-  const [amount, setAmount]         = useState('1');
-  const [fromUnit, setFromUnit]     = useState('cup');
-  const [toUnit, setToUnit]         = useState('g');
+  const [amount, setAmount] = useState('1');
+  const [fromUnit, setFromUnit] = useState('cup');
+  const [toUnit, setToUnit] = useState('g');
   const [convertResult, setConvertResult] = useState<ConvertResult>(null);
-  const [loading, startTransition]  = useTransition();
-  const [error, setError]           = useState(false);
-  const [noDensity, setNoDensity]   = useState(false);
+  const [loading, startTransition] = useTransition();
+  const [error, setError] = useState(false);
+  const [noDensity, setNoDensity] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const numVal = parseFloat(amount.replace(',', '.'));
@@ -451,11 +433,11 @@ export function IngredientConverterClient({ ingredients, i18n }: Props) {
 
             const nutrition_for_result = (baseNutrition && resultGrams !== null)
               ? {
-                  calories: Math.round(baseNutrition.calories_per_100g * resultGrams / 100 * 10) / 10,
-                  protein:  Math.round(baseNutrition.protein_per_100g  * resultGrams / 100 * 10) / 10,
-                  fat:      Math.round(baseNutrition.fat_per_100g      * resultGrams / 100 * 10) / 10,
-                  carbs:    Math.round(baseNutrition.carbs_per_100g    * resultGrams / 100 * 10) / 10,
-                }
+                calories: Math.round(baseNutrition.calories_per_100g * resultGrams / 100 * 10) / 10,
+                protein: Math.round(baseNutrition.protein_per_100g * resultGrams / 100 * 10) / 10,
+                fat: Math.round(baseNutrition.fat_per_100g * resultGrams / 100 * 10) / 10,
+                carbs: Math.round(baseNutrition.carbs_per_100g * resultGrams / 100 * 10) / 10,
+              }
               : null;
 
             setConvertResult({
@@ -490,11 +472,11 @@ export function IngredientConverterClient({ ingredients, i18n }: Props) {
             : (MASS_TO_G[fromUnit] ? numVal * MASS_TO_G[fromUnit] : null);
           const nutrition_for_result = (baseNutrition && resultGrams !== null)
             ? {
-                calories: Math.round(baseNutrition.calories_per_100g * resultGrams / 100 * 10) / 10,
-                protein:  Math.round(baseNutrition.protein_per_100g  * resultGrams / 100 * 10) / 10,
-                fat:      Math.round(baseNutrition.fat_per_100g      * resultGrams / 100 * 10) / 10,
-                carbs:    Math.round(baseNutrition.carbs_per_100g    * resultGrams / 100 * 10) / 10,
-              }
+              calories: Math.round(baseNutrition.calories_per_100g * resultGrams / 100 * 10) / 10,
+              protein: Math.round(baseNutrition.protein_per_100g * resultGrams / 100 * 10) / 10,
+              fat: Math.round(baseNutrition.fat_per_100g * resultGrams / 100 * 10) / 10,
+              carbs: Math.round(baseNutrition.carbs_per_100g * resultGrams / 100 * 10) / 10,
+            }
             : null;
           setConvertResult({
             result: local,
@@ -533,7 +515,7 @@ export function IngredientConverterClient({ ingredients, i18n }: Props) {
           setBaseNutrition(data.nutrition || null);
         }
       })
-      .catch(() => {});
+      .catch(() => { });
   }, [ingredient, locale]);
 
   const fmt = (n: number) =>
@@ -542,10 +524,10 @@ export function IngredientConverterClient({ ingredients, i18n }: Props) {
     }).format(n);
 
   const targetValue = convertResult?.result ?? null;
-  const nutrition   = convertResult?.nutrition_for_result ?? null;
-  const density     = convertResult?.density_g_per_ml ?? null;
-  const fromLabel   = unitLabel(fromUnit, locale);
-  const toLabel     = unitLabel(toUnit, locale);
+  const nutrition = convertResult?.nutrition_for_result ?? null;
+  const density = convertResult?.density_g_per_ml ?? null;
+  const fromLabel = unitLabel(fromUnit, locale);
+  const toLabel = unitLabel(toUnit, locale);
 
   // Full equivalents: result in grams → all mass units + volume units (if density known)
   const allEquivalents: Record<string, number> | null = (() => {
@@ -563,283 +545,299 @@ export function IngredientConverterClient({ ingredients, i18n }: Props) {
   })();
 
   return (
-    <div className="border-2 border-border/60 rounded-3xl p-5 sm:p-8 bg-background space-y-5">
-      {/* Header */}
-      <div>
-        <h2 className="text-base sm:text-lg font-black uppercase tracking-widest text-foreground italic">
-          {i18n.title}<span className="text-primary">.</span>
-        </h2>
-        <p className="text-sm text-muted-foreground font-medium mt-1">
-          {i18n.description}
-        </p>
-      </div>
+    <Card className="border-2 border-border/60 rounded-3xl shadow-sm hover:shadow-lg transition-shadow">
+      <CardContent className="p-6 sm:p-10 space-y-6">
+        {/* Header */}
+        <div>
+          <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">
+            {i18n.title}<span className="text-primary">.</span>
+          </h2>
+          <p className="text-base text-muted-foreground font-medium mt-2 leading-relaxed max-w-xl">
+            {locale === 'ru' 
+              ? '1 стакан муки в граммах? 2 ст.л. масла в унциях? Выберите ингредиент и единицы — конвертер учитывает реальную плотность продукта.'
+              : i18n.description}
+          </p>
+        </div>
 
-      {/* Quick ingredient chips */}
-      <div className="space-y-1.5">
-        <p className="text-[10px] font-black uppercase tracking-wider text-muted-foreground/60">
-          {i18n.quickIngredients}
-        </p>
-        <div className="flex flex-wrap gap-1.5">
-          {QUICK_SLUGS.map((slug) => {
-            const opt = findBySlug(slug);
-            if (!opt) return null;
-            return (
-              <button
-                key={slug}
-                type="button"
-                onClick={() => {
-                  setIngredient(opt);
-                  setDescription(null);
+        {/* Quick ingredient chips */}
+        <div className="space-y-3">
+          <p className="text-xs font-black uppercase tracking-wider text-muted-foreground/60">
+            {locale === 'ru' ? 'Быстрый выбор' : i18n.quickIngredients}
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {QUICK_SLUGS.map((slug) => {
+              const opt = findBySlug(slug);
+              if (!opt) return null;
+              return (
+                <button
+                  key={slug}
+                  type="button"
+                  onClick={() => {
+                    setIngredient(opt);
+                    setDescription(null);
+                    setConvertResult(null);
+                  }}
+                  className={`px-4 py-2 text-sm rounded-full border-2 transition-all font-bold ${ingredient?.slug === slug
+                      ? 'bg-primary text-primary-foreground border-primary shadow-md shadow-primary/20'
+                      : 'bg-muted/30 border-border/40 hover:bg-primary/10 hover:border-primary/30 hover:text-primary text-foreground/80'
+                    }`}
+                >
+                  {opt.name}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Product Preview: photo + description */}
+        {ingredient && (
+          <div className="flex items-start gap-4 bg-muted/20 border border-border/40 rounded-2xl p-4 animate-in fade-in slide-in-from-top-2 duration-300">
+            <div className="relative h-20 w-20 rounded-xl overflow-hidden bg-muted shrink-0 border border-border/40">
+              {ingredient.image ? (
+                <Image
+                  src={ingredient.image}
+                  alt={ingredient.name}
+                  fill
+                  className="object-cover"
+                  unoptimized
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                  <Package className="h-8 w-8 text-muted-foreground/30" />
+                </div>
+              )}
+            </div>
+            <div className="min-w-0 flex-1">
+              <h3 className="font-black text-sm uppercase tracking-tight text-foreground truncate">
+                {ingredient.name}
+              </h3>
+              <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest mt-0.5 mb-2">
+                {ingredient.nameEn}
+              </p>
+              {description ? (
+                <p className="text-[11px] text-muted-foreground leading-relaxed line-clamp-3 border-l-2 border-primary/30 pl-2 italic">
+                  {description}
+                </p>
+              ) : (
+                <div className="h-4 w-3/4 bg-muted animate-pulse rounded" />
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Row 1: ingredient combobox — full width */}
+        <div className="space-y-2">
+          <IngredientCombobox
+            options={ingredients}
+            value={ingredient}
+            onChange={(opt) => { setIngredient(opt); setDescription(null); setBaseNutrition(null); setConvertResult(null); }}
+            placeholder={locale === 'ru' ? 'напр.: мука, сахар, рис, масло...' : i18n.ingredientPlaceholder}
+            noResults={i18n.searchNoResults}
+          />
+        </div>
+
+        {/* Row 2: amount + from-unit → arrow → to-unit → result */}
+          <div className="flex items-center gap-2 flex-1 relative">
+            <div className="relative flex-1">
+              <Input
+                type="text"
+                inputMode="decimal"
+                value={amount}
+                onChange={(e) => {
+                  const raw = e.target.value;
+                  if (raw !== '' && !/^[\d]*[.,]?[\d]*$/.test(raw)) return;
+                  setAmount(raw);
                   setConvertResult(null);
                 }}
-                className={`text-[11px] font-black px-3 py-1.5 rounded-full border transition-all ${
-                  ingredient?.slug === slug
-                    ? 'border-primary bg-primary/10 text-primary'
-                    : 'border-border/60 hover:border-primary/40 hover:text-primary text-muted-foreground hover:bg-primary/5'
-                }`}
-              >
-                {opt.name}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Product Preview: photo + description */}
-      {ingredient && (
-        <div className="flex items-start gap-4 bg-muted/20 border border-border/40 rounded-2xl p-4 animate-in fade-in slide-in-from-top-2 duration-300">
-          <div className="relative h-20 w-20 rounded-xl overflow-hidden bg-muted shrink-0 border border-border/40">
-            {ingredient.image ? (
-              <Image
-                src={ingredient.image}
-                alt={ingredient.name}
-                fill
-                className="object-cover"
-                unoptimized
+                placeholder={i18n.valuePlaceholder}
+                className="h-14 w-full rounded-2xl border-2 border-border/60 bg-muted/30 font-black text-xl focus-visible:border-primary/60 focus-visible:ring-0 pl-4 pr-16 placeholder:font-medium placeholder:text-muted-foreground/30"
               />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center">
-                <Package className="h-8 w-8 text-muted-foreground/30" />
-              </div>
-            )}
-          </div>
-          <div className="min-w-0 flex-1">
-            <h3 className="font-black text-sm uppercase tracking-tight text-foreground truncate">
-              {ingredient.name}
-            </h3>
-            <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest mt-0.5 mb-2">
-              {ingredient.nameEn}
-            </p>
-            {description ? (
-              <p className="text-[11px] text-muted-foreground leading-relaxed line-clamp-3 border-l-2 border-primary/30 pl-2 italic">
-                {description}
-              </p>
-            ) : (
-              <div className="h-4 w-3/4 bg-muted animate-pulse rounded" />
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Row 1: amount + from unit + ingredient */}
-      <div className="flex flex-col sm:flex-row gap-3">
-        <Input
-          type="text"
-          inputMode="decimal"
-          value={amount}
-          onChange={(e) => {
-            const raw = e.target.value;
-            if (raw !== '' && !/^[\d]*[.,]?[\d]*$/.test(raw)) return;
-            setAmount(raw);
-            setConvertResult(null);
-          }}
-          placeholder={i18n.valuePlaceholder}
-          className="h-12 sm:h-14 w-24 sm:w-28 shrink-0 rounded-2xl border-2 border-border/60 bg-muted/30 font-black text-lg sm:text-xl focus-visible:border-primary/60 focus-visible:ring-0 px-4 placeholder:font-medium placeholder:text-muted-foreground/50"
-        />
-        <UnitPicker units={FROM_UNITS} value={fromUnit} onChange={(c) => { setFromUnit(c); setConvertResult(null); }} locale={locale} />
-        <IngredientCombobox
-          options={ingredients}
-          value={ingredient}
-          onChange={(opt) => { setIngredient(opt); setDescription(null); setBaseNutrition(null); setConvertResult(null); }}
-          placeholder={i18n.ingredientPlaceholder}
-          noResults={i18n.searchNoResults}
-        />
-      </div>
-
-      {/* Row 2: arrow + to unit + result box */}
-      <div className="flex items-center gap-3">
-        <ArrowRight className="h-5 w-5 text-muted-foreground shrink-0" />
-        <UnitPicker units={TO_UNITS} value={toUnit} onChange={(c) => { setToUnit(c); setConvertResult(null); }} locale={locale} />
-        <div
-          aria-live="polite"
-          className={`flex-1 h-12 sm:h-14 px-4 rounded-2xl border-2 flex items-center transition-colors min-w-0 ${
-            error
-              ? 'border-orange-400/40 bg-orange-500/5'
-              : noDensity
-              ? 'border-yellow-400/40 bg-yellow-500/5'
-              : loading
-              ? 'border-border/60 bg-muted/20'
-              : targetValue != null
-              ? 'border-primary/40 bg-primary/5'
-              : 'border-border/40 bg-muted/10'
-          }`}
-        >
-          {loading ? (
-            <svg className="animate-spin h-4 w-4 text-muted-foreground" viewBox="0 0 24 24" fill="none">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
-            </svg>
-          ) : !ingredient ? (
-            <span className="text-sm text-muted-foreground/50 font-medium">{i18n.noIngredient}</span>
-          ) : noDensity ? (
-            <span className="text-[11px] text-yellow-600 font-bold leading-tight">
-              {locale === 'ru' ? '⚠ Нет плотности — используйте г, кг, унц.' :
-               locale === 'pl' ? '⚠ Brak gęstości — użyj g, kg, oz' :
-               locale === 'uk' ? '⚠ Немає густини — використайте г, кг' :
-               '⚠ No density — use g, kg, oz'}
-            </span>
-          ) : error ? (
-            <span className="text-sm text-orange-500 font-medium">{i18n.noResult}</span>
-          ) : targetValue != null ? (
-            <span className="font-black text-lg sm:text-2xl text-primary truncate">
-              {fmtFraction(convertResult!.result_fraction, toUnit)}{' '}
-              <span className="text-sm font-black text-primary/70">{toLabel}</span>
-            </span>
-          ) : (
-            <span className="font-black text-2xl text-muted-foreground/40">—</span>
-          )}
-        </div>
-      </div>
-
-      {/* Results section */}
-      {targetValue != null && ingredient && !loading && convertResult && (
-        <div className="space-y-4 pt-1">
-
-          {/* Equation line */}
-          <p className="text-sm text-muted-foreground font-medium">
-            {amount} {fromLabel}{' '}
-            <span className="text-foreground font-black">{ingredient.name}</span>
-            {' = '}
-            <span className="text-primary font-black">{fmtFraction(convertResult.result_fraction, toUnit)} {toLabel}</span>
-          </p>
-
-          {/* All equivalents — mass group + volume group */}
-          {allEquivalents && Object.keys(allEquivalents).length > 0 && (() => {
-            const massUnits = ['g', 'kg', 'oz', 'lb'].filter((u) => u in allEquivalents);
-            const volUnits  = ['ml', 'l', 'cup', 'tbsp', 'tsp'].filter((u) => u in allEquivalents);
-            const renderBtn = (unit: string) => (
-              <button
-                key={unit}
-                type="button"
-                onClick={() => { setToUnit(unit); setConvertResult(null); }}
-                className={`text-[10px] font-black px-2.5 py-1 rounded-full border transition-all ${
-                  unit === toUnit
-                    ? 'border-primary bg-primary/10 text-primary'
-                    : 'border-border/60 hover:border-primary/40 hover:text-primary text-muted-foreground'
-                }`}
-              >
-                {fmtUnit(allEquivalents[unit], unit)} {unitLabel(unit, locale)}
-              </button>
-            );
-            return (
-              <div className="space-y-2">
-                {massUnits.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5 items-center">
-                    <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground/50 w-full sm:w-auto">
-                      ⚖ {i18n.allUnits}:
-                    </span>
-                    {massUnits.map(renderBtn)}
-                  </div>
-                )}
-                {volUnits.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5 items-center">
-                    <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground/50 w-full sm:w-auto">
-                      🥄 {i18n.allUnits}:
-                    </span>
-                    {volUnits.map(renderBtn)}
-                  </div>
-                )}
-              </div>
-            );
-          })()}
-
-          {/* Nutrition block — from API, already scaled to the result */}
-          {nutrition && (
-            <div className="rounded-2xl border-2 border-border/40 bg-muted/20 p-4 space-y-3">
-              <p className="text-[10px] font-black uppercase tracking-wider text-muted-foreground/70">
-                {i18n.nutritionResult}
-              </p>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div className="flex items-center gap-2">
-                  <Flame className="h-4 w-4 text-orange-500 shrink-0" />
-                  <div>
-                    <p className="text-sm font-black text-foreground">{Math.round(nutrition.calories)}</p>
-                    <p className="text-[9px] text-muted-foreground font-medium">{i18n.kcal}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Beef className="h-4 w-4 text-red-500 shrink-0" />
-                  <div>
-                    <p className="text-sm font-black text-foreground">{nutrition.protein} g</p>
-                    <p className="text-[9px] text-muted-foreground font-medium">{i18n.protein}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Droplets className="h-4 w-4 text-yellow-500 shrink-0" />
-                  <div>
-                    <p className="text-sm font-black text-foreground">{nutrition.fat} g</p>
-                    <p className="text-[9px] text-muted-foreground font-medium">{i18n.fat}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Wheat className="h-4 w-4 text-green-500 shrink-0" />
-                  <div>
-                    <p className="text-sm font-black text-foreground">{nutrition.carbs} g</p>
-                    <p className="text-[9px] text-muted-foreground font-medium">{i18n.carbs}</p>
-                  </div>
-                </div>
+              <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                <UnitPicker units={FROM_UNITS} value={fromUnit} onChange={(c) => { setFromUnit(c); setConvertResult(null); }} locale={locale} />
               </div>
             </div>
-          )}
+            
+            <div className="flex items-center justify-center shrink-0">
+              <ArrowRight className="h-5 w-5 text-muted-foreground/40" />
+            </div>
 
-          {/* Density badge */}
-          {density != null && (
-            <p className="text-[10px] text-muted-foreground/60 font-medium">
-              {i18n.density} <span className="text-foreground font-black">{ingredient.name}</span>:
-              {' ≈ '}<span className="text-foreground font-black">{fmt(density)} g/ml</span>
-            </p>
-          )}
-        </div>
-      )}
-
-      {/* Popular queries presets */}
-      <div className="pt-3 border-t border-border/30 space-y-2">
-        <div className="flex items-center gap-2">
-          <Zap className="h-3 w-3 text-primary" />
-          <p className="text-[10px] font-black uppercase tracking-wider text-muted-foreground/70">
-            {i18n.popularQueries}
-          </p>
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-          {POPULAR_PRESETS.map((p) => {
-            const opt = findBySlug(p.slug);
-            if (!opt) return null;
-            return (
-              <button
-                key={`${p.slug}-${p.fromUnit}`}
-                type="button"
-                onClick={() => applyPreset(p)}
-                className="text-left text-[10px] font-bold text-muted-foreground border border-border/50 rounded-xl px-3 py-2 hover:border-primary/40 hover:text-primary hover:bg-primary/5 transition-all leading-snug"
+            <div className="relative flex-1">
+              <div
+                aria-live="polite"
+                className={`h-14 w-full px-4 pr-16 rounded-2xl border-2 flex items-center transition-colors min-w-0 ${error
+                    ? 'border-orange-400/40 bg-orange-500/5'
+                    : noDensity
+                      ? 'border-yellow-400/40 bg-yellow-500/5'
+                      : loading
+                        ? 'border-border/60 bg-muted/20'
+                        : targetValue != null
+                          ? 'border-primary/40 bg-primary/5'
+                          : 'border-border/40 bg-muted/10'
+                  }`}
               >
-                {p.amount} {unitLabel(p.fromUnit, locale)}{' '}
-                <span className="font-black text-foreground/80">{opt.name}</span>
-                {' → '}{unitLabel(p.toUnit, locale)}
-                <ExternalLink className="inline ml-1 h-2.5 w-2.5 opacity-40" />
-              </button>
-            );
-          })}
+                {loading ? (
+                  <svg className="animate-spin h-4 w-4 text-muted-foreground" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                  </svg>
+                ) : !ingredient ? (
+                  <span className="text-[10px] text-muted-foreground/40 font-bold uppercase tracking-tight leading-tight">
+                    {locale === 'ru' ? 'Выберите ингредиент' : i18n.noIngredient}
+                  </span>
+                ) : noDensity ? (
+                  <span className="text-[10px] text-yellow-600 font-bold leading-tight line-clamp-2">
+                    {locale === 'ru' ? '⚠ Нет плотности' : '⚠ No density'}
+                  </span>
+                ) : error ? (
+                  <span className="text-xs text-orange-500 font-medium line-clamp-2">{i18n.noResult}</span>
+                ) : targetValue != null ? (
+                  <span className="font-black text-xl text-primary truncate">
+                    {fmtFraction(convertResult!.result_fraction, toUnit)}
+                  </span>
+                ) : (
+                  <span className="font-black text-xl text-muted-foreground/20">—</span>
+                )}
+              </div>
+              <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                <UnitPicker units={TO_UNITS} value={toUnit} onChange={(c) => { setToUnit(c); setConvertResult(null); }} locale={locale} />
+              </div>
+            </div>
+          </div>
+
+        {/* Results section */}
+        {targetValue != null && ingredient && !loading && convertResult && (
+          <div className="space-y-4 pt-1">
+
+            {/* Equation line */}
+            <p className="text-sm text-muted-foreground font-medium">
+              {amount} {fromLabel}{' '}
+              <span className="text-foreground font-black">{ingredient.name}</span>
+              {' = '}
+              <span className="text-primary font-black">{fmtFraction(convertResult.result_fraction, toUnit)} {toLabel}</span>
+            </p>
+
+            {/* All equivalents — mass group + volume group */}
+            {allEquivalents && Object.keys(allEquivalents).length > 0 && (() => {
+              const massUnits = ['g', 'kg', 'oz', 'lb'].filter((u) => u in allEquivalents);
+              const volUnits = ['ml', 'l', 'cup', 'tbsp', 'tsp'].filter((u) => u in allEquivalents);
+              const renderBtn = (unit: string) => (
+                <Badge
+                  key={unit}
+                  variant={unit === toUnit ? 'default' : 'outline'}
+                  className="cursor-pointer text-[10px] font-black px-2.5 py-1 h-auto rounded-full transition-all hover:scale-105"
+                  onClick={() => { setToUnit(unit); setConvertResult(null); }}
+                >
+                  {fmtUnit(allEquivalents[unit], unit)} {unitLabel(unit, locale)}
+                </Badge>
+              );
+              return (
+                <div className="space-y-2">
+                  {massUnits.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 items-center">
+                      <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground/50 w-full sm:w-auto">
+                        ⚖ {i18n.allUnits}:
+                      </span>
+                      {massUnits.map(renderBtn)}
+                    </div>
+                  )}
+                  {volUnits.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 items-center">
+                      <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground/50 w-full sm:w-auto">
+                        🥄 {i18n.allUnits}:
+                      </span>
+                      {volUnits.map(renderBtn)}
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
+
+            {/* Nutrition block */}
+            {nutrition && (
+              <Card className="border-2 border-border/40">
+                <CardContent className="p-4 space-y-3">
+                  <p className="text-[10px] font-black uppercase tracking-wider text-muted-foreground/70">
+                    {i18n.nutritionResult}
+                  </p>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div className="flex items-center gap-2">
+                      <Flame className="h-4 w-4 text-orange-500 shrink-0" />
+                      <div>
+                        <p className="text-sm font-black text-foreground">{Math.round(nutrition.calories)}</p>
+                        <p className="text-[9px] text-muted-foreground font-medium">{i18n.kcal}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Beef className="h-4 w-4 text-red-500 shrink-0" />
+                      <div>
+                        <p className="text-sm font-black text-foreground">{nutrition.protein} g</p>
+                        <p className="text-[9px] text-muted-foreground font-medium">{i18n.protein}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Droplets className="h-4 w-4 text-yellow-500 shrink-0" />
+                      <div>
+                        <p className="text-sm font-black text-foreground">{nutrition.fat} g</p>
+                        <p className="text-[9px] text-muted-foreground font-medium">{i18n.fat}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Wheat className="h-4 w-4 text-green-500 shrink-0" />
+                      <div>
+                        <p className="text-sm font-black text-foreground">{nutrition.carbs} g</p>
+                        <p className="text-[9px] text-muted-foreground font-medium">{i18n.carbs}</p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Density badge */}
+            {density != null && (
+              <p className="text-[10px] text-muted-foreground/60 font-medium">
+                {i18n.density} <span className="text-foreground font-black">{ingredient.name}</span>:
+                {' ≈ '}<span className="text-foreground font-black">{fmt(density)} g/ml</span>
+              </p>
+            )}
+
+            {/* Micro-trust line */}
+            <Separator className="mt-1" />
+            <p className="text-[10px] text-muted-foreground/50 font-medium text-center pt-1">
+              🔬 {i18n.microtrust}
+            </p>
+          </div>
+        )}
+
+        {/* Popular queries presets */}
+        <div className="space-y-4">
+          <Separator />
+          <div className="flex items-center gap-2 pt-1">
+            <Zap className="h-4 w-4 text-primary" />
+            <p className="text-sm font-black uppercase tracking-wider text-muted-foreground/70">
+              {locale === 'ru' ? 'Популярные конвертации' : i18n.popularQueries}
+            </p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+            {POPULAR_PRESETS.map((p) => {
+              const opt = findBySlug(p.slug);
+              if (!opt) return null;
+              return (
+                <button
+                  key={`${p.slug}-${p.fromUnit}`}
+                  type="button"
+                  onClick={() => applyPreset(p)}
+                  className="text-left text-xs font-bold rounded-2xl border-2 border-border/40 bg-background hover:bg-primary/5 hover:border-primary/30 hover:scale-[1.02] shadow-sm transition-all px-4 py-3 leading-snug group"
+                >
+                  <span className="text-muted-foreground group-hover:text-primary transition-colors">{p.amount} {unitLabel(p.fromUnit, locale)} </span>
+                  <span className="font-black text-foreground group-hover:text-primary transition-colors">{opt.name}</span>
+                  <span className="text-muted-foreground group-hover:text-primary transition-colors"> → {unitLabel(p.toUnit, locale)}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }

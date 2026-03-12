@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
 import {
   ChevronLeft, ChevronRight,
@@ -102,12 +102,28 @@ function buildAnswer(fromApi: string, toApi: string, name: string, result: numbe
   }
 }
 
+// All high-value search query combinations.
+// Pattern: how-many-{unit}-in-a-{measure}-of-{slug}
+// e.g. /how-many-grams-in-a-cup-of-rice
 const TOP_COMBINATIONS = [
+  // → grams (highest search volume globally)
   { unit: 'grams', measure: 'cup'  },
   { unit: 'grams', measure: 'tbsp' },
   { unit: 'grams', measure: 'tsp'  },
   { unit: 'grams', measure: 'oz'   },
+  { unit: 'grams', measure: 'lb'   },
+  // → oz
   { unit: 'oz',    measure: 'cup'  },
+  { unit: 'oz',    measure: 'tbsp' },
+  { unit: 'oz',    measure: 'grams'},
+  // → cups / volume
+  { unit: 'cups',  measure: 'grams'},
+  { unit: 'ml',    measure: 'cup'  },
+  { unit: 'ml',    measure: 'tbsp' },
+  { unit: 'ml',    measure: 'tsp'  },
+  // → lbs / kg
+  { unit: 'lbs',   measure: 'kg'   },
+  { unit: 'kg',    measure: 'lbs'  },
 ];
 
 export const dynamicParams = true;
@@ -153,6 +169,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string; query: string[] }>;
 }): Promise<Metadata> {
   const { locale, query } = await params;
+  setRequestLocale(locale);
   const parsed = parseQuery(query[0]);
   if (!parsed) return {};
 
@@ -180,6 +197,7 @@ export default async function HowManyCatchAllPage({
   params: Promise<{ locale: string; query: string[] }>;
 }) {
   const { locale, query } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: 'chefTools' });
 
   // Slug from the query
@@ -218,8 +236,39 @@ export default async function HowManyCatchAllPage({
     carbs: ingredientDetail.carbs
   } : null;
 
+  /* ── FAQPage JSON-LD ── */
+  const faqLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: h1,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: answer,
+        },
+      },
+      ...(nutrition ? [{
+        '@type': 'Question',
+        name: locale === 'pl' ? `Ile kalorii ma ${name}?`
+            : locale === 'ru' ? `Сколько калорий в ${name}?`
+            : locale === 'uk' ? `Скільки калорій у ${name}?`
+            : `How many calories does ${name} have?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: locale === 'pl' ? `${name} zawiera ${nutrition.calories} kcal, ${nutrition.protein ?? 0}g białka, ${nutrition.fat ?? 0}g tłuszczu i ${nutrition.carbs ?? 0}g węglowodanów na 100g.`
+              : locale === 'ru' ? `${name} содержит ${nutrition.calories} kcal, ${nutrition.protein ?? 0}г белка, ${nutrition.fat ?? 0}г жиров и ${nutrition.carbs ?? 0}г углеводов на 100г.`
+              : locale === 'uk' ? `${name} містить ${nutrition.calories} kcal, ${nutrition.protein ?? 0}г білка, ${nutrition.fat ?? 0}г жирів та ${nutrition.carbs ?? 0}г вуглеводів на 100г.`
+              : `${name} contains ${nutrition.calories} kcal, ${nutrition.protein ?? 0}g protein, ${nutrition.fat ?? 0}g fat, and ${nutrition.carbs ?? 0}g carbs per 100g.`,
+        },
+      }] : []),
+    ],
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12">
+      <JsonLd data={faqLd} />
       <ChefToolsNav 
         locale={locale} 
         translations={{
@@ -234,7 +283,6 @@ export default async function HowManyCatchAllPage({
             fishSeason: { title: t('tools.fishSeason.title') },
             ingredientAnalyzer: { title: t('tools.ingredientAnalyzer.title') },
             ingredientsCatalog: { title: t('ingredients.catalog.title') },
-            nutrition: { title: t('nutrition.title') },
           }
         }} 
       />
@@ -289,6 +337,34 @@ export default async function HowManyCatchAllPage({
              Pełna tabela: {name} ({fromLbl} → {toLbl})
           </Link>
         )}
+
+        {/* Internal links to ingredient profile & converter */}
+        <div className="mt-6 space-y-2">
+          <Link
+            href={`/chef-tools/ingredients/${parsed.slug}` as never}
+            className="flex items-center justify-between gap-2 p-3 sm:p-4 rounded-2xl border border-border/50 hover:border-primary/40 hover:bg-primary/5 transition-all group"
+          >
+            <span className="text-xs sm:text-sm font-bold text-foreground group-hover:text-primary transition-colors">
+              {locale === 'pl' ? `📊 Profil odżywczy: ${name}`
+                : locale === 'ru' ? `📊 Пищевой профиль: ${name}`
+                : locale === 'uk' ? `📊 Харчовий профіль: ${name}`
+                : `📊 Nutrition profile: ${name}`}
+            </span>
+            <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary shrink-0" />
+          </Link>
+          <Link
+            href="/chef-tools/converter"
+            className="flex items-center justify-between gap-2 p-3 sm:p-4 rounded-2xl border border-border/50 hover:border-primary/40 hover:bg-primary/5 transition-all group"
+          >
+            <span className="text-xs sm:text-sm font-bold text-foreground group-hover:text-primary transition-colors">
+              {locale === 'pl' ? '⚖️ Przelicznik jednostek kuchennych'
+                : locale === 'ru' ? '⚖️ Конвертер кухонных единиц'
+                : locale === 'uk' ? '⚖️ Конвертер кухонних одиниць'
+                : '⚖️ Kitchen Unit Converter'}
+            </span>
+            <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary shrink-0" />
+          </Link>
+        </div>
       </div>
     </div>
   );

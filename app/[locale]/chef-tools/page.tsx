@@ -1,4 +1,4 @@
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { generateMetadata as genMeta } from '@/lib/metadata';
 import { JsonLd } from '@/components/JsonLd';
 import { ChefToolsTabs } from './ChefToolsTabs';
@@ -11,6 +11,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: 'chefTools' });
   return genMeta({
     title: t('meta.title'),
@@ -55,6 +56,7 @@ export default async function ChefToolsPage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: 'chefTools' });
 
   /* Build serializable tab data for the client component */

@@ -2,16 +2,10 @@
 
 import { useState, useCallback, useTransition, useEffect, useRef } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import { ArrowLeftRight, ChevronDown } from 'lucide-react';
+import { ArrowLeftRight } from 'lucide-react';
 import { convertUnits, type ConvertResult } from './action';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 
 export type UnitItem = { code: string; label: string };
 
@@ -97,30 +91,16 @@ function UnitSelect({
   value: string;
   onChange: (code: string) => void;
 }) {
-  const current = units.find((u) => u.code === value) ?? units[0];
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="outline"
-          className="h-12 sm:h-14 px-3 sm:px-4 rounded-2xl border-2 border-border/60 bg-muted/30 font-black text-sm hover:bg-primary/10 hover:border-primary/40 gap-1 sm:gap-2 min-w-[76px] sm:min-w-[90px] shrink-0"
-        >
-          {current?.label}
-          <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4 opacity-60 shrink-0" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="rounded-2xl">
-        {units.map((u) => (
-          <DropdownMenuItem
-            key={u.code}
-            onSelect={() => onChange(u.code)}
-            className={`font-black cursor-pointer ${u.code === value ? 'text-primary' : ''}`}
-          >
-            {u.label}
-          </DropdownMenuItem>
-        ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <select
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      className="h-12 sm:h-14 px-3 sm:px-4 rounded-2xl border-2 border-border/60 bg-muted/30 font-black text-sm hover:bg-primary/10 hover:border-primary/40 min-w-[76px] sm:min-w-[90px] shrink-0 cursor-pointer focus:outline-none focus:border-primary/60 appearance-none pr-7 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIiIGhlaWdodD0iOCIgdmlld0JveD0iMCAwIDEyIDgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTEgMUw2IDcgMTEgMSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48L3N2Zz4=')] bg-no-repeat bg-[center_right_0.75rem]"
+    >
+      {units.map((u) => (
+        <option key={u.code} value={u.code}>{u.label}</option>
+      ))}
+    </select>
   );
 }
 
@@ -338,9 +318,11 @@ interface Props {
   groups?: UnitGroups;
   initialQuickFill?: QuickFill | null;
   onQuickFillReady?: (fn: (qf: QuickFill) => void) => void;
+  /** If provided, renders only this group instead of all */
+  mode?: 'mass' | 'volume' | 'all';
 }
 
-export default function ConverterClient({ groups }: Props) {
+export default function ConverterClient({ groups, mode = 'all' }: Props) {
   const locale = useLocale();
   const t = useTranslations('chefTools');
   const g = groups ?? FALLBACK;
@@ -349,10 +331,16 @@ export default function ConverterClient({ groups }: Props) {
   const placeholder = t('tools.converter.placeholder');
   const [quickFill, setQuickFill] = useState<QuickFill | null>(null);
 
-  const displayGroups = [
+  const allGroups = [
     { key: 'mass', label: labels.mass, units: g.mass },
     { key: 'volume', label: labels.volume, units: [...g.volume, ...g.kitchen] },
   ];
+
+  const displayGroups = mode === 'mass'
+    ? allGroups.filter((grp) => grp.key === 'mass')
+    : mode === 'volume'
+    ? allGroups.filter((grp) => grp.key === 'volume')
+    : allGroups;
 
   // Expose fill function via a stable ref so sibling QuickExamples can call it
   const fillRef = useRef(setQuickFill);

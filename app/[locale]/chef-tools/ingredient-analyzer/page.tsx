@@ -1,4 +1,4 @@
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
 import { generateMetadata as genMeta } from '@/lib/metadata';
 import { JsonLd } from '@/components/JsonLd';
@@ -10,12 +10,17 @@ import { ChefToolsNav } from '../ChefToolsNav';
 
 export const revalidate = 3600; // pre-fetched list is stable
 
+export function generateStaticParams() {
+  return [{ locale: 'pl' }, { locale: 'en' }, { locale: 'ru' }, { locale: 'uk' }];
+}
+
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: 'chefTools' });
   return genMeta({
     title: t('tools.ingredientAnalyzer.title'),
@@ -31,6 +36,7 @@ export default async function IngredientAnalyzerPage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: 'chefTools' });
 
   // Pre-fetch full ingredient list + fish season map in parallel
@@ -125,7 +131,6 @@ export default async function IngredientAnalyzerPage({
             fishSeason: { title: t('tools.fishSeason.title') },
             ingredientAnalyzer: { title: t('tools.ingredientAnalyzer.title') },
             ingredientsCatalog: { title: t('ingredients.catalog.title') },
-            nutrition: { title: t('nutrition.title') },
           }
         }} 
       />

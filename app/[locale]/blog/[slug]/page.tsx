@@ -1,4 +1,4 @@
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
 import { ArrowLeft, Calendar, Clock, Share2, Printer } from 'lucide-react';
 import { getPostBySlug, getAllPosts } from '@/lib/posts';
@@ -44,6 +44,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string; slug: string }>;
 }): Promise<Metadata> {
   const { locale, slug } = await params;
+  setRequestLocale(locale);
 
   const locales = ['pl', 'en', 'uk', 'ru'] as const;
   const postsByLocale = await Promise.all(
@@ -86,6 +87,7 @@ export default async function BlogPostPage({
   params: Promise<{ locale: string; slug: string }>;
 }) {
   const { locale, slug } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: 'blog' });
   const post = await getPostBySlug(locale, slug);
 

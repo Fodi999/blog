@@ -1,4 +1,4 @@
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
 import { ShoppingCart, Smartphone, Globe, Cloud, Clock, CheckCircle, Zap, Star, ArrowLeft, ExternalLink, Package, MapPin, Bell, ChefHat } from 'lucide-react';
 import type { Metadata } from 'next';
@@ -12,6 +12,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale: l } = await params;
+  setRequestLocale(l);
   const locale = l as 'pl' | 'en' | 'uk' | 'ru';
   const t = await getTranslations({ locale, namespace: 'metadata' });
 
@@ -29,6 +30,7 @@ export default async function SushiDeliveryDemoPage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: 'sushidelivery' });
 
   return (

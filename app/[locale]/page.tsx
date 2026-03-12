@@ -1,4 +1,4 @@
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
 import { PostCard } from '@/components/PostCard';
 import { HeroImage } from '@/components/HeroImage';
@@ -11,6 +11,10 @@ import { generateMetadata as sharedGenerateMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
 
 export const revalidate = 60;
+
+export function generateStaticParams() {
+  return [{ locale: 'pl' }, { locale: 'en' }, { locale: 'ru' }, { locale: 'uk' }];
+}
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? 'https://ministerial-yetta-fodi999-c58d8823.koyeb.app';
 
@@ -40,6 +44,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale: l } = await params;
+  setRequestLocale(l);
   const locale = l as 'pl' | 'en' | 'uk' | 'ru';
   const t = await getTranslations({ locale, namespace: 'metadata' });
 
@@ -57,6 +62,7 @@ export default async function HomePage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
+  setRequestLocale(locale);
   const loc = locale as Locale;
   const t = await getTranslations({ locale, namespace: 'home' });
   

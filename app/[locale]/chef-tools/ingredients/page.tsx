@@ -1,14 +1,9 @@
-import { getTranslations } from 'next-intl/server';
-import { Link } from '@/i18n/routing';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { generateMetadata as genMeta } from '@/lib/metadata';
 import { JsonLd } from '@/components/JsonLd';
 import { fetchIngredients } from '@/lib/api';
-import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
 import type { Metadata } from 'next';
-import { ChevronRight, Search, Package } from 'lucide-react';
 import { IngredientsClient } from './IngredientsClient';
 import { ChefToolsNav } from '../ChefToolsNav';
 import { resolveCategory } from './ingredient-utils';
@@ -22,6 +17,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale: l } = await params;
   const locale = l as 'pl' | 'en' | 'uk' | 'ru';
+  setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: 'chefTools' });
 
   return genMeta({
@@ -57,6 +53,7 @@ export default async function IngredientsPage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
+  setRequestLocale(locale);
   const [ingredients, t] = await Promise.all([
     fetchIngredients(),
     getTranslations({ locale, namespace: 'chefTools' }),
@@ -141,7 +138,6 @@ export default async function IngredientsPage({
             fishSeason: { title: t('tools.fishSeason.title') },
             ingredientAnalyzer: { title: t('tools.ingredientAnalyzer.title') },
             ingredientsCatalog: { title: t('ingredients.catalog.title') },
-            nutrition: { title: t('nutrition.title') },
           }
         }} 
       />

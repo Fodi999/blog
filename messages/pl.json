@@ -65,6 +65,9 @@
         "description": "Przelicz gramy, uncje, litry, łyżki i inne miary kuchenne natychmiast.",
         "weight": "Waga",
         "volume": "Objętość",
+        "tabIngredients": "Składniki",
+        "tabMass": "Masa",
+        "tabVolume": "Objętość",
         "howToUse": {
           "title": "Jak korzystać",
           "steps": [
@@ -176,7 +179,7 @@
       "ingredientConverter": {
         "title": "Kalkulator Składników",
         "description": "1 szklanka mąki w gramach? 2 łyżki masła w uncjach? Wybierz składnik i jednostki — kalkulator uwzględnia gęstość produktu.",
-        "ingredientPlaceholder": "Szukaj składnika (mąka, masło, ryż...)",
+        "ingredientPlaceholder": "np. mąka, cukier, ryż, masło...",
         "valuePlaceholder": "Ilość",
         "selectUnit": "Jednostka",
         "noIngredient": "Wybierz składnik, aby przeliczyć",
@@ -193,7 +196,8 @@
         "popularQueries": "Popularne przeliczenia",
         "density": "Gęstość",
         "nutritionResult": "Wartość odżywcza",
-        "contains": "zawiera"
+        "contains": "zawiera",
+        "microtrust": "Wyniki obliczone na podstawie rzeczywistej gęstości składników"
       },
       "popularConversions": {
         "title": "Popularne przeliczenia kuchenne",

@@ -1,4 +1,4 @@
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
 import { notFound } from 'next/navigation';
 import { generateMetadata as genMeta } from '@/lib/metadata';
@@ -22,7 +22,8 @@ const MONTH_NUMBERS: Record<string, number> = {
 };
 
 export async function generateStaticParams() {
-  return MONTH_SLUGS.map((month) => ({ month }));
+  const locales = ['pl', 'en', 'ru', 'uk'];
+  return locales.flatMap((locale) => MONTH_SLUGS.map((month) => ({ locale, month })));
 }
 
 export async function generateMetadata({
@@ -31,6 +32,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string; month: string }>;
 }) {
   const { locale, month } = await params;
+  setRequestLocale(locale);
   if (!MONTH_NUMBERS[month]) return {};
   const t = await getTranslations({ locale, namespace: 'chefTools' });
   const monthNum = MONTH_NUMBERS[month];
@@ -71,6 +73,7 @@ export default async function FishInMonthPage({
   params: Promise<{ locale: string; month: string }>;
 }) {
   const { locale, month } = await params;
+  setRequestLocale(locale);
   const monthNum = MONTH_NUMBERS[month];
   if (!monthNum) notFound();
 

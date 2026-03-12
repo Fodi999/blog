@@ -74,7 +74,7 @@ export function IngredientsClient({
   return (
     <div className="space-y-5">
       {/* Search */}
-      <div className="sticky top-16 z-10 bg-background/95 backdrop-blur-sm pb-3 -mx-1 px-1 border-b border-border/30">
+      <div className="sticky top-16 z-[15] bg-background/95 backdrop-blur-sm pb-3 -mx-1 px-1 border-b border-border/30">
         <div className="relative max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
           <Input

@@ -65,6 +65,9 @@
         "description": "Convert grams, ounces, liters, tablespoons and other kitchen measurements instantly.",
         "weight": "Weight",
         "volume": "Volume",
+        "tabIngredients": "Ingredients",
+        "tabMass": "Mass",
+        "tabVolume": "Volume",
         "howToUse": {
           "title": "How to use",
           "steps": [
@@ -176,7 +179,7 @@
       "ingredientConverter": {
         "title": "Ingredient Converter",
         "description": "1 cup of flour in grams? 2 tbsp of butter in oz? Pick an ingredient and units — the converter uses real density.",
-        "ingredientPlaceholder": "Search ingredient (flour, butter, rice...)",
+        "ingredientPlaceholder": "e.g. flour, sugar, rice, butter...",
         "valuePlaceholder": "Amount",
         "selectUnit": "Unit",
         "noIngredient": "Select an ingredient to convert",
@@ -193,7 +196,8 @@
         "popularQueries": "Popular conversions",
         "density": "Density of",
         "nutritionResult": "Nutritional value",
-        "contains": "contains"
+        "contains": "contains",
+        "microtrust": "Results calculated based on real ingredient density"
       },
       "popularConversions": {
         "title": "Popular Kitchen Conversions",

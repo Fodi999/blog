@@ -1,10 +1,11 @@
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
 import { generateMetadata as genMeta } from '@/lib/metadata';
 import { ChevronLeft } from 'lucide-react';
-import ConverterClient, { type UnitGroups } from './ConverterClient';
+import { type UnitGroups } from './ConverterClient';
 import { QuickExamplesClient } from './QuickExamplesClient';
-import { IngredientConverterClient, type IngredientOption, type I18nIngConverter } from './IngredientConverterClient';
+import { type IngredientOption, type I18nIngConverter } from './IngredientConverterClient';
+import { KitchenConverterTabs } from './KitchenConverterTabs';
 import { getUnits } from './action';
 import { JsonLd } from '@/components/JsonLd';
 import { fetchIngredients } from '@/lib/api';
@@ -12,12 +13,17 @@ import { ChefToolsNav } from '../ChefToolsNav';
 
 export const revalidate = 3600;
 
+export function generateStaticParams() {
+  return [{ locale: 'pl' }, { locale: 'en' }, { locale: 'ru' }, { locale: 'uk' }];
+}
+
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: 'chefTools' });
   return genMeta({
     title: t('tools.converter.title'),
@@ -33,6 +39,7 @@ export default async function ConverterPage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: 'chefTools' });
 
   // Load localized unit groups from API + ingredient list in parallel
@@ -72,6 +79,7 @@ export default async function ConverterPage({
     density:               t('tools.ingredientConverter.density'),
     nutritionResult:       t('tools.ingredientConverter.nutritionResult'),
     contains:              t('tools.ingredientConverter.contains'),
+    microtrust:            t('tools.ingredientConverter.microtrust'),
   };
 
   return (
@@ -90,20 +98,11 @@ export default async function ConverterPage({
             fishSeason: { title: t('tools.fishSeason.title') },
             ingredientAnalyzer: { title: t('tools.ingredientAnalyzer.title') },
             ingredientsCatalog: { title: t('ingredients.catalog.title') },
-            nutrition: { title: t('nutrition.title') },
           }
         }} 
       />
       {/* Header — same style as /blog and tools home */}
       <div className="mb-12 border-t border-primary/20 pt-10">
-        <Link
-          href="/chef-tools"
-          className="inline-flex items-center gap-2 text-sm font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors mb-8"
-        >
-          <ChevronLeft className="h-4 w-4" />
-          {t('back')}
-        </Link>
-
         <h1 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tighter text-foreground leading-tight sm:leading-[0.9] mb-3 sm:mb-4">
           {t('tools.converter.title')}<span className="text-primary">.</span>
         </h1>
@@ -112,12 +111,16 @@ export default async function ConverterPage({
         </p>
       </div>
 
-      <ConverterClient groups={groups} />
-
-      {/* Ingredient-aware smart converter */}
-      <div className="mt-6">
-        <IngredientConverterClient ingredients={ingredientOptions} i18n={ingI18n} />
-      </div>
+      <KitchenConverterTabs
+        groups={groups}
+        ingredients={ingredientOptions}
+        i18n={ingI18n}
+        labels={{
+          tabIngredients: t('tools.converter.tabIngredients'),
+          tabMass:        t('tools.converter.tabMass'),
+          tabVolume:      t('tools.converter.tabVolume'),
+        }}
+      />
 
       {/* FAQ JsonLd */}
       <JsonLd data={{

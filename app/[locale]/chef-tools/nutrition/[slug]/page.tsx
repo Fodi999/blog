@@ -1,4 +1,4 @@
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
 import { generateMetadata as genMeta } from '@/lib/metadata';
 import { JsonLd } from '@/components/JsonLd';
@@ -27,6 +27,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string; slug: string }>;
 }) {
   const { locale, slug } = await params;
+  setRequestLocale(locale);
   const ingredient = await fetchIngredient(slug);
   if (!ingredient) return {};
   const t = await getTranslations({ locale, namespace: 'chefTools' });
@@ -67,6 +68,7 @@ export default async function IngredientDetailPage({
   searchParams?: Promise<{ from?: string }>;
 }) {
   const { locale, slug } = await params;
+  setRequestLocale(locale);
   const sp = searchParams ? await searchParams : {};
   const from = sp?.from; // 'catalog' | 'table' | 'analyzer' | undefined
 
@@ -98,7 +100,6 @@ export default async function IngredientDetailPage({
             fishSeason: { title: t('tools.fishSeason.title') },
             ingredientAnalyzer: { title: t('tools.ingredientAnalyzer.title') },
             ingredientsCatalog: { title: t('ingredients.catalog.title') },
-            nutrition: { title: t('nutrition.title') },
           }
         }} 
       />
@@ -338,6 +339,48 @@ export default async function IngredientDetailPage({
           ))}
         </div>
       )}
+
+      {/* Internal links: ingredient profile + converter + how-many */}
+      <div className="mt-8 space-y-2">
+        <Link
+          href={`/chef-tools/ingredients/${slug}` as never}
+          className="flex items-center justify-between gap-2 p-4 rounded-2xl border border-primary/30 bg-primary/5 hover:bg-primary/10 transition-all group"
+        >
+          <span className="text-xs sm:text-sm font-bold text-foreground group-hover:text-primary transition-colors">
+            {locale === 'pl' ? `🍽 Pełny profil składnika: ${name}`
+              : locale === 'ru' ? `🍽 Полный профиль: ${name}`
+              : locale === 'uk' ? `🍽 Повний профіль: ${name}`
+              : `🍽 Full ingredient profile: ${name}`}
+          </span>
+          <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary shrink-0" />
+        </Link>
+        {ingredient.measures?.grams_per_cup != null && (
+          <Link
+            href={`/chef-tools/how-many/how-many-grams-in-a-cup-of-${slug}` as never}
+            className="flex items-center justify-between gap-2 p-4 rounded-2xl border border-border/50 hover:border-primary/40 hover:bg-primary/5 transition-all group"
+          >
+            <span className="text-xs sm:text-sm font-bold text-foreground group-hover:text-primary transition-colors">
+              {locale === 'pl' ? `⚖️ Ile gramów w szklance ${name}?`
+                : locale === 'ru' ? `⚖️ Сколько граммов в стакане ${name}?`
+                : locale === 'uk' ? `⚖️ Скільки грамів у склянці ${name}?`
+                : `⚖️ How many grams in a cup of ${name}?`}
+            </span>
+            <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary shrink-0" />
+          </Link>
+        )}
+        <Link
+          href="/chef-tools/converter"
+          className="flex items-center justify-between gap-2 p-4 rounded-2xl border border-border/50 hover:border-primary/40 hover:bg-primary/5 transition-all group"
+        >
+          <span className="text-xs sm:text-sm font-bold text-foreground group-hover:text-primary transition-colors">
+            {locale === 'pl' ? '🔄 Przelicznik jednostek kuchennych'
+              : locale === 'ru' ? '🔄 Конвертер кухонных единиц'
+              : locale === 'uk' ? '🔄 Конвертер кухонних одиниць'
+              : '🔄 Kitchen Unit Converter'}
+          </span>
+          <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary shrink-0" />
+        </Link>
+      </div>
     </div>
   );
 }

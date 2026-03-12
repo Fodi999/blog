@@ -2,6 +2,8 @@ import { MetadataRoute } from 'next';
 import { getAllPosts } from '@/lib/posts';
 import { fetchIngredients } from '@/lib/api';
 import { locales } from '@/i18n';
+import { CATEGORY_MAP } from './[locale]/chef-tools/ingredients/[slug]/category-page';
+import { CONVERSION_MAP } from './[locale]/chef-tools/converter/[conversion]/page';
 
 const BASE_URL = 'https://dima-fomin.pl';
 const API_URL = 'https://ministerial-yetta-fodi999-c58d8823.koyeb.app';
@@ -46,10 +48,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       { path: '/demos/restaurant-ai', priority: 0.6, changeFrequency: 'monthly' },
       { path: '/chef-tools', priority: 0.8, changeFrequency: 'monthly' },
       { path: '/chef-tools/ingredients', priority: 0.9, changeFrequency: 'daily' },
-      { path: '/chef-tools/nutrition', priority: 0.85, changeFrequency: 'weekly' },
       { path: '/chef-tools/ingredient-analyzer', priority: 0.8, changeFrequency: 'weekly' },
       { path: '/chef-tools/fish-season', priority: 0.8, changeFrequency: 'weekly' },
       { path: '/chef-tools/converter', priority: 0.75, changeFrequency: 'monthly' },
+      // SEO taxonomy: ingredient category hub pages
+      ...Object.keys(CATEGORY_MAP).map((cat) => ({
+        path: `/chef-tools/ingredients/${cat}`,
+        priority: 0.85,
+        changeFrequency: 'weekly' as const,
+      })),
+      // SEO converter pages: cup-to-grams, tablespoon-to-grams, etc.
+      ...Object.keys(CONVERSION_MAP).map((conv) => ({
+        path: `/chef-tools/converter/${conv}`,
+        priority: 0.85,
+        changeFrequency: 'monthly' as const,
+      })),
     ];
 
   // Static pages exist in ALL locales (same Next.js route handles all).
@@ -166,45 +179,28 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         }))
     : [];
 
-  // ─── Conversion SEO pages ────────────────────────────────────────────
-  // /chef-tools/[conversion]/[slug] — unit notation (cup-to-grams/rice)
-  const TOP_CONVERSIONS = [
-    'cup-to-grams',
-    'tbsp-to-grams',
-    'tsp-to-grams',
-    'oz-to-grams',
-    'grams-to-oz',
-  ];
-
-  const conversionUrls: MetadataRoute.Sitemap = ingredientList
-    ? ingredientList
-        .filter((ing) => ing.slug)
-        .flatMap((ing) =>
-          TOP_CONVERSIONS.map((conv) => ({
-            url: `${BASE_URL}/${canonicalLocale}/chef-tools/${conv}/${ing.slug}`,
-            lastModified: BUILD_DATE,
-            changeFrequency: 'monthly' as const,
-            priority: 0.7,
-            alternates: {
-              languages: {
-                ...Object.fromEntries(
-                  locales.map((l) => [l, `${BASE_URL}/${l}/chef-tools/${conv}/${ing.slug}`])
-                ),
-                'x-default': `${BASE_URL}/${canonicalLocale}/chef-tools/${conv}/${ing.slug}`,
-              },
-            },
-          }))
-        )
-    : [];
-
   // ─── Natural-language "how many" pages ───────────────────────────────
-  // /chef-tools/how-many-grams-in-a-cup-of-rice — matches Google search queries
+  // Pattern: /chef-tools/how-many/how-many-{unit}-in-a-{measure}-of-{slug}
+  // Mirrors TOP_COMBINATIONS in how-many/[...query]/page.tsx — keep in sync.
   const HOW_MANY_COMBOS = [
+    // → grams
     { unit: 'grams', measure: 'cup'  },
     { unit: 'grams', measure: 'tbsp' },
     { unit: 'grams', measure: 'tsp'  },
     { unit: 'grams', measure: 'oz'   },
+    { unit: 'grams', measure: 'lb'   },
+    // → oz
     { unit: 'oz',    measure: 'cup'  },
+    { unit: 'oz',    measure: 'tbsp' },
+    { unit: 'oz',    measure: 'grams'},
+    // → cups / ml
+    { unit: 'cups',  measure: 'grams'},
+    { unit: 'ml',    measure: 'cup'  },
+    { unit: 'ml',    measure: 'tbsp' },
+    { unit: 'ml',    measure: 'tsp'  },
+    // → lbs / kg
+    { unit: 'lbs',   measure: 'kg'   },
+    { unit: 'kg',    measure: 'lbs'  },
   ];
 
   const howManyUrls: MetadataRoute.Sitemap = ingredientList
@@ -231,5 +227,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         )
     : [];
 
-  return [...staticUrls, ...postUrls, ...ingredientUrls, ...ingredientProfileUrls, ...conversionUrls, ...howManyUrls];
+  return [...staticUrls, ...postUrls, ...ingredientUrls, ...ingredientProfileUrls, ...howManyUrls];
 }

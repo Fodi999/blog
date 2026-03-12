@@ -13,6 +13,41 @@ export const API_URL = BASE;
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 /** Normalized ingredient for display */
+export type ApiIngredientVitamins = {
+  vitamin_a?: number | null; vitamin_c?: number | null; vitamin_d?: number | null;
+  vitamin_e?: number | null; vitamin_k?: number | null; vitamin_b1?: number | null;
+  vitamin_b2?: number | null; vitamin_b3?: number | null; vitamin_b5?: number | null;
+  vitamin_b6?: number | null; vitamin_b7?: number | null; vitamin_b9?: number | null;
+  vitamin_b12?: number | null;
+};
+export type ApiIngredientMinerals = {
+  calcium?: number | null; iron?: number | null; magnesium?: number | null;
+  phosphorus?: number | null; potassium?: number | null; sodium?: number | null;
+  zinc?: number | null; copper?: number | null; manganese?: number | null; selenium?: number | null;
+};
+export type ApiIngredientDietFlags = {
+  vegan?: boolean; vegetarian?: boolean; gluten_free?: boolean;
+  keto?: boolean; paleo?: boolean; mediterranean?: boolean; low_carb?: boolean;
+};
+export type ApiIngredientPairing = {
+  slug: string; name_en: string; name_ru?: string; name_pl?: string; name_uk?: string;
+  image_url?: string | null; pair_score: number; flavor_score: number;
+  culinary_score: number; nutrition_score: number;
+};
+export type ApiIngredientFoodProperties = {
+  glycemic_index?: number | null; glycemic_load?: number | null;
+  ph?: number | null; smoke_point?: number | null; water_activity?: number | null;
+};
+export type ApiIngredientMacrosFull = {
+  calories_kcal?: number | null; protein_g?: number | null; fat_g?: number | null;
+  carbs_g?: number | null; fiber_g?: number | null; sugar_g?: number | null;
+  starch_g?: number | null; water_g?: number | null; alcohol_g?: number | null;
+};
+export type ApiIngredientCulinary = {
+  sweetness?: number | null; acidity?: number | null; bitterness?: number | null;
+  umami?: number | null; aroma?: number | null; texture?: string | null;
+};
+
 export type ApiIngredient = {
   slug?: string;
   name: string;
@@ -23,6 +58,8 @@ export type ApiIngredient = {
   image_url?: string | null;
   category?: string;
   category_id?: string;
+  product_type?: string | null;
+  // Basic macros (from /public/ingredients)
   calories: number;
   protein: number | null;
   fat: number | null;
@@ -40,6 +77,15 @@ export type ApiIngredient = {
     grams_per_tbsp?: number | null;
     grams_per_tsp?: number | null;
   } | null;
+  // Extended nutrition (from /public/nutrition/:slug)
+  macros_full?: ApiIngredientMacrosFull | null;
+  vitamins?: ApiIngredientVitamins | null;
+  minerals?: ApiIngredientMinerals | null;
+  diet_flags?: ApiIngredientDietFlags | null;
+  food_properties?: ApiIngredientFoodProperties | null;
+  culinary?: ApiIngredientCulinary | null;
+  pairings?: ApiIngredientPairing[];
+  availability_months?: boolean[] | null;
 };
 
 /** GET /public/tools/convert response */
@@ -308,7 +354,7 @@ export async function fetchIngredients(): Promise<ApiIngredient[] | null> {
   });
 }
 
-/** GET /public/ingredients/:slug */
+/** GET /public/ingredients/:slug — with extended nutrition from /public/nutrition/:slug */
 export async function fetchIngredient(slug: string): Promise<ApiIngredient | null> {
   type Raw = {
     slug: string;
@@ -339,7 +385,23 @@ export async function fetchIngredient(slug: string): Promise<ApiIngredient | nul
       carbs_per_100g: number;
     } | null;
   };
-  const raw = await apiFetchFresh<Raw>(`/public/ingredients/${encodeURIComponent(slug)}`);
+  type NutritionRaw = {
+    slug: string;
+    basic?: { product_type?: string | null; typical_portion_g?: number | null; wild_farmed?: string | null; water_type?: string | null; sushi_grade?: boolean | null } | null;
+    macros?: ApiIngredientMacrosFull | null;
+    vitamins?: ApiIngredientVitamins | null;
+    minerals?: ApiIngredientMinerals | null;
+    diet_flags?: ApiIngredientDietFlags | null;
+    food_properties?: ApiIngredientFoodProperties | null;
+    culinary?: ApiIngredientCulinary | null;
+    pairings?: ApiIngredientPairing[];
+    availability_months?: boolean[] | null;
+  };
+
+  const [raw, nutr] = await Promise.all([
+    apiFetchFresh<Raw>(`/public/ingredients/${encodeURIComponent(slug)}`),
+    apiFetchFresh<NutritionRaw>(`/public/nutrition/${encodeURIComponent(slug)}`).catch(() => null),
+  ]);
   if (!raw) return null;
   return {
     slug: raw.slug,
@@ -349,6 +411,7 @@ export async function fetchIngredient(slug: string): Promise<ApiIngredient | nul
     name_pl: raw.name_pl,
     name_uk: raw.name_uk,
     image_url: raw.image_url,
+    product_type: nutr?.basic?.product_type ?? null,
     calories: raw.nutrition?.calories_per_100g ?? 0,
     protein: raw.nutrition?.protein_per_100g ?? null,
     fat: raw.nutrition?.fat_per_100g ?? null,
@@ -362,6 +425,15 @@ export async function fetchIngredient(slug: string): Promise<ApiIngredient | nul
     description_uk: raw.description_uk,
     density_g_per_ml: raw.density_g_per_ml,
     measures: raw.measures,
+    // Extended nutrition
+    macros_full: nutr?.macros ?? null,
+    vitamins: nutr?.vitamins ?? null,
+    minerals: nutr?.minerals ?? null,
+    diet_flags: nutr?.diet_flags ?? null,
+    food_properties: nutr?.food_properties ?? null,
+    culinary: nutr?.culinary ?? null,
+    pairings: nutr?.pairings ?? [],
+    availability_months: nutr?.availability_months ?? null,
   };
 }
 
