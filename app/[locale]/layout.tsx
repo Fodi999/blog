@@ -5,10 +5,11 @@ import { Inter, Noto_Sans_JP } from 'next/font/google';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Providers } from '@/components/Providers';
-import { Analytics } from '@vercel/analytics/react';
+import { ConditionalAnalytics } from '@/components/ConditionalAnalytics';
 import { Toaster } from 'sonner';
 import { notFound } from 'next/navigation';
 import { locales } from '@/i18n';
+import { CookieConsent } from '@/components/CookieConsent';
 import '../globals.css';
 import { generateMetadata as sharedGenerateMetadata } from '@/lib/metadata';
 
@@ -77,10 +78,11 @@ export default async function LocaleLayout({
               {children}
             </main>
             <Footer locale={locale} />
+            <CookieConsent />
             <Toaster position="top-right" richColors />
           </NextIntlClientProvider>
         </Providers>
-        <Analytics />
+        <ConditionalAnalytics />
       </body>
     </html>
   );

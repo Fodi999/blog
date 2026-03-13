@@ -51,6 +51,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       { path: '/chef-tools/ingredient-analyzer', priority: 0.8, changeFrequency: 'weekly' },
       { path: '/chef-tools/fish-season', priority: 0.8, changeFrequency: 'weekly' },
       { path: '/chef-tools/converter', priority: 0.75, changeFrequency: 'monthly' },
+      // Legal / GDPR pages
+      { path: '/privacy', priority: 0.3, changeFrequency: 'yearly' },
+      { path: '/terms', priority: 0.3, changeFrequency: 'yearly' },
+      { path: '/cookies', priority: 0.3, changeFrequency: 'yearly' },
       // SEO taxonomy: ingredient category hub pages
       ...Object.keys(CATEGORY_MAP).map((cat) => ({
         path: `/chef-tools/ingredients/${cat}`,

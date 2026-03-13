@@ -633,7 +633,7 @@
       "instagram": "Instagram: @fodifood",
       "instagramUrl": "https://www.instagram.com/fodifood?igsh=aXZqbjZmNWhsNzNn"
     },
-    "location": "Bazuję w Krakowie, Polska. Pracuję globalnie."
+    "location": "Bazuję w Gdańsku, Polska. Pracuję globalnie."
   },
   "restaurants": {
     "title": "Rozwiązania dla restauracji",
@@ -993,6 +993,219 @@
   "footer": {
     "stats": "Stronę odwiedzają szefowie kuchni i restauratorzy z różnych krajów",
     "viewPublicStats": "Zobacz statystyki →",
-    "rights": "© 2026 Dima Fomin. Wszelkie prawa zastrzeżone."
+    "rights": "© 2026 Dima Fomin. Wszelkie prawa zastrzeżone.",
+    "privacy": "Prywatność",
+    "terms": "Regulamin",
+    "cookies": "Cookie",
+    "contact": "Kontakt",
+    "manageCookies": "Zarządzaj cookie"
+  },
+  "cookieConsent": {
+    "message": "Używamy niezbędnych plików cookie do prawidłowego działania strony. Analityczne pliki cookie są ładowane wyłącznie po Twojej zgodzie. Możesz zmienić lub wycofać zgodę w dowolnym momencie.",
+    "privacyLink": "Polityka prywatności",
+    "accept": "Akceptuję",
+    "reject": "Odrzucam",
+    "close": "Zamknij",
+    "ariaLabel": "Zgoda na pliki cookie"
+  },
+  "privacy": {
+    "meta": {
+      "title": "Polityka prywatności",
+      "description": "Dowiedz się, jak dima-fomin.pl zbiera, wykorzystuje i chroni Twoje informacje. Zgodność z RODO."
+    },
+    "title": "Polityka prywatności",
+    "lastUpdated": "Ostatnia aktualizacja: 13 marca 2026",
+    "intro": "Niniejsza Polityka prywatności wyjaśnia, w jaki sposób dima-fomin.pl zbiera, wykorzystuje i chroni Twoje informacje podczas korzystania z tej strony.",
+    "sections": {
+      "controller": {
+        "title": "Administrator danych",
+        "text": "Administratorem strony i operatorem danych osobowych jest:",
+        "items": [
+          "Dima Fomin",
+          "Strona: https://dima-fomin.pl",
+          "Email: fodi85999@gmail.com",
+          "Lokalizacja: Gdańsk, Polska"
+        ]
+      },
+      "collect": {
+        "title": "Informacje, które zbieramy",
+        "text": "Strona może zbierać ograniczone informacje, takie jak:",
+        "items": [
+          "Informacje techniczne o Twoim urządzeniu i przeglądarce",
+          "Anonimowe dane analityczne (odsłony, czas sesji)",
+          "Pliki cookie poprawiające funkcjonalność strony",
+          "Informacje dobrowolnie podane przez formularze kontaktowe"
+        ]
+      },
+      "usage": {
+        "title": "Jak wykorzystujemy informacje",
+        "text": "Informacje mogą być wykorzystywane do:",
+        "items": [
+          "Poprawy wydajności i doświadczenia użytkownika",
+          "Analizy ruchu i wzorców użytkowania",
+          "Zapewnienia bezpieczeństwa strony i zapobiegania nadużyciom",
+          "Odpowiedzi na Twoje zapytania"
+        ]
+      },
+      "cookies": {
+        "title": "Pliki cookie",
+        "text": "Strona może wykorzystywać techniczne pliki cookie niezbędne do prawidłowego funkcjonowania serwisu, zapewnienia bezpieczeństwa i zapisywania preferencji użytkownika.\n\nDo analizy odwiedzin strony może być wykorzystywane Vercel Web Analytics. Zgodnie z dokumentacją Vercel, usługa ta nie wykorzystuje plików cookie stron trzecich i przetwarza zanonimizowane dane o odwiedzinach strony.",
+        "items": [
+          "Niezbędne pliki cookie wymagane do funkcjonowania strony",
+          "Pliki cookie preferencji do zapamiętywania ustawień"
+        ]
+      },
+      "thirdParty": {
+        "title": "Usługi stron trzecich",
+        "text": "Strona może korzystać z usług stron trzecich w zakresie infrastruktury technicznej i analityki. Usługi te mogą przetwarzać ograniczone dane techniczne zgodnie z własnymi politykami prywatności.",
+        "items": [
+          "Vercel — hosting, dostarczanie treści i infrastruktura techniczna strony",
+          "Vercel Web Analytics — zanonimizowana analityka odwiedzin strony bez wykorzystania plików cookie stron trzecich"
+        ]
+      },
+      "storage": {
+        "title": "Przechowywanie danych",
+        "text": "Przechowujemy dane wyłącznie przez okres niezbędny do osiągnięcia celów przetwarzania.\nDane przesłane za pośrednictwem formularzy kontaktowych przechowywane są przez czas niezbędny do obsługi zapytania i odpowiedzi użytkownikowi, chyba że dłuższe przechowywanie jest wymagane przez prawo.\nZanonimizowane dane analityczne przetwarzane są zgodnie z politykami wykorzystywanych usług technicznych."
+      },
+      "legalBasis": {
+        "title": "Podstawa prawna przetwarzania",
+        "text": "Przetwarzamy dane na podstawie następujących przesłanek RODO:",
+        "items": [
+          "Twoja zgoda — na pliki cookie i analitykę (Art. 6(1)(a) RODO)",
+          "Prawnie uzasadniony interes — zapewnienie bezpieczeństwa i funkcjonowania strony (Art. 6(1)(f) RODO)"
+        ]
+      },
+      "rights": {
+        "title": "Twoje prawa (RODO)",
+        "text": "Jeśli znajdujesz się w Europejskim Obszarze Gospodarczym, masz następujące prawa na mocy RODO:",
+        "items": [
+          "Prawo dostępu — żądanie kopii swoich danych",
+          "Prawo do sprostowania — żądanie poprawienia niedokładnych danych",
+          "Prawo do usunięcia — żądanie usunięcia swoich danych",
+          "Prawo do ograniczenia przetwarzania — ograniczenie sposobu wykorzystania danych",
+          "Prawo do sprzeciwu — sprzeciw wobec przetwarzania danych",
+          "Prawo do przenoszenia danych — otrzymanie danych w przenośnym formacie",
+          "Prawo do wniesienia skargi do organu nadzorczego"
+        ],
+        "supervisory": "Masz również prawo do wniesienia skargi do organu nadzorczego ds. ochrony danych osobowych.\nW Polsce organem nadzorczym jest:\nUrząd Ochrony Danych Osobowych (UODO)\nhttps://uodo.gov.pl"
+      },
+      "contact": {
+        "title": "Kontakt",
+        "text": "Jeśli masz pytania dotyczące tej Polityki prywatności lub chcesz skorzystać ze swoich praw RODO, skontaktuj się z administratorem strony:\n\nDima Fomin\nEmail: fodi85999@gmail.com"
+      }
+    },
+    "relatedPages": "Powiązane strony:",
+    "termsLink": "Regulamin",
+    "cookiesLink": "Polityka cookie"
+  },
+  "terms": {
+    "meta": {
+      "title": "Regulamin",
+      "description": "Warunki korzystania ze strony dima-fomin.pl i jej usług."
+    },
+    "title": "Regulamin",
+    "lastUpdated": "Ostatnia aktualizacja: 13 marca 2026",
+    "intro": "Korzystając z tej strony (dima-fomin.pl), akceptujesz i zgadzasz się przestrzegać poniższych warunków.",
+    "sections": {
+      "usage": {
+        "title": "Korzystanie ze strony",
+        "text": "Ta strona udostępnia treści kulinarne, narzędzia szefa kuchni i profesjonalne zasoby. Zgadzasz się korzystać ze strony wyłącznie w celach zgodnych z prawem.",
+        "items": [
+          "Treści są udostępniane wyłącznie w celach informacyjnych",
+          "Narzędzia są udostępniane w obecnym stanie do użytku edukacyjnego i profesjonalnego",
+          "Nie wolno nadużywać ani próbować zakłócać działania strony"
+        ]
+      },
+      "content": {
+        "title": "Treści",
+        "text": "Wszystkie przepisy, artykuły i narzędzia są tworzone w celach edukacyjnych i profesjonalnych. Dokładamy starań, aby informacje były dokładne, ale nie możemy zagwarantować braku błędów."
+      },
+      "intellectual": {
+        "title": "Własność intelektualna",
+        "text": "Cała zawartość tej strony, w tym teksty, zdjęcia i design, jest własnością Dimy Fomina, chyba że zaznaczono inaczej.",
+        "items": [
+          "Treści nie mogą być powielane bez zgody",
+          "Możesz swobodnie udostępniać linki do naszych treści",
+          "Przy odwoływaniu się do naszych materiałów wymagane jest podanie autorstwa"
+        ]
+      },
+      "disclaimer": {
+        "title": "Zastrzeżenia",
+        "text": "Treści strony są dostarczane w obecnym stanie bez jakiejkolwiek gwarancji. Obliczenia wartości odżywczych, przeliczniki jednostek i inne narzędzia mają charakter przybliżony i powinny być niezależnie zweryfikowane do użytku profesjonalnego."
+      },
+      "liability": {
+        "title": "Ograniczenie odpowiedzialności",
+        "text": "Nie ponosimy odpowiedzialności za jakiekolwiek szkody wynikające z korzystania z tej strony lub polegania na jej treściach. Korzystaj ze wszystkich narzędzi i informacji na własną odpowiedzialność."
+      },
+      "changes": {
+        "title": "Zmiany regulaminu",
+        "text": "Zastrzegamy sobie prawo do aktualizacji niniejszego regulaminu w dowolnym momencie. Zmiany będą publikowane na tej stronie z zaktualizowaną datą."
+      },
+      "governing": {
+        "title": "Prawo właściwe",
+        "text": "Niniejszy regulamin podlega prawu polskiemu i prawu Unii Europejskiej, w tym przepisom RODO."
+      }
+    },
+    "relatedPages": "Powiązane strony:",
+    "privacyLink": "Polityka prywatności",
+    "cookiesLink": "Polityka cookie"
+  },
+  "cookiesPage": {
+    "meta": {
+      "title": "Polityka cookie",
+      "description": "Informacje o plikach cookie używanych na dima-fomin.pl i sposobach zarządzania nimi."
+    },
+    "title": "Polityka cookie",
+    "lastUpdated": "Ostatnia aktualizacja: 13 marca 2026",
+    "intro": "Niniejsza Polityka cookie wyjaśnia, czym są pliki cookie, jak ich używamy na dima-fomin.pl i jak możesz zarządzać swoimi preferencjami.",
+    "sections": {
+      "what": {
+        "title": "Czym są pliki cookie",
+        "text": "Pliki cookie to małe pliki tekstowe przechowywane na Twoim urządzeniu podczas odwiedzania strony. Pomagają stronie zapamiętać Twoje preferencje i poprawiają komfort przeglądania."
+      },
+      "types": {
+        "title": "Rodzaje używanych plików cookie",
+        "text": "Używamy następujących rodzajów plików cookie:",
+        "items": [
+          "Niezbędne pliki cookie — wymagane do podstawowego działania strony",
+          "Analityczne pliki cookie — pomagają zrozumieć, jak odwiedzający korzystają ze strony",
+          "Pliki cookie preferencji — zapamiętują Twoje ustawienia i wybory"
+        ]
+      },
+      "essential": {
+        "title": "Niezbędne pliki cookie",
+        "text": "Te pliki cookie są konieczne do prawidłowego działania strony. Obejmują:",
+        "items": [
+          "Preferencja zgody na pliki cookie (cookie-consent)",
+          "Preferencja motywu (jasny/ciemny)",
+          "Preferencja języka"
+        ]
+      },
+      "analytics": {
+        "title": "Analityczne pliki cookie",
+        "text": "Korzystamy z Vercel Analytics do analizy ruchu na stronie. Te pliki cookie zbierają anonimowe dane, takie jak odsłony i czas sesji. Analityczne pliki cookie są ładowane tylko po zaakceptowaniu ich przez banner zgody."
+      },
+      "manage": {
+        "title": "Zarządzanie plikami cookie",
+        "text": "Możesz zarządzać swoimi preferencjami dotyczącymi plików cookie na kilka sposobów:",
+        "items": [
+          "Skorzystaj z bannera zgody przy pierwszej wizycie na stronie",
+          "Wyczyść pliki cookie w ustawieniach przeglądarki",
+          "Wyłącz pliki cookie w preferencjach przeglądarki",
+          "Użyj rozszerzeń przeglądarki blokujących pliki cookie"
+        ]
+      },
+      "thirdParty": {
+        "title": "Pliki cookie stron trzecich",
+        "text": "Niektóre usługi stron trzecich mogą ustawiać własne pliki cookie. Korzystamy z minimalnej liczby usług stron trzecich i nie używamy reklamowych plików cookie ani pikseli śledzących."
+      },
+      "updates": {
+        "title": "Aktualizacje polityki",
+        "text": "Możemy aktualizować niniejszą Politykę cookie. Wszelkie zmiany będą publikowane na tej stronie z zaktualizowaną datą."
+      }
+    },
+    "relatedPages": "Powiązane strony:",
+    "privacyLink": "Polityka prywatności",
+    "termsLink": "Regulamin"
   }
 }
