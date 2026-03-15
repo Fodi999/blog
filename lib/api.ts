@@ -909,3 +909,108 @@ export async function fetchProductSeasonality(
     `/public/tools/product-seasonality?slug=${encodeURIComponent(slug)}&lang=${encodeURIComponent(lang)}&region=${encodeURIComponent(region)}`,
   );
 }
+
+
+// ─── Ingredient States ─────────────────────────────────────────────────────
+
+export type ApiIngredientStateNutrition = {
+  calories_per_100g: number | null;
+  protein_per_100g: number | null;
+  fat_per_100g: number | null;
+  carbs_per_100g: number | null;
+  fiber_per_100g: number | null;
+  water_percent: number | null;
+};
+
+export type ApiIngredientStateCooking = {
+  weight_change_percent: number | null;
+  water_loss_percent: number | null;
+  oil_absorption_g: number | null;
+};
+
+export type ApiIngredientStateStorage = {
+  shelf_life_hours: number | null;
+  storage_temp_c: number | null;
+  texture: string | null;
+};
+
+/** Single state from GET /public/ingredients/:slug/states/:state */
+export type ApiIngredientStateSingle = {
+  slug: string;
+  ingredient_id: string;
+  state: string;
+  state_type: string;
+  cooking_method: string | null;
+  glycemic_index: number | null;
+  data_score: number | null;
+  name_en: string;
+  name_ru?: string;
+  name_pl?: string;
+  name_uk?: string;
+  name_suffix_en: string;
+  name_suffix_ru?: string;
+  name_suffix_pl?: string;
+  name_suffix_uk?: string;
+  image_url: string | null;
+  nutrition: ApiIngredientStateNutrition;
+  cooking: ApiIngredientStateCooking;
+  storage: ApiIngredientStateStorage;
+  notes_en?: string | null;
+  notes_ru?: string | null;
+  notes_pl?: string | null;
+  notes_uk?: string | null;
+};
+
+/** Summary state from the list endpoint */
+export type ApiIngredientStateListItem = {
+  state: string;
+  state_type: string;
+  cooking_method: string | null;
+  glycemic_index: number | null;
+  name_suffix_en: string;
+  name_suffix_ru?: string;
+  name_suffix_pl?: string;
+  name_suffix_uk?: string;
+  calories_per_100g: number | null;
+  protein_per_100g: number | null;
+  fat_per_100g: number | null;
+  carbs_per_100g: number | null;
+  fiber_per_100g: number | null;
+  water_percent: number | null;
+  texture: string | null;
+  weight_change_percent: number | null;
+  water_loss_percent: number | null;
+  oil_absorption_g: number | null;
+  shelf_life_hours: number | null;
+  storage_temp_c: number | null;
+  data_score: number | null;
+  notes_en?: string | null;
+  notes_ru?: string | null;
+  notes_pl?: string | null;
+  notes_uk?: string | null;
+};
+
+export type ApiIngredientStatesResponse = {
+  slug: string;
+  ingredient_id: string;
+  name_en: string;
+  name_ru?: string;
+  name_pl?: string;
+  name_uk?: string;
+  image_url: string | null;
+  states: ApiIngredientStateListItem[];
+};
+
+/** GET /public/ingredients/:slug/states — list all states */
+export async function fetchIngredientStates(slug: string): Promise<ApiIngredientStatesResponse | null> {
+  return apiFetchFresh<ApiIngredientStatesResponse>(
+    "/public/ingredients/" + encodeURIComponent(slug) + "/states",
+  );
+}
+
+/** GET /public/ingredients/:slug/states/:state — single state detail */
+export async function fetchIngredientStateSingle(slug: string, state: string): Promise<ApiIngredientStateSingle | null> {
+  return apiFetchFresh<ApiIngredientStateSingle>(
+    "/public/ingredients/" + encodeURIComponent(slug) + "/states/" + encodeURIComponent(state),
+  );
+}

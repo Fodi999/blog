@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { generateMetadata as genMeta } from '@/lib/metadata';
-import { fetchIngredient as apiFetchIngredient, fetchIngredientsMeta } from '@/lib/api';
+import { fetchIngredient as apiFetchIngredient, fetchIngredientsMeta, fetchIngredientStates } from '@/lib/api';
 import type { ApiIngredient } from '@/lib/api';
 import { ChefToolsNav } from '../../ChefToolsNav';
 import { Link } from '@/i18n/routing';
@@ -9,6 +9,7 @@ import Image from 'next/image';
 import { ChevronRight, Package, Leaf, Flame, Droplets, FlaskConical, Apple, Scale, Heart, CalendarDays, ShieldAlert, ArrowRight } from 'lucide-react';
 import type { Metadata } from 'next';
 import CategoryPage, { CATEGORY_MAP } from './category-page';
+import IngredientStateClient from './IngredientStateClient';
 import { JsonLd } from '@/components/JsonLd';
 
 export const revalidate = 86400;
@@ -162,8 +163,14 @@ export default async function IngredientSlugPage({
   }
 
   /* ── individual ingredient page ── */
-  const item = await apiFetchIngredient(slug);
+  const [item, statesResp] = await Promise.all([
+    apiFetchIngredient(slug),
+    fetchIngredientStates(slug).catch(() => null),
+  ]);
   if (!item) notFound();
+
+  const statesList = statesResp?.states ?? [];
+  const initialState = 'raw';
 
   const t = await getTranslations({ locale, namespace: 'chefTools' });
   const name = localName(item, locale);
@@ -351,6 +358,16 @@ export default async function IngredientSlugPage({
             )}
           </div>
         </div>
+
+        {/* ── State Switcher ── */}
+        {statesList.length > 0 && (
+          <IngredientStateClient
+            slug={item.slug ?? slug}
+            locale={locale}
+            availableStates={statesList}
+            initialState={initialState}
+          />
+        )}
 
         {/* ── Macros ── */}
         <Section

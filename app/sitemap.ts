@@ -231,5 +231,36 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         )
     : [];
 
-  return [...staticUrls, ...postUrls, ...ingredientUrls, ...ingredientProfileUrls, ...howManyUrls];
+  // ─── Ingredient state pages ──────────────────────────────────────────
+  // /chef-tools/ingredients/{slug}/{state} — 10 states per ingredient
+  const PROCESSING_STATES = [
+    'raw', 'boiled', 'steamed', 'baked', 'grilled',
+    'fried', 'smoked', 'frozen', 'dried', 'pickled',
+  ];
+
+  const ingredientStateUrls: MetadataRoute.Sitemap = ingredientList
+    ? ingredientList
+        .filter((ing) => ing.slug)
+        .flatMap((ing) =>
+          PROCESSING_STATES.map((state) => ({
+            url: `${BASE_URL}/${canonicalLocale}/chef-tools/ingredients/${ing.slug}/${state}`,
+            lastModified: BUILD_DATE,
+            changeFrequency: 'weekly' as const,
+            priority: 0.7,
+            alternates: {
+              languages: {
+                ...Object.fromEntries(
+                  locales.map((l) => [
+                    l,
+                    `${BASE_URL}/${l}/chef-tools/ingredients/${ing.slug}/${state}`,
+                  ])
+                ),
+                'x-default': `${BASE_URL}/${canonicalLocale}/chef-tools/ingredients/${ing.slug}/${state}`,
+              },
+            },
+          }))
+        )
+    : [];
+
+  return [...staticUrls, ...postUrls, ...ingredientUrls, ...ingredientProfileUrls, ...howManyUrls, ...ingredientStateUrls];
 }
