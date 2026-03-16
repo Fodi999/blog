@@ -194,6 +194,50 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         }))
     : [];
 
+  // ─── Natural-language "how many" pages ───────────────────────────────
+  // Pattern: /chef-tools/how-many/how-many-{unit}-in-a-{measure}-of-{slug}
+  // e.g. /how-many/how-many-grams-in-a-cup-of-rice
+  const HOW_MANY_COMBOS = [
+    { unit: 'grams', measure: 'cup'  },
+    { unit: 'grams', measure: 'tbsp' },
+    { unit: 'grams', measure: 'tsp'  },
+    { unit: 'grams', measure: 'oz'   },
+    { unit: 'grams', measure: 'lb'   },
+    { unit: 'oz',    measure: 'cup'  },
+    { unit: 'oz',    measure: 'tbsp' },
+    { unit: 'oz',    measure: 'grams'},
+    { unit: 'cups',  measure: 'grams'},
+    { unit: 'ml',    measure: 'cup'  },
+    { unit: 'ml',    measure: 'tbsp' },
+    { unit: 'ml',    measure: 'tsp'  },
+    { unit: 'lbs',   measure: 'kg'   },
+    { unit: 'kg',    measure: 'lbs'  },
+  ];
+
+  const howManyUrls: MetadataRoute.Sitemap = ingredientList
+    ? ingredientList
+        .filter((ing) => ing.slug)
+        .flatMap((ing) =>
+          HOW_MANY_COMBOS.map(({ unit, measure }) => ({
+            url: `${BASE_URL}/${canonicalLocale}/chef-tools/how-many/how-many-${unit}-in-a-${measure}-of-${ing.slug}`,
+            lastModified: BUILD_DATE,
+            changeFrequency: 'monthly' as const,
+            priority: 0.8,
+            alternates: {
+              languages: {
+                ...Object.fromEntries(
+                  locales.map((l) => [
+                    l,
+                    `${BASE_URL}/${l}/chef-tools/how-many/how-many-${unit}-in-a-${measure}-of-${ing.slug}`,
+                  ])
+                ),
+                'x-default': `${BASE_URL}/${canonicalLocale}/chef-tools/how-many/how-many-${unit}-in-a-${measure}-of-${ing.slug}`,
+              },
+            },
+          }))
+        )
+    : [];
+
   // ─── Ingredient state pages ──────────────────────────────────────────
   // /chef-tools/ingredients/{slug}/{state} — 10 states per ingredient
   const PROCESSING_STATES = [
@@ -246,5 +290,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }),
   );
 
-  return [...staticUrls, ...postUrls, ...ingredientUrls, ...ingredientProfileUrls, ...ingredientStateUrls, ...recipeAnalysisUrls];
+  return [...staticUrls, ...postUrls, ...ingredientUrls, ...ingredientProfileUrls, ...howManyUrls, ...ingredientStateUrls, ...recipeAnalysisUrls];
 }
