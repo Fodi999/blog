@@ -726,7 +726,7 @@ function RecipeAnalyzerMode({ locale, t }: { locale: string; t: any }) {
       {/* Ingredient table */}
       <div className="border border-border/50 rounded-2xl overflow-hidden">
         <div className="bg-muted/20 px-4 py-2.5 border-b border-border/30">
-          <div className="grid grid-cols-[1fr_60px_72px_36px] gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
+          <div className="grid grid-cols-[1fr_76px_64px_32px] gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
             <span>{t("ingredient")}</span>
             <span className="text-center">{t("amount") ?? "Amount"}</span>
             <span className="text-center">{t("unit") ?? "Unit"}</span>
@@ -736,7 +736,7 @@ function RecipeAnalyzerMode({ locale, t }: { locale: string; t: any }) {
         <div className="divide-y divide-border/20">
           {rows.map((row, idx) => (
             <div key={idx} className="px-4 py-2.5 relative">
-              <div className="grid grid-cols-[1fr_60px_72px_36px] gap-2 items-center">
+              <div className="grid grid-cols-[1fr_76px_64px_32px] gap-2 items-center">
                 <div className="relative flex items-center gap-2">
                   {row.image_url && <img src={row.image_url} alt="" className="w-8 h-8 rounded-full object-cover flex-shrink-0" />}
                   <Input
@@ -767,16 +767,18 @@ function RecipeAnalyzerMode({ locale, t }: { locale: string; t: any }) {
                 </div>
                 <Input
                   type="number"
+                  inputMode="decimal"
                   min={0}
                   step="any"
-                  value={row.amount ?? row.grams}
+                  value={row.amount === undefined || Number.isNaN(row.amount) ? "" : row.amount}
                   onChange={(e) => {
-                    const amt = Number(e.target.value);
+                    const val = e.target.value;
+                    let amt = val === "" ? undefined : Number(val);
                     const unit = row.unit || "g";
-                    const grams = Math.round(toGrams(amt, unit, row.slug));
+                    const grams = amt === undefined ? 0 : Math.round(toGrams(amt, unit, row.slug));
                     setRows((prev) => { const next = [...prev]; next[idx] = { ...next[idx], amount: amt, grams }; return next; });
                   }}
-                  className="w-full h-9 text-center"
+                  className="w-full h-9 text-center tabular-nums text-sm font-semibold px-1"
                 />
                 <select
                   value={row.unit || "g"}
@@ -841,11 +843,15 @@ function RecipeAnalyzerMode({ locale, t }: { locale: string; t: any }) {
               <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">{t("portions")}</span>
               <Input
                 type="number"
+                inputMode="numeric"
                 min={1}
                 max={20}
-                value={portions}
-                onChange={(e) => setPortions(Number(e.target.value))}
-                className="w-14 px-2 py-1 text-sm text-center h-8"
+                value={portions === undefined || Number.isNaN(portions) ? "" : portions}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setPortions(val === "" ? 1 : Number(val));
+                }}
+                className="w-14 px-2 py-1 text-sm text-center h-8 tabular-nums font-semibold"
               />
             </div>
           </div>
