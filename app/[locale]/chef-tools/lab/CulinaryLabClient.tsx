@@ -235,12 +235,24 @@ const MODE_ICONS: Record<Mode, any> = {
 // HELPERS
 // ══════════════════════════════════════════════════════════════════════════════
 
+const MISSING_LOCALIZATIONS: Record<string, Record<string, string>> = {
+  "bacon": { ru: "Бекон", pl: "Boczek", uk: "Бекон" },
+  "black-pepper": { ru: "Чёрный перец", pl: "Czarny pieprz", uk: "Чорний перець" },
+  "butter": { ru: "Сливочное масло", pl: "Masło", uk: "Вершкове масло" },
+  "hard-cheese": { ru: "Твёрдый сыр", pl: "Twardy ser", uk: "Твердий сир" },
+  "mozzarella-cheese": { ru: "Моцарелла", pl: "Mozzarella", uk: "Моцарела" }
+};
+
 function localizedName(
   item: { name_en?: string; name_ru?: string; name_pl?: string; name_uk?: string; slug?: string },
   locale: string,
 ): string {
   const map: Record<string, string | undefined> = { en: item.name_en, ru: item.name_ru, pl: item.name_pl, uk: item.name_uk };
-  return map[locale] || item.name_en || item.slug || "";
+  if (map[locale]) return map[locale]!;
+  if (item.slug && MISSING_LOCALIZATIONS[item.slug]?.[locale]) {
+    return MISSING_LOCALIZATIONS[item.slug][locale];
+  }
+  return item.name_en || item.slug || "";
 }
 
 function scoreColor(s?: number) {
@@ -420,7 +432,7 @@ type RecipeDraft = {
 
 function RecipeAnalyzerMode({ locale, t }: { locale: string; t: any }) {
   const [rows, setRows] = useState<IngredientRow[]>([{ slug: "", name: "", grams: 100 }]);
-  const [portions, setPortions] = useState(1);
+  const [portions, setPortions] = useState<number | "">(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [activeRowIdx, setActiveRowIdx] = useState<number | null>(null);
@@ -480,7 +492,7 @@ function RecipeAnalyzerMode({ locale, t }: { locale: string; t: any }) {
   useEffect(() => {
     const draft: RecipeDraft = {
       rows: rows.map((r) => ({ slug: r.slug, grams: r.grams, amount: r.amount, unit: r.unit })),
-      portions,
+      portions: Number(portions) || 1,
     };
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(draft)); } catch { /* quota */ }
   }, [rows, portions]);
@@ -590,7 +602,7 @@ function RecipeAnalyzerMode({ locale, t }: { locale: string; t: any }) {
       const res = await fetch(`${API_URL}/public/tools/recipe-analyze`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ingredients: validRows.map((r) => ({ slug: r.slug, grams: r.grams })), portions: Math.max(1, portions), lang: locale }),
+        body: JSON.stringify({ ingredients: validRows.map((r) => ({ slug: r.slug, grams: r.grams })), portions: Math.max(1, Number(portions) || 1), lang: locale }),
       });
       if (!res.ok) { const data = await res.json().catch(() => ({})); throw new Error(data.error || `Error ${res.status}`); }
       const data: AnalyzeResponse = await res.json();
@@ -613,16 +625,26 @@ function RecipeAnalyzerMode({ locale, t }: { locale: string; t: any }) {
     }
   };
 
-  /** Add a suggested ingredient to the recipe and re-analyze */
-  const addSuggestionToRecipe = async (s: SuggestionItem) => {
-    // Check if ingredient already exists in the recipe
-    if (rows.some((r) => r.slug === s.slug)) return;
-    const name = localizedName(s, locale) || s.name;
-    const defaultGrams = 50;
-    const newRow: IngredientRow = { slug: s.slug, name, grams: defaultGrams, amount: defaultGrams, unit: "g", image_url: s.image_url };
-    const updatedRows = [...rows, newRow];
-    setRows(updatedRows);
-    // Re-analyze with the new ingredient
+  /** Toggle a suggested ingredient in the recipe and re-analyze */
+  const toggleSuggestionInRecipe = async (s: SuggestionItem) => {
+    const isAdded = rows.some((r) => r.slug === s.slug);
+    let updatedRows;
+    if (isAdded) {
+      updatedRows = rows.filter((r) => r.slug !== s.slug);
+      if (updatedRows.length === 0) {
+        setRows([{ slug: "", name: "", grams: 100 }]);
+        setResult(null);
+        return;
+      }
+      setRows(updatedRows);
+    } else {
+      const name = localizedName(s, locale) || s.name;
+      const defaultGrams = 50;
+      const newRow: IngredientRow = { slug: s.slug, name, grams: defaultGrams, amount: defaultGrams, unit: "g", image_url: s.image_url };
+      updatedRows = [...rows, newRow];
+      setRows(updatedRows);
+    }
+    // Re-analyze with the new ingredient list
     const validRows = updatedRows.filter((r) => r.slug && r.grams > 0);
     if (validRows.length === 0) return;
     setLoading(true); setError(null);
@@ -630,7 +652,7 @@ function RecipeAnalyzerMode({ locale, t }: { locale: string; t: any }) {
       const res = await fetch(`${API_URL}/public/tools/recipe-analyze`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ingredients: validRows.map((r) => ({ slug: r.slug, grams: r.grams })), portions: Math.max(1, portions), lang: locale }),
+        body: JSON.stringify({ ingredients: validRows.map((r) => ({ slug: r.slug, grams: r.grams })), portions: Math.max(1, Number(portions) || 1), lang: locale }),
       });
       if (!res.ok) { const data = await res.json().catch(() => ({})); throw new Error(data.error || `Error ${res.status}`); }
       const data: AnalyzeResponse = await res.json();
@@ -671,7 +693,7 @@ function RecipeAnalyzerMode({ locale, t }: { locale: string; t: any }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ingredients: validRows.map((r) => ({ slug: r.slug, grams: r.grams })),
-          portions: Math.max(1, portions),
+          portions: Number(portions) || 1,
           lang: locale,
         }),
       });
@@ -724,8 +746,8 @@ function RecipeAnalyzerMode({ locale, t }: { locale: string; t: any }) {
       )}
 
       {/* Ingredient table */}
-      <div className="border border-border/50 rounded-2xl overflow-hidden">
-        <div className="bg-muted/20 px-4 py-2.5 border-b border-border/30">
+      <div className="border border-border/50 rounded-2xl">
+        <div className="bg-muted/20 px-4 py-2.5 border-b border-border/30 rounded-t-2xl">
           <div className="grid grid-cols-[1fr_76px_64px_32px] gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
             <span>{t("ingredient")}</span>
             <span className="text-center">{t("amount") ?? "Amount"}</span>
@@ -735,7 +757,7 @@ function RecipeAnalyzerMode({ locale, t }: { locale: string; t: any }) {
         </div>
         <div className="divide-y divide-border/20">
           {rows.map((row, idx) => (
-            <div key={idx} className="px-4 py-2.5 relative">
+            <div key={idx} className={cn("px-4 py-2.5 relative", activeRowIdx === idx && "z-50")}>
               <div className="grid grid-cols-[1fr_76px_64px_32px] gap-2 items-center">
                 <div className="relative flex items-center gap-2">
                   {row.image_url && <img src={row.image_url} alt="" className="w-8 h-8 rounded-full object-cover flex-shrink-0" />}
@@ -812,7 +834,7 @@ function RecipeAnalyzerMode({ locale, t }: { locale: string; t: any }) {
             </div>
           ))}
         </div>
-        <div className="px-4 py-2.5 border-t border-border/30 flex items-center justify-between bg-muted/10">
+        <div className="px-4 py-2.5 border-t border-border/30 flex flex-wrap items-center justify-between gap-3 bg-muted/10">
           <div className="flex items-center gap-3">
             <Button
               variant="link"
@@ -835,23 +857,23 @@ function RecipeAnalyzerMode({ locale, t }: { locale: string; t: any }) {
               </Button>
             )}
           </div>
-          <div className="flex items-center gap-4">
-            <span className="text-[10px] font-bold text-muted-foreground/60">
+          <div className="flex items-center gap-4 ml-auto">
+            <span className="text-[10px] font-bold text-muted-foreground/60 whitespace-nowrap">
               {t("totalWeight")}: <span className="text-foreground font-black">{formatWeight(rows.reduce((s, r) => s + (r.grams || 0), 0), locale)}</span>
             </span>
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">{t("portions")}</span>
+              <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 whitespace-nowrap">{t("portions")}</span>
               <Input
                 type="number"
                 inputMode="numeric"
                 min={1}
                 max={20}
-                value={portions === undefined || Number.isNaN(portions) ? "" : portions}
+                value={portions}
                 onChange={(e) => {
                   const val = e.target.value;
-                  setPortions(val === "" ? 1 : Number(val));
+                  setPortions(val === "" ? "" : Number(val));
                 }}
-                className="w-14 px-2 py-1 text-sm text-center h-8 tabular-nums font-semibold"
+                className="w-14 px-2 py-1 text-sm text-center h-8 tabular-nums font-semibold shrink-0"
               />
             </div>
           </div>
@@ -1531,9 +1553,9 @@ function RecipeAnalyzerMode({ locale, t }: { locale: string; t: any }) {
                                                 size="sm"
                                                 disabled={alreadyInRecipe || loading}
                                                 onClick={() => {
-                                                  if (alreadyInRecipe || loading) return;
+                                                  if (loading) return;
                                                   const fakeS: SuggestionItem = { slug, name: displayName, image_url: imgUrl, score: 0, reasons: [], fills: [] };
-                                                  addSuggestionToRecipe(fakeS);
+                                                  toggleSuggestionInRecipe(fakeS);
                                                 }}
                                                 className={cn(
                                                   "gap-2 text-xs font-bold h-10 px-3",
@@ -1596,14 +1618,14 @@ function RecipeAnalyzerMode({ locale, t }: { locale: string; t: any }) {
                     <Card
                       key={s.slug}
                       className={cn(
-                        "group rounded-2xl overflow-hidden transition-all cursor-pointer",
+                        "group flex flex-col h-full rounded-2xl overflow-hidden transition-all cursor-pointer",
                         alreadyAdded
                           ? "ring-2 ring-green-500/50"
                           : "hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]",
                       )}
-                      onClick={() => !alreadyAdded && !loading && addSuggestionToRecipe(s)}
+                      onClick={() => !loading && toggleSuggestionInRecipe(s)}
                     >
-                      <CardContent className="p-0">
+                      <CardContent className="p-0 flex flex-col h-full">
                         {/* Hero image — object-cover, aspect-[4/3] */}
                         <div className="relative aspect-[4/3] w-full overflow-hidden">
                           {s.image_url ? (
@@ -1658,27 +1680,33 @@ function RecipeAnalyzerMode({ locale, t }: { locale: string; t: any }) {
                         </div>
 
                         {/* Content below image */}
-                        <div className="p-3 space-y-1.5">
-                          {/* Reasons */}
-                          {s.reasons.slice(0, 2).map((r, i) => (
-                            <p key={i} className="text-xs text-muted-foreground leading-snug">{localizeReason(r, t)}</p>
-                          ))}
+                        <div className="p-3 flex flex-col flex-1">
+                          <div className="space-y-1.5 mb-2">
+                            {/* Reasons */}
+                            {s.reasons.slice(0, 2).map((r, i) => (
+                              <p key={i} className="text-xs text-muted-foreground leading-snug">{localizeReason(r, t)}</p>
+                            ))}
 
-                          {/* Fill badges */}
-                          {s.fills.length > 0 && (
-                            <div className="flex flex-wrap gap-1 pt-0.5">
-                              {s.fills.map((f) => (
-                                <Badge key={f} variant="outline" className="text-[11px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20 px-2 py-0">
-                                  + {localizeFill(f, t)}
-                                </Badge>
-                              ))}
-                            </div>
-                          )}
+                            {/* Fill badges */}
+                            {s.fills.length > 0 && (
+                              <div className="flex flex-wrap gap-1 pt-0.5">
+                                {s.fills.map((f) => (
+                                  <Badge key={f} variant="outline" className="text-[11px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20 px-2 py-0">
+                                    + {localizeFill(f, t)}
+                                  </Badge>
+                                ))}
+                              </div>
+                            )}
+                          </div>
 
                           {/* Already added */}
-                          {alreadyAdded && (
-                            <p className="text-xs text-green-600 dark:text-green-400 font-bold">✓ {t("addedToRecipe") ?? "Added"}</p>
-                          )}
+                          <div className="mt-auto">
+                            {alreadyAdded ? (
+                              <p className="text-xs text-green-600 dark:text-green-400 font-bold">✓ {t("addedToRecipe") ?? "Added"}</p>
+                            ) : (
+                              <div className="h-4" />
+                            )}
+                          </div>
                         </div>
                       </CardContent>
                     </Card>

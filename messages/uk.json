@@ -414,6 +414,27 @@
         "aroma": "Аромат",
         "improveRecipe": "Покращіть рецепт",
         "noSuggestions": "Аналіз покаже рекомендації щодо покращення",
+        "sg": {
+          "fillsGap": "заповнює прогалину",
+          "pairing": "високе поєднання",
+          "aromatic_boost": "ароматичний акцент",
+          "balances_sweetness": "балансує солодкість",
+          "balances_acidity": "балансує кислотність",
+          "balances_bitterness": "балансує гіркоту",
+          "balances_umami": "балансує умамі",
+          "balances_fat": "балансує жирність",
+          "balances_aroma": "балансує аромат",
+          "nutritional_boost": "покращує поживність",
+          "adds_texture": "додає текстуру",
+          "fills": {
+            "bitterness": "гіркота",
+            "acidity": "кислотність",
+            "sweetness": "солодкість",
+            "umami": "умамі",
+            "fat": "жирність",
+            "aroma": "аромат"
+          }
+        },
         "pairings": "Поєднання інгредієнтів",
         "clickIngredient": "Натисніть на інгредієнт, щоб побачити найкращі поєднання",
         "bestPairings": "Найкращі поєднання для",

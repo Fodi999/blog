@@ -414,6 +414,27 @@
         "aroma": "Aromat",
         "improveRecipe": "Ulepsz swój przepis",
         "noSuggestions": "Analiza pokaże sugestie ulepszeń",
+        "sg": {
+          "fillsGap": "Wypełnia lukę smakową",
+          "pairing": "Wysoka ocena parowania",
+          "aromatic_boost": "Akcent aromatyczny",
+          "balances_sweetness": "Balansuje słodycz",
+          "balances_acidity": "Balansuje kwasowość",
+          "balances_bitterness": "Balansuje goryczkę",
+          "balances_umami": "Balansuje umami",
+          "balances_fat": "Balansuje tłuszcz",
+          "balances_aroma": "Balansuje aromat",
+          "nutritional_boost": "Poprawia odżywczość",
+          "adds_texture": "Dodaje teksturę",
+          "fills": {
+            "bitterness": "goryczka",
+            "acidity": "kwasowość",
+            "sweetness": "słodycz",
+            "umami": "umami",
+            "fat": "tłuszcz",
+            "aroma": "aromat"
+          }
+        },
         "pairings": "Parowanie składników",
         "clickIngredient": "Kliknij składnik, aby zobaczyć najlepsze parowania",
         "bestPairings": "Najlepsze parowania dla",

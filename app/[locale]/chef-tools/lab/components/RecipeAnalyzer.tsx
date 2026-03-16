@@ -53,7 +53,7 @@ function translateFill(raw: string, t: any): string {
 
 export function RecipeAnalyzer({ locale, t }: RecipeAnalyzerProps) {
   const [rows, setRows] = useState<IngredientRow[]>([{ slug: "", name: "", grams: 100 }]);
-  const [portions, setPortions] = useState(1);
+  const [portions, setPortions] = useState<number | "">(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [activeRowIdx, setActiveRowIdx] = useState<number | null>(null);
@@ -89,7 +89,7 @@ export function RecipeAnalyzer({ locale, t }: RecipeAnalyzerProps) {
       const res = await fetch(`${API_URL}/public/tools/recipe-analyze`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ingredients: validRows.map((r) => ({ slug: r.slug, grams: r.grams })), portions: Math.max(1, portions), lang: locale }),
+        body: JSON.stringify({ ingredients: validRows.map((r) => ({ slug: r.slug, grams: r.grams })), portions: Math.max(1, Number(portions) || 1), lang: locale }),
       });
       if (!res.ok) { const data = await res.json().catch(() => ({})); throw new Error(data.error || `Error ${res.status}`); }
       const data: AnalyzeResponse = await res.json();
@@ -201,7 +201,10 @@ export function RecipeAnalyzer({ locale, t }: RecipeAnalyzerProps) {
                     min={1}
                     max={20}
                     value={portions}
-                    onChange={(e) => setPortions(Number(e.target.value))}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setPortions(val === "" ? "" : Number(val));
+                    }}
                     className="w-16 px-3 py-1.5 text-sm bg-background border border-border/40 rounded-xl text-center font-black"
                   />
                 </div>

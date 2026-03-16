@@ -414,6 +414,27 @@
         "aroma": "Aroma",
         "improveRecipe": "Improve Your Recipe",
         "noSuggestions": "Analysis will show improvement suggestions",
+        "sg": {
+          "fillsGap": "Fills flavor gap",
+          "pairing": "High pairing score",
+          "aromatic_boost": "Aromatic boost",
+          "balances_sweetness": "Balances sweetness",
+          "balances_acidity": "Balances acidity",
+          "balances_bitterness": "Balances bitterness",
+          "balances_umami": "Balances umami",
+          "balances_fat": "Balances fat",
+          "balances_aroma": "Balances aroma",
+          "nutritional_boost": "Improves nutrition",
+          "adds_texture": "Adds texture",
+          "fills": {
+            "bitterness": "bitterness",
+            "acidity": "acidity",
+            "sweetness": "sweetness",
+            "umami": "umami",
+            "fat": "fat",
+            "aroma": "aroma"
+          }
+        },
         "pairings": "Ingredient Pairings",
         "clickIngredient": "Click any ingredient to see its best pairings",
         "bestPairings": "Best Pairings for",
