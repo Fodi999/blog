@@ -4,6 +4,7 @@ import { fetchIngredients } from '@/lib/api';
 import { locales } from '@/i18n';
 import { CATEGORY_MAP } from './[locale]/chef-tools/ingredients/[slug]/category-page';
 import { CONVERSION_MAP } from './[locale]/chef-tools/converter/[conversion]/page';
+import { RECIPE_TEMPLATES } from '@/lib/recipe-templates';
 
 const BASE_URL = 'https://dima-fomin.pl';
 const API_URL = 'https://ministerial-yetta-fodi999-c58d8823.koyeb.app';
@@ -51,6 +52,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       { path: '/chef-tools/ingredient-analyzer', priority: 0.8, changeFrequency: 'weekly' },
       { path: '/chef-tools/fish-season', priority: 0.8, changeFrequency: 'weekly' },
       { path: '/chef-tools/converter', priority: 0.75, changeFrequency: 'monthly' },
+      { path: '/chef-tools/lab', priority: 0.85, changeFrequency: 'weekly' },
+      { path: '/chef-tools/recipe-analyzer', priority: 0.8, changeFrequency: 'weekly' },
+      { path: '/chef-tools/flavor-pairing', priority: 0.8, changeFrequency: 'weekly' },
+      { path: '/chef-tools/nutrition', priority: 0.85, changeFrequency: 'daily' },
+      // Fish season — 12 monthly pages
+      ...Array.from({ length: 12 }, (_, i) => ({
+        path: `/chef-tools/fish-season/${String(i + 1).padStart(2, '0')}`,
+        priority: 0.7 as number,
+        changeFrequency: 'monthly' as const,
+      })),
       // Legal / GDPR pages
       { path: '/privacy', priority: 0.3, changeFrequency: 'yearly' },
       { path: '/terms', priority: 0.3, changeFrequency: 'yearly' },
@@ -183,54 +194,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         }))
     : [];
 
-  // ─── Natural-language "how many" pages ───────────────────────────────
-  // Pattern: /chef-tools/how-many/how-many-{unit}-in-a-{measure}-of-{slug}
-  // Mirrors TOP_COMBINATIONS in how-many/[...query]/page.tsx — keep in sync.
-  const HOW_MANY_COMBOS = [
-    // → grams
-    { unit: 'grams', measure: 'cup'  },
-    { unit: 'grams', measure: 'tbsp' },
-    { unit: 'grams', measure: 'tsp'  },
-    { unit: 'grams', measure: 'oz'   },
-    { unit: 'grams', measure: 'lb'   },
-    // → oz
-    { unit: 'oz',    measure: 'cup'  },
-    { unit: 'oz',    measure: 'tbsp' },
-    { unit: 'oz',    measure: 'grams'},
-    // → cups / ml
-    { unit: 'cups',  measure: 'grams'},
-    { unit: 'ml',    measure: 'cup'  },
-    { unit: 'ml',    measure: 'tbsp' },
-    { unit: 'ml',    measure: 'tsp'  },
-    // → lbs / kg
-    { unit: 'lbs',   measure: 'kg'   },
-    { unit: 'kg',    measure: 'lbs'  },
-  ];
-
-  const howManyUrls: MetadataRoute.Sitemap = ingredientList
-    ? ingredientList
-        .filter((ing) => ing.slug)
-        .flatMap((ing) =>
-          HOW_MANY_COMBOS.map(({ unit, measure }) => ({
-            url: `${BASE_URL}/${canonicalLocale}/chef-tools/how-many/how-many-${unit}-in-a-${measure}-of-${ing.slug}`,
-            lastModified: BUILD_DATE,
-            changeFrequency: 'monthly' as const,
-            priority: 0.8,   // higher priority — matches exact user queries
-            alternates: {
-              languages: {
-                ...Object.fromEntries(
-                  locales.map((l) => [
-                    l,
-                    `${BASE_URL}/${l}/chef-tools/how-many/how-many-${unit}-in-a-${measure}-of-${ing.slug}`,
-                  ])
-                ),
-                'x-default': `${BASE_URL}/${canonicalLocale}/chef-tools/how-many/how-many-${unit}-in-a-${measure}-of-${ing.slug}`,
-              },
-            },
-          }))
-        )
-    : [];
-
   // ─── Ingredient state pages ──────────────────────────────────────────
   // /chef-tools/ingredients/{slug}/{state} — 10 states per ingredient
   const PROCESSING_STATES = [
@@ -262,5 +225,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         )
     : [];
 
-  return [...staticUrls, ...postUrls, ...ingredientUrls, ...ingredientProfileUrls, ...howManyUrls, ...ingredientStateUrls];
+  // ─── Recipe analysis pages ───────────────────────────────────────────
+  const recipeAnalysisUrls: MetadataRoute.Sitemap = RECIPE_TEMPLATES.map(
+    (recipe) => ({
+      url: `${BASE_URL}/${canonicalLocale}/chef-tools/recipe-analysis/${recipe.slug}`,
+      lastModified: BUILD_DATE,
+      changeFrequency: 'weekly' as const,
+      priority: 0.85,
+      alternates: {
+        languages: {
+          ...Object.fromEntries(
+            locales.map((l) => [
+              l,
+              `${BASE_URL}/${l}/chef-tools/recipe-analysis/${recipe.slug}`,
+            ]),
+          ),
+          'x-default': `${BASE_URL}/${canonicalLocale}/chef-tools/recipe-analysis/${recipe.slug}`,
+        },
+      },
+    }),
+  );
+
+  return [...staticUrls, ...postUrls, ...ingredientUrls, ...ingredientProfileUrls, ...ingredientStateUrls, ...recipeAnalysisUrls];
 }

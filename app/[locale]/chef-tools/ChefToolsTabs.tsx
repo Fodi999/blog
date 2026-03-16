@@ -13,6 +13,9 @@ import {
   Salad,
   FlaskConical,
   LayoutGrid,
+  ChefHat,
+  Sparkles,
+  FlameKindling,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -28,6 +31,9 @@ const iconMap: Record<string, LucideIcon> = {
   nutrition: Salad,
   ingredientAnalyzer: FlaskConical,
   ingredientsCatalog: LayoutGrid,
+  recipeAnalyzer: ChefHat,
+  flavorPairing: Sparkles,
+  lab: FlameKindling,
 };
 
 /* ── Types ───────────────────────────────────────────────────────────────── */

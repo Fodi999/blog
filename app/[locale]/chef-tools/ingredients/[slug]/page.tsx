@@ -250,42 +250,6 @@ export default async function IngredientSlugPage({
     nutrition: nutritionLd,
   };
 
-  /* ── Build how-many internal link slugs ── */
-  const howManyLinks: { href: string; label: string }[] = [];
-  if (item.measures?.grams_per_cup != null) {
-    howManyLinks.push({
-      href: `/chef-tools/how-many/how-many-grams-in-a-cup-of-${slug}`,
-      label: t4(locale,
-        `How many grams in a cup of ${name}?`,
-        `Сколько граммов в стакане ${name}?`,
-        `Ile gramów w szklance ${name}?`,
-        `Скільки грамів у склянці ${name}?`,
-      ),
-    });
-  }
-  if (item.measures?.grams_per_tbsp != null) {
-    howManyLinks.push({
-      href: `/chef-tools/how-many/how-many-grams-in-a-tbsp-of-${slug}`,
-      label: t4(locale,
-        `How many grams in a tbsp of ${name}?`,
-        `Сколько граммов в ст.л. ${name}?`,
-        `Ile gramów w łyżce ${name}?`,
-        `Скільки грамів у ст.л. ${name}?`,
-      ),
-    });
-  }
-  if (item.measures?.grams_per_cup != null) {
-    howManyLinks.push({
-      href: `/chef-tools/how-many/how-many-oz-in-a-cup-of-${slug}`,
-      label: t4(locale,
-        `How many oz in a cup of ${name}?`,
-        `Сколько унций в стакане ${name}?`,
-        `Ile uncji w szklance ${name}?`,
-        `Скільки унцій у склянці ${name}?`,
-      ),
-    });
-  }
-
   return (
     <div className="max-w-5xl mx-auto px-3 sm:px-6 lg:px-8 pt-6 sm:pt-12 pb-12 sm:pb-16">
       <JsonLd data={productLd} />
@@ -574,28 +538,6 @@ export default async function IngredientSlugPage({
               })}
             </div>
           </Section>
-        )}
-
-        {/* ── Quick conversion links (how-many) ── */}
-        {howManyLinks.length > 0 && (
-          <div className="rounded-xl sm:rounded-2xl border border-border/50 p-3 sm:p-5 mb-4 sm:mb-6 bg-muted/20">
-            <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2.5 sm:mb-3 flex items-center gap-1.5">
-              <Scale className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-              {t4(locale, 'Quick conversions', 'Быстрые конвертации', 'Szybkie przeliczenia', 'Швидкі конвертації')}
-            </p>
-            <div className="flex flex-col gap-1.5 sm:gap-2">
-              {howManyLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href as never}
-                  className="flex items-center justify-between gap-2 px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg sm:rounded-xl border border-border/50 bg-background hover:border-primary/40 hover:bg-primary/5 transition-all group"
-                >
-                  <span className="text-[11px] sm:text-xs font-bold text-foreground group-hover:text-primary transition-colors">{link.label}</span>
-                  <ArrowRight className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
-                </Link>
-              ))}
-            </div>
-          </div>
         )}
 
         {/* ── Converter CTA ── */}

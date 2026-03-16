@@ -12,6 +12,9 @@ import {
   FlaskConical,
   Apple,
   ChevronDown,
+  ChefHat,
+  Sparkles,
+  FlameKindling,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -97,9 +100,12 @@ export function ChefToolsNav({ locale, translations }: ChefToolsNavProps) {
       href: '/chef-tools/converter',
       icon: Wrench,
       label: translations.tabs.tools,
-      pattern: /^\/chef-tools\/(converter|how-many|.*-to-.*)/,
+      pattern: /^\/chef-tools\/(converter|recipe-analyzer|flavor-pairing|lab|.*-to-.*)/,
       subItems: [
+        { href: '/chef-tools/lab', label: 'Culinary Lab', icon: FlameKindling },
         { href: '/chef-tools/converter', label: translations.tools.converter.title, icon: Scale },
+        { href: '/chef-tools/recipe-analyzer', label: 'Recipe Analyzer', icon: ChefHat },
+        { href: '/chef-tools/flavor-pairing', label: 'Flavor Pairing', icon: Sparkles },
       ]
     },
     {

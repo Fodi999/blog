@@ -28,7 +28,10 @@ const tabDefs = [
     id: 'tools',
     iconKey: 'tools',
     items: [
+      { href: '/chef-tools/lab', iconKey: 'lab', key: 'lab' },
       { href: '/chef-tools/converter', iconKey: 'converter', key: 'converter' },
+      { href: '/chef-tools/recipe-analyzer', iconKey: 'recipeAnalyzer', key: 'recipeAnalyzer' },
+      { href: '/chef-tools/flavor-pairing', iconKey: 'flavorPairing', key: 'flavorPairing' },
     ],
   },
   {

@@ -40,6 +40,16 @@
     --macro-protein: 239 68 68;   /* primary / red   */
     --macro-fat: 245 158 11;      /* amber-500       */
     --macro-carbs: 132 204 22;    /* lime-500        */
+
+    /* ── Flavor Radar Chart ── */
+    --radar-grid: #e5e7eb;
+    --radar-label: #6b7280;
+    --radar-line: #ef4444;
+    --radar-fill: #ef4444;
+    --radar-dot: #ef4444;
+    --tooltip-bg: rgba(255, 255, 255, 0.95);
+    --tooltip-border: rgba(0, 0, 0, 0.06);
+    --tooltip-color: #09090b;
   }
 
   .dark {
@@ -72,6 +82,16 @@
     --macro-protein: 248 113 113; /* red-400    */
     --macro-fat: 251 191 36;      /* amber-400  */
     --macro-carbs: 163 230 53;    /* lime-400   */
+
+    /* ── Flavor Radar Chart (dark) ── */
+    --radar-grid: #374151;
+    --radar-label: #9ca3af;
+    --radar-line: #f87171;
+    --radar-fill: #f87171;
+    --radar-dot: #f87171;
+    --tooltip-bg: rgba(9, 9, 11, 0.95);
+    --tooltip-border: rgba(255, 255, 255, 0.08);
+    --tooltip-color: #fafafa;
   }
 }
 

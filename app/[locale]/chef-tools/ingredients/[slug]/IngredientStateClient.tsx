@@ -18,6 +18,28 @@ const STATE_EMOJI: Record<string, string> = {
 
 const STATE_ORDER = ['raw', 'boiled', 'steamed', 'baked', 'grilled', 'fried', 'smoked', 'frozen', 'dried', 'pickled'];
 
+const STATE_NAMES: Record<string, { en: string; ru: string; pl: string; uk: string }> = {
+  raw:     { en: 'Raw',     ru: 'Сырой',    pl: 'Surowy',    uk: 'Сирий' },
+  boiled:  { en: 'Boiled',  ru: 'Варёный',  pl: 'Gotowany',  uk: 'Варений' },
+  steamed: { en: 'Steamed', ru: 'На пару',  pl: 'Na parze',  uk: 'На парі' },
+  baked:   { en: 'Baked',   ru: 'Печёный',  pl: 'Pieczony',  uk: 'Печений' },
+  grilled: { en: 'Grilled', ru: 'Гриль',    pl: 'Grillowany', uk: 'Гриль' },
+  fried:   { en: 'Fried',   ru: 'Жареный',  pl: 'Smażony',   uk: 'Смажений' },
+  smoked:  { en: 'Smoked',  ru: 'Копчёный', pl: 'Wędzony',   uk: 'Копчений' },
+  frozen:  { en: 'Frozen',  ru: 'Замор.',   pl: 'Mrożony',   uk: 'Замор.' },
+  dried:   { en: 'Dried',   ru: 'Сушёный',  pl: 'Suszony',   uk: 'Сушений' },
+  pickled: { en: 'Pickled', ru: 'Маринов.', pl: 'Marynow.',  uk: 'Марин.' },
+};
+
+function stateName(state: string, locale: string): string {
+  const names = STATE_NAMES[state];
+  if (!names) return state;
+  if (locale === 'ru') return names.ru;
+  if (locale === 'pl') return names.pl;
+  if (locale === 'uk') return names.uk;
+  return names.en;
+}
+
 /* ─── Helpers ────────────────────────────────────────────────────────────── */
 
 function fmt(v: number | null | undefined): string {
@@ -167,7 +189,7 @@ export default function IngredientStateClient({ slug, locale, availableStates, i
             >
               <span className="text-sm sm:text-base">{STATE_EMOJI[s.state] || '⚗️'}</span>
               <span className="hidden sm:inline">{localSuffix(s, locale)}</span>
-              <span className="sm:hidden">{s.state}</span>
+              <span className="sm:hidden">{stateName(s.state, locale)}</span>
             </button>
           );
         })}

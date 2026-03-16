@@ -1014,3 +1014,91 @@ export async function fetchIngredientStateSingle(slug: string, state: string): P
     "/public/ingredients/" + encodeURIComponent(slug) + "/states/" + encodeURIComponent(state),
   );
 }
+
+// ─── Recipe Analysis (POST) ──────────────────────────────────────────────
+
+export type RecipeAnalysisNutrition = {
+  calories: number; protein: number; fat: number;
+  carbs: number; fiber: number; sugar: number;
+};
+
+export type RecipeAnalysisFlavor = {
+  sweetness: number; acidity: number; bitterness: number;
+  umami: number; fat: number; aroma: number;
+  balance_score: number; weak: string[]; strong: string[];
+};
+
+export type RecipeAnalysisSuggestion = {
+  slug: string; name: string; name_en?: string; name_ru?: string;
+  name_pl?: string; name_uk?: string; image_url?: string;
+  score: number; reasons: string[]; fills: string[];
+};
+
+export type RecipeAnalysisIngredient = {
+  slug: string; name: string; name_en?: string; name_ru?: string;
+  name_pl?: string; name_uk?: string; image_url?: string;
+  grams: number; calories: number; protein: number; fat: number;
+  carbs: number; fiber: number; sugar: number;
+  product_type?: string; found: boolean;
+};
+
+export type RecipeAnalysisFlavorContribution = {
+  slug: string;
+  sweetness: number; acidity: number; bitterness: number;
+  umami: number; fat: number; aroma: number;
+  pct_sweetness: number; pct_acidity: number; pct_bitterness: number;
+  pct_umami: number; pct_fat: number; pct_aroma: number;
+};
+
+export type RecipeAnalysisIssue = {
+  category: string; severity: string; rule: string;
+  title_key: string; description_key: string;
+  fix_slugs: string[]; fix_keys: string[];
+  value?: number; threshold?: number; impact?: number;
+};
+
+export type RecipeAnalysisCategoryScores = {
+  flavor: number; nutrition: number;
+  dominance: number; structure: number;
+};
+
+export type RecipeAnalysisDiagnosis = {
+  health_score: number;
+  issues: RecipeAnalysisIssue[];
+  category_scores: RecipeAnalysisCategoryScores;
+  critical_count: number; warning_count: number; info_count: number;
+};
+
+export type RecipeAnalysisResponse = {
+  nutrition: RecipeAnalysisNutrition;
+  per_portion?: RecipeAnalysisNutrition;
+  portions: number;
+  macros: { protein_pct: number; fat_pct: number; carbs_pct: number };
+  score: number;
+  flavor: RecipeAnalysisFlavor;
+  diet: string[];
+  suggestions: RecipeAnalysisSuggestion[];
+  ingredients: RecipeAnalysisIngredient[];
+  flavor_contributions?: RecipeAnalysisFlavorContribution[];
+  diagnosis?: RecipeAnalysisDiagnosis;
+};
+
+/** POST /public/tools/recipe-analyze — full recipe analysis */
+export async function fetchRecipeAnalysis(
+  ingredients: { slug: string; grams: number }[],
+  portions: number,
+  lang = 'en',
+): Promise<RecipeAnalysisResponse | null> {
+  try {
+    const res = await fetch(`${BASE}/public/tools/recipe-analyze`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ingredients, portions, lang }),
+      next: { revalidate: 86400 },
+    });
+    if (!res.ok) return null;
+    return res.json();
+  } catch {
+    return null;
+  }
+}

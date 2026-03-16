@@ -354,20 +354,6 @@ export default async function IngredientDetailPage({
           </span>
           <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary shrink-0" />
         </Link>
-        {ingredient.measures?.grams_per_cup != null && (
-          <Link
-            href={`/chef-tools/how-many/how-many-grams-in-a-cup-of-${slug}` as never}
-            className="flex items-center justify-between gap-2 p-4 rounded-2xl border border-border/50 hover:border-primary/40 hover:bg-primary/5 transition-all group"
-          >
-            <span className="text-xs sm:text-sm font-bold text-foreground group-hover:text-primary transition-colors">
-              {locale === 'pl' ? `⚖️ Ile gramów w szklance ${name}?`
-                : locale === 'ru' ? `⚖️ Сколько граммов в стакане ${name}?`
-                : locale === 'uk' ? `⚖️ Скільки грамів у склянці ${name}?`
-                : `⚖️ How many grams in a cup of ${name}?`}
-            </span>
-            <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary shrink-0" />
-          </Link>
-        )}
         <Link
           href="/chef-tools/converter"
           className="flex items-center justify-between gap-2 p-4 rounded-2xl border border-border/50 hover:border-primary/40 hover:bg-primary/5 transition-all group"
