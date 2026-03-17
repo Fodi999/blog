@@ -145,13 +145,23 @@ export default async function IngredientStatePage({
   const statesList = statesResp?.states ?? [];
 
   /* ── JSON-LD ── */
+  const SITE = 'https://dima-fomin.pl';
+  const pageUrl = `${SITE}/${locale}/chef-tools/ingredients/${slug}/${state}`;
+  const absImage = item.image_url
+    ? item.image_url.startsWith('http') ? item.image_url : `${SITE}${item.image_url}`
+    : undefined;
+
   const n = stateDetail.nutrition;
   const productLd = {
     '@context': 'https://schema.org',
     '@type': 'Product',
+    '@id': `${pageUrl}#product`,
     name: `${name} (${sl})`,
-    ...(item.image_url && { image: item.image_url }),
+    url: pageUrl,
+    ...(absImage && { image: absImage }),
     description: `${name} ${sl.toLowerCase()} — nutrition facts per 100g`,
+    additionalType: 'https://schema.org/Food',
+    mainEntityOfPage: { '@type': 'WebPage', '@id': pageUrl },
     brand: { '@type': 'Brand', name: 'Chef Tools by Dima Fomin' },
     nutrition: {
       '@type': 'NutritionInformation',
@@ -167,6 +177,14 @@ export default async function IngredientStatePage({
       ...(stateDetail.glycemic_index != null ? [{ '@type': 'PropertyValue', name: 'Glycemic Index', value: String(stateDetail.glycemic_index) }] : []),
       ...(stateDetail.cooking_method ? [{ '@type': 'PropertyValue', name: 'Cooking Method', value: stateDetail.cooking_method }] : []),
     ],
+    offers: {
+      '@type': 'Offer',
+      url: pageUrl,
+      price: '0',
+      priceCurrency: 'PLN',
+      availability: 'https://schema.org/InStock',
+      isAccessibleForFree: true,
+    },
   };
 
   return (

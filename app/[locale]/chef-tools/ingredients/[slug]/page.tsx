@@ -235,19 +235,37 @@ export default async function IngredientSlugPage({
     ...(sodiumMg != null && { sodiumContent: `${fmt(sodiumMg)} mg` }),
   };
 
+  const SITE = 'https://dima-fomin.pl';
+  const pageUrl = `${SITE}/${locale}/chef-tools/ingredients/${slug}`;
+  const absImage = item.image_url
+    ? item.image_url.startsWith('http') ? item.image_url : `${SITE}${item.image_url}`
+    : undefined;
+
   const productLd = {
     '@context': 'https://schema.org',
     '@type': 'Product',
+    '@id': `${pageUrl}#product`,
     name,
-    ...(item.image_url && { image: item.image_url }),
+    url: pageUrl,
+    ...(absImage && { image: absImage }),
     ...(description && { description }),
     ...(item.category && { category: item.category }),
+    additionalType: 'https://schema.org/Food',
+    mainEntityOfPage: { '@type': 'WebPage', '@id': pageUrl },
     brand: { '@type': 'Brand', name: 'Chef Tools by Dima Fomin' },
     additionalProperty: [
       ...(calories != null ? [{ '@type': 'PropertyValue', name: 'Calories', value: `${fmt(calories)} kcal per 100g` }] : []),
       ...(proteinG != null ? [{ '@type': 'PropertyValue', name: 'Protein', value: `${fmt(proteinG)} g per 100g` }] : []),
     ],
     nutrition: nutritionLd,
+    offers: {
+      '@type': 'Offer',
+      url: pageUrl,
+      price: '0',
+      priceCurrency: 'PLN',
+      availability: 'https://schema.org/InStock',
+      isAccessibleForFree: true,
+    },
   };
 
   return (

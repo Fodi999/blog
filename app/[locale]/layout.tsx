@@ -10,7 +10,6 @@ import { Toaster } from 'sonner';
 import { notFound } from 'next/navigation';
 import { locales } from '@/i18n';
 import { CookieConsent } from '@/components/CookieConsent';
-import { LocaleTransition } from '@/components/LocaleTransition';
 import '../globals.css';
 import { generateMetadata as sharedGenerateMetadata } from '@/lib/metadata';
 
@@ -76,7 +75,7 @@ export default async function LocaleLayout({
           <NextIntlClientProvider locale={locale} messages={messages}>
             <Header locale={locale} />
             <main className="container mx-auto px-4 py-8">
-              <LocaleTransition>{children}</LocaleTransition>
+              {children}
             </main>
             <Footer locale={locale} />
             <CookieConsent />
