@@ -218,10 +218,17 @@ export type ApiEquivalentsResult = {
 
 // ─── Core fetch helpers ───────────────────────────────────────────────────────
 
-async function apiFetch<T>(path: string, revalidate = 86400): Promise<T | null> {
+type FetchOpts = {
+  revalidate?: number;
+  tags?: string[];
+};
+
+async function apiFetch<T>(path: string, opts: FetchOpts | number = 86400): Promise<T | null> {
+  const { revalidate, tags } =
+    typeof opts === 'number' ? { revalidate: opts, tags: undefined } : opts;
   try {
     const res = await fetch(`${BASE}${path}`, {
-      next: { revalidate },
+      next: { revalidate, tags },
     });
     if (!res.ok) return null;
     return res.json() as Promise<T>;
@@ -232,9 +239,11 @@ async function apiFetch<T>(path: string, revalidate = 86400): Promise<T | null> 
 
 /** Fetch without Next.js cache — used for bulk parallel calls where the
  *  page-level ISR (export const revalidate) controls caching instead. */
-async function apiFetchFresh<T>(path: string): Promise<T | null> {
+async function apiFetchFresh<T>(path: string, tags?: string[]): Promise<T | null> {
   try {
-    const res = await fetch(`${BASE}${path}`, { cache: 'no-store' });
+    const res = await fetch(`${BASE}${path}`, {
+      ...(tags ? { next: { tags } } : { cache: 'no-store' as const }),
+    });
     if (!res.ok) return null;
     return res.json() as Promise<T>;
   } catch {
@@ -272,7 +281,7 @@ export async function fetchIngredientsMeta(
 
   const results = await Promise.all(
     slugs.map((slug) =>
-      apiFetchFresh<Raw>(`/public/ingredients/${encodeURIComponent(slug)}`),
+      apiFetchFresh<Raw>(`/public/ingredients/${encodeURIComponent(slug)}`, [`ingredient-${slug}`]),
     ),
   );
 
@@ -312,7 +321,7 @@ export async function fetchIngredients(): Promise<ApiIngredient[] | null> {
   type RawResponse = { items: RawItem[]; total: number };
 
   // Use no-store — page-level ISR (revalidate = 3600) controls caching
-  const data = await apiFetchFresh<RawResponse>('/public/ingredients?limit=200');
+  const data = await apiFetchFresh<RawResponse>('/public/ingredients?limit=200', ['ingredients']);
   if (!data) return null;
 
   // Only items that have calories
@@ -343,7 +352,7 @@ export async function fetchIngredients(): Promise<ApiIngredient[] | null> {
 
   const details = await Promise.allSettled(
     filtered.map((item) =>
-      apiFetch<RawDetail>(`/public/ingredients/${encodeURIComponent(item.slug)}`, 86400),
+      apiFetch<RawDetail>(`/public/ingredients/${encodeURIComponent(item.slug)}`, { tags: [`ingredient-${item.slug}`] }),
     ),
   );
 
@@ -421,8 +430,8 @@ export async function fetchIngredient(slug: string): Promise<ApiIngredient | nul
   };
 
   const [raw, nutr] = await Promise.all([
-    apiFetchFresh<Raw>(`/public/ingredients/${encodeURIComponent(slug)}`),
-    apiFetchFresh<NutritionRaw>(`/public/nutrition/${encodeURIComponent(slug)}`).catch(() => null),
+    apiFetchFresh<Raw>(`/public/ingredients/${encodeURIComponent(slug)}`, [`ingredient-${slug}`]),
+    apiFetchFresh<NutritionRaw>(`/public/nutrition/${encodeURIComponent(slug)}`, [`ingredient-${slug}`]).catch(() => null),
   ]);
   if (!raw) return null;
   return {
@@ -1005,6 +1014,7 @@ export type ApiIngredientStatesResponse = {
 export async function fetchIngredientStates(slug: string): Promise<ApiIngredientStatesResponse | null> {
   return apiFetchFresh<ApiIngredientStatesResponse>(
     "/public/ingredients/" + encodeURIComponent(slug) + "/states",
+    [`ingredient-${slug}`],
   );
 }
 
@@ -1012,6 +1022,7 @@ export async function fetchIngredientStates(slug: string): Promise<ApiIngredient
 export async function fetchIngredientStateSingle(slug: string, state: string): Promise<ApiIngredientStateSingle | null> {
   return apiFetchFresh<ApiIngredientStateSingle>(
     "/public/ingredients/" + encodeURIComponent(slug) + "/states/" + encodeURIComponent(state),
+    [`ingredient-${slug}`],
   );
 }
 

@@ -1,18 +1,29 @@
 import { revalidatePath } from 'next/cache';
+import { revalidateTag } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
 
 /**
  * POST /api/revalidate
- * On-demand ISR revalidation endpoint.
- * Called by the admin backend after publish/unpublish.
+ * On-demand ISR revalidation endpoint (SaaS-grade).
  *
- * Body: { "paths": ["/chef-tools/ingredients", "/chef-tools/ingredients/salmon"] }
+ * Hybrid mode:
+ *   • tags  — fast, surgical cache invalidation (preferred)
+ *   • paths — legacy fallback for full-page purge
+ *
+ * Body examples:
+ *   { "tags": ["ingredients"] }                        — all catalog pages
+ *   { "tags": ["ingredients", "ingredient-salmon"] }   — catalog + one product
+ *   { "paths": ["/chef-tools/ingredients"] }           — legacy path mode
+ *
  * Header: Authorization: Bearer <REVALIDATE_SECRET>
  */
 export async function POST(req: NextRequest) {
   const secret = process.env.REVALIDATE_SECRET;
   if (!secret) {
-    return NextResponse.json({ error: 'REVALIDATE_SECRET not configured' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'REVALIDATE_SECRET not configured' },
+      { status: 500 },
+    );
   }
 
   const auth = req.headers.get('authorization');
@@ -22,19 +33,33 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json();
+
+    // ── Tag-based revalidation (preferred) ──────────────────────
+    const tags: string[] = body.tags ?? [];
+    if (tags.length > 0) {
+      for (const tag of tags) {
+        revalidateTag(tag, 'default');
+      }
+      return NextResponse.json({ revalidated: true, mode: 'tags', tags });
+    }
+
+    // ── Path-based revalidation (fallback) ──────────────────────
     const paths: string[] = body.paths ?? [];
+    const locales = ['en', 'ru', 'pl', 'uk'];
 
     if (paths.length === 0) {
-      const locales = ['en', 'ru', 'pl', 'uk'];
+      // Default: purge catalog listing for all locales
       for (const locale of locales) {
         revalidatePath(`/${locale}/chef-tools/ingredients`);
       }
-      return NextResponse.json({ revalidated: true, paths: locales.map(l => `/${l}/chef-tools/ingredients`) });
+      return NextResponse.json({
+        revalidated: true,
+        mode: 'paths',
+        paths: locales.map((l) => `/${l}/chef-tools/ingredients`),
+      });
     }
 
     const revalidated: string[] = [];
-    const locales = ['en', 'ru', 'pl', 'uk'];
-
     for (const path of paths) {
       for (const locale of locales) {
         const full = `/${locale}${path}`;
@@ -43,7 +68,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    return NextResponse.json({ revalidated: true, paths: revalidated });
+    return NextResponse.json({ revalidated: true, mode: 'paths', paths: revalidated });
   } catch {
     return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
   }
