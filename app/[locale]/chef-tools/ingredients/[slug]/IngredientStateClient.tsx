@@ -2,6 +2,19 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter, usePathname } from '@/i18n/routing';
+import { 
+  Leaf, 
+  Droplets, 
+  Wind, 
+  ChefHat, 
+  Flame, 
+  CookingPot, 
+  CloudFog, 
+  Snowflake, 
+  Sun, 
+  Archive,
+  FlaskConical
+} from 'lucide-react';
 import type {
   ApiIngredientStateSingle,
   ApiIngredientStateListItem,
@@ -10,10 +23,17 @@ import { API_URL } from '@/lib/api';
 
 /* ─── Constants ──────────────────────────────────────────────────────────── */
 
-const STATE_EMOJI: Record<string, string> = {
-  raw: '🥬', boiled: '💧', steamed: '♨️', baked: '🧑‍🍳',
-  grilled: '🔥', fried: '🍳', smoked: '🌫️', frozen: '❄️',
-  dried: '☀️', pickled: '🫙',
+const STATE_ICONS: Record<string, any> = {
+  raw: Leaf,
+  boiled: Droplets,
+  steamed: Wind,
+  baked: ChefHat,
+  grilled: Flame,
+  fried: CookingPot,
+  smoked: CloudFog,
+  frozen: Snowflake,
+  dried: Sun,
+  pickled: Archive,
 };
 
 const STATE_ORDER = ['raw', 'boiled', 'steamed', 'baked', 'grilled', 'fried', 'smoked', 'frozen', 'dried', 'pickled'];
@@ -162,8 +182,8 @@ export default function IngredientStateClient({ slug, locale, availableStates, i
   return (
     <div className="mb-6 sm:mb-10">
       {/* ── Section Title ── */}
-      <div className="flex items-center gap-2 mb-3 sm:mb-4">
-        <span className="text-lg">⚗️</span>
+      <div className="flex items-center gap-2 mb-3 sm:mb-4 group">
+        <FlaskConical className="h-4 w-4 sm:h-5 sm:w-5 text-primary animate-pulse" />
         <h2 className="text-xs sm:text-sm font-black uppercase tracking-wider text-foreground">
           {t4(locale, 'Processing States', 'Состояния обработки', 'Stany przetwarzania', 'Стани обробки')}
         </h2>
@@ -173,6 +193,7 @@ export default function IngredientStateClient({ slug, locale, availableStates, i
       <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-5 sm:mb-6">
         {sorted.map((s) => {
           const active = s.state === activeState;
+          const Icon = STATE_ICONS[s.state] || FlaskConical;
           return (
             <button
               key={s.state}
@@ -187,7 +208,7 @@ export default function IngredientStateClient({ slug, locale, availableStates, i
                 }
               `}
             >
-              <span className="text-sm sm:text-base">{STATE_EMOJI[s.state] || '⚗️'}</span>
+              <Icon className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${active ? 'text-primary-foreground' : 'text-muted-foreground'}`} />
               <span className="hidden sm:inline">{localSuffix(s, locale)}</span>
               <span className="sm:hidden">{stateName(s.state, locale)}</span>
             </button>
@@ -302,11 +323,15 @@ export default function IngredientStateClient({ slug, locale, availableStates, i
                       .map((s) => (
                         <span
                           key={s.state}
-                          className={`text-[9px] sm:text-[10px] font-bold px-1.5 py-0.5 rounded-md border ${
+                          className={`flex items-center gap-1 text-[9px] sm:text-[10px] font-bold px-1.5 py-0.5 rounded-md border ${
                             s.state === activeState ? giBg(s.glycemic_index!) + ' ' + giColor(s.glycemic_index!) : 'bg-muted/30 text-muted-foreground border-border/30'
                           }`}
                         >
-                          {STATE_EMOJI[s.state]} {s.glycemic_index}
+                          {(() => {
+                            const Svg = STATE_ICONS[s.state];
+                            return Svg ? <Svg className="h-2.5 w-2.5" /> : null;
+                          })()}
+                          {s.glycemic_index}
                         </span>
                       ))}
                   </div>
