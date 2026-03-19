@@ -10,6 +10,13 @@ const BASE_URL = 'https://dima-fomin.pl';
 const API_URL = 'https://ministerial-yetta-fodi999-c58d8823.koyeb.app';
 const canonicalLocale = 'pl';
 
+/**
+ * Revalidate sitemap every 5 minutes so Google sees new/updated ingredients
+ * without requiring a redeploy. On-demand revalidation via /api/revalidate
+ * provides instant updates when products are published/unpublished.
+ */
+export const revalidate = 300;
+
 /** Fixed at build time — avoids marking every page as "updated today" on every deploy */
 const BUILD_DATE = new Date();
 
@@ -25,7 +32,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // ─── Gallery images from API (for sitemap image entries) ─────────────
   let galleryItems: Array<{ image_url: string; title_en?: string; alt_en?: string }> = [];
   try {
-    const res = await fetch(`${API_URL}/public/gallery`, { next: { revalidate: 3600 } });
+    const res = await fetch(`${API_URL}/public/gallery`, { next: { revalidate: 300 } });
     if (res.ok) galleryItems = await res.json();
   } catch { /* non-blocking */ }
 
@@ -160,7 +167,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         .filter((ing) => ing.slug)
         .map((ing) => ({
           url: `${BASE_URL}/${canonicalLocale}/chef-tools/nutrition/${ing.slug}`,
-          lastModified: BUILD_DATE,
+          lastModified: toDate(ing.updated_at ?? undefined),
           changeFrequency: 'monthly' as const,
           priority: 0.8,
           alternates: {
@@ -180,7 +187,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         .filter((ing) => ing.slug)
         .map((ing) => ({
           url: `${BASE_URL}/${canonicalLocale}/chef-tools/ingredients/${ing.slug}`,
-          lastModified: BUILD_DATE,
+          lastModified: toDate(ing.updated_at ?? undefined),
           changeFrequency: 'monthly' as const,
           priority: 0.75,
           alternates: {
@@ -220,7 +227,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         .flatMap((ing) =>
           HOW_MANY_COMBOS.map(({ unit, measure }) => ({
             url: `${BASE_URL}/${canonicalLocale}/chef-tools/how-many/how-many-${unit}-in-a-${measure}-of-${ing.slug}`,
-            lastModified: BUILD_DATE,
+            lastModified: toDate(ing.updated_at ?? undefined),
             changeFrequency: 'monthly' as const,
             priority: 0.8,
             alternates: {
@@ -251,7 +258,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         .flatMap((ing) =>
           PROCESSING_STATES.map((state) => ({
             url: `${BASE_URL}/${canonicalLocale}/chef-tools/ingredients/${ing.slug}/${state}`,
-            lastModified: BUILD_DATE,
+            lastModified: toDate(ing.updated_at ?? undefined),
             changeFrequency: 'weekly' as const,
             priority: 0.7,
             alternates: {
