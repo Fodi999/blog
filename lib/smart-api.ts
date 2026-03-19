@@ -45,6 +45,75 @@ export async function fetchSmart(req: SmartRequest): Promise<SmartResponse> {
   return data;
 }
 
+/* ── Text-based recipe analysis ────────────────────────────── */
+
+import { searchProducts, type SearchResult } from '@/lib/tools';
+
+export type ResolvedIngredient = {
+  slug: string;
+  name: string;
+  image_url?: string | null;
+};
+
+/**
+ * Parse a free-text input like "salmon rice avocado" into resolved ingredients
+ * via the product search API, then call SmartService with the first as primary
+ * and the rest as additional_ingredients.
+ *
+ * Returns both the SmartResponse and the resolved ingredient list for chips display.
+ */
+export async function fetchSmartFromText(
+  text: string,
+  lang: string,
+): Promise<{ smart: SmartResponse; ingredients: ResolvedIngredient[] }> {
+  // Split text into words, clean up
+  const words = text
+    .trim()
+    .split(/[\s,;+]+/)
+    .map((w) => w.trim().toLowerCase())
+    .filter((w) => w.length >= 2);
+
+  if (words.length === 0) {
+    throw new Error('No ingredients found');
+  }
+
+  // Resolve each word to a slug via product search (parallel)
+  const resolved = await Promise.all(
+    words.map(async (word): Promise<ResolvedIngredient | null> => {
+      const results = await searchProducts(word, lang, 1);
+      if (results.length === 0) return null;
+      const r = results[0];
+      return { slug: r.slug, name: r.name, image_url: r.image_url };
+    }),
+  );
+
+  // Filter out unresolved words, deduplicate by slug
+  const seen = new Set<string>();
+  const ingredients: ResolvedIngredient[] = [];
+  for (const r of resolved) {
+    if (r && !seen.has(r.slug)) {
+      seen.add(r.slug);
+      ingredients.push(r);
+    }
+  }
+
+  if (ingredients.length === 0) {
+    throw new Error('No ingredients found');
+  }
+
+  // First ingredient = primary, rest = additional
+  const [primary, ...rest] = ingredients;
+
+  const req: SmartRequest = {
+    ingredient: primary.slug,
+    ...(rest.length > 0 && { additional_ingredients: rest.map((r) => r.slug) }),
+    lang,
+  };
+
+  const smart = await fetchSmart(req);
+  return { smart, ingredients };
+}
+
 /** Reset the stored session (e.g. when the user clears the dish). */
 export function resetSmartSession() {
   currentSessionId = null;

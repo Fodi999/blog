@@ -65,6 +65,7 @@ export function useSmartEngine({
   // Auto-analyze when inputs change
   const extrasKey = extras.join(',');
   useEffect(() => {
+    if (!slug) return; // skip when no primary ingredient (e.g. from-text mode)
     analyze();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug, state, extrasKey, goal, lang]);

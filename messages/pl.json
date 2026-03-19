@@ -460,7 +460,7 @@
         "seoP3": "Kliknij dowolny składnik, aby eksplorować graf parowania. Nawiguj od składnika do składnika odkrywając optymalne kombinacje.",
         "seoP4": "Nasza baza zawiera 112+ składników ze zweryfikowanymi danymi. Bezpłatne, szybkie i oparte na prawdziwej nauce kulinarnej.",
         "modes": {
-          "recipeAnalyzer": "Analiza Przepisów",
+          "recipeAnalyzer": "Konstruktor Dań",
           "ingredientExplorer": "Eksplorator Składników",
           "unitConverter": "Konwerter Jednostek",
           "flavorPairing": "Parowanie Smaków"
@@ -576,7 +576,12 @@
         "sharedNotFound": "Nie znaleziono udostępnionego przepisu",
         "sharedNotFoundDesc": "Ten link mógł wygasnąć lub przepis został usunięty.",
         "openInLab": "Otwórz w Lab",
-        "viewAnalysis": "Zobacz analizę"
+        "viewAnalysis": "Zobacz analizę",
+        "inputPlaceholderBig": "łosoś ryż awokado...",
+        "recipeOverview": "Twoje danie",
+        "nextActions": "Szef poleca",
+        "showDetails": "Szczegóły",
+        "buildingRecipe": "Budowanie..."
       }
     },
     "season": {
@@ -724,7 +729,7 @@
     },
     "dashboard": {
       "tagline": "Kulinarna inteligencja w zasięgu ręki",
-      "searchPlaceholder": "Wyszukaj składnik — łosoś, mąka, awokado…",
+      "searchPlaceholder": "łosoś, ryż awokado, lub dowolny składnik…",
       "noResults": "Nic nie znaleziono. Spróbuj innego zapytania.",
       "quickAction": {
         "season": "Sezon",
@@ -843,7 +848,11 @@
       "balanceImproved": "Balans się poprawił",
       "balanceDeclined": "Balans się pogorszył",
       "tabRecommendations": "Rekomendacje",
-      "tabAnalysis": "Analiza"
+      "tabAnalysis": "Analiza",
+      "buildingRecipe": "Buduję przepis...",
+      "noIngredientsFound": "Nie znaleziono składników",
+      "tryAgain": "Spróbuj ponownie",
+      "back": "Wróć"
     }
   },
   "home": {

@@ -57,6 +57,8 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
+import type { SmartResponse, NextAction, SuggestionInfo, DiagnosticIssue, FlavorDimension } from "@/types/smart";
+import { fetchSmartFromText, resetSmartSession } from "@/lib/smart-api";
 import {
   RadarChart,
   PolarGrid,
@@ -420,276 +422,265 @@ export function CulinaryLabClient() {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
-// MODE 1: RECIPE ANALYZER
+// MODE 1: RECIPE BUILDER ENGINE
 // ══════════════════════════════════════════════════════════════════════════════
 
-const STORAGE_KEY = "recipe_draft";
-
-type RecipeDraft = {
-  rows: { slug: string; grams: number; amount?: number; unit?: string }[];
-  portions: number;
-  result?: AnalyzeResponse | null;
-  resultTab?: "ingredients" | "nutrition" | "flavor" | "influence" | "doctor" | "suggestions";
+type IngredientChip = {
+  slug: string;
+  name: string;
+  image_url?: string;
+  grams?: number;
 };
 
+/** Animated number hook — smooth transitions on score changes */
+function useAnimatedNumber(target: number, duration = 600) {
+  const [display, setDisplay] = useState(target);
+  const prev = useRef(target);
+  useEffect(() => {
+    const from = prev.current;
+    const diff = target - from;
+    if (diff === 0) return;
+    prev.current = target;
+    const start = performance.now();
+    let raf: number;
+    const tick = (now: number) => {
+      const elapsed = Math.min((now - start) / duration, 1);
+      const ease = 1 - (1 - elapsed) * (1 - elapsed);
+      setDisplay(Math.round(from + diff * ease));
+      if (elapsed < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [target, duration]);
+  return display;
+}
+
+/** Collapsible section with icon, title, and toggle */
+function CollapsibleDetail({
+  title, icon: Icon, iconColor, defaultOpen = false, count, children,
+}: {
+  title: string;
+  icon: React.ElementType;
+  iconColor?: string;
+  defaultOpen?: boolean;
+  count?: number;
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className="rounded-2xl border border-border/50 bg-background overflow-hidden transition-all">
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="flex items-center justify-between w-full px-5 py-4 text-left hover:bg-muted/20 transition-colors"
+      >
+        <div className="flex items-center gap-2.5">
+          <Icon className={cn("h-4 w-4", iconColor ?? "text-primary")} />
+          <span className="text-xs font-black uppercase tracking-wider text-muted-foreground">{title}</span>
+          {count != null && count > 0 && (
+            <span className="px-1.5 py-0.5 text-[9px] font-black rounded-full bg-primary/10 text-primary">{count}</span>
+          )}
+        </div>
+        <svg className={cn("h-4 w-4 text-muted-foreground transition-transform duration-200", open && "rotate-180")} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      {open && <div className="px-5 pb-5 animate-in fade-in slide-in-from-top-1 duration-200">{children}</div>}
+    </div>
+  );
+}
+
+/** Loading skeleton for re-analysis */
+function AnalysisSkeleton() {
+  return (
+    <div className="space-y-4 animate-pulse">
+      <div className="flex items-center gap-4">
+        <div className="w-20 h-20 rounded-2xl bg-muted/40" />
+        <div className="flex-1 space-y-2">
+          <div className="h-4 w-3/4 bg-muted/40 rounded-lg" />
+          <div className="h-3 w-1/2 bg-muted/30 rounded-lg" />
+        </div>
+      </div>
+      <div className="grid grid-cols-3 gap-3">
+        {[0,1,2].map(i => <div key={i} className="h-20 rounded-2xl bg-muted/30" />)}
+      </div>
+      <div className="h-24 rounded-2xl bg-muted/20" />
+    </div>
+  );
+}
+
 function RecipeAnalyzerMode({ locale, t }: { locale: string; t: any }) {
+  // ── State: chips are source of truth ──────────────────────────────────
+  const [inputText, setInputText] = useState("");
+  const [chips, setChips] = useState<IngredientChip[]>([]);
+  const [smartResult, setSmartResult] = useState<SmartResponse | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [showManualInput, setShowManualInput] = useState(false);
+
+  // Details open state
+  const [detailsOpen, setDetailsOpen] = useState({
+    nutrition: true,
+    flavor: false,
+    influence: false,
+    diagnosis: false,
+    ingredients: false,
+  });
+
+  // Legacy state for manual input mode
   const [rows, setRows] = useState<IngredientRow[]>([{ slug: "", name: "", grams: 100 }]);
   const [portions, setPortions] = useState<number | "">(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [activeRowIdx, setActiveRowIdx] = useState<number | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<AnalyzeResponse | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [legacyResult, setLegacyResult] = useState<AnalyzeResponse | null>(null);
   const [resultTab, setResultTab] = useState<"ingredients" | "nutrition" | "flavor" | "influence" | "doctor" | "suggestions">("nutrition");
-  const [restored, setRestored] = useState(false);
   const [slugNames, setSlugNames] = useState<Record<string, { name: string; image_url?: string }>>({});
-  const resultsRef = useRef<HTMLDivElement>(null);
-  const didRestore = useRef(false);
 
-  // ── Restore draft from localStorage on mount ───────────────────────────
+  // Score animation
+  const balanceScore = smartResult?.flavor_profile?.balance?.balance_score ?? 0;
+  const animatedScore = useAnimatedNumber(balanceScore);
+  const prevScore = useRef(balanceScore);
+  const [feedback, setFeedback] = useState<"improved" | "declined" | null>(null);
+  const resultsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (prevScore.current !== 0 && balanceScore !== prevScore.current) {
+      setFeedback(balanceScore > prevScore.current ? "improved" : "declined");
+      const timer = setTimeout(() => setFeedback(null), 2200);
+      prevScore.current = balanceScore;
+      return () => clearTimeout(timer);
+    }
+    prevScore.current = balanceScore;
+  }, [balanceScore]);
+
+  // ── Draft persistence ─────────────────────────────────────────────────
+  const didRestore = useRef(false);
   useEffect(() => {
     if (didRestore.current) return;
     didRestore.current = true;
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) return;
-      const draft: RecipeDraft = JSON.parse(raw);
-      if (!draft.rows || draft.rows.length === 0) return;
-      // Only restore if there's at least one ingredient with a slug
-      const hasData = draft.rows.some((r) => r.slug);
-      if (!hasData) return;
-      setPortions(draft.portions || 1);
-      // Set rows with slugs as placeholder names, then resolve localized names
-      const initial: IngredientRow[] = draft.rows.map((r) => {
-        // Try to get localized name + image from cached result
-        const detail = draft.result?.ingredients?.find((i) => i.slug === r.slug);
-        const name = (detail && (localizedName(detail, locale) || detail.name)) || r.slug;
-        const image_url = detail?.image_url;
-        return { slug: r.slug, name, grams: r.grams, amount: r.amount ?? r.grams, unit: r.unit || "g", image_url };
-      });
-      setRows(initial);
-      // Restore cached analysis result if present
-      if (draft.result) {
-        setResult(draft.result);
-        setResultTab(draft.resultTab || "nutrition");
+      const draft = JSON.parse(raw);
+      if (draft.chips && draft.chips.length > 0) {
+        setChips(draft.chips);
+        if (draft.inputText) setInputText(draft.inputText);
       }
-      setRestored(true);
-      // Resolve localized names + images in background
-      Promise.all(
-        draft.rows.filter((r) => r.slug).map(async (r) => {
-          try {
-            const res = await fetch(`${API_URL}/public/tools/product-search?q=${encodeURIComponent(r.slug)}&lang=${locale}&limit=1`);
-            if (res.ok) {
-              const data = await res.json();
-              const found = (data.results || []).find((p: any) => p.slug === r.slug);
-              if (found) return { slug: r.slug, name: found.name || r.slug, image_url: found.image_url as string | undefined };
-            }
-          } catch { /* ignore */ }
-          return { slug: r.slug, name: r.slug, image_url: undefined };
-        }),
-      ).then((resolved) => {
-        setRows((prev) => prev.map((row) => {
-          const match = resolved.find((r) => r.slug === row.slug);
-          return match ? { ...row, name: match.name, image_url: match.image_url } : row;
-        }));
-      });
-      // Auto-hide restored toast after 3s
-      setTimeout(() => setRestored(false), 3000);
-    } catch { /* corrupted storage — ignore */ }
-  }, [locale]);
+    } catch { /* corrupted */ }
+  }, []);
 
-  // ── Save draft to localStorage on every change ─────────────────────────
   useEffect(() => {
-    const draft: RecipeDraft = {
-      rows: rows.map((r) => ({ slug: r.slug, grams: r.grams, amount: r.amount, unit: r.unit })),
-      portions: Number(portions) || 1,
-      result: result ?? undefined,
-      resultTab,
-    };
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(draft)); } catch { /* quota */ }
-  }, [rows, portions, result, resultTab]);
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        chips,
+        inputText,
+        smartResult,
+      }));
+    } catch { /* quota */ }
+  }, [chips, inputText, smartResult]);
 
-  // ── Resolve fix-slug localized names when AI Sous Chef tab is active ──
-  useEffect(() => {
-    if (resultTab !== "doctor" || !result?.diagnosis) return;
-    const diag = result.diagnosis;
-    // Collect all unique fix slugs
-    const allSlugs = new Set<string>();
-    diag.issues.forEach((issue) => issue.fix_slugs.forEach((s) => allSlugs.add(s)));
-    if (allSlugs.size === 0) return;
-    // Build known map from ingredients + suggestions
-    const known: Record<string, { name: string; image_url?: string }> = {};
-    result.ingredients.forEach((i) => { known[i.slug] = { name: localizedName(i, locale) || i.name, image_url: i.image_url }; });
-    result.suggestions.forEach((s) => { known[s.slug] = { name: localizedName(s, locale) || s.name, image_url: s.image_url }; });
-    // Find unknown slugs not yet resolved
-    const unknown = [...allSlugs].filter((s) => !known[s] && !slugNames[s]);
-    // Set known ones immediately
-    if (Object.keys(known).length > 0) {
-      setSlugNames((prev) => ({ ...prev, ...known }));
-    }
-    // Fetch unknown slugs from product-search
-    if (unknown.length > 0) {
-      Promise.all(
-        unknown.map(async (slug) => {
-          try {
-            const res = await fetch(`${API_URL}/public/tools/product-search?q=${encodeURIComponent(slug)}&lang=${locale}&limit=1`);
-            if (res.ok) {
-              const data = await res.json();
-              const found = (data.results || [])[0];
-              if (found) return { slug, name: found.name || slug, image_url: found.image_url as string | undefined };
-            }
-          } catch { /* ignore */ }
-          return { slug, name: slug, image_url: undefined };
-        }),
-      ).then((resolved) => {
-        const map: Record<string, { name: string; image_url?: string }> = {};
-        resolved.forEach((r) => { map[r.slug] = { name: r.name, image_url: r.image_url }; });
-        setSlugNames((prev) => ({ ...prev, ...map }));
-      });
-    }
-  }, [resultTab, result, locale]);
-
-  /** Clear recipe — reset rows, portions, result, and remove from localStorage */
-  const clearRecipe = () => {
-    setRows([{ slug: "", name: "", grams: 100 }]);
-    setPortions(1);
-    setResult(null);
+  // ── Smart API: analyze from text ──────────────────────────────────────
+  const analyzeFromText = async (text?: string) => {
+    const t_text = text ?? inputText;
+    if (!t_text.trim()) return;
+    setIsAnalyzing(true);
     setError(null);
+    try {
+      const { smart: result, ingredients: resolved } = await fetchSmartFromText(t_text, locale);
+      setSmartResult(result);
+
+      // Build chips from resolved ingredients
+      const newChips: IngredientChip[] = resolved.map((r) => ({
+        slug: r.slug,
+        name: r.name,
+        image_url: r.image_url ?? undefined,
+      }));
+      setChips(newChips);
+
+      setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
+    } catch (err: any) {
+      setError(err.message || "Failed to analyze");
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
+  // ── Re-analyze with updated chips ─────────────────────────────────────
+  const reanalyzeWithChips = async (updatedChips: IngredientChip[]) => {
+    if (updatedChips.length === 0) {
+      setSmartResult(null);
+      setChips([]);
+      return;
+    }
+    setIsAnalyzing(true);
+    setError(null);
+    try {
+      // Build text from chip names for from-text re-analysis
+      const text = updatedChips.map(c => c.name || c.slug).join(" ");
+      const { smart: result } = await fetchSmartFromText(text, locale);
+      setSmartResult(result);
+      setInputText(text);
+    } catch (err: any) {
+      setError(err.message || "Failed to re-analyze");
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
+  // ── Add ingredient from next_actions / suggestions ────────────────────
+  const addIngredientAction = async (slug: string, name: string, image_url?: string | null) => {
+    if (chips.some(c => c.slug === slug)) return;
+    const newChip: IngredientChip = { slug, name, image_url: image_url ?? undefined };
+    const updatedChips = [...chips, newChip];
+    setChips(updatedChips);
+    await reanalyzeWithChips(updatedChips);
+  };
+
+  // ── Remove chip ───────────────────────────────────────────────────────
+  const removeChip = async (slug: string) => {
+    const updatedChips = chips.filter(c => c.slug !== slug);
+    setChips(updatedChips);
+    if (updatedChips.length > 0) {
+      await reanalyzeWithChips(updatedChips);
+    } else {
+      setSmartResult(null);
+    }
+  };
+
+  // ── Clear all ─────────────────────────────────────────────────────────
+  const clearRecipe = () => {
+    setChips([]);
+    setInputText("");
+    setSmartResult(null);
+    setError(null);
+    resetSmartSession();
     try { localStorage.removeItem(STORAGE_KEY); } catch { /* ignore */ }
   };
 
-  const searchIngredients = useCallback(
-    async (query: string) => {
-      if (query.length < 2) { setSearchResults([]); return; }
-      try {
-        const res = await fetch(`${API_URL}/public/tools/product-search?q=${encodeURIComponent(query)}&lang=${locale}&limit=8`);
-        if (res.ok) {
-          const data = await res.json();
-          setSearchResults((data.results || []).map((p: any) => ({ slug: p.slug, name: p.name || p.name_en || p.slug, image_url: p.image_url })));
-        }
-      } catch { /* ignore */ }
-    },
-    [locale],
-  );
-
-  const selectIngredient = (idx: number, item: SearchResult) => {
-    setRows((prev) => {
-      const next = [...prev];
-      const existing = next[idx];
-      next[idx] = { ...existing, slug: item.slug, name: item.name, image_url: item.image_url, amount: existing.amount ?? existing.grams, unit: existing.unit || "g" };
-      return next;
-    });
-    setSearchResults([]); setActiveRowIdx(null); setSearchQuery("");
-  };
-
+  // ── Quick recipes ─────────────────────────────────────────────────────
   const loadQuickRecipe = async (recipe: typeof QUICK_RECIPES[0]) => {
-    setResult(null); setError(null);
-    // Set rows immediately with slug as placeholder name
-    const initial: IngredientRow[] = recipe.ingredients.map((i) => ({ slug: i.slug, name: i.slug, grams: i.grams, amount: i.grams, unit: "g" }));
-    setRows(initial);
-    // Fetch localized names + image_url in parallel
-    try {
-      const resolved = await Promise.all(
-        recipe.ingredients.map(async (i) => {
-          try {
-            const res = await fetch(`${API_URL}/public/tools/product-search?q=${encodeURIComponent(i.slug)}&lang=${locale}&limit=1`);
-            if (res.ok) {
-              const data = await res.json();
-              const found = (data.results || []).find((r: any) => r.slug === i.slug);
-              if (found) return { name: found.name || i.slug, image_url: found.image_url as string | undefined };
-            }
-          } catch { /* ignore */ }
-          return { name: i.slug, image_url: undefined };
-        }),
-      );
-      setRows(recipe.ingredients.map((i, idx) => ({ slug: i.slug, name: resolved[idx].name, grams: i.grams, amount: i.grams, unit: "g", image_url: resolved[idx].image_url })));
-    } catch { /* keep slug names */ }
+    const text = recipe.ingredients.map(i => i.slug.replace(/-/g, " ")).join(" ");
+    setInputText(text);
+    await analyzeFromText(text);
   };
 
-  const analyze = async () => {
-    const validRows = rows.filter((r) => r.slug && r.grams > 0);
-    if (validRows.length === 0) { setError(t("addAtLeastOne")); return; }
-    setLoading(true); setError(null); setResult(null);
-    try {
-      const res = await fetch(`${API_URL}/public/tools/recipe-analyze`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ingredients: validRows.map((r) => ({ slug: r.slug, grams: r.grams })), portions: Math.max(1, Number(portions) || 1), lang: locale }),
-      });
-      if (!res.ok) { const data = await res.json().catch(() => ({})); throw new Error(data.error || `Error ${res.status}`); }
-      const data: AnalyzeResponse = await res.json();
-      setResult(data);
-      setResultTab("nutrition");
-      // Update input row names + images with localized data from the API response
-      setRows((prev) => prev.map((row) => {
-        const detail = data.ingredients.find((d) => d.slug === row.slug);
-        if (detail) {
-          const locName = localizedName(detail, locale) || detail.name;
-          return { ...row, name: locName, image_url: row.image_url || detail.image_url };
-        }
-        return row;
-      }));
-      setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
-    } catch (err: any) {
-      setError(err.message || t("failedAnalyze"));
-    } finally {
-      setLoading(false);
-    }
-  };
+  // ── Search for manual add ─────────────────────────────────────────────
+  const [addSearchQuery, setAddSearchQuery] = useState("");
+  const [addSearchResults, setAddSearchResults] = useState<SearchResult[]>([]);
+  const [addSearchOpen, setAddSearchOpen] = useState(false);
 
-  /** Toggle a suggested ingredient in the recipe and re-analyze */
-  const toggleSuggestionInRecipe = async (s: SuggestionItem) => {
-    const isAdded = rows.some((r) => r.slug === s.slug);
-    let updatedRows;
-    if (isAdded) {
-      updatedRows = rows.filter((r) => r.slug !== s.slug);
-      if (updatedRows.length === 0) {
-        setRows([{ slug: "", name: "", grams: 100 }]);
-        setResult(null);
-        return;
+  const searchForAdd = useCallback(async (query: string) => {
+    if (query.length < 2) { setAddSearchResults([]); return; }
+    try {
+      const res = await fetch(`${API_URL}/public/tools/product-search?q=${encodeURIComponent(query)}&lang=${locale}&limit=6`);
+      if (res.ok) {
+        const data = await res.json();
+        setAddSearchResults((data.results || []).map((p: any) => ({
+          slug: p.slug, name: p.name || p.slug, image_url: p.image_url,
+        })));
       }
-      setRows(updatedRows);
-    } else {
-      const name = localizedName(s, locale) || s.name;
-      const defaultGrams = 50;
-      const newRow: IngredientRow = { slug: s.slug, name, grams: defaultGrams, amount: defaultGrams, unit: "g", image_url: s.image_url };
-      updatedRows = [...rows, newRow];
-      setRows(updatedRows);
-    }
-    // Re-analyze with the new ingredient list
-    const validRows = updatedRows.filter((r) => r.slug && r.grams > 0);
-    if (validRows.length === 0) return;
-    setLoading(true); setError(null);
-    try {
-      const res = await fetch(`${API_URL}/public/tools/recipe-analyze`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ingredients: validRows.map((r) => ({ slug: r.slug, grams: r.grams })), portions: Math.max(1, Number(portions) || 1), lang: locale }),
-      });
-      if (!res.ok) { const data = await res.json().catch(() => ({})); throw new Error(data.error || `Error ${res.status}`); }
-      const data: AnalyzeResponse = await res.json();
-      setResult(data);
-      // Update row names + images from fresh response
-      setRows((prev) => prev.map((row) => {
-        const detail = data.ingredients.find((d) => d.slug === row.slug);
-        if (detail) {
-          const locName = localizedName(detail, locale) || detail.name;
-          return { ...row, name: locName, image_url: row.image_url || detail.image_url };
-        }
-        return row;
-      }));
-    } catch (err: any) {
-      setError(err.message || t("failedAnalyze"));
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const dietLabels: Record<string, string> = {
-    vegan: "\ud83c\udf31 Vegan", vegetarian: "\ud83e\udd5a Vegetarian", keto: "\ud83e\udd51 Keto",
-    paleo: "\ud83e\uddb4 Paleo", gluten_free: "\ud83c\udf3e GF", mediterranean: "\ud83e\udeda Med", low_carb: "\ud83d\udcc9 LC",
-  };
+    } catch { /* ignore */ }
+  }, [locale]);
 
   // ── Share recipe logic ────────────────────────────────────────────────
   const [sharing, setSharing] = useState(false);
@@ -697,23 +688,21 @@ function RecipeAnalyzerMode({ locale, t }: { locale: string; t: any }) {
   const [copied, setCopied] = useState(false);
 
   const shareRecipe = async () => {
-    const validRows = rows.filter((r) => r.slug && r.grams > 0);
-    if (validRows.length === 0) return;
+    if (chips.length === 0) return;
     setSharing(true);
     try {
       const res = await fetch(`${API_URL}/public/tools/share-recipe`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          ingredients: validRows.map((r) => ({ slug: r.slug, grams: r.grams })),
-          portions: Number(portions) || 1,
+          ingredients: chips.map(c => ({ slug: c.slug, grams: c.grams || 100 })),
+          portions: 1,
           lang: locale,
         }),
       });
       if (!res.ok) throw new Error("Failed to share");
       const data = await res.json();
-      const fullUrl = `https://dima-fomin.pl/${locale}/chef-tools/lab/r/${data.slug}`;
-      setShareUrl(fullUrl);
+      setShareUrl(`https://dima-fomin.pl/${locale}/chef-tools/lab/r/${data.slug}`);
     } catch {
       setError("Failed to create share link");
     } finally {
@@ -730,1017 +719,549 @@ function RecipeAnalyzerMode({ locale, t }: { locale: string; t: any }) {
     } catch { /* fallback */ }
   };
 
+  // ── Derived data from SmartResponse ───────────────────────────────────
+  const flavor = smartResult?.flavor_profile;
+  const diagnostics = smartResult?.diagnostics;
+  const nextActions = smartResult?.next_actions ?? [];
+  const suggestions = smartResult?.suggestions ?? [];
+  const confidence = smartResult?.confidence;
+  const addedSlugs = new Set(chips.map(c => c.slug));
+
+  // Priority: next_actions first, then suggestions as fallback
+  const filteredActions = nextActions.filter(a => !addedSlugs.has(a.ingredient));
+  const filteredSuggestions = suggestions.filter(s => !addedSlugs.has(s.slug));
+  const hasActions = filteredActions.length > 0 || filteredSuggestions.length > 0;
+
+  // Build a name lookup from suggestions
+  const nameMap = new Map<string, { name: string; image_url?: string }>();
+  for (const s of suggestions) nameMap.set(s.slug, { name: s.name, image_url: s.image_url ?? undefined });
+
+  const actionName = (a: NextAction) => a.name || nameMap.get(a.ingredient)?.name || a.ingredient.replace(/-/g, " ");
+  const actionImage = (a: NextAction) => nameMap.get(a.ingredient)?.image_url;
+
+  // Score helpers
+  const scoreColor = (v: number) => v >= 70 ? "text-emerald-500" : v >= 40 ? "text-amber-500" : "text-rose-500";
+  const ringStroke = (v: number) => v >= 70 ? "#10b981" : v >= 40 ? "#f59e0b" : "#ef4444";
+  const barGradient = (v: number) => v >= 70 ? "from-emerald-400 to-emerald-500" : v >= 40 ? "from-amber-400 to-amber-500" : "from-rose-400 to-rose-500";
+
+  // Nutrition from SmartResponse
+  const nutrition = smartResult?.nutrition;
+
+  // Map legacy AnalyzeResponse for NutritionTab / FlavorRadarCard
+  const legacyAnalyzeResult: AnalyzeResponse | null = smartResult ? {
+    nutrition: {
+      calories: nutrition?.calories ?? 0,
+      protein: nutrition?.protein_g ?? 0,
+      fat: nutrition?.fat_g ?? 0,
+      carbs: nutrition?.carbs_g ?? 0,
+      fiber: nutrition?.fiber_g ?? 0,
+      sugar: nutrition?.sugar_g ?? 0,
+    },
+    portions: 1,
+    macros: (() => {
+      const p = nutrition?.protein_g ?? 0;
+      const f = nutrition?.fat_g ?? 0;
+      const c = nutrition?.carbs_g ?? 0;
+      const total = p + f + c || 1;
+      return {
+        protein_pct: Math.round((p / total) * 100),
+        fat_pct: Math.round((f / total) * 100),
+        carbs_pct: Math.round((c / total) * 100),
+      };
+    })(),
+    score: balanceScore,
+    flavor: {
+      sweetness: flavor?.vector?.sweetness ?? 0,
+      acidity: flavor?.vector?.acidity ?? 0,
+      bitterness: flavor?.vector?.bitterness ?? 0,
+      umami: flavor?.vector?.umami ?? 0,
+      fat: flavor?.vector?.fat ?? 0,
+      aroma: flavor?.vector?.aroma ?? 0,
+      balance_score: balanceScore,
+      weak: (flavor?.balance?.weak_dimensions ?? []).map(d => d.dimension),
+      strong: (flavor?.balance?.strong_dimensions ?? []).map(d => d.dimension),
+    },
+    diet: [],
+    suggestions: [],
+    ingredients: [],
+  } : null;
+
+  const dietLabels: Record<string, string> = {
+    vegan: "🌱 Vegan", vegetarian: "🥚 Vegetarian", keto: "🥑 Keto",
+    paleo: "🦴 Paleo", gluten_free: "🌾 GF", mediterranean: "🫓 Med", low_carb: "📉 LC",
+  };
+
   return (
     <div className="space-y-6">
-      {/* Quick recipes */}
-      <div>
-        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 mb-2">{t("quickRecipes")}</p>
-        <div className="flex flex-wrap gap-2">
-          {QUICK_RECIPES.map((recipe) => (
+
+      {/* ═══════════════════════════════════════════════════════════════
+          LEVEL 1 — INPUT
+          ═══════════════════════════════════════════════════════════════ */}
+      <div className="space-y-4">
+        {/* Big text input */}
+        <div className="relative">
+          <div className="relative">
+            <textarea
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  analyzeFromText();
+                }
+              }}
+              placeholder={t("inputPlaceholderBig") || "salmon rice avocado..."}
+              rows={2}
+              className={cn(
+                "w-full px-5 py-4 pr-14 text-base sm:text-lg font-medium bg-background",
+                "border-2 border-border/50 rounded-2xl resize-none",
+                "placeholder:text-muted-foreground/40 placeholder:font-normal",
+                "focus:outline-none focus:border-primary/50 focus:ring-4 focus:ring-primary/10",
+                "transition-all duration-200",
+              )}
+            />
             <Button
-              key={recipe.key}
-              variant="outline"
-              size="sm"
-              onClick={() => loadQuickRecipe(recipe)}
-              className="text-xs font-bold"
+              onClick={() => analyzeFromText()}
+              disabled={isAnalyzing || !inputText.trim()}
+              size="icon"
+              className="absolute right-3 bottom-3 h-10 w-10 rounded-xl shadow-lg shadow-primary/20"
             >
-              {t(recipe.key as any)}
+              {isAnalyzing ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <ArrowRight className="h-4 w-4" />
+              )}
             </Button>
-          ))}
+          </div>
+          <p className="text-[10px] text-muted-foreground/50 mt-1.5 px-1">
+            {t("inputHint") || 'e.g. "salmon rice avocado" or "лосось рис авокадо"'}
+          </p>
         </div>
-      </div>
 
-      {/* Draft restored toast */}
-      {restored && (
-        <Alert className="border-green-500/20 bg-green-500/5 animate-in fade-in slide-in-from-top-2 duration-300">
-          <Check className="h-4 w-4 text-green-600 dark:text-green-400" />
-          <AlertDescription className="text-green-600 dark:text-green-400 font-medium">{t("draftRestored")}</AlertDescription>
-        </Alert>
-      )}
-
-      {/* Ingredient table */}
-      <div className="border border-border/50 rounded-2xl">
-        <div className="bg-muted/20 px-4 py-2.5 border-b border-border/30 rounded-t-2xl">
-          <div className="grid grid-cols-[1fr_76px_64px_32px] gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
-            <span>{t("ingredient")}</span>
-            <span className="text-center">{t("amount") ?? "Amount"}</span>
-            <span className="text-center">{t("unit") ?? "Unit"}</span>
-            <span />
+        {/* Quick recipes */}
+        <div>
+          <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 mb-2">{t("quickRecipes")}</p>
+          <div className="flex flex-wrap gap-2">
+            {QUICK_RECIPES.map((recipe) => (
+              <Button
+                key={recipe.key}
+                variant="outline"
+                size="sm"
+                onClick={() => loadQuickRecipe(recipe)}
+                className="text-xs font-bold rounded-xl"
+                disabled={isAnalyzing}
+              >
+                {t(recipe.key as any)}
+              </Button>
+            ))}
           </div>
         </div>
-        <div className="divide-y divide-border/20">
-          {rows.map((row, idx) => (
-            <div key={idx} className={cn("px-4 py-2.5 relative", activeRowIdx === idx && "z-50")}>
-              <div className="grid grid-cols-[1fr_76px_64px_32px] gap-2 items-center">
-                <div className="relative flex items-center gap-2">
-                  {row.image_url && <img src={row.image_url} alt="" className="w-8 h-8 rounded-full object-cover flex-shrink-0" />}
-                  <Input
-                    type="text"
-                    value={activeRowIdx === idx ? searchQuery : row.name || ""}
-                    onChange={(e) => { setActiveRowIdx(idx); setSearchQuery(e.target.value); searchIngredients(e.target.value); }}
-                    onFocus={() => { setActiveRowIdx(idx); setSearchQuery(row.name || ""); }}
-                    onBlur={() => { setTimeout(() => { if (activeRowIdx === idx) { setActiveRowIdx(null); setSearchResults([]); } }, 200); }}
-                    placeholder={t("searchPlaceholder")}
-                    className="w-full h-9"
-                  />
-                  {activeRowIdx === idx && searchResults.length > 0 && (
-                    <div className="absolute z-50 top-full mt-1 left-0 right-0 bg-background border border-border/50 rounded-xl shadow-lg max-h-48 overflow-y-auto">
-                      {searchResults.map((item) => (
-                        <button
-                          key={item.slug}
-                          onMouseDown={(e) => e.preventDefault()}
-                          onClick={() => selectIngredient(idx, item)}
-                          className="w-full text-left px-3 py-2 text-sm hover:bg-muted/40 flex items-center gap-2"
-                        >
-                          {item.image_url && <img src={item.image_url} alt="" className="w-5 h-5 rounded-full object-cover" />}
-                          <span className="font-medium">{item.name}</span>
-                          <span className="text-[10px] text-muted-foreground ml-auto">{item.slug}</span>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-                <Input
-                  type="number"
-                  inputMode="decimal"
-                  min={0}
-                  step="any"
-                  value={row.amount === undefined || Number.isNaN(row.amount) ? "" : row.amount}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    let amt = val === "" ? undefined : Number(val);
-                    const unit = row.unit || "g";
-                    const grams = amt === undefined ? 0 : Math.round(toGrams(amt, unit, row.slug));
-                    setRows((prev) => { const next = [...prev]; next[idx] = { ...next[idx], amount: amt, grams }; return next; });
-                  }}
-                  className="w-full h-9 text-center tabular-nums text-sm font-semibold px-1"
-                />
-                <select
-                  value={row.unit || "g"}
-                  onChange={(e) => {
-                    const unit = e.target.value;
-                    const amt = row.amount ?? row.grams;
-                    const grams = Math.round(toGrams(amt, unit, row.slug));
-                    setRows((prev) => { const next = [...prev]; next[idx] = { ...next[idx], unit, grams }; return next; });
-                  }}
-                  className="w-full px-1 py-2 text-xs bg-background border border-border/40 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 text-center appearance-none cursor-pointer"
-                >
-                  {INPUT_UNITS.map((u) => (
-                    <option key={u} value={u}>{inputUnitLabel(u, locale)}</option>
-                  ))}
-                </select>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => { if (rows.length > 1) setRows((prev) => prev.filter((_, i) => i !== idx)); }}
-                  disabled={rows.length <= 1}
-                  className="h-8 w-8 text-muted-foreground hover:text-red-500 disabled:opacity-20"
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                </Button>
+
+        {/* Manual add search */}
+        <div className="flex items-center gap-2">
+          <div className="relative flex-1 max-w-sm">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground/50" />
+            <Input
+              type="text"
+              value={addSearchQuery}
+              onChange={(e) => { setAddSearchQuery(e.target.value); setAddSearchOpen(true); searchForAdd(e.target.value); }}
+              onFocus={() => setAddSearchOpen(true)}
+              onBlur={() => setTimeout(() => setAddSearchOpen(false), 200)}
+              placeholder={t("searchPlaceholder") || "Add ingredient..."}
+              className="pl-9 h-9 text-xs rounded-xl"
+            />
+            {addSearchOpen && addSearchResults.length > 0 && (
+              <div className="absolute z-50 top-full mt-1 left-0 right-0 bg-background border border-border/50 rounded-xl shadow-xl max-h-48 overflow-y-auto">
+                {addSearchResults.map((item) => (
+                  <button
+                    key={item.slug}
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={async () => {
+                      setAddSearchOpen(false);
+                      setAddSearchResults([]);
+                      setAddSearchQuery("");
+                      await addIngredientAction(item.slug, item.name, item.image_url);
+                    }}
+                    className="w-full text-left px-3 py-2.5 text-sm hover:bg-muted/40 flex items-center gap-2.5 transition-colors"
+                  >
+                    {item.image_url && <img src={item.image_url} alt="" className="w-7 h-7 rounded-lg object-cover" />}
+                    <span className="font-semibold text-xs">{item.name}</span>
+                    <span className="text-[10px] text-muted-foreground ml-auto">{item.slug}</span>
+                  </button>
+                ))}
               </div>
-              {(row.unit && row.unit !== "g") && (
-                <div className="mt-1 text-[10px] text-muted-foreground/50 pl-10">
-                  ≈ {formatWeight(row.grams, locale)}
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-        <div className="px-4 py-2.5 border-t border-border/30 flex flex-wrap items-center justify-between gap-3 bg-muted/10">
-          <div className="flex items-center gap-3">
-            <Button
-              variant="link"
-              size="sm"
-              onClick={() => setRows((prev) => [...prev, { slug: "", name: "", grams: 100, amount: 100, unit: "g" }])}
-              className="text-xs font-bold text-primary p-0 h-auto"
-            >
-              <Plus className="h-3.5 w-3.5" />
-              {t("addIngredient")}
-            </Button>
-            {rows.some((r) => r.slug) && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={clearRecipe}
-                className="text-[10px] font-bold text-muted-foreground hover:text-red-500 p-0 h-auto"
-              >
-                <Trash2 className="h-3 w-3" />
-                {t("clearRecipe")}
-              </Button>
             )}
           </div>
-          <div className="flex items-center gap-4 ml-auto">
-            <span className="text-[10px] font-bold text-muted-foreground/60 whitespace-nowrap">
-              {t("totalWeight")}: <span className="text-foreground font-black">{formatWeight(rows.reduce((s, r) => s + (r.grams || 0), 0), locale)}</span>
-            </span>
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 whitespace-nowrap">{t("portions")}</span>
-              <Input
-                type="number"
-                inputMode="numeric"
-                min={1}
-                max={20}
-                value={portions}
-                onChange={(e) => {
-                  const val = e.target.value;
-                  setPortions(val === "" ? "" : Number(val));
-                }}
-                className="w-14 px-2 py-1 text-sm text-center h-8 tabular-nums font-semibold shrink-0"
-              />
-            </div>
-          </div>
         </div>
       </div>
 
-      {/* Analyze button */}
-      <Button
-        onClick={analyze}
-        disabled={loading || rows.every((r) => !r.slug)}
-        size="lg"
-        className="w-full py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest"
-      >
-        {loading ? (
-          <>
-            <Loader2 className="h-4 w-4 animate-spin" />
-            {t("analyzing")}
-          </>
-        ) : (
-          <>
-            <ChefHat className="h-4 w-4" />
-            {t("analyzeRecipe")}
-          </>
-        )}
-      </Button>
-
+      {/* Error */}
       {error && (
-        <Alert variant="destructive" className="border-red-500/10 bg-red-500/5">
+        <Alert variant="destructive" className="border-red-500/10 bg-red-500/5 rounded-2xl">
           <AlertTriangle className="h-4 w-4" />
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
 
-      {/* Results */}
-      {result && (
+      {/* ═══════════════════════════════════════════════════════════════
+          LEVEL 2 — OVERVIEW (visible after analysis)
+          ═══════════════════════════════════════════════════════════════ */}
+      {(smartResult || isAnalyzing) && (
         <div ref={resultsRef} className="space-y-5 pt-2">
-          {/* Result sub-tabs */}
-          <div className="flex gap-1 overflow-x-auto scrollbar-none border-b border-border/30 -mx-1 px-1">
-            {(["ingredients", "nutrition", "flavor", "influence", "doctor", "suggestions"] as const).map((tab) => {
-              const icons = { ingredients: Apple, nutrition: Zap, flavor: FlameKindling, influence: BarChart3, doctor: HeartPulse, suggestions: Sparkles };
-              const Icon = icons[tab];
-              return (
-                <button
-                  key={tab}
-                  onClick={() => setResultTab(tab)}
-                  className={cn(
-                    "flex items-center gap-1.5 px-3 py-2.5 font-bold text-[10px] uppercase tracking-widest border-b-2 -mb-px transition-all whitespace-nowrap shrink-0",
-                    resultTab === tab ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground",
+
+          {isAnalyzing && !smartResult && <AnalysisSkeleton />}
+
+          {smartResult && (
+            <>
+              {/* Ingredient chips row */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
+                    🍽 {t("recipeOverview") || "Your Dish"}
+                  </p>
+                  {chips.length > 0 && (
+                    <button onClick={clearRecipe} className="text-[10px] font-bold text-muted-foreground hover:text-red-500 transition-colors">
+                      {t("clearRecipe")}
+                    </button>
                   )}
-                >
-                  <Icon className="h-3 w-3" />
-                  {t(`tabs.${tab}`)}
-                  {tab === "suggestions" && result.suggestions.length > 0 && (
-                    <span className="ml-1 px-1.5 py-0.5 text-[9px] bg-primary/10 text-primary rounded-full font-black">
-                      {result.suggestions.length}
-                    </span>
-                  )}
-                  {tab === "doctor" && result.diagnosis && result.diagnosis.issues.length > 0 && (
-                    <span className={cn(
-                      "ml-1 px-1.5 py-0.5 text-[9px] rounded-full font-black",
-                      result.diagnosis.critical_count > 0 ? "bg-red-500/10 text-red-500" : "bg-amber-500/10 text-amber-500",
-                    )}>
-                      {result.diagnosis.issues.length}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Share recipe button */}
-          <div className="flex items-center gap-2">
-            {!shareUrl ? (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={shareRecipe}
-                disabled={sharing}
-                className="text-xs font-bold gap-1.5"
-              >
-                {sharing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Share2 className="h-3.5 w-3.5" />}
-                {sharing ? t("sharing") || "Sharing…" : t("shareRecipe") || "Share Recipe"}
-              </Button>
-            ) : (
-              <div className="flex items-center gap-2 flex-wrap">
-                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-muted/40 border border-border/30 rounded-xl text-xs font-mono text-muted-foreground truncate max-w-[300px]">
-                  <Link className="h-3 w-3 flex-shrink-0 text-primary" />
-                  <span className="truncate">{shareUrl}</span>
-                </div>
-                <Button variant="outline" size="sm" onClick={copyShareUrl} className="text-xs font-bold gap-1.5">
-                  {copied ? <CheckCheck className="h-3.5 w-3.5 text-green-500" /> : <Copy className="h-3.5 w-3.5" />}
-                  {copied ? t("copied") || "Copied!" : t("copy") || "Copy"}
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => window.open(`https://t.me/share/url?url=${encodeURIComponent(shareUrl)}`, "_blank")}
-                  className="text-xs font-bold px-2"
-                >
-                  Telegram
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent(shareUrl)}`, "_blank")}
-                  className="text-xs font-bold px-2"
-                >
-                  WhatsApp
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => { setShareUrl(null); setCopied(false); }}
-                  className="h-7 w-7 text-muted-foreground hover:text-foreground"
-                >
-                  ✕
-                </Button>
-              </div>
-            )}
-          </div>
-
-          {/* Ingredients table — PRO */}
-          {resultTab === "ingredients" && (() => {
-            const totalCal = result.ingredients.reduce((s, i) => s + i.calories, 0);
-            const totalG = result.ingredients.reduce((s, i) => s + i.grams, 0);
-            const totalP = result.ingredients.reduce((s, i) => s + i.protein, 0);
-            const totalF = result.ingredients.reduce((s, i) => s + i.fat, 0);
-            const totalC = result.ingredients.reduce((s, i) => s + i.carbs, 0);
-            const totalFiber = result.ingredients.reduce((s, i) => s + (i.fiber || 0), 0);
-            const totalSugar = result.ingredients.reduce((s, i) => s + (i.sugar || 0), 0);
-
-            /** Color-coded role badge by product_type */
-            const roleBadge = (pt?: string) => {
-              const map: Record<string, { label: Record<string, string>; bg: string; text: string }> = {
-                grain:       { label: { en: "base",    ru: "основа",  pl: "baza",     uk: "основа" },   bg: "bg-amber-500/10",   text: "text-amber-600 dark:text-amber-400" },
-                vegetable:   { label: { en: "veggie",  ru: "овощ",    pl: "warzywo",  uk: "овоч" },     bg: "bg-green-500/10",   text: "text-green-600 dark:text-green-400" },
-                fruit:       { label: { en: "fruit",   ru: "фрукт",   pl: "owoc",     uk: "фрукт" },    bg: "bg-pink-500/10",    text: "text-pink-600 dark:text-pink-400" },
-                meat:        { label: { en: "meat",    ru: "мясо",    pl: "mięso",    uk: "м'ясо" },    bg: "bg-red-500/10",     text: "text-red-600 dark:text-red-400" },
-                fish:        { label: { en: "fish",    ru: "рыба",    pl: "ryba",     uk: "риба" },     bg: "bg-cyan-500/10",    text: "text-cyan-600 dark:text-cyan-400" },
-                seafood:     { label: { en: "seafood", ru: "морепрод.", pl: "owoce morza", uk: "морепрод." }, bg: "bg-teal-500/10", text: "text-teal-600 dark:text-teal-400" },
-                dairy:       { label: { en: "dairy",   ru: "молочн.",  pl: "nabiał",   uk: "молочн." },  bg: "bg-sky-500/10",     text: "text-sky-600 dark:text-sky-400" },
-                oil:         { label: { en: "fat",     ru: "жир",     pl: "tłuszcz",  uk: "жир" },      bg: "bg-yellow-500/10",  text: "text-yellow-600 dark:text-yellow-400" },
-                fat:         { label: { en: "fat",     ru: "жир",     pl: "tłuszcz",  uk: "жир" },      bg: "bg-yellow-500/10",  text: "text-yellow-600 dark:text-yellow-400" },
-                herb:        { label: { en: "herb",    ru: "зелень",  pl: "zioło",    uk: "зелень" },   bg: "bg-emerald-500/10", text: "text-emerald-600 dark:text-emerald-400" },
-                spice:       { label: { en: "spice",   ru: "специя",  pl: "przyprawa", uk: "спеція" },  bg: "bg-orange-500/10",  text: "text-orange-600 dark:text-orange-400" },
-                legume:      { label: { en: "legume",  ru: "бобы",    pl: "strączkowe", uk: "боби" },   bg: "bg-lime-500/10",    text: "text-lime-600 dark:text-lime-400" },
-                nut:         { label: { en: "nut",     ru: "орех",    pl: "orzech",   uk: "горіх" },    bg: "bg-stone-500/10",   text: "text-stone-600 dark:text-stone-400" },
-                sauce:       { label: { en: "sauce",   ru: "соус",    pl: "sos",      uk: "соус" },     bg: "bg-violet-500/10",  text: "text-violet-600 dark:text-violet-400" },
-                sweetener:   { label: { en: "sweet",   ru: "подслащ.", pl: "słodzik",  uk: "підсол." },  bg: "bg-rose-500/10",    text: "text-rose-600 dark:text-rose-400" },
-                condiment:   { label: { en: "condim.", ru: "приправа", pl: "przyprawa", uk: "приправа" }, bg: "bg-fuchsia-500/10", text: "text-fuchsia-600 dark:text-fuchsia-400" },
-                mushroom:    { label: { en: "mushroom", ru: "гриб",   pl: "grzyb",    uk: "гриб" },     bg: "bg-stone-500/10",   text: "text-stone-600 dark:text-stone-400" },
-                egg:         { label: { en: "egg",     ru: "яйцо",   pl: "jajko",    uk: "яйце" },     bg: "bg-amber-500/10",   text: "text-amber-600 dark:text-amber-400" },
-                other:       { label: { en: "other",   ru: "прочее",  pl: "inne",     uk: "інше" },     bg: "bg-muted",          text: "text-muted-foreground" },
-              };
-              if (!pt) return null;
-              const cfg = map[pt] || { label: { en: pt, ru: pt, pl: pt, uk: pt }, bg: "bg-muted", text: "text-muted-foreground" };
-              const lb = cfg.label[locale] || cfg.label.en || pt;
-              return (
-                <Badge variant="outline" className={cn("text-[10px] font-bold uppercase tracking-wider border-0 px-2 py-0.5", cfg.bg, cfg.text)}>
-                  {lb}
-                </Badge>
-              );
-            };
-
-            /** Calorie-share bar width */
-            const calPct = (cal: number) => totalCal > 0 ? (cal / totalCal) * 100 : 0;
-
-            return (
-              <div className="space-y-4">
-                {/* Summary Cards */}
-                <div className="grid grid-cols-3 gap-3">
-                  <Card className="rounded-2xl overflow-hidden">
-                    <CardContent className="p-4 text-center">
-                      <Scale className="h-5 w-5 mx-auto mb-1.5 text-muted-foreground/60" />
-                      <span className="text-2xl font-black tabular-nums">{formatWeight(totalG, locale)}</span>
-                      <p className="text-xs text-muted-foreground font-bold mt-0.5">{t("totalWeight")?.replace(":", "") ?? "Weight"}</p>
-                    </CardContent>
-                  </Card>
-                  <Card className="rounded-2xl overflow-hidden">
-                    <CardContent className="p-4 text-center">
-                      <Zap className="h-5 w-5 mx-auto mb-1.5 text-amber-500" />
-                      <span className="text-2xl font-black tabular-nums">{Math.round(totalCal)}</span>
-                      <p className="text-xs text-muted-foreground font-bold mt-0.5">kcal</p>
-                    </CardContent>
-                  </Card>
-                  <Card className="rounded-2xl overflow-hidden">
-                    <CardContent className="p-4 text-center">
-                      <Apple className="h-5 w-5 mx-auto mb-1.5 text-green-500" />
-                      <span className="text-2xl font-black tabular-nums">{result.ingredients.length}</span>
-                      <p className="text-xs text-muted-foreground font-bold mt-0.5">{t("tabs.ingredients")}</p>
-                    </CardContent>
-                  </Card>
                 </div>
 
-                {/* Ingredient Cards — mobile-first list */}
-                <div className="space-y-3">
-                  {result.ingredients.map((ing) => {
-                    const pct = calPct(ing.calories);
-                    return (
-                      <Card key={ing.slug} className="rounded-2xl overflow-hidden">
-                        <CardContent className="p-0">
-                          <div className="flex items-stretch">
-                            {/* Left: image */}
-                            <div className="w-20 sm:w-24 shrink-0 bg-muted/10 flex items-center justify-center">
-                              {ing.image_url ? (
-                                <img src={ing.image_url} alt={localizedName(ing, locale) || ing.name} className="w-full h-full object-cover" />
-                              ) : (
-                                <span className="text-2xl font-black text-muted-foreground/20">{(localizedName(ing, locale) || ing.name).charAt(0)}</span>
-                              )}
-                            </div>
-
-                            {/* Right: content */}
-                            <div className="flex-1 min-w-0 p-3 sm:p-4">
-                              {/* Title row */}
-                              <div className="flex items-center justify-between gap-2 mb-2">
-                                <div className="flex items-center gap-2 min-w-0">
-                                  <h4 className="text-sm font-black truncate">{localizedName(ing, locale) || ing.name}</h4>
-                                  {roleBadge(ing.product_type)}
-                                </div>
-                                {!ing.found && (
-                                  <Badge variant="outline" className="text-[10px] font-bold text-amber-500 border-amber-500/30 bg-amber-500/10 shrink-0">
-                                    ⚠ {t("notFound") ?? "N/F"}
-                                  </Badge>
-                                )}
-                              </div>
-
-                              {/* Calorie bar */}
-                              <div className="flex items-center gap-2 mb-2">
-                                <div className="flex-1 h-2 rounded-full bg-muted/30 overflow-hidden">
-                                  <div
-                                    className={cn("h-full rounded-full transition-all duration-500", pct >= 50 ? "bg-amber-500" : pct >= 20 ? "bg-amber-400" : "bg-amber-300/60")}
-                                    style={{ width: `${Math.min(pct, 100)}%` }}
-                                  />
-                                </div>
-                                <span className={cn("text-xs font-black tabular-nums w-12 text-right", pct >= 50 ? "text-amber-500" : "text-muted-foreground")}>
-                                  {pct.toFixed(0)}% cal
-                                </span>
-                              </div>
-
-                              {/* Macros row */}
-                              <div className="flex items-center gap-3 text-xs">
-                                <span className="font-bold tabular-nums">{Math.round(ing.grams)}<span className="text-muted-foreground font-normal">{unitLabel("g", locale)}</span></span>
-                                <Separator orientation="vertical" className="h-3" />
-                                <span className="font-bold tabular-nums">{Math.round(ing.calories)} <span className="text-muted-foreground font-normal">kcal</span></span>
-                                <Separator orientation="vertical" className="h-3" />
-                                <span className="text-blue-500 font-bold tabular-nums">P {ing.protein.toFixed(1)}</span>
-                                <span className="text-yellow-500 font-bold tabular-nums">F {ing.fat.toFixed(1)}</span>
-                                <span className="text-green-500 font-bold tabular-nums">C {ing.carbs.toFixed(1)}</span>
-                              </div>
-                            </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  {chips.map((chip, idx) => (
+                    <span key={chip.slug} className="contents">
+                      {idx > 0 && <span className="text-primary/40 text-lg font-black select-none">+</span>}
+                      <div className="group flex items-center gap-1.5 pl-1.5 pr-2 py-1.5 rounded-2xl border border-border/50 bg-background text-[13px] font-black transition-all hover:border-primary/30 hover:shadow-sm">
+                        {chip.image_url ? (
+                          <img src={chip.image_url} alt={chip.name} className="w-6 h-6 rounded-lg object-cover shrink-0" />
+                        ) : (
+                          <div className="w-6 h-6 rounded-lg bg-muted flex items-center justify-center shrink-0">
+                            <ChefHat className="h-3 w-3 text-muted-foreground" />
                           </div>
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
-                </div>
-
-                {/* Totals card */}
-                <Card className="rounded-2xl overflow-hidden border-2">
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-xs font-black uppercase tracking-widest text-muted-foreground">{t("total")}</span>
-                      <span className="text-lg font-black tabular-nums">{Math.round(totalCal)} <span className="text-sm text-muted-foreground">kcal</span></span>
-                    </div>
-                    <div className="grid grid-cols-4 gap-3 text-center text-xs">
-                      <div>
-                        <span className="text-base font-black text-blue-500 tabular-nums">{totalP.toFixed(1)}</span>
-                        <p className="text-muted-foreground font-bold">{t("protein")}</p>
+                        )}
+                        <span className="truncate max-w-[100px] capitalize">{chip.name}</span>
+                        <button
+                          onClick={() => removeChip(chip.slug)}
+                          className="ml-0.5 opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-red-500 transition-all"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </button>
                       </div>
-                      <div>
-                        <span className="text-base font-black text-yellow-500 tabular-nums">{totalF.toFixed(1)}</span>
-                        <p className="text-muted-foreground font-bold">{t("fat")}</p>
-                      </div>
-                      <div>
-                        <span className="text-base font-black text-green-500 tabular-nums">{totalC.toFixed(1)}</span>
-                        <p className="text-muted-foreground font-bold">{t("carbs")}</p>
-                      </div>
-                      <div>
-                        <span className="text-base font-black text-emerald-500 tabular-nums">{totalFiber.toFixed(1)}</span>
-                        <p className="text-muted-foreground font-bold">{t("fiber")}</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Macro split bar */}
-                <Card className="rounded-2xl overflow-hidden">
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-0.5 h-4 rounded-full overflow-hidden bg-muted/30">
-                      <div className="h-full bg-blue-500 rounded-l-full transition-all" style={{ width: `${result.macros.protein_pct}%` }} />
-                      <div className="h-full bg-yellow-500 transition-all" style={{ width: `${result.macros.fat_pct}%` }} />
-                      <div className="h-full bg-green-500 rounded-r-full transition-all" style={{ width: `${result.macros.carbs_pct}%` }} />
-                    </div>
-                    <div className="flex justify-between mt-2 text-xs font-bold">
-                      <span className="text-blue-500">{t("protein")} {result.macros.protein_pct.toFixed(0)}%</span>
-                      <span className="text-yellow-500">{t("fat")} {result.macros.fat_pct.toFixed(0)}%</span>
-                      <span className="text-green-500">{t("carbs")} {result.macros.carbs_pct.toFixed(0)}%</span>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            );
-          })()}
-
-          {/* Nutrition */}
-          {resultTab === "nutrition" && (
-            <NutritionTab result={result} locale={locale} t={t} dietLabels={dietLabels} />
-          )}
-
-          {/* Flavor */}
-          {resultTab === "flavor" && <FlavorRadarCard flavor={result.flavor} t={t} />}
-
-          {/* Influence Heatmap */}
-          {resultTab === "influence" && result.flavor_contributions && (() => {
-            const fc = result.flavor_contributions;
-            const dims = [
-              { key: "sweetness",  pctKey: "pct_sweetness",  label: t("sweetness"),  bgCell: "bg-pink-500",   bgLight: "bg-pink-100 dark:bg-pink-950",   text: "text-pink-600 dark:text-pink-400",   border: "border-pink-200 dark:border-pink-800" },
-              { key: "acidity",    pctKey: "pct_acidity",    label: t("acidity"),    bgCell: "bg-lime-500",   bgLight: "bg-lime-100 dark:bg-lime-950",   text: "text-lime-600 dark:text-lime-400",   border: "border-lime-200 dark:border-lime-800" },
-              { key: "bitterness", pctKey: "pct_bitterness", label: t("bitterness"), bgCell: "bg-amber-500",  bgLight: "bg-amber-100 dark:bg-amber-950", text: "text-amber-600 dark:text-amber-400", border: "border-amber-200 dark:border-amber-800" },
-              { key: "umami",      pctKey: "pct_umami",      label: t("umami"),      bgCell: "bg-red-500",    bgLight: "bg-red-100 dark:bg-red-950",     text: "text-red-600 dark:text-red-400",     border: "border-red-200 dark:border-red-800" },
-              { key: "fat",        pctKey: "pct_fat",        label: t("fatDimension"), bgCell: "bg-yellow-500", bgLight: "bg-yellow-100 dark:bg-yellow-950", text: "text-yellow-600 dark:text-yellow-400", border: "border-yellow-200 dark:border-yellow-800" },
-              { key: "aroma",      pctKey: "pct_aroma",      label: t("aroma"),      bgCell: "bg-violet-500", bgLight: "bg-violet-100 dark:bg-violet-950", text: "text-violet-600 dark:text-violet-400", border: "border-violet-200 dark:border-violet-800" },
-            ] as const;
-
-            const getName = (slug: string) => {
-              const ing = result.ingredients.find((i) => i.slug === slug);
-              return ing ? (localizedName(ing, locale) || ing.name) : slug;
-            };
-
-            const topContributor = (pctKey: string) => {
-              let max = 0; let top = "";
-              for (const c of fc) { const v = (c as any)[pctKey]; if (v > max) { max = v; top = c.slug; } }
-              return { slug: top, pct: max };
-            };
-
-            return (
-              <div className="space-y-5">
-                {/* Heatmap table */}
-                <Card className="rounded-2xl overflow-hidden">
-                  <CardHeader className="bg-muted/20 px-4 py-3 border-b border-border/30 flex flex-row items-center gap-2">
-                    <BarChart3 className="w-4 h-4 text-primary" />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
-                      {t("influenceMap") ?? "Ingredient Influence Map"}
                     </span>
-                  </CardHeader>
-                  <CardContent className="p-0">
-                    <div className="overflow-x-auto">
-                      <Table>
-                        <TableHeader>
-                          <TableRow className="border-b border-border/30 bg-muted/10">
-                            <TableHead className="text-left px-3 py-2.5 text-[9px] font-black uppercase tracking-widest text-muted-foreground/60 min-w-[120px]">
-                              {t("ingredient")}
-                            </TableHead>
-                            {dims.map((d) => (
-                              <TableHead key={d.key} className={cn("text-center px-2 py-2.5 text-[9px] font-black uppercase tracking-widest min-w-[70px]", d.text)}>
-                                {d.label}
-                              </TableHead>
-                            ))}
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {fc.map((c, idx) => (
-                            <TableRow key={c.slug} className={cn(
-                              "border-b border-border/10 transition-colors",
-                              idx % 2 === 0 ? "bg-transparent" : "bg-muted/5",
-                            )}>
-                              <TableCell className="px-3 py-2.5">
-                                <div className="flex items-center gap-2">
-                                  {(() => {
-                                    const ing = result.ingredients.find((i) => i.slug === c.slug);
-                                    return ing?.image_url
-                                      ? <img src={ing.image_url} alt="" className="w-6 h-6 rounded-full object-cover shrink-0" />
-                                      : <div className="w-6 h-6 rounded-full bg-muted shrink-0 flex items-center justify-center text-[9px] font-bold text-muted-foreground">{getName(c.slug).charAt(0)}</div>;
-                                  })()}
-                                  <span className="font-bold text-[11px]">{getName(c.slug)}</span>
-                                </div>
-                              </TableCell>
-                              {dims.map((d) => {
-                                const pct = (c as any)[d.pctKey] as number;
-                                return (
-                                  <TableCell key={d.key} className="px-1.5 py-2.5 text-center">
-                                    {pct > 0 ? (
-                                      <Badge variant="outline" className={cn(
-                                        "text-[10px] font-black tabular-nums px-2 py-0.5 border",
-                                        pct >= 50 ? `${d.bgCell} text-white border-transparent` :
-                                        pct >= 20 ? `${d.bgLight} ${d.text} ${d.border}` :
-                                        "bg-muted/50 text-foreground border-border/50",
-                                      )}>
-                                        {pct.toFixed(0)}%
-                                      </Badge>
-                                    ) : (
-                                      <span className="text-[10px] text-muted-foreground/40">—</span>
-                                    )}
-                                  </TableCell>
-                                );
-                              })}
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Stacked dimension bars */}
-                <Card className="rounded-2xl p-4 space-y-3">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
-                    {t("flavorSources") ?? "Flavor Sources"}
-                  </span>
-                  {dims.map((d) => {
-                    const top = topContributor(d.pctKey);
-                    return (
-                      <div key={d.key}>
-                        <div className="flex items-center justify-between mb-1">
-                          <span className={cn("text-[10px] font-bold", d.text)}>{d.label}</span>
-                          {top.pct > 0 && (
-                            <span className="text-[9px] text-muted-foreground">
-                              ← {getName(top.slug)} ({top.pct.toFixed(0)}%)
-                            </span>
-                          )}
-                        </div>
-                        <div className="flex h-5 rounded-full overflow-hidden bg-muted/20 gap-px">
-                          {fc.map((c) => {
-                            const pct = (c as any)[d.pctKey] as number;
-                            if (pct <= 0) return null;
-                            return (
-                              <div
-                                key={c.slug}
-                                className={cn(d.bgCell, "h-full transition-all relative group")}
-                                style={{ width: `${pct}%`, opacity: 0.4 + (pct / 100) * 0.6 }}
-                                title={`${getName(c.slug)}: ${pct.toFixed(0)}%`}
-                              >
-                                {pct >= 12 && (
-                                  <span className="absolute inset-0 flex items-center justify-center text-[8px] font-black text-white truncate px-0.5">
-                                    {getName(c.slug).split(" ")[0]}
-                                  </span>
-                                )}
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </Card>
-
-                {/* Quick insight cards */}
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                  {dims.map((d) => {
-                    const top = topContributor(d.pctKey);
-                    if (top.pct <= 0) return null;
-                    return (
-                      <Card key={d.key} className="rounded-xl p-3 bg-muted/5">
-                        <div className={cn("text-[10px] font-black uppercase tracking-wider mb-1", d.text)}>{d.label}</div>
-                        <div className="flex items-center gap-1.5">
-                          {(() => {
-                            const ing = result.ingredients.find((i) => i.slug === top.slug);
-                            return ing?.image_url
-                              ? <img src={ing.image_url} alt="" className="w-5 h-5 rounded-full object-cover shrink-0" />
-                              : null;
-                          })()}
-                          <span className="text-xs font-bold truncate">{getName(top.slug)}</span>
-                        </div>
-                        <span className="text-lg font-black tabular-nums">{top.pct.toFixed(0)}%</span>
-                      </Card>
-                    );
-                  })}
+                  ))}
+                  {/* Ghost add */}
+                  <span className="text-primary/40 text-lg font-black select-none">+</span>
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl border-2 border-dashed border-primary/20 text-primary/40 text-[11px] font-bold cursor-default">
+                    <Plus className="h-3 w-3" />
+                    ?
+                  </div>
                 </div>
               </div>
-            );
-          })()}
 
-          {/* Influence — fallback if no data */}
-          {resultTab === "influence" && !result.flavor_contributions && (
-            <div className="border border-border/40 rounded-2xl p-8 text-center text-muted-foreground text-sm">
-              {t("noInfluenceData") ?? "Influence data not available. Re-analyze to see flavor contributions."}
-            </div>
-          )}
+              {/* Score + Balance row */}
+              {flavor && (
+                <div className="p-5 rounded-2xl bg-muted/10 border border-border/40 relative overflow-hidden">
+                  {/* Feedback flash */}
+                  {feedback && (
+                    <div className={cn(
+                      "absolute inset-0 pointer-events-none animate-in fade-in duration-300",
+                      feedback === "improved" ? "bg-emerald-500/10" : "bg-rose-500/10",
+                    )} />
+                  )}
 
-          {/* ═══ AI Sous Chef Tab ═══ */}
-          {resultTab === "doctor" && (() => {
-            const diag = result.diagnosis;
-            if (!diag) return (
-              <Card className="rounded-2xl p-8 text-center text-muted-foreground text-sm">
-                Re-analyze to see diagnosis.
-              </Card>
-            );
-
-            const catLabels: Record<string, string> = {
-              flavor: t("catFlavor"), nutrition: t("catNutrition"),
-              dominance: t("catDominance"), structure: t("catStructure"),
-            };
-            const catIcons: Record<string, typeof FlameKindling> = {
-              flavor: FlameKindling, nutrition: Zap, dominance: Scale, structure: Apple,
-            };
-            const catColors: Record<string, string> = {
-              flavor: "text-pink-500", nutrition: "text-blue-500",
-              dominance: "text-amber-500", structure: "text-emerald-500",
-            };
-            const catBarColors: Record<string, string> = {
-              flavor: "bg-pink-500", nutrition: "bg-blue-500",
-              dominance: "bg-amber-500", structure: "bg-emerald-500",
-            };
-
-            const tr = (key: string) => { try { return t(key); } catch { return key; } };
-
-            // Health score ring
-            const ringColor = diag.health_score >= 80 ? "text-green-500" : diag.health_score >= 50 ? "text-amber-500" : "text-red-500";
-            const ringBg = diag.health_score >= 80 ? "stroke-green-500/20" : diag.health_score >= 50 ? "stroke-amber-500/20" : "stroke-red-500/20";
-            const ringStroke = diag.health_score >= 80 ? "stroke-green-500" : diag.health_score >= 50 ? "stroke-amber-500" : "stroke-red-500";
-            const circumference = 2 * Math.PI * 42;
-            const offset = circumference - (diag.health_score / 100) * circumference;
-
-            // Category scores from API
-            const cs = diag.category_scores || { flavor: 100, nutrition: 100, dominance: 100, structure: 100 };
-
-            // Group issues by category
-            const grouped = diag.issues.reduce<Record<string, RuleIssue[]>>((acc, issue) => {
-              (acc[issue.category] ||= []).push(issue);
-              return acc;
-            }, {});
-
-            // Sort issues: critical first, then warning, then info
-            const sevOrder: Record<string, number> = { critical: 0, warning: 1, info: 2 };
-
-            // Severity styling
-            const sevStyle = (sev: string) => {
-              if (sev === "critical") return { border: "border-red-500/40", bg: "bg-red-50 dark:bg-red-950/30", icon: "bg-red-500/20", badge: "bg-red-500 text-white", IconComp: ShieldAlert, iconColor: "text-red-500", barColor: "bg-red-500" };
-              if (sev === "warning") return { border: "border-amber-500/40", bg: "bg-amber-50 dark:bg-amber-950/30", icon: "bg-amber-500/20", badge: "bg-amber-500 text-white", IconComp: CircleAlert, iconColor: "text-amber-500", barColor: "bg-amber-500" };
-              return { border: "border-sky-500/30", bg: "bg-sky-50 dark:bg-sky-950/20", icon: "bg-sky-500/15", badge: "bg-sky-500 text-white", IconComp: Info, iconColor: "text-sky-500", barColor: "bg-sky-500" };
-            };
-
-            const sevLabel = (sev: string) => {
-              if (sev === "critical") return t("critical");
-              if (sev === "warning") return t("warning");
-              return t("info") || "Info";
-            };
-
-            return (
-              <div className="space-y-6">
-                {/* Health Score Hero + Category Breakdown */}
-                <Card className="rounded-2xl overflow-hidden">
-                  <CardContent className="p-6">
-                    <div className="flex flex-col sm:flex-row items-center gap-6">
-                      {/* Ring */}
-                      <div className="relative w-32 h-32 shrink-0">
-                        <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
-                          <circle cx="50" cy="50" r="42" fill="none" strokeWidth="6" className={ringBg} />
-                          <circle cx="50" cy="50" r="42" fill="none" strokeWidth="6" strokeLinecap="round" className={ringStroke}
-                            strokeDasharray={circumference} strokeDashoffset={offset}
-                            style={{ transition: "stroke-dashoffset 0.6s ease" }} />
-                        </svg>
-                        <div className="absolute inset-0 flex flex-col items-center justify-center">
-                          <span className={cn("text-3xl font-black tabular-nums", ringColor)}>{diag.health_score}</span>
-                        </div>
-                      </div>
-
-                      {/* Category breakdown bars */}
-                      <div className="flex-1 w-full space-y-3">
-                        <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground/60 mb-3">{t("healthScore")}</h3>
-                        {(["flavor", "nutrition", "dominance", "structure"] as const).map((cat) => {
-                          const score = (cs as any)[cat] as number;
-                          const barColor = score >= 80 ? catBarColors[cat] : score >= 50 ? "bg-amber-500" : "bg-red-500";
-                          return (
-                            <div key={cat} className="flex items-center gap-3">
-                              <span className={cn("text-xs font-bold w-24 truncate", catColors[cat])}>{catLabels[cat]}</span>
-                              <div className="flex-1 h-2.5 rounded-full bg-muted/30 overflow-hidden">
-                                <div className={cn("h-full rounded-full transition-all duration-500", barColor)} style={{ width: `${score}%` }} />
-                              </div>
-                              <span className={cn("text-sm font-black tabular-nums w-10 text-right",
-                                score >= 80 ? catColors[cat] : score >= 50 ? "text-amber-500" : "text-red-500"
-                              )}>{score}</span>
-                            </div>
-                          );
-                        })}
+                  <div className="flex items-center gap-5 relative">
+                    {/* Score ring */}
+                    <div className="relative w-20 h-20 shrink-0">
+                      <svg className="w-full h-full -rotate-90" viewBox="0 0 64 64">
+                        <circle cx="32" cy="32" r="26" fill="none" stroke="currentColor" className="text-muted/20" strokeWidth="5" />
+                        <circle cx="32" cy="32" r="26" fill="none"
+                          stroke={ringStroke(balanceScore)}
+                          strokeWidth="5" strokeLinecap="round"
+                          strokeDasharray={`${2 * Math.PI * 26}`}
+                          strokeDashoffset={`${2 * Math.PI * 26 * (1 - balanceScore / 100)}`}
+                          className="transition-all duration-700"
+                        />
+                      </svg>
+                      <div className="absolute inset-0 flex flex-col items-center justify-center">
+                        <span className={cn("text-2xl font-black tabular-nums transition-colors duration-500", scoreColor(balanceScore))}>
+                          {animatedScore}
+                        </span>
+                        <span className="text-[9px] text-muted-foreground font-bold">/100</span>
                       </div>
                     </div>
 
-                    <Separator className="my-4" />
-
-                    {/* Severity badges */}
-                    <div className="flex items-center justify-center gap-3">
-                      {diag.critical_count > 0 && (
-                        <Badge variant="destructive" className="gap-1 text-xs px-3 py-1">
-                          <ShieldAlert className="h-3.5 w-3.5" />
-                          {diag.critical_count} {t("critical")}
-                        </Badge>
-                      )}
-                      {diag.warning_count > 0 && (
-                        <Badge className="gap-1 text-xs px-3 py-1 bg-amber-500 hover:bg-amber-600 text-white">
-                          <CircleAlert className="h-3.5 w-3.5" />
-                          {diag.warning_count} {t("warning")}
-                        </Badge>
-                      )}
-                      {(diag.info_count ?? 0) > 0 && (
-                        <Badge className="gap-1 text-xs px-3 py-1 bg-sky-500 hover:bg-sky-600 text-white">
-                          <Info className="h-3.5 w-3.5" />
-                          {diag.info_count} {t("info") || "Info"}
-                        </Badge>
-                      )}
-                      {diag.issues.length === 0 && (
-                        <Badge className="gap-1 text-xs px-3 py-1 bg-green-500 hover:bg-green-600 text-white">
-                          ✓ {t("noIssues")}
-                        </Badge>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Issues by category */}
-                {Object.entries(grouped).map(([cat, catIssues]) => {
-                  const CatIcon = catIcons[cat] || AlertTriangle;
-                  const sorted = [...catIssues].sort((a, b) => (sevOrder[a.severity] ?? 9) - (sevOrder[b.severity] ?? 9));
-                  return (
-                    <div key={cat}>
-                      <div className="flex items-center gap-2 mb-3">
-                        <CatIcon className={cn("h-5 w-5", catColors[cat] || "text-muted-foreground")} />
-                        <h4 className="text-sm font-black uppercase tracking-widest">{catLabels[cat] || cat}</h4>
-                        <Badge variant="secondary" className="text-xs">{catIssues.length}</Badge>
+                    <div className="flex-1 min-w-0 space-y-2">
+                      {/* Balance bar */}
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+                          {t("balance")}
+                        </span>
+                        {feedback === "improved" && (
+                          <span className="text-[10px] font-black text-emerald-500 animate-in fade-in slide-in-from-left-2 duration-300">
+                            ↑ improved
+                          </span>
+                        )}
+                        {feedback === "declined" && (
+                          <span className="text-[10px] font-black text-rose-500 animate-in fade-in slide-in-from-left-2 duration-300">
+                            ↓ declined
+                          </span>
+                        )}
                       </div>
-                      <div className="grid gap-4">
-                        {sorted.map((issue, i) => {
-                          const st = sevStyle(issue.severity);
-                          const SevIcon = st.IconComp;
-                          return (
-                            <Card key={i} className={cn("rounded-2xl overflow-hidden", st.border, st.bg)}>
-                              {/* Severity color strip */}
-                              <div className={cn("h-1", st.barColor)} />
-                              <CardContent className="p-5">
-                                <div className="flex items-start gap-4">
-                                  <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center shrink-0", st.icon)}>
-                                    <SevIcon className={cn("h-5 w-5", st.iconColor)} />
-                                  </div>
-                                  <div className="flex-1 min-w-0 space-y-3">
-                                    {/* Title row */}
-                                    <div className="flex items-center gap-2 flex-wrap">
-                                      <h5 className="text-sm font-black leading-tight">{tr(issue.title_key)}</h5>
-                                      <Badge className={cn("text-[10px] font-black uppercase px-2 py-0.5", st.badge)}>
-                                        {sevLabel(issue.severity)}
-                                      </Badge>
-                                      {issue.impact != null && issue.impact > 0 && (
-                                        <Badge className="text-[10px] font-black px-2 py-0.5 bg-green-500 hover:bg-green-600 text-white">
-                                          +{issue.impact} pts
-                                        </Badge>
-                                      )}
-                                    </div>
+                      <div className="h-2.5 rounded-full bg-muted/30 overflow-hidden">
+                        <div
+                          className={cn("h-full rounded-full bg-gradient-to-r transition-all duration-700", barGradient(balanceScore))}
+                          style={{ width: `${balanceScore}%` }}
+                        />
+                      </div>
 
-                                    {/* Description */}
-                                    <p className="text-sm text-muted-foreground leading-relaxed">
-                                      {tr(issue.description_key)}
-                                    </p>
-
-                                    {/* Value / Threshold */}
-                                    {issue.value != null && (
-                                      <div className="flex items-center gap-4 text-xs">
-                                        <span className="text-muted-foreground">{t("value")}: <span className="font-bold text-foreground">{typeof issue.value === 'number' ? Number(issue.value).toFixed(1) : issue.value}</span></span>
-                                        {issue.threshold != null && (
-                                          <span className="text-muted-foreground">{t("threshold")}: <span className="font-bold">{issue.threshold}</span></span>
-                                        )}
-                                      </div>
-                                    )}
-
-                                    {/* Fix suggestions */}
-                                    {issue.fix_slugs.length > 0 && (
-                                      <div className="pt-1">
-                                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2">{t("fixWith")}</p>
-                                        <div className="flex flex-wrap gap-2">
-                                          {issue.fix_slugs.map((slug) => {
-                                            const alreadyInRecipe = rows.some((r) => r.slug === slug);
-                                            const info = slugNames[slug];
-                                            const displayName = info?.name || slug;
-                                            const imgUrl = info?.image_url;
-                                            return (
-                                              <Button
-                                                key={slug}
-                                                variant="outline"
-                                                size="sm"
-                                                disabled={alreadyInRecipe || loading}
-                                                onClick={() => {
-                                                  if (loading) return;
-                                                  const fakeS: SuggestionItem = { slug, name: displayName, image_url: imgUrl, score: 0, reasons: [], fills: [] };
-                                                  toggleSuggestionInRecipe(fakeS);
-                                                }}
-                                                className={cn(
-                                                  "gap-2 text-xs font-bold h-10 px-3",
-                                                  alreadyInRecipe && "border-green-500/40 text-green-500 bg-green-500/5",
-                                                )}
-                                              >
-                                                {alreadyInRecipe ? (
-                                                  <Check className="h-4 w-4" />
-                                                ) : imgUrl ? (
-                                                  <img src={imgUrl} alt={displayName} className="w-7 h-7 rounded-lg object-cover" />
-                                                ) : (
-                                                  <Plus className="h-4 w-4" />
-                                                )}
-                                                {displayName}
-                                              </Button>
-                                            );
-                                          })}
-                                        </div>
-                                      </div>
-                                    )}
-
-                                    {/* Fix keys (text advice) */}
-                                    {issue.fix_keys.length > 0 && (
-                                      <p className="text-xs text-primary/80 italic leading-relaxed">
-                                        {issue.fix_keys.map((k) => tr(k)).join(". ")}
-                                      </p>
-                                    )}
-                                  </div>
-                                </div>
-                              </CardContent>
-                            </Card>
-                          );
-                        })}
+                      {/* Weak / Strong */}
+                      <div className="flex flex-wrap gap-1.5">
+                        {(flavor.balance.weak_dimensions ?? []).map((w) => (
+                          <Badge key={w.dimension} variant="outline" className="bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20 text-[10px] font-bold">
+                            ↓ {(() => { try { return t(w.dimension); } catch { return w.dimension; } })()}
+                          </Badge>
+                        ))}
+                        {(flavor.balance.strong_dimensions ?? []).map((s) => (
+                          <Badge key={s.dimension} variant="outline" className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 text-[10px] font-bold">
+                            ↑ {(() => { try { return t(s.dimension); } catch { return s.dimension; } })()}
+                          </Badge>
+                        ))}
                       </div>
                     </div>
-                  );
-                })}
+                  </div>
 
-                {/* All clear message */}
-                {diag.issues.length === 0 && (
-                  <Card className="rounded-2xl border-green-500/20 bg-green-500/[0.03]">
-                    <CardContent className="p-8 text-center">
-                      <HeartPulse className="h-12 w-12 mx-auto mb-3 text-green-500" />
-                      <p className="text-base font-bold text-green-600 dark:text-green-400">{t("noIssues")}</p>
-                    </CardContent>
-                  </Card>
+                  {/* Nutrition quick row */}
+                  {nutrition && (
+                    <div className="flex items-center justify-between mt-4 pt-3 border-t border-border/20">
+                      <div className="flex items-center gap-4 text-xs">
+                        <span className="font-black tabular-nums">{Math.round(nutrition.calories ?? 0)} <span className="text-muted-foreground font-normal">kcal</span></span>
+                        <span className="text-blue-500 font-bold tabular-nums">P {(nutrition.protein_g ?? 0).toFixed(1)}</span>
+                        <span className="text-amber-500 font-bold tabular-nums">F {(nutrition.fat_g ?? 0).toFixed(1)}</span>
+                        <span className="text-green-500 font-bold tabular-nums">C {(nutrition.carbs_g ?? 0).toFixed(1)}</span>
+                      </div>
+                      {confidence && (
+                        <span className="text-[9px] font-bold text-muted-foreground/60">
+                          {Math.round(confidence.overall * 100)}% confidence
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Share */}
+              <div className="flex items-center gap-2">
+                {!shareUrl ? (
+                  <Button variant="outline" size="sm" onClick={shareRecipe} disabled={sharing || chips.length === 0} className="text-xs font-bold gap-1.5 rounded-xl">
+                    {sharing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Share2 className="h-3.5 w-3.5" />}
+                    {sharing ? t("sharing") || "Sharing…" : t("shareRecipe") || "Share Recipe"}
+                  </Button>
+                ) : (
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <div className="flex items-center gap-1.5 px-3 py-1.5 bg-muted/40 border border-border/30 rounded-xl text-xs font-mono text-muted-foreground truncate max-w-[300px]">
+                      <Link className="h-3 w-3 flex-shrink-0 text-primary" />
+                      <span className="truncate">{shareUrl}</span>
+                    </div>
+                    <Button variant="outline" size="sm" onClick={copyShareUrl} className="text-xs font-bold gap-1.5 rounded-xl">
+                      {copied ? <CheckCheck className="h-3.5 w-3.5 text-green-500" /> : <Copy className="h-3.5 w-3.5" />}
+                      {copied ? t("copied") || "Copied!" : t("copy") || "Copy"}
+                    </Button>
+                    <Button variant="ghost" size="icon" onClick={() => { setShareUrl(null); setCopied(false); }} className="h-7 w-7"><span>✕</span></Button>
+                  </div>
                 )}
               </div>
-            );
-          })()}
 
-          {/* Suggestions */}
-          {resultTab === "suggestions" && (
-            <div>
-              {result.suggestions.length > 0 ? (
-                <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-                  {result.suggestions.map((s) => {
-                    const alreadyAdded = rows.some((r) => r.slug === s.slug);
-                    return (
-                    <Card
-                      key={s.slug}
-                      className={cn(
-                        "group flex flex-col h-full rounded-2xl overflow-hidden transition-all cursor-pointer",
-                        alreadyAdded
-                          ? "ring-2 ring-green-500/50"
-                          : "hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]",
-                      )}
-                      onClick={() => !loading && toggleSuggestionInRecipe(s)}
-                    >
-                      <CardContent className="p-0 flex flex-col h-full">
-                        {/* Hero image — object-cover, aspect-[4/3] */}
-                        <div className="relative aspect-[4/3] w-full overflow-hidden">
-                          {s.image_url ? (
-                            <img
-                              src={s.image_url}
-                              alt={localizedName(s, locale) || s.name}
-                              className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                            />
-                          ) : (
-                            <div className="absolute inset-0 bg-gradient-to-br from-muted/40 to-muted/10 flex items-center justify-center">
-                              <Plus className="h-10 w-10 text-muted-foreground/30" />
-                            </div>
-                          )}
+              {/* ═══════════════════════════════════════════════════════════
+                  LEVEL 3 — NEXT ACTIONS (always visible, #1 block)
+                  ═══════════════════════════════════════════════════════════ */}
+              {hasActions && (
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="h-4 w-4 text-primary" />
+                    <p className="text-xs font-black uppercase tracking-wider text-primary">
+                      {t("nextActions") || "Chef Recommends"}
+                    </p>
+                  </div>
 
-                          {/* Gradient overlay — text readable */}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-
-                          {/* Score badge — top right */}
-                          <div className="absolute top-2.5 right-2.5 z-10">
-                            <Badge className={cn(
-                              "text-sm font-black px-2.5 py-1 shadow-lg backdrop-blur-md border-0",
-                              s.score >= 60 ? "bg-green-500/90 text-white" : s.score >= 40 ? "bg-amber-500/90 text-white" : "bg-white/20 text-white",
-                            )}>
-                              {s.score}%
-                            </Badge>
+                  {/* Loading overlay during re-analysis */}
+                  <div className={cn("space-y-2 transition-opacity duration-300", isAnalyzing && "opacity-50 pointer-events-none")}>
+                    {/* Next Actions (primary) */}
+                    {filteredActions.map((action, i) => (
+                      <div
+                        key={`${action.type}-${action.ingredient}-${i}`}
+                        className={cn(
+                          "flex items-center gap-3 p-4 rounded-2xl border transition-all cursor-pointer group",
+                          i === 0
+                            ? "border-2 border-primary/30 bg-primary/[0.03] hover:bg-primary/[0.06]"
+                            : "border-border/40 bg-muted/5 hover:border-primary/30 hover:bg-primary/[0.02]",
+                        )}
+                        onClick={() => addIngredientAction(action.ingredient, actionName(action), actionImage(action))}
+                      >
+                        {actionImage(action) ? (
+                          <img src={actionImage(action)!} alt={actionName(action)} className="w-10 h-10 rounded-xl object-cover shrink-0 border border-border/20" />
+                        ) : (
+                          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                            <Plus className="h-4 w-4 text-primary" />
                           </div>
-
-                          {/* Add button — hover, top left */}
-                          {!alreadyAdded && (
-                            <div className="absolute top-2.5 left-2.5 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                              <div className="w-9 h-9 rounded-full bg-white/90 dark:bg-black/70 backdrop-blur-sm flex items-center justify-center shadow-lg">
-                                <Plus className="h-4 w-4 text-foreground" />
-                              </div>
-                            </div>
-                          )}
-
-                          {/* Added overlay */}
-                          {alreadyAdded && (
-                            <div className="absolute inset-0 bg-green-500/20 backdrop-blur-[1px] flex items-center justify-center z-10">
-                              <div className="w-14 h-14 rounded-full bg-green-500 flex items-center justify-center shadow-2xl">
-                                <Check className="h-7 w-7 text-white" />
-                              </div>
-                            </div>
-                          )}
-
-                          {/* Title over image — bottom */}
-                          <div className="absolute bottom-0 left-0 right-0 z-10 p-3">
-                            <h4 className="text-sm font-bold text-white leading-snug drop-shadow-lg line-clamp-2">
-                              {localizedName(s, locale) || s.name}
-                            </h4>
-                          </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-black text-foreground capitalize group-hover:text-primary transition-colors">
+                            {actionName(action)}
+                          </p>
+                          <p className="text-[11px] text-muted-foreground mt-0.5 line-clamp-1">{action.reason}</p>
                         </div>
-
-                        {/* Content below image */}
-                        <div className="p-3 flex flex-col flex-1">
-                          <div className="space-y-1.5 mb-2">
-                            {/* Reasons */}
-                            {s.reasons.slice(0, 2).map((r, i) => (
-                              <p key={i} className="text-xs text-muted-foreground leading-snug">{localizeReason(r, t)}</p>
-                            ))}
-
-                            {/* Fill badges */}
-                            {s.fills.length > 0 && (
-                              <div className="flex flex-wrap gap-1 pt-0.5">
-                                {s.fills.map((f) => (
-                                  <Badge key={f} variant="outline" className="text-[11px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20 px-2 py-0">
-                                    + {localizeFill(f, t)}
-                                  </Badge>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Already added */}
-                          <div className="mt-auto">
-                            {alreadyAdded ? (
-                              <p className="text-xs text-green-600 dark:text-green-400 font-bold">✓ {t("addedToRecipe") ?? "Added"}</p>
-                            ) : (
-                              <div className="h-4" />
-                            )}
-                          </div>
+                        <div className="shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-xl bg-primary/10 text-primary text-[10px] font-black uppercase group-hover:bg-primary/20 transition-all border border-primary/20">
+                          <Plus className="h-3 w-3" />
+                          {t("addToRecipe") || "Add"}
                         </div>
-                      </CardContent>
-                    </Card>
-                    );
-                  })}
+                      </div>
+                    ))}
+
+                    {/* Suggestions fallback (when no next_actions) */}
+                    {filteredActions.length === 0 && filteredSuggestions.map((s) => (
+                      <div
+                        key={s.slug}
+                        className="flex items-center gap-3 p-4 rounded-2xl border border-border/40 bg-muted/5 hover:border-primary/30 hover:bg-primary/[0.02] transition-all cursor-pointer group"
+                        onClick={() => addIngredientAction(s.slug, s.name, s.image_url)}
+                      >
+                        {s.image_url ? (
+                          <img src={s.image_url} alt={s.name} className="w-10 h-10 rounded-xl object-cover shrink-0 border border-border/20" />
+                        ) : (
+                          <div className="w-10 h-10 rounded-xl bg-muted/30 flex items-center justify-center shrink-0">
+                            <Plus className="h-4 w-4 text-muted-foreground/50" />
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-black text-foreground capitalize group-hover:text-primary transition-colors">
+                            {s.name}
+                          </p>
+                          {s.fills_gaps.length > 0 && (
+                            <p className="text-[11px] text-muted-foreground mt-0.5">
+                              + {s.fills_gaps.map(f => { try { return t(`sg.fills.${f}`); } catch { return f; } }).join(", ")}
+                            </p>
+                          )}
+                          {s.reasons.length > 0 && s.fills_gaps.length === 0 && (
+                            <p className="text-[11px] text-muted-foreground mt-0.5 line-clamp-1">
+                              {localizeReason(s.reasons[0], t)}
+                            </p>
+                          )}
+                        </div>
+                        <span className="text-xs font-black text-primary tabular-nums shrink-0">{s.score}</span>
+                        <div className="shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-xl bg-primary/10 text-primary text-[10px] font-black uppercase group-hover:bg-primary/20 transition-all border border-primary/20">
+                          <Plus className="h-3 w-3" />
+                          {t("addToRecipe") || "Add"}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              ) : (
-                <Card className="rounded-2xl">
-                  <CardContent className="text-center py-12 text-muted-foreground">
-                    <Sparkles className="h-10 w-10 mx-auto mb-3 opacity-40" />
-                    <p className="text-sm">{t("tabs.suggestions")}</p>
-                  </CardContent>
-                </Card>
               )}
-            </div>
+
+              {/* ═══════════════════════════════════════════════════════════
+                  LEVEL 4 — DETAILS (collapsible sections)
+                  ═══════════════════════════════════════════════════════════ */}
+              <div className="space-y-3">
+                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40">
+                  {t("showDetails") || "Details"}
+                </p>
+
+                {/* Nutrition — open by default */}
+                {legacyAnalyzeResult && (
+                  <CollapsibleDetail
+                    title={t("nutrition")}
+                    icon={Zap}
+                    iconColor="text-amber-500"
+                    defaultOpen={true}
+                  >
+                    <NutritionTab result={legacyAnalyzeResult} locale={locale} t={t} dietLabels={dietLabels} />
+                  </CollapsibleDetail>
+                )}
+
+                {/* Flavor Profile — collapsed */}
+                {legacyAnalyzeResult && (
+                  <CollapsibleDetail
+                    title={t("flavorProfile")}
+                    icon={FlameKindling}
+                    iconColor="text-violet-500"
+                  >
+                    <FlavorRadarCard flavor={legacyAnalyzeResult.flavor} t={t} />
+                  </CollapsibleDetail>
+                )}
+
+                {/* Diagnostics — collapsed */}
+                {diagnostics && diagnostics.issues.length > 0 && (
+                  <CollapsibleDetail
+                    title={t("tabs.doctor") || "AI Sous Chef"}
+                    icon={HeartPulse}
+                    iconColor="text-rose-500"
+                    count={diagnostics.issues.length}
+                  >
+                    <div className="space-y-2">
+                      {diagnostics.issues.map((issue, i) => {
+                        const sevClass = issue.severity === "critical"
+                          ? "border-rose-500/40 bg-rose-50 dark:bg-rose-950/30 text-rose-700 dark:text-rose-400"
+                          : issue.severity === "warning"
+                            ? "border-amber-500/40 bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400"
+                            : "border-sky-500/30 bg-sky-50 dark:bg-sky-950/20 text-sky-700 dark:text-sky-400";
+                        return (
+                          <div key={i} className={cn("flex items-start gap-2 px-3 py-2.5 rounded-xl border text-[11px] leading-relaxed", sevClass)}>
+                            <AlertTriangle className="h-3.5 w-3.5 mt-0.5 shrink-0" />
+                            <div>
+                              <span className="font-bold">{issue.message}</span>
+                              {issue.fix_slugs && issue.fix_slugs.length > 0 && (
+                                <div className="flex flex-wrap gap-1 mt-1.5">
+                                  {issue.fix_slugs.map(slug => (
+                                    <button
+                                      key={slug}
+                                      onClick={() => addIngredientAction(slug, slug.replace(/-/g, " "))}
+                                      disabled={addedSlugs.has(slug)}
+                                      className={cn(
+                                        "text-[10px] font-bold px-2 py-0.5 rounded-lg border transition-colors",
+                                        addedSlugs.has(slug)
+                                          ? "border-green-500/30 text-green-500 bg-green-500/5"
+                                          : "border-primary/30 text-primary hover:bg-primary/10",
+                                      )}
+                                    >
+                                      {addedSlugs.has(slug) ? "✓" : "+"} {slug.replace(/-/g, " ")}
+                                    </button>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </CollapsibleDetail>
+                )}
+              </div>
+
+              {/* Engine meta */}
+              {smartResult.meta && (
+                <div className="flex items-center justify-between text-[9px] text-muted-foreground/30 pt-1">
+                  <span>v{smartResult.meta.engine_version}</span>
+                  <span>{smartResult.meta.timing_ms}ms{smartResult.meta.cached ? " · cached" : ""}</span>
+                </div>
+              )}
+            </>
           )}
         </div>
       )}
     </div>
   );
 }
+
+
+const STORAGE_KEY = "recipe_draft";
+
+type RecipeDraft = {
+  rows: { slug: string; grams: number; amount?: number; unit?: string }[];
+  portions: number;
+  result?: AnalyzeResponse | null;
+  resultTab?: "ingredients" | "nutrition" | "flavor" | "influence" | "doctor" | "suggestions";
+};
+
+
+
 
 // ══════════════════════════════════════════════════════════════════════════════
 // MODE 2: INGREDIENT EXPLORER

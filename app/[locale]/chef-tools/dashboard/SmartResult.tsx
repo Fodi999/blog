@@ -14,7 +14,7 @@ import { MiniLab } from './MiniLab';
 import { CookingStateSelector } from './CookingStateSelector';
 import { ChefBotPanel, type DishIngredient } from './ChefBotPanel';
 import { useSmartEngine } from '@/hooks/useSmartEngine';
-import type { Goal } from '@/types/smart';
+import type { Goal, SmartResponse } from '@/types/smart';
 import {
   fetchNutrition, fetchSeasonality, fetchEquivalents,
   type NutritionResult, type ProductSeasonality, type EquivalentsResult,
@@ -127,6 +127,8 @@ type SmartResultProps = {
   name: string;
   primaryImage?: string | null;
   dishExtras: DishIngredient[];
+  /** Pre-fetched SmartResponse from text-based recipe analysis */
+  fromTextResult?: SmartResponse | null;
   onAddExtra: (ing: DishIngredient) => void;
   onRemoveExtra: (slug: string) => void;
   onSelectIngredient: (slug: string, name: string, image?: string | null) => void;
@@ -134,7 +136,7 @@ type SmartResultProps = {
 };
 
 export function SmartResult({
-  slug, name, primaryImage, dishExtras, onAddExtra, onRemoveExtra, onSelectIngredient, onClose,
+  slug, name, primaryImage, dishExtras, fromTextResult, onAddExtra, onRemoveExtra, onSelectIngredient, onClose,
 }: SmartResultProps) {
   const locale = useLocale();
   const t = useTranslations('chefTools.dashboard');
@@ -153,12 +155,16 @@ export function SmartResult({
   const eqRequestId = useRef(0);
 
   // ── SmartService v3 Decision Engine ──
-  const { data: smartData, loading: smartLoading } = useSmartEngine({
+  // Skip hook auto-fetch if we already have text-based result
+  const { data: smartEngineData, loading: smartLoading } = useSmartEngine({
     slug,
     state: cookingState,
     extras: dishExtras.map((e) => e.slug),
     lang: locale,
   });
+
+  // ── SINGLE DATA SOURCE: text result wins over engine result ──
+  const smartData = fromTextResult ?? smartEngineData;
 
   /* ── Reset + fetch when slug changes ─────────────────────── */
   useEffect(() => {

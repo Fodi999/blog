@@ -460,7 +460,7 @@
         "seoP3": "Click any ingredient to explore its pairing graph. Navigate from ingredient to ingredient discovering optimal combinations.",
         "seoP4": "Our database contains 112+ ingredients with verified nutritional data and pairing scores. Free, fast, and based on real culinary science.",
         "modes": {
-          "recipeAnalyzer": "Recipe Analyzer",
+          "recipeAnalyzer": "Recipe Builder",
           "ingredientExplorer": "Ingredient Explorer",
           "unitConverter": "Unit Converter",
           "flavorPairing": "Flavor Pairing"
@@ -576,7 +576,12 @@
         "sharedNotFound": "Shared recipe not found",
         "sharedNotFoundDesc": "This link may have expired or the recipe was removed.",
         "openInLab": "Open in Lab",
-        "viewAnalysis": "View Analysis"
+        "viewAnalysis": "View Analysis",
+        "inputPlaceholderBig": "salmon rice avocado...",
+        "recipeOverview": "Your Dish",
+        "nextActions": "Chef Recommends",
+        "showDetails": "Details",
+        "buildingRecipe": "Building..."
       }
     },
     "season": {
@@ -724,7 +729,7 @@
     },
     "dashboard": {
       "tagline": "Culinary Intelligence at your fingertips",
-      "searchPlaceholder": "Search any ingredient — salmon, flour, avocado…",
+      "searchPlaceholder": "salmon, rice avocado, or any ingredient…",
       "noResults": "Nothing found. Try a different query.",
       "quickAction": {
         "season": "In Season",
@@ -843,7 +848,11 @@
       "balanceImproved": "Balance improved",
       "balanceDeclined": "Balance declined",
       "tabRecommendations": "Recommendations",
-      "tabAnalysis": "Analysis"
+      "tabAnalysis": "Analysis",
+      "buildingRecipe": "Building recipe...",
+      "noIngredientsFound": "No ingredients found",
+      "tryAgain": "Try again",
+      "back": "Back"
     }
   },
   "home": {
