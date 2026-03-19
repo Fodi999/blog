@@ -213,7 +213,13 @@ export default async function IngredientSlugPage({
     low_carb: 'Low-carb',
   };
 
-  /* ── Build Product + NutritionInformation JSON-LD ── */
+  /* ── Build Food + NutritionInformation JSON-LD ── */
+  const SITE = 'https://dima-fomin.pl';
+  const pageUrl = `${locale}/chef-tools/ingredients/${slug}`;
+  const absImage = item.image_url
+    ? item.image_url.startsWith('http') ? item.image_url : `https://dima-fomin.pl${item.image_url}`
+    : undefined;
+
   const calories = macros?.calories_kcal ?? item.calories;
   const proteinG = macros?.protein_g ?? item.protein;
   const fatG     = macros?.fat_g ?? item.fat;
@@ -221,11 +227,10 @@ export default async function IngredientSlugPage({
   const fiberG   = macros?.fiber_g;
   const sugarG   = macros?.sugar_g;
   const sodiumMg = minerals?.sodium;
-  const cholesterolMg = null; // not available in API
 
   const nutritionLd: Record<string, unknown> = {
     '@type': 'NutritionInformation',
-    servingSize: '100g',
+    servingSize: '100 g',
     ...(calories != null && { calories: `${fmt(calories)} kcal` }),
     ...(proteinG != null && { proteinContent: `${fmt(proteinG)} g` }),
     ...(fatG != null && { fatContent: `${fmt(fatG)} g` }),
@@ -235,24 +240,39 @@ export default async function IngredientSlugPage({
     ...(sodiumMg != null && { sodiumContent: `${fmt(sodiumMg)} mg` }),
   };
 
-  const productLd = {
+  const foodLd = {
     '@context': 'https://schema.org',
-    '@type': 'Product',
-    name,
-    ...(item.image_url && { image: item.image_url }),
+    '@type': 'WebPage',
+    '@id': `https://dima-fomin.pl/${locale}/chef-tools/ingredients/${slug}`,
+    url: `https://dima-fomin.pl/${locale}/chef-tools/ingredients/${slug}`,
+    name: `${name} — Nutrition Facts`,
     ...(description && { description }),
-    ...(item.category && { category: item.category }),
-    brand: { '@type': 'Brand', name: 'Chef Tools by Dima Fomin' },
-    additionalProperty: [
-      ...(calories != null ? [{ '@type': 'PropertyValue', name: 'Calories', value: `${fmt(calories)} kcal per 100g` }] : []),
-      ...(proteinG != null ? [{ '@type': 'PropertyValue', name: 'Protein', value: `${fmt(proteinG)} g per 100g` }] : []),
-    ],
-    nutrition: nutritionLd,
+    mainEntity: {
+      '@type': 'Thing',
+      additionalType: 'https://schema.org/Food',
+      name,
+      ...(absImage && { image: absImage }),
+      ...(description && { description }),
+      ...(item.category && { category: item.category }),
+      nutrition: nutritionLd,
+      additionalProperty: [
+        ...(calories != null ? [{ '@type': 'PropertyValue', name: 'Calories', value: `${fmt(calories)} kcal per 100g` }] : []),
+        ...(proteinG != null ? [{ '@type': 'PropertyValue', name: 'Protein', value: `${fmt(proteinG)} g per 100g` }] : []),
+      ],
+    },
+    breadcrumb: {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Chef Tools', item: `https://dima-fomin.pl/${locale}/chef-tools` },
+        { '@type': 'ListItem', position: 2, name: t('ingredients.catalog.title'), item: `https://dima-fomin.pl/${locale}/chef-tools/ingredients` },
+        { '@type': 'ListItem', position: 3, name },
+      ],
+    },
   };
 
   return (
     <div className="max-w-5xl mx-auto px-3 sm:px-6 lg:px-8 pt-6 sm:pt-12 pb-12 sm:pb-16">
-      <JsonLd data={productLd} />
+      <JsonLd data={foodLd} />
       <ChefToolsNav
         locale={locale}
         translations={{
