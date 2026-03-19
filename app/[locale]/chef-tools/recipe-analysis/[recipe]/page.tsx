@@ -133,10 +133,11 @@ export default async function RecipeAnalysisPage({
   const tpl = RECIPE_TEMPLATES.find((r) => r.slug === slug);
   if (!tpl) notFound();
 
-  const [data, t, tIssues] = await Promise.all([
+  const [data, t, tIssues, tNav] = await Promise.all([
     fetchRecipeAnalysis(tpl.ingredients, tpl.portions, locale),
     getTranslations({ locale, namespace: 'recipeAnalysis' }),
     getTranslations({ locale, namespace: 'recipeAnalysis.issues' }),
+    getTranslations({ locale, namespace: 'chefTools' }),
   ]);
 
   if (!data) notFound();
@@ -200,6 +201,10 @@ export default async function RecipeAnalysisPage({
           fishSeason: { title: t('fishSeason') },
           ingredientAnalyzer: { title: t('ingredientAnalyzer') },
           ingredientsCatalog: { title: t('ingredientsCatalog') },
+          lab: { title: tNav('tools.lab.title') },
+          recipeAnalyzer: { title: tNav('tools.recipeAnalyzer.title') },
+          flavorPairing: { title: tNav('tools.flavorPairing.title') },
+          nutrition: { title: tNav('nutrition.title') },
         },
       }}
     />

@@ -240,6 +240,10 @@ export default async function CategoryPage({
             fishSeason: { title: t('tools.fishSeason.title') },
             ingredientAnalyzer: { title: t('tools.ingredientAnalyzer.title') },
             ingredientsCatalog: { title: t('ingredients.catalog.title') },
+            lab: { title: t('tools.lab.title') },
+            recipeAnalyzer: { title: t('tools.recipeAnalyzer.title') },
+            flavorPairing: { title: t('tools.flavorPairing.title') },
+            nutrition: { title: t('nutrition.title') },
           },
         }}
       />

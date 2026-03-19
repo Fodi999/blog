@@ -152,44 +152,48 @@ export default async function IngredientStatePage({
     : undefined;
 
   const n = stateDetail.nutrition;
-  const productLd = {
+  const foodLd = {
     '@context': 'https://schema.org',
-    '@type': 'Product',
-    '@id': `${pageUrl}#product`,
-    name: `${name} (${sl})`,
+    '@type': 'WebPage',
+    '@id': pageUrl,
     url: pageUrl,
-    ...(absImage && { image: absImage }),
-    description: `${name} ${sl.toLowerCase()} — nutrition facts per 100g`,
-    additionalType: 'https://schema.org/Food',
-    mainEntityOfPage: { '@type': 'WebPage', '@id': pageUrl },
-    brand: { '@type': 'Brand', name: 'Chef Tools by Dima Fomin' },
-    nutrition: {
-      '@type': 'NutritionInformation',
-      servingSize: '100g',
-      ...(n?.calories_per_100g != null && { calories: `${fmt(n.calories_per_100g)} kcal` }),
-      ...(n?.protein_per_100g != null && { proteinContent: `${fmt(n.protein_per_100g)} g` }),
-      ...(n?.fat_per_100g != null && { fatContent: `${fmt(n.fat_per_100g)} g` }),
-      ...(n?.carbs_per_100g != null && { carbohydrateContent: `${fmt(n.carbs_per_100g)} g` }),
-      ...(n?.fiber_per_100g != null && { fiberContent: `${fmt(n.fiber_per_100g)} g` }),
+    name: `${name} (${sl}) — Nutrition Facts`,
+    description: `${name} ${sl.toLowerCase()} — nutrition facts per 100 g`,
+    mainEntity: {
+      '@type': 'Thing',
+      additionalType: 'https://schema.org/Food',
+      name: `${name} (${sl})`,
+      ...(absImage && { image: absImage }),
+      description: `${name} ${sl.toLowerCase()} — nutrition facts per 100 g`,
+      nutrition: {
+        '@type': 'NutritionInformation',
+        servingSize: '100 g',
+        ...(n?.calories_per_100g != null && { calories: `${fmt(n.calories_per_100g)} kcal` }),
+        ...(n?.protein_per_100g != null && { proteinContent: `${fmt(n.protein_per_100g)} g` }),
+        ...(n?.fat_per_100g != null && { fatContent: `${fmt(n.fat_per_100g)} g` }),
+        ...(n?.carbs_per_100g != null && { carbohydrateContent: `${fmt(n.carbs_per_100g)} g` }),
+        ...(n?.fiber_per_100g != null && { fiberContent: `${fmt(n.fiber_per_100g)} g` }),
+      },
+      additionalProperty: [
+        ...(n?.calories_per_100g != null ? [{ '@type': 'PropertyValue', name: 'Calories', value: `${fmt(n.calories_per_100g)} kcal per 100g` }] : []),
+        ...(stateDetail.glycemic_index != null ? [{ '@type': 'PropertyValue', name: 'Glycemic Index', value: String(stateDetail.glycemic_index) }] : []),
+        ...(stateDetail.cooking_method ? [{ '@type': 'PropertyValue', name: 'Cooking Method', value: stateDetail.cooking_method }] : []),
+      ],
     },
-    additionalProperty: [
-      ...(n?.calories_per_100g != null ? [{ '@type': 'PropertyValue', name: 'Calories', value: `${fmt(n.calories_per_100g)} kcal per 100g` }] : []),
-      ...(stateDetail.glycemic_index != null ? [{ '@type': 'PropertyValue', name: 'Glycemic Index', value: String(stateDetail.glycemic_index) }] : []),
-      ...(stateDetail.cooking_method ? [{ '@type': 'PropertyValue', name: 'Cooking Method', value: stateDetail.cooking_method }] : []),
-    ],
-    offers: {
-      '@type': 'Offer',
-      url: pageUrl,
-      price: '0',
-      priceCurrency: 'PLN',
-      availability: 'https://schema.org/InStock',
-      isAccessibleForFree: true,
+    breadcrumb: {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Chef Tools', item: `${SITE}/${locale}/chef-tools` },
+        { '@type': 'ListItem', position: 2, name: t('ingredients.catalog.title'), item: `${SITE}/${locale}/chef-tools/ingredients` },
+        { '@type': 'ListItem', position: 3, name, item: `${SITE}/${locale}/chef-tools/ingredients/${slug}` },
+        { '@type': 'ListItem', position: 4, name: sl },
+      ],
     },
   };
 
   return (
     <div className="max-w-5xl mx-auto px-3 sm:px-6 lg:px-8 pt-6 sm:pt-12 pb-12 sm:pb-16">
-      <JsonLd data={productLd} />
+      <JsonLd data={foodLd} />
       <ChefToolsNav
         locale={locale}
         translations={{
@@ -200,6 +204,10 @@ export default async function IngredientStatePage({
             fishSeason: { title: t('tools.fishSeason.title') },
             ingredientAnalyzer: { title: t('tools.ingredientAnalyzer.title') },
             ingredientsCatalog: { title: t('ingredients.catalog.title') },
+            lab: { title: t('tools.lab.title') },
+            recipeAnalyzer: { title: t('tools.recipeAnalyzer.title') },
+            flavorPairing: { title: t('tools.flavorPairing.title') },
+            nutrition: { title: t('nutrition.title') },
           },
         }}
       />

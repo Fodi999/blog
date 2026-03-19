@@ -1,9 +1,10 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { generateMetadata as genMeta } from '@/lib/metadata';
 import { JsonLd } from '@/components/JsonLd';
-import { ChefToolsTabs } from './ChefToolsTabs';
+import { DashboardClient } from './dashboard/DashboardClient';
 
-export const dynamic = 'force-static';
+export const dynamic = 'force-dynamic';
+export const revalidate = 300;
 
 export async function generateMetadata({
   params,
@@ -21,36 +22,6 @@ export async function generateMetadata({
   });
 }
 
-/* ── Tab definitions ─────────────────────────────────────────────────────── */
-
-const tabDefs = [
-  {
-    id: 'tools',
-    iconKey: 'tools',
-    items: [
-      { href: '/chef-tools/lab', iconKey: 'lab', key: 'lab' },
-      { href: '/chef-tools/converter', iconKey: 'converter', key: 'converter' },
-      { href: '/chef-tools/recipe-analyzer', iconKey: 'recipeAnalyzer', key: 'recipeAnalyzer' },
-      { href: '/chef-tools/flavor-pairing', iconKey: 'flavorPairing', key: 'flavorPairing' },
-    ],
-  },
-  {
-    id: 'tables',
-    iconKey: 'tables',
-    items: [
-      { href: '/chef-tools/fish-season', iconKey: 'fishSeason', key: 'fishSeason' },
-      { href: '/chef-tools/ingredient-analyzer', iconKey: 'ingredientAnalyzer', key: 'ingredientAnalyzer' },
-    ],
-  },
-  {
-    id: 'products',
-    iconKey: 'products',
-    items: [
-      { href: '/chef-tools/ingredients', iconKey: 'ingredientsCatalog', key: 'ingredientsCatalog' },
-    ],
-  },
-];
-
 /* ── Page ─────────────────────────────────────────────────────────────────── */
 
 export default async function ChefToolsPage({
@@ -61,21 +32,6 @@ export default async function ChefToolsPage({
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: 'chefTools' });
-
-  /* Build serializable tab data for the client component */
-  const tabs = tabDefs.map(({ id, iconKey, items }) => ({
-    id,
-    label: t(`tabs.${id}`),
-    desc: t(`tabs.${id}Desc`),
-    iconKey,
-    items: items.map(({ href, iconKey: ik, key }) => ({
-      href,
-      iconKey: ik,
-      title: t(`tools.${key}.title`),
-      description: t(`tools.${key}.description`),
-      openLabel: t('open'),
-    })),
-  }));
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -95,8 +51,8 @@ export default async function ChefToolsPage({
         }}
       />
 
-      {/* Header — same pattern as /blog */}
-      <div className="mb-16 md:mb-24 border-t border-primary/20 pt-12">
+      {/* Header */}
+      <div className="mb-12 md:mb-16 border-t border-primary/20 pt-12">
         <h1 className="text-6xl md:text-8xl font-black mb-6 text-foreground tracking-tighter uppercase italic">
           {t('title')}<span className="text-primary">.</span>
         </h1>
@@ -105,8 +61,10 @@ export default async function ChefToolsPage({
         </p>
       </div>
 
-      {/* Horizontal Tabs */}
-      <ChefToolsTabs tabs={tabs} />
+      {/* Dashboard */}
+      <DashboardClient />
+
+      <div className="h-16 md:h-24" />
     </div>
   );
 }
