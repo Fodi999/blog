@@ -852,7 +852,11 @@
       "buildingRecipe": "Building recipe...",
       "noIngredientsFound": "No ingredients found",
       "tryAgain": "Try again",
-      "back": "Back"
+      "back": "Back",
+      "healthyLabel": "Healthy",
+      "moderateLabel": "Moderate",
+      "cautionLabel": "Caution",
+      "per100g": "per 100 g"
     }
   },
   "home": {

@@ -13,6 +13,41 @@ const ALL_CATEGORIES = [
   'nut', 'spice', 'other',
 ] as const;
 
+/* ── Health status logic ────────────────────────────────────── */
+type HealthStatus = 'healthy' | 'moderate' | 'caution';
+
+function getHealthStatus(protein: number, fat: number, calories: number): HealthStatus {
+  if (fat > 20 || calories > 250) return 'caution';
+  if (protein > 15 && fat < 10)   return 'healthy';
+  return 'moderate';
+}
+
+const healthConfig: Record<HealthStatus, {
+  emoji: string;
+  cardBg: string;
+  badgeBg: string;
+  badgeText: string;
+}> = {
+  healthy:  {
+    emoji:     '🟢',
+    cardBg:    'bg-green-50/60 dark:bg-green-950/20 border-green-200/70 dark:border-green-800/40',
+    badgeBg:   'bg-green-100 dark:bg-green-900/40',
+    badgeText: 'text-green-700 dark:text-green-400',
+  },
+  moderate: {
+    emoji:     '🟡',
+    cardBg:    'bg-yellow-50/60 dark:bg-yellow-950/20 border-yellow-200/70 dark:border-yellow-800/40',
+    badgeBg:   'bg-yellow-100 dark:bg-yellow-900/40',
+    badgeText: 'text-yellow-700 dark:text-yellow-500',
+  },
+  caution:  {
+    emoji:     '🔴',
+    cardBg:    'bg-red-50/60 dark:bg-red-950/20 border-red-200/70 dark:border-red-800/40',
+    badgeBg:   'bg-red-100 dark:bg-red-900/40',
+    badgeText: 'text-red-700 dark:text-red-400',
+  },
+};
+
 /* ── Macro bar tiny component ───────────────────────────────── */
 function MacroBar({ protein, fat, carbs }: { protein: number; fat: number; carbs: number }) {
   const total = protein + fat + carbs || 1;
@@ -175,11 +210,18 @@ export function IngredientGrid({ onSelect, activeSlug, compact }: IngredientGrid
                         {item.name}
                       </p>
                       <p className="text-[10px] text-muted-foreground">
-                        {item.per_100g.calories} {t('kcal')}
+                        {item.per_100g.calories} {t('kcal')} / 100 g
                       </p>
                     </div>
-                    <span className="text-[10px] text-muted-foreground font-medium shrink-0">
-                      P{item.per_100g.protein_g} F{item.per_100g.fat_g} C{item.per_100g.carbs_g}
+                    {/* Health status dot in compact mode */}
+                    <span className="text-sm shrink-0" title={t(
+                      (getHealthStatus(item.per_100g.protein_g, item.per_100g.fat_g, item.per_100g.calories) === 'healthy'
+                        ? 'healthyLabel'
+                        : getHealthStatus(item.per_100g.protein_g, item.per_100g.fat_g, item.per_100g.calories) === 'moderate'
+                        ? 'moderateLabel'
+                        : 'cautionLabel') as any
+                    )}>
+                      {healthConfig[getHealthStatus(item.per_100g.protein_g, item.per_100g.fat_g, item.per_100g.calories)].emoji}
                     </span>
                   </button>
                 );
@@ -190,6 +232,13 @@ export function IngredientGrid({ onSelect, activeSlug, compact }: IngredientGrid
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
             {items.map((item) => {
               const isActive = item.slug === activeSlug;
+              const status = getHealthStatus(
+                item.per_100g.protein_g,
+                item.per_100g.fat_g,
+                item.per_100g.calories,
+              );
+              const hc = healthConfig[status];
+              const statusKey = status === 'healthy' ? 'healthyLabel' : status === 'moderate' ? 'moderateLabel' : 'cautionLabel';
               return (
               <button
                 key={item.slug}
@@ -197,9 +246,10 @@ export function IngredientGrid({ onSelect, activeSlug, compact }: IngredientGrid
                 className={`group rounded-2xl border p-4 transition-all duration-300 text-left cursor-pointer ${
                   isActive
                     ? 'border-primary bg-primary/5 shadow-md shadow-primary/10 ring-1 ring-primary/20'
-                    : 'border-border/60 bg-background hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5'
+                    : `${hc.cardBg} hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5`
                 }`}
               >
+                {/* Header: image + name + calories */}
                 <div className="flex items-start gap-3 mb-3">
                   {item.image_url ? (
                     <img
@@ -214,23 +264,34 @@ export function IngredientGrid({ onSelect, activeSlug, compact }: IngredientGrid
                     <p className={`text-sm font-bold truncate transition-colors ${isActive ? 'text-primary' : 'text-foreground group-hover:text-primary'}`}>
                       {item.name}
                     </p>
-                    <p className="text-[11px] text-muted-foreground">
-                      {item.per_100g.calories} {t('kcal')}
+                    {/* Calories with unit context */}
+                    <p className="text-[11px] text-muted-foreground leading-tight">
+                      <span className="font-black text-foreground">{item.per_100g.calories}</span>
+                      {' '}{t('kcal')} / 100 g
                       <span className="ml-1.5 opacity-60">{catLabel(item.product_type)}</span>
                     </p>
                   </div>
                 </div>
 
+                {/* Macro bar */}
                 <MacroBar
                   protein={item.per_100g.protein_g}
                   fat={item.per_100g.fat_g}
                   carbs={item.per_100g.carbs_g}
                 />
 
-                <div className="flex justify-between mt-1.5 text-[10px] text-muted-foreground font-medium">
-                  <span className="text-blue-500">P {item.per_100g.protein_g}</span>
-                  <span className="text-amber-500">F {item.per_100g.fat_g}</span>
-                  <span className="text-emerald-500">C {item.per_100g.carbs_g}</span>
+                {/* Full macro labels instead of P/F/C */}
+                <p className="mt-1.5 text-[10px] text-muted-foreground leading-snug">
+                  <span className="text-blue-500 font-bold">{t('protein')}</span>{' '}{item.per_100g.protein_g} g
+                  {' · '}
+                  <span className="text-amber-500 font-bold">{t('fat')}</span>{' '}{item.per_100g.fat_g} g
+                  {' · '}
+                  <span className="text-emerald-500 font-bold">{t('carbs')}</span>{' '}{item.per_100g.carbs_g} g
+                </p>
+
+                {/* Health status badge */}
+                <div className={`mt-2.5 inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-black uppercase tracking-wide ${hc.badgeBg} ${hc.badgeText}`}>
+                  {hc.emoji} {t(statusKey as any)}
                 </div>
               </button>
               );

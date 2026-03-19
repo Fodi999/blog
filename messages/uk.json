@@ -852,7 +852,11 @@
       "buildingRecipe": "Будую рецепт...",
       "noIngredientsFound": "Інгредієнти не знайдено",
       "tryAgain": "Спробувати знову",
-      "back": "Назад"
+      "back": "Назад",
+      "healthyLabel": "Корисно",
+      "moderateLabel": "Помірно",
+      "cautionLabel": "Обережно",
+      "per100g": "на 100 г"
     }
   },
   "home": {

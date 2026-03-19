@@ -852,7 +852,11 @@
       "buildingRecipe": "Buduję przepis...",
       "noIngredientsFound": "Nie znaleziono składników",
       "tryAgain": "Spróbuj ponownie",
-      "back": "Wróć"
+      "back": "Wróć",
+      "healthyLabel": "Zdrowe",
+      "moderateLabel": "Umiarkowane",
+      "cautionLabel": "Ostrożnie",
+      "per100g": "na 100 g"
     }
   },
   "home": {
