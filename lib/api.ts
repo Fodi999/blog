@@ -94,6 +94,8 @@ export type ApiIngredient = {
   og_title?: string | null;
   og_description?: string | null;
   og_image?: string | null;
+  // Timestamp for sitemap lastModified
+  updated_at?: string | null;
 };
 
 /** GET /public/tools/convert response */
@@ -142,7 +144,7 @@ export type FishSeasonTableItem = {
   water_type: 'sea' | 'freshwater' | 'both' | null;
   wild_farmed: 'wild' | 'farmed' | 'both' | null;
   sushi_grade: boolean | null;
-  season: { month: number; month_name: string; available: boolean }[];
+  season: { month: number; month_name: string; available: boolean; status: FishSeasonStatus }[];
 };
 
 export type FishSeasonTableResponse = {
@@ -303,7 +305,7 @@ export async function fetchIngredientsMeta(
 
 /** GET /public/ingredients — returns normalized list with full macros */
 export async function fetchIngredients(): Promise<ApiIngredient[] | null> {
-  type RawItem = {
+  type FullItem = {
     slug: string;
     name_en: string;
     name_ru?: string;
@@ -312,70 +314,39 @@ export async function fetchIngredients(): Promise<ApiIngredient[] | null> {
     image_url?: string | null;
     category_id?: string;
     category_name_en?: string;
-    category_name_ru?: string;
-    category_name_pl?: string;
-    category_name_uk?: string;
     calories_per_100g: number | null;
+    protein_per_100g: number | null;
+    fat_per_100g: number | null;
+    carbs_per_100g: number | null;
     seasons?: string[];
+    updated_at?: string;
   };
-  type RawResponse = { items: RawItem[]; total: number };
+  type FullResponse = { items: FullItem[]; total: number };
 
-  // Use no-store — page-level ISR (revalidate = 3600) controls caching
-  const data = await apiFetchFresh<RawResponse>('/public/ingredients?limit=200', ['ingredients']);
+  // Single bulk query — no N+1. Returns all published ingredients with macros.
+  const data = await apiFetchFresh<FullResponse>('/public/ingredients-full', ['ingredients']);
   if (!data) return null;
 
-  // Only items that have calories
-  const filtered = data.items.filter((item) => item.calories_per_100g !== null);
-
-  // Fetch detail for every item in parallel — detail has full nutrition{} object
-  type RawDetail = {
-    slug: string;
-    name_en: string;
-    name_ru?: string;
-    name_pl?: string;
-    name_uk?: string;
-    image_url?: string | null;
-    nutrition?: {
-      calories_per_100g: number;
-      protein_per_100g: number;
-      fat_per_100g: number;
-      carbs_per_100g: number;
-    } | null;
-    seo_title?: string | null;
-    seo_description?: string | null;
-    seo_h1?: string | null;
-    canonical_url?: string | null;
-    og_title?: string | null;
-    og_description?: string | null;
-    og_image?: string | null;
-  };
-
-  const details = await Promise.allSettled(
-    filtered.map((item) =>
-      apiFetch<RawDetail>(`/public/ingredients/${encodeURIComponent(item.slug)}`, { tags: [`ingredient-${item.slug}`] }),
-    ),
-  );
-
-  return filtered.map((item, i) => {
-    const d = details[i].status === 'fulfilled' ? details[i].value : null;
-    return {
+  return data.items
+    .filter((item) => item.calories_per_100g !== null)
+    .map((item) => ({
       slug: item.slug,
       name: item.name_en,
       name_en: item.name_en,
-      name_ru: d?.name_ru ?? item.name_ru,
-      name_pl: d?.name_pl ?? item.name_pl,
-      name_uk: d?.name_uk ?? item.name_uk,
-      image_url: d?.image_url ?? item.image_url,
+      name_ru: item.name_ru,
+      name_pl: item.name_pl,
+      name_uk: item.name_uk,
+      image_url: item.image_url,
       category_id: item.category_id,
       category: item.category_name_en,
-      calories: d?.nutrition?.calories_per_100g ?? item.calories_per_100g!,
-      protein: d?.nutrition?.protein_per_100g ?? null,
-      fat: d?.nutrition?.fat_per_100g ?? null,
-      carbs: d?.nutrition?.carbs_per_100g ?? null,
+      calories: item.calories_per_100g!,
+      protein: item.protein_per_100g ?? null,
+      fat: item.fat_per_100g ?? null,
+      carbs: item.carbs_per_100g ?? null,
       per: '100g',
       seasons: item.seasons,
-    };
-  });
+      updated_at: item.updated_at ?? null,
+    }));
 }
 
 /** GET /public/ingredients/:slug — with extended nutrition from /public/nutrition/:slug */

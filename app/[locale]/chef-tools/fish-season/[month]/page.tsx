@@ -7,7 +7,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { fetchFishSeasonTable } from '@/lib/api';
 import Image from 'next/image';
 
-export const revalidate = 3600;
+export const revalidate = 300;
 
 // ─── Month config ─────────────────────────────────────────────────────────────
 

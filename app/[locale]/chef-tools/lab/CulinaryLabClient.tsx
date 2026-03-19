@@ -428,6 +428,8 @@ const STORAGE_KEY = "recipe_draft";
 type RecipeDraft = {
   rows: { slug: string; grams: number; amount?: number; unit?: string }[];
   portions: number;
+  result?: AnalyzeResponse | null;
+  resultTab?: "ingredients" | "nutrition" | "flavor" | "influence" | "doctor" | "suggestions";
 };
 
 function RecipeAnalyzerMode({ locale, t }: { locale: string; t: any }) {
@@ -459,10 +461,19 @@ function RecipeAnalyzerMode({ locale, t }: { locale: string; t: any }) {
       if (!hasData) return;
       setPortions(draft.portions || 1);
       // Set rows with slugs as placeholder names, then resolve localized names
-      const initial: IngredientRow[] = draft.rows.map((r) => ({
-        slug: r.slug, name: r.slug, grams: r.grams, amount: r.amount ?? r.grams, unit: r.unit || "g",
-      }));
+      const initial: IngredientRow[] = draft.rows.map((r) => {
+        // Try to get localized name + image from cached result
+        const detail = draft.result?.ingredients?.find((i) => i.slug === r.slug);
+        const name = (detail && (localizedName(detail, locale) || detail.name)) || r.slug;
+        const image_url = detail?.image_url;
+        return { slug: r.slug, name, grams: r.grams, amount: r.amount ?? r.grams, unit: r.unit || "g", image_url };
+      });
       setRows(initial);
+      // Restore cached analysis result if present
+      if (draft.result) {
+        setResult(draft.result);
+        setResultTab(draft.resultTab || "nutrition");
+      }
       setRestored(true);
       // Resolve localized names + images in background
       Promise.all(
@@ -493,9 +504,11 @@ function RecipeAnalyzerMode({ locale, t }: { locale: string; t: any }) {
     const draft: RecipeDraft = {
       rows: rows.map((r) => ({ slug: r.slug, grams: r.grams, amount: r.amount, unit: r.unit })),
       portions: Number(portions) || 1,
+      result: result ?? undefined,
+      resultTab,
     };
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(draft)); } catch { /* quota */ }
-  }, [rows, portions]);
+  }, [rows, portions, result, resultTab]);
 
   // ── Resolve fix-slug localized names when AI Sous Chef tab is active ──
   useEffect(() => {

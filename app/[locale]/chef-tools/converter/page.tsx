@@ -11,7 +11,7 @@ import { JsonLd } from '@/components/JsonLd';
 import { fetchIngredients } from '@/lib/api';
 import { ChefToolsNav } from '../ChefToolsNav';
 
-export const revalidate = 3600;
+export const revalidate = 300;
 
 export function generateStaticParams() {
   return [{ locale: 'pl' }, { locale: 'en' }, { locale: 'ru' }, { locale: 'uk' }];

@@ -8,7 +8,7 @@ import { fetchIngredientSearch, fetchFishSeasonTable } from '@/lib/api';
 import { IngredientAnalyzerClient, type I18n, type SeasonMap } from './IngredientAnalyzerClient';
 import { ChefToolsNav } from '../ChefToolsNav';
 
-export const revalidate = 3600; // pre-fetched list is stable
+export const revalidate = 300; // pre-fetched list is stable
 
 export function generateStaticParams() {
   return [{ locale: 'pl' }, { locale: 'en' }, { locale: 'ru' }, { locale: 'uk' }];

@@ -35,17 +35,16 @@ const REGION_NAMES: Record<Region, string> = {
   UA: 'Ukraine',
 };
 
-/** Map API boolean season array + fish's current status → Availability per month */
+/** Map API season array → Availability per month (uses status from DB) */
 function buildMonths(
-  season: { month: number; available: boolean }[],
-  currentStatus: Availability,
+  season: { month: number; available: boolean; status?: string }[],
 ): Availability[] {
-  const currentMonthIdx = new Date().getMonth();
   return Array.from({ length: 12 }, (_, i) => {
     const s = season.find((m) => m.month === i + 1);
-    if (!s || !s.available) return 'off';
-    if (i === currentMonthIdx) return currentStatus;
-    return 'good';
+    if (!s) return 'off';
+    const st = s.status ?? (s.available ? 'good' : 'off');
+    if (['peak', 'good', 'limited', 'off'].includes(st)) return st as Availability;
+    return s.available ? 'good' : 'off';
   });
 }
 
@@ -107,7 +106,7 @@ export default async function FishSeasonPage({
     slug: fish.slug,
     name: fish.name,
     image: fish.image_url,
-    months: buildMonths(fish.season, fish.status),
+    months: buildMonths(fish.season),
     currentStatus: fish.status,
     live: true,
     isSushi: fish.sushi_grade ?? false,
