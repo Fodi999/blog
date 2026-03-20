@@ -323,23 +323,50 @@ export default async function HowManyCatchAllPage({
               </div>
               <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-center">
                 <div className="font-black">{nutrition.protein}g</div>
-                <div className="text-[10px] uppercase opacity-60">Białko</div>
+                <div className="text-[10px] uppercase opacity-60">
+                  {locale === 'pl' ? 'Białko' : locale === 'ru' ? 'Белок' : locale === 'uk' ? 'Білок' : 'Protein'}
+                </div>
               </div>
               <div className="p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-xl text-center">
                 <div className="font-black">{nutrition.fat}g</div>
-                <div className="text-[10px] uppercase opacity-60">Tłuszcz</div>
+                <div className="text-[10px] uppercase opacity-60">
+                  {locale === 'pl' ? 'Tłuszcz' : locale === 'ru' ? 'Жиры' : locale === 'uk' ? 'Жири' : 'Fat'}
+                </div>
               </div>
               <div className="p-3 bg-green-500/10 border border-green-500/20 rounded-xl text-center">
                 <div className="font-black">{nutrition.carbs}g</div>
-                <div className="text-[10px] uppercase opacity-60">Węglowodany</div>
+                <div className="text-[10px] uppercase opacity-60">
+                  {locale === 'pl' ? 'Węglowodany' : locale === 'ru' ? 'Углеводы' : locale === 'uk' ? 'Вуглеводи' : 'Carbs'}
+                </div>
               </div>
            </div>
         )}
 
         {convSlug && (
           <Link href={`/chef-tools/${convSlug}/${parsed.slug}` as never} className="block p-4 border rounded-2xl text-center font-bold hover:bg-muted/30">
-             Pełna tabela: {name} ({fromLbl} → {toLbl})
+             {locale === 'pl' ? `Pełna tabela: ${name} (${fromLbl} → ${toLbl})` : locale === 'ru' ? `Полная таблица: ${name} (${fromLbl} → ${toLbl})` : locale === 'uk' ? `Повна таблиця: ${name} (${fromLbl} → ${toLbl})` : `Full table: ${name} (${fromLbl} → ${toLbl})`}
           </Link>
+        )}
+
+        {/* ── Number intent: quick multi-quantity answers ── */}
+        {toApi === 'g' && (
+          <div className="mt-6 border border-border/50 rounded-2xl p-4">
+            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-3">
+              {locale === 'pl' ? `Ile gramów w ${name}?` : locale === 'ru' ? `Сколько граммов ${name}?` : locale === 'uk' ? `Скільки грамів ${name}?` : `How many grams of ${name}?`}
+            </p>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {[2, 3, 4, 5].map((n) => (
+                <Link
+                  key={n}
+                  href={`/chef-tools/how-many/how-many-grams-in-a-${fromApi === 'cup' ? 'cup' : fromApi}-of-${parsed.slug}` as never}
+                  className="flex flex-col items-center gap-0.5 px-3 py-2.5 rounded-xl border border-border/40 bg-muted/20 hover:border-primary/40 hover:bg-primary/5 transition-colors"
+                >
+                  <span className="text-xs font-black text-foreground">{n} {fromLbl}</span>
+                  <span className="text-[11px] font-bold text-primary">{fmt(result * n)} {toLbl}</span>
+                </Link>
+              ))}
+            </div>
+          </div>
         )}
 
         {/* Internal links to ingredient profile & converter */}
@@ -357,6 +384,18 @@ export default async function HowManyCatchAllPage({
             <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary shrink-0" />
           </Link>
           <Link
+            href={`/chef-tools/nutrition/${parsed.slug}` as never}
+            className="flex items-center justify-between gap-2 p-3 sm:p-4 rounded-2xl border border-border/50 hover:border-primary/40 hover:bg-primary/5 transition-all group"
+          >
+            <span className="text-xs sm:text-sm font-bold text-foreground group-hover:text-primary transition-colors">
+              {locale === 'pl' ? `🔬 Szczegółowe wartości odżywcze: ${name}`
+                : locale === 'ru' ? `🔬 Детальная нутрициология: ${name}`
+                : locale === 'uk' ? `🔬 Детальна нутриціологія: ${name}`
+                : `🔬 Detailed nutrition facts: ${name}`}
+            </span>
+            <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary shrink-0" />
+          </Link>
+          <Link
             href="/chef-tools/converter"
             className="flex items-center justify-between gap-2 p-3 sm:p-4 rounded-2xl border border-border/50 hover:border-primary/40 hover:bg-primary/5 transition-all group"
           >
@@ -367,6 +406,66 @@ export default async function HowManyCatchAllPage({
                 : '⚖️ Kitchen Unit Converter'}
             </span>
             <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary shrink-0" />
+          </Link>
+        </div>
+
+        {/* ── Related "how many" queries (anchor diversity) ── */}
+        <div className="mt-6">
+          <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-3">
+            {locale === 'pl' ? 'Powiązane przeliczenia' : locale === 'ru' ? 'Связанные запросы' : locale === 'uk' ? 'Пов\'язані запити' : 'Related conversions'}
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {[
+              { unit: 'grams', measure: 'cup',  label: { en: 'cups to grams',   pl: 'szklanki → gramy',    ru: 'стакан → г',    uk: 'склянка → г'   } },
+              { unit: 'grams', measure: 'tbsp', label: { en: 'tbsp to grams',   pl: 'łyżka → gramy',       ru: 'ст.л. → г',     uk: 'ст.л. → г'     } },
+              { unit: 'grams', measure: 'tsp',  label: { en: 'tsp to grams',    pl: 'łyżeczka → gramy',    ru: 'ч.л. → г',      uk: 'ч.л. → г'      } },
+              { unit: 'grams', measure: 'oz',   label: { en: 'oz to grams',     pl: 'uncje → gramy',       ru: 'унц. → г',      uk: 'унц. → г'      } },
+              { unit: 'cups',  measure: 'grams', label: { en: 'grams to cups',  pl: 'gramy → szklanki',    ru: 'г → стаканы',   uk: 'г → склянки'   } },
+            ]
+              .filter(({ unit, measure }) => !(unit === parsed.unit && measure === parsed.measure))
+              .map(({ unit, measure, label }) => (
+                <Link
+                  key={`${unit}-${measure}`}
+                  href={`/chef-tools/how-many/how-many-${unit}-in-a-${measure}-of-${parsed.slug}` as never}
+                  className="px-3 py-1.5 rounded-full text-xs font-bold border border-border/50 text-muted-foreground hover:border-primary/40 hover:text-primary transition-colors"
+                >
+                  {name} — {label[locale as keyof typeof label] ?? label.en}
+                </Link>
+              ))}
+          </div>
+        </div>
+
+        {/* ── Specific converter page link ── */}
+        {convSlug && (
+          <div className="mt-6">
+            <Link
+              href={`/chef-tools/converter/${convSlug}` as never}
+              className="flex items-center justify-between gap-2 p-3 sm:p-4 rounded-2xl border border-primary/20 bg-primary/5 hover:bg-primary/10 transition-all group"
+            >
+              <span className="text-xs sm:text-sm font-bold text-foreground group-hover:text-primary transition-colors">
+                {locale === 'pl' ? `Przelicznik: ${lbl(fromApi, locale)} na ${lbl(toApi, locale)}`
+                  : locale === 'ru' ? `Конвертер: ${lbl(fromApi, locale)} → ${lbl(toApi, locale)}`
+                  : locale === 'uk' ? `Конвертер: ${lbl(fromApi, locale)} → ${lbl(toApi, locale)}`
+                  : `Convert ${lbl(fromApi, locale)} to ${lbl(toApi, locale)} — full converter`}
+              </span>
+              <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary shrink-0" />
+            </Link>
+          </div>
+        )}
+
+        {/* ── Browse more ingredients ── */}
+        <div className="mt-4 flex flex-wrap gap-2">
+          <Link
+            href="/chef-tools/ingredients"
+            className="px-3 py-1.5 rounded-full text-xs font-bold border border-border/50 text-muted-foreground hover:border-primary/40 hover:text-primary transition-colors"
+          >
+            {locale === 'pl' ? `Przeglądaj składniki podobne do ${name}` : locale === 'ru' ? `Похожие ингредиенты — ${name}` : locale === 'uk' ? `Схожі інгредієнти — ${name}` : `Browse ingredients similar to ${name}`}
+          </Link>
+          <Link
+            href="/chef-tools/converter"
+            className="px-3 py-1.5 rounded-full text-xs font-bold border border-border/50 text-muted-foreground hover:border-primary/40 hover:text-primary transition-colors"
+          >
+            {locale === 'pl' ? 'Wszystkie przeliczniki kuchenne' : locale === 'ru' ? 'Все кухонные конвертеры' : locale === 'uk' ? 'Всі кухонні конвертери' : 'All kitchen converters'}
           </Link>
         </div>
       </div>

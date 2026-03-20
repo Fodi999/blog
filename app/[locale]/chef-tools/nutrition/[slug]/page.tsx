@@ -2,13 +2,59 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
 import { generateMetadata as genMeta } from '@/lib/metadata';
 import { JsonLd } from '@/components/JsonLd';
-import { ChevronLeft, ChevronRight, Flame, Beef, Droplets, Wheat } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Flame, Beef, Droplets, Wheat, ArrowRight } from 'lucide-react';
 import { fetchIngredient, fetchIngredients } from '@/lib/api';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { ChefToolsNav } from '../../ChefToolsNav';
 
 export const revalidate = 86400;
+
+/** Category → related slugs for "Compare with" cross-links on nutrition pages */
+const NUTRITION_RELATED: Record<string, { slug: string; nameEn: string; names: Record<string, string> }[]> = {
+  vegetables: [
+    { slug: 'broccoli',    nameEn: 'Broccoli',    names: { en: 'Broccoli',    ru: '\u0411\u0440\u043e\u043a\u043a\u043e\u043b\u0438', pl: 'Broku\u0142y', uk: '\u0411\u0440\u043e\u043a\u043e\u043b\u0456' } },
+    { slug: 'cauliflower', nameEn: 'Cauliflower', names: { en: 'Cauliflower', ru: '\u0426\u0432\u0435\u0442\u043d\u0430\u044f \u043a\u0430\u043f\u0443\u0441\u0442\u0430', pl: 'Kalafior', uk: '\u0426\u0432\u0456\u0442\u043d\u0430 \u043a\u0430\u043f\u0443\u0441\u0442\u0430' } },
+    { slug: 'spinach',     nameEn: 'Spinach',     names: { en: 'Spinach',     ru: '\u0428\u043f\u0438\u043d\u0430\u0442', pl: 'Szpinak', uk: '\u0428\u043f\u0438\u043d\u0430\u0442' } },
+  ],
+  fruits: [
+    { slug: 'apple',      nameEn: 'Apple',      names: { en: 'Apple',      ru: '\u042f\u0431\u043b\u043e\u043a\u043e', pl: 'Jab\u0142ko', uk: '\u042f\u0431\u043b\u0443\u043a\u043e' } },
+    { slug: 'banana',     nameEn: 'Banana',     names: { en: 'Banana',     ru: '\u0411\u0430\u043d\u0430\u043d', pl: 'Banan', uk: '\u0411\u0430\u043d\u0430\u043d' } },
+    { slug: 'orange',     nameEn: 'Orange',     names: { en: 'Orange',     ru: '\u0410\u043f\u0435\u043b\u044c\u0441\u0438\u043d', pl: 'Pomara\u0144cza', uk: '\u0410\u043f\u0435\u043b\u044c\u0441\u0438\u043d' } },
+  ],
+  meat: [
+    { slug: 'beef',           nameEn: 'Beef',    names: { en: 'Beef',    ru: '\u0413\u043e\u0432\u044f\u0434\u0438\u043d\u0430', pl: 'Wo\u0142owina', uk: '\u042f\u043b\u043e\u0432\u0438\u0447\u0438\u043d\u0430' } },
+    { slug: 'chicken-breast', nameEn: 'Chicken', names: { en: 'Chicken', ru: '\u041a\u0443\u0440\u0438\u0446\u0430', pl: 'Kurczak', uk: '\u041a\u0443\u0440\u043a\u0430' } },
+    { slug: 'pork',           nameEn: 'Pork',    names: { en: 'Pork',    ru: '\u0421\u0432\u0438\u043d\u0438\u043d\u0430', pl: 'Wieprzowina', uk: '\u0421\u0432\u0438\u043d\u0438\u043d\u0430' } },
+  ],
+  fish: [
+    { slug: 'salmon',   nameEn: 'Salmon',   names: { en: 'Salmon',   ru: '\u041b\u043e\u0441\u043e\u0441\u044c', pl: '\u0141oso\u015b', uk: '\u041b\u043e\u0441\u043e\u0441\u044c' } },
+    { slug: 'tuna',     nameEn: 'Tuna',     names: { en: 'Tuna',     ru: '\u0422\u0443\u043d\u0435\u0446', pl: 'Tu\u0144czyk', uk: '\u0422\u0443\u043d\u0435\u0446\u044c' } },
+    { slug: 'cod',      nameEn: 'Cod',      names: { en: 'Cod',      ru: '\u0422\u0440\u0435\u0441\u043a\u0430', pl: 'Dorsz', uk: '\u0422\u0440\u0456\u0441\u043a\u0430' } },
+  ],
+  dairy: [
+    { slug: 'milk',   nameEn: 'Milk',   names: { en: 'Milk',   ru: '\u041c\u043e\u043b\u043e\u043a\u043e', pl: 'Mleko', uk: '\u041c\u043e\u043b\u043e\u043a\u043e' } },
+    { slug: 'butter', nameEn: 'Butter', names: { en: 'Butter', ru: '\u041c\u0430\u0441\u043b\u043e', pl: 'Mas\u0142o', uk: '\u041c\u0430\u0441\u043b\u043e' } },
+    { slug: 'cheese', nameEn: 'Cheese', names: { en: 'Cheese', ru: '\u0421\u044b\u0440', pl: 'Ser', uk: '\u0421\u0438\u0440' } },
+  ],
+  grains: [
+    { slug: 'rice',        nameEn: 'Rice',       names: { en: 'Rice',       ru: '\u0420\u0438\u0441', pl: 'Ry\u017c', uk: '\u0420\u0438\u0441' } },
+    { slug: 'oats',        nameEn: 'Oats',       names: { en: 'Oats',       ru: '\u041e\u0432\u0451\u0441', pl: 'Owies', uk: '\u041e\u0432\u0435\u0441' } },
+    { slug: 'wheat-flour', nameEn: 'Wheat Flour',names: { en: 'Wheat Flour',ru: '\u041c\u0443\u043a\u0430', pl: 'M\u0105ka', uk: '\u0411\u043e\u0440\u043e\u0448\u043d\u043e' } },
+  ],
+  nuts: [
+    { slug: 'almonds', nameEn: 'Almonds', names: { en: 'Almonds', ru: '\u041c\u0438\u043d\u0434\u0430\u043b\u044c', pl: 'Migda\u0142y', uk: '\u041c\u0438\u0433\u0434\u0430\u043b\u044c' } },
+    { slug: 'walnuts', nameEn: 'Walnuts', names: { en: 'Walnuts', ru: '\u0413\u0440\u0435\u0446\u043a\u0438\u0439 \u043e\u0440\u0435\u0445', pl: 'Orzechy w\u0142oskie', uk: '\u0413\u0440\u0435\u0446\u044c\u043a\u0438\u0439 \u0433\u043e\u0440\u0456\u0445' } },
+    { slug: 'cashews', nameEn: 'Cashews', names: { en: 'Cashews', ru: '\u041a\u0435\u0448\u044c\u044e', pl: 'Nerkowce', uk: '\u041a\u0435\u0448\u044c\u044e' } },
+  ],
+};
+
+function getNutritionRelated(category: string | undefined | null, currentSlug: string) {
+  if (!category) return [];
+  const key = category.toLowerCase();
+  const list = NUTRITION_RELATED[key] ?? [];
+  return list.filter((r) => r.slug !== currentSlug).slice(0, 3);
+}
 
 export async function generateStaticParams() {
   const ingredients = await fetchIngredients();
@@ -344,31 +390,98 @@ export default async function IngredientDetailPage({
         </div>
       )}
 
-      {/* Internal links: ingredient profile + converter + how-many */}
-      <div className="mt-8 space-y-2">
+      {/* Ingredient profile link + Quick Conversions + Compare With */}
+      <div className="mt-8 space-y-4">
+        {/* Full ingredient profile */}
         <Link
           href={`/chef-tools/ingredients/${slug}` as never}
           className="flex items-center justify-between gap-2 p-4 rounded-2xl border border-primary/30 bg-primary/5 hover:bg-primary/10 transition-all group"
         >
           <span className="text-xs sm:text-sm font-bold text-foreground group-hover:text-primary transition-colors">
-            {locale === 'pl' ? `🍽 Pełny profil składnika: ${name}`
-              : locale === 'ru' ? `🍽 Полный профиль: ${name}`
-              : locale === 'uk' ? `🍽 Повний профіль: ${name}`
-              : `🍽 Full ingredient profile: ${name}`}
+            {locale === 'pl' ? `${name} — pe\u0142ny profil sk\u0142adnika`
+              : locale === 'ru' ? `${name} — \u043f\u043e\u043b\u043d\u044b\u0439 \u043f\u0440\u043e\u0444\u0438\u043b\u044c`
+              : locale === 'uk' ? `${name} — \u043f\u043e\u0432\u043d\u0438\u0439 \u043f\u0440\u043e\u0444\u0456\u043b\u044c`
+              : `${name} — full ingredient profile`}
           </span>
           <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary shrink-0" />
         </Link>
+
+        {/* Quick conversions pill bar */}
+        <div>
+          <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2">
+            {locale === 'pl' ? 'Szybkie przeliczenia'
+              : locale === 'ru' ? '\u0411\u044b\u0441\u0442\u0440\u044b\u0435 \u043a\u043e\u043d\u0432\u0435\u0440\u0442\u0430\u0446\u0438\u0438'
+              : locale === 'uk' ? '\u0428\u0432\u0438\u0434\u043a\u0456 \u043a\u043e\u043d\u0432\u0435\u0440\u0442\u0430\u0446\u0456\u0457'
+              : 'Quick conversions'}
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <Link href={`/chef-tools/how-many/how-many-grams-in-a-cup-of-${slug}` as never} className="px-3 py-1.5 rounded-full text-xs font-bold border border-border/50 text-muted-foreground hover:border-primary/40 hover:text-primary transition-colors">
+              {locale === 'pl' ? `ile gramów w szklance ${name}` : locale === 'ru' ? `${name}: стакан в граммы` : locale === 'uk' ? `${name}: склянка в грами` : `${name}: how many grams in a cup`}
+            </Link>
+            <Link href="/chef-tools/converter/cup-to-grams" className="px-3 py-1.5 rounded-full text-xs font-bold border border-border/50 text-muted-foreground hover:border-primary/40 hover:text-primary transition-colors">
+              {locale === 'pl' ? 'przelicz szklanki na gramy' : locale === 'ru' ? 'конвертер: стаканы в граммы' : locale === 'uk' ? 'конвертер: склянки в грами' : 'convert cups to grams'}
+            </Link>
+            <Link href="/chef-tools/converter/tablespoon-to-grams" className="px-3 py-1.5 rounded-full text-xs font-bold border border-border/50 text-muted-foreground hover:border-primary/40 hover:text-primary transition-colors">
+              {locale === 'pl' ? '1 łyżka na gramy' : locale === 'ru' ? '1 ст.л. в граммы' : locale === 'uk' ? '1 ст.л. в грами' : '1 tablespoon to grams'}
+            </Link>
+            <Link href="/chef-tools/converter/teaspoon-to-grams" className="px-3 py-1.5 rounded-full text-xs font-bold border border-border/50 text-muted-foreground hover:border-primary/40 hover:text-primary transition-colors">
+              {locale === 'pl' ? '\u0142y\u017ceczka na gramy' : locale === 'ru' ? '\u0447\u0430\u0439\u043d\u0430\u044f \u043b\u043e\u0436\u043a\u0430 \u0432 \u0433\u0440\u0430\u043c\u043c\u044b' : locale === 'uk' ? '\u0447\u0430\u0439\u043d\u0430 \u043b\u043e\u0436\u043a\u0430 \u0432 \u0433\u0440\u0430\u043c\u0438' : 'teaspoon to grams'}
+            </Link>
+            <Link href="/chef-tools/converter/grams-to-oz" className="px-3 py-1.5 rounded-full text-xs font-bold border border-border/50 text-muted-foreground hover:border-primary/40 hover:text-primary transition-colors">
+              {locale === 'pl' ? 'gramy na uncje' : locale === 'ru' ? '\u0433\u0440\u0430\u043c\u043c\u044b \u0432 \u0443\u043d\u0446\u0438\u0438' : locale === 'uk' ? '\u0433\u0440\u0430\u043c\u0438 \u0432 \u0443\u043d\u0446\u0456\u0457' : 'grams to ounces (oz)'}
+            </Link>
+          </div>
+        </div>
+
+        {/* Compare with similar ingredients */}
+        {(() => {
+          const related = getNutritionRelated(ingredient.category, slug);
+          if (related.length === 0) return null;
+          return (
+            <div className="border border-border/60 rounded-2xl p-5">
+              <h2 className="text-sm font-black uppercase tracking-widest text-foreground mb-3">
+                {locale === 'pl' ? 'Por\u00f3wnaj z podobnymi'
+                  : locale === 'ru' ? '\u0421\u0440\u0430\u0432\u043d\u0438 \u0441 \u043f\u043e\u0445\u043e\u0436\u0438\u043c\u0438'
+                  : locale === 'uk' ? '\u041f\u043e\u0440\u0456\u0432\u043d\u044f\u0439 \u0437 \u043f\u043e\u0434\u0456\u0431\u043d\u0438\u043c\u0438'
+                  : 'Compare with similar'}
+              </h2>
+              <div className="space-y-2">
+                {related.map((r) => {
+                  const rName = r.names[locale] ?? r.nameEn;
+                  const anchors = [
+                    locale === 'pl' ? `${rName} — kalorie na 100g` : locale === 'ru' ? `${rName} — калории на 100г` : locale === 'uk' ? `${rName} — калорії на 100г` : `${rName} — calories per 100g`,
+                    locale === 'pl' ? `${rName} wartości odżywcze` : locale === 'ru' ? `${rName} пищевая ценность` : locale === 'uk' ? `${rName} харчова цінність` : `${rName} nutrition facts`,
+                    locale === 'pl' ? `${rName} vs ${name} — kalorie` : locale === 'ru' ? `${rName} vs ${name} — калории` : locale === 'uk' ? `${rName} vs ${name} — калорії` : `${rName} vs ${name} calories`,
+                  ];
+                  const anchorText = anchors[related.indexOf(r) % anchors.length];
+                  return (
+                    <Link
+                      key={r.slug}
+                      href={`/chef-tools/nutrition/${r.slug}` as never}
+                      className="flex items-center justify-between gap-2 p-3 rounded-xl border border-border/40 hover:border-primary/30 hover:bg-primary/5 transition-all group"
+                    >
+                      <span className="text-xs sm:text-sm font-bold text-foreground group-hover:text-primary transition-colors">
+                        {anchorText}
+                      </span>
+                      <ChevronRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary shrink-0" />
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })()}
+
+        {/* Back to nutrition list */}
         <Link
-          href="/chef-tools/converter"
-          className="flex items-center justify-between gap-2 p-4 rounded-2xl border border-border/50 hover:border-primary/40 hover:bg-primary/5 transition-all group"
+          href="/chef-tools/nutrition"
+          className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-muted-foreground hover:text-primary transition-colors"
         >
-          <span className="text-xs sm:text-sm font-bold text-foreground group-hover:text-primary transition-colors">
-            {locale === 'pl' ? '🔄 Przelicznik jednostek kuchennych'
-              : locale === 'ru' ? '🔄 Конвертер кухонных единиц'
-              : locale === 'uk' ? '🔄 Конвертер кухонних одиниць'
-              : '🔄 Kitchen Unit Converter'}
-          </span>
-          <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary shrink-0" />
+          <ArrowRight className="h-3.5 w-3.5 rotate-180" />
+          {locale === 'pl' ? 'Wszystkie dane od\u017cywcze'
+            : locale === 'ru' ? '\u0412\u0441\u0435 \u0434\u0430\u043d\u043d\u044b\u0435 \u043e \u043f\u0438\u0442\u0430\u043d\u0438\u0438'
+            : locale === 'uk' ? '\u0423\u0441\u0456 \u0434\u0430\u043d\u0456 \u043f\u0440\u043e \u0445\u0430\u0440\u0447\u0443\u0432\u0430\u043d\u043d\u044f'
+            : 'All nutrition data'}
         </Link>
       </div>
     </div>

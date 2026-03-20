@@ -286,10 +286,10 @@ export default async function ConversionSeoPage({
                     <ArrowRight className="h-3.5 w-3.5 text-muted-foreground/40" />
                     <span className="font-black text-primary">{resultLabel} {conv.to}</span>
                     <Link
-                      href={`/chef-tools/converter?ingredient=${ing.slug}&from=${conv.from}&to=${conv.to}` as never}
+                      href={`/chef-tools/how-many/how-many-${conv.to === 'g' ? 'grams' : conv.to}-in-a-${conv.from}-of-${ing.slug}` as never}
                       className="ml-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors border border-border/40 rounded-full px-2 py-0.5 hover:border-primary/30"
                     >
-                      {locale === 'ru' ? 'Открыть' : locale === 'pl' ? 'Otwórz' : locale === 'uk' ? 'Відкрити' : 'Open'}
+                      {locale === 'ru' ? `${ingName}: сколько?` : locale === 'pl' ? `${ingName}: ile?` : locale === 'uk' ? `${ingName}: скільки?` : `How many ${conv.to === 'g' ? 'grams' : conv.to}?`}
                     </Link>
                   </div>
                 </div>
@@ -346,6 +346,90 @@ export default async function ConversionSeoPage({
             {locale === 'ru' ? 'Открыть конвертер' : locale === 'pl' ? 'Otwórz przelicznik' : locale === 'uk' ? 'Відкрити конвертер' : 'Open Converter'}
           </Link>
         </div>
+
+        {/* ── Common Ingredient Conversions — question-intent hub block ── */}
+        <div className="border border-border/60 rounded-2xl p-5">
+          <h2 className="text-sm font-black uppercase tracking-widest text-foreground mb-1">
+            {locale === 'ru' ? '🧑‍🍳 Частые кулинарные конвертации' : locale === 'pl' ? '🧑‍🍳 Popularne przeliczenia składników' : locale === 'uk' ? '🧑‍🍳 Популярні кулінарні конвертації' : '🧑‍🍳 Common ingredient conversions'}
+          </h2>
+          <p className="text-[11px] text-muted-foreground mb-4">
+            {locale === 'ru' ? 'Конвертер стаканов в граммы для муки, сахара, масла и других ингредиентов.'
+              : locale === 'pl' ? 'Przelicznik szklanek na gramy dla mąki, cukru, masła i innych składników.'
+              : locale === 'uk' ? 'Конвертер склянок у грами для борошна, цукру, масла та інших інгредієнтів.'
+              : 'Use this cup to grams converter for ingredients like flour, sugar, and butter.'}
+          </p>
+          <ul className="space-y-2">
+            {[
+              {
+                href: '/chef-tools/how-many/how-many-grams-in-a-cup-of-wheat-flour',
+                label: { en: 'Flour: how many grams in 1 cup', ru: 'Мука: сколько граммов в 1 стакане', pl: 'Mąka: ile gramów w 1 szklance', uk: 'Борошно: скільки грамів у 1 склянці' },
+              },
+              {
+                href: '/chef-tools/how-many/how-many-grams-in-a-cup-of-sugar',
+                label: { en: 'Sugar: grams in 1 cup', ru: 'Сахар: граммы в 1 стакане', pl: 'Cukier: gramy w 1 szklance', uk: 'Цукор: грами в 1 склянці' },
+              },
+              {
+                href: '/chef-tools/how-many/how-many-grams-in-a-tbsp-of-butter',
+                label: { en: 'Butter: tablespoon to grams conversion', ru: 'Масло: столовая ложка в граммы', pl: 'Masło: łyżka na gramy', uk: 'Масло: столова ложка в грами' },
+              },
+              {
+                href: '/chef-tools/how-many/how-many-grams-in-a-cup-of-rice',
+                label: { en: 'Rice: convert cups to grams', ru: 'Рис: конвертер стаканов в граммы', pl: 'Ryż: przelicz szklanki na gramy', uk: 'Рис: конвертер склянок у грами' },
+              },
+              {
+                href: '/chef-tools/how-many/how-many-grams-in-a-cup-of-oats',
+                label: { en: 'Oats: how many grams in a cup', ru: 'Овёс: сколько граммов в стакане', pl: 'Płatki owsiane: ile gramów w szklance', uk: 'Вівсянка: скільки грамів у склянці' },
+              },
+            ].map(({ href, label }) => (
+              <li key={href}>
+                <Link
+                  href={href as never}
+                  className="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-border/40 text-xs font-bold text-foreground hover:border-primary/40 hover:text-primary hover:bg-primary/5 transition-colors"
+                >
+                  <ArrowRight className="h-3.5 w-3.5 text-primary/50 shrink-0" />
+                  {label[locale as keyof typeof label] ?? label.en}
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <Link
+            href="/chef-tools/ingredients"
+            className="mt-4 inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors"
+          >
+            <ArrowRight className="h-3 w-3" />
+            {locale === 'ru' ? 'Все ингредиенты' : locale === 'pl' ? 'Wszystkie składniki' : locale === 'uk' ? 'Всі інгредієнти' : 'Browse all ingredients'}
+          </Link>
+        </div>
+
+        {/* ── Common baking conversions (varied anchor text for SEO) ── */}
+        {conversion === 'cup-to-grams' && (
+          <div className="border border-border/60 rounded-2xl p-5">
+            <h2 className="text-sm font-black uppercase tracking-widest text-foreground mb-4">
+              {locale === 'ru' ? '🔥 Частые запросы' : locale === 'pl' ? '🔥 Popularne zapytania' : locale === 'uk' ? '🔥 Часті запити' : '🔥 Common searches'}
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {[
+                { href: '/chef-tools/converter/cup-to-grams',       label: { en: 'cups to grams',          ru: 'стаканы в граммы',      pl: 'szklanki na gramy',       uk: 'склянки в грами'       } },
+                { href: '/chef-tools/converter/cup-to-grams',       label: { en: 'convert cups to grams',  ru: 'конвертер стакан → г',  pl: 'przelicz szklanki na g',  uk: 'конвертер склянка → г' } },
+                { href: '/chef-tools/how-many/how-many-grams-in-a-cup-of-wheat-flour', label: { en: '1 cup flour in grams',   ru: '1 стакан муки в г',     pl: '1 szklanka mąki w g',    uk: '1 склянка борошна в г' } },
+                { href: '/chef-tools/how-many/how-many-grams-in-a-cup-of-sugar',       label: { en: '1 cup sugar in grams',   ru: '1 стакан сахара в г',   pl: '1 szklanka cukru w g',   uk: '1 склянка цукру в г'   } },
+                { href: '/chef-tools/converter/tablespoon-to-grams', label: { en: 'tablespoon to grams',    ru: 'столовая ложка в г',    pl: 'łyżka na gramy',          uk: 'столова ложка в г'     } },
+                { href: '/chef-tools/converter/teaspoon-to-grams',  label: { en: 'teaspoon to grams',      ru: 'чайная ложка в г',      pl: 'łyżeczka na gramy',       uk: 'чайна ложка в г'       } },
+                { href: '/chef-tools/converter/grams-to-cups',      label: { en: 'grams to cups',          ru: 'граммы в стаканы',      pl: 'gramy na szklanki',       uk: 'грами в склянки'       } },
+                { href: '/chef-tools/converter/oz-to-grams',        label: { en: 'ounces to grams',        ru: 'унции в граммы',        pl: 'uncje na gramy',          uk: 'унції в грами'         } },
+              ].map(({ href, label }) => (
+                <Link
+                  key={href + (label.en)}
+                  href={href as never}
+                  className="flex items-center gap-2 px-3 py-2 rounded-xl border border-border/40 text-xs font-bold text-muted-foreground hover:border-primary/40 hover:text-primary transition-colors"
+                >
+                  <span className="text-primary/50">→</span>
+                  {label[locale as keyof typeof label] ?? label.en}
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Cross-links to other conversions */}
         <div>

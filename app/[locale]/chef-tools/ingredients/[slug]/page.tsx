@@ -6,7 +6,7 @@ import type { ApiIngredient } from '@/lib/api';
 import { ChefToolsNav } from '../../ChefToolsNav';
 import { Link } from '@/i18n/routing';
 import Image from 'next/image';
-import { ChevronRight, Package, Leaf, Flame, Droplets, FlaskConical, Apple, Scale, Heart, CalendarDays, ShieldAlert, ArrowRight } from 'lucide-react';
+import { ChevronRight, Package, Leaf, Flame, Droplets, FlaskConical, Apple, Scale, Heart, CalendarDays, ShieldAlert, ArrowRight, ExternalLink } from 'lucide-react';
 import type { Metadata } from 'next';
 import CategoryPage, { CATEGORY_MAP } from './category-page';
 import IngredientStateClient from './IngredientStateClient';
@@ -25,6 +25,76 @@ function t4(locale: string, en: string, ru: string, pl: string, uk: string): str
   if (locale === 'pl') return pl;
   if (locale === 'uk') return uk;
   return en;
+}
+
+/** Static map: category → related ingredient slugs for cross-linking */
+const CATEGORY_RELATED: Record<string, { slug: string; nameEn: string; names: Record<string, string> }[]> = {
+  vegetables: [
+    { slug: 'broccoli',    nameEn: 'Broccoli',    names: { en: 'Broccoli',    ru: '\u0411\u0440\u043e\u043a\u043a\u043e\u043b\u0438',   pl: 'Broku\u0142y',    uk: '\u0411\u0440\u043e\u043a\u043e\u043b\u0456'    } },
+    { slug: 'cauliflower', nameEn: 'Cauliflower', names: { en: 'Cauliflower', ru: '\u0426\u0432\u0435\u0442\u043d\u0430\u044f \u043a\u0430\u043f\u0443\u0441\u0442\u0430', pl: 'Kalafior',  uk: '\u0426\u0432\u0456\u0442\u043d\u0430 \u043a\u0430\u043f\u0443\u0441\u0442\u0430' } },
+    { slug: 'spinach',     nameEn: 'Spinach',     names: { en: 'Spinach',     ru: '\u0428\u043f\u0438\u043d\u0430\u0442',     pl: 'Szpinak',    uk: '\u0428\u043f\u0438\u043d\u0430\u0442'     } },
+    { slug: 'zucchini',    nameEn: 'Zucchini',    names: { en: 'Zucchini',    ru: '\u041a\u0430\u0431\u0430\u0447\u043e\u043a',    pl: 'Cukinia',    uk: '\u041a\u0430\u0431\u0430\u0447\u043e\u043a'    } },
+  ],
+  fruits: [
+    { slug: 'apple',       nameEn: 'Apple',       names: { en: 'Apple',       ru: '\u042f\u0431\u043b\u043e\u043a\u043e',     pl: 'Jab\u0142ko',     uk: '\u042f\u0431\u043b\u0443\u043a\u043e'     } },
+    { slug: 'banana',      nameEn: 'Banana',      names: { en: 'Banana',      ru: '\u0411\u0430\u043d\u0430\u043d',      pl: 'Banan',      uk: '\u0411\u0430\u043d\u0430\u043d'      } },
+    { slug: 'orange',      nameEn: 'Orange',      names: { en: 'Orange',      ru: '\u0410\u043f\u0435\u043b\u044c\u0441\u0438\u043d',   pl: 'Pomara\u0144cza', uk: '\u0410\u043f\u0435\u043b\u044c\u0441\u0438\u043d'   } },
+    { slug: 'strawberry',  nameEn: 'Strawberry',  names: { en: 'Strawberry',  ru: '\u041a\u043b\u0443\u0431\u043d\u0438\u043a\u0430',   pl: 'Truskawka',  uk: '\u041f\u043e\u043b\u0443\u043d\u0438\u0446\u044f'   } },
+  ],
+  meat: [
+    { slug: 'beef',           nameEn: 'Beef',         names: { en: 'Beef',         ru: '\u0413\u043e\u0432\u044f\u0434\u0438\u043d\u0430',   pl: 'Wo\u0142owina',   uk: '\u042f\u043b\u043e\u0432\u0438\u0447\u0438\u043d\u0430'  } },
+    { slug: 'chicken-breast', nameEn: 'Chicken',      names: { en: 'Chicken',      ru: '\u041a\u0443\u0440\u0438\u0446\u0430',     pl: 'Kurczak',    uk: '\u041a\u0443\u0440\u043a\u0430'      } },
+    { slug: 'pork',           nameEn: 'Pork',         names: { en: 'Pork',         ru: '\u0421\u0432\u0438\u043d\u0438\u043d\u0430',    pl: 'Wieprzowina', uk: '\u0421\u0432\u0438\u043d\u0438\u043d\u0430'    } },
+    { slug: 'turkey',         nameEn: 'Turkey',       names: { en: 'Turkey',       ru: '\u0418\u043d\u0434\u0435\u0439\u043a\u0430',    pl: 'Indyk',      uk: '\u0406\u043d\u0434\u0438\u043a'      } },
+  ],
+  fish: [
+    { slug: 'salmon',   nameEn: 'Salmon',   names: { en: 'Salmon',   ru: '\u041b\u043e\u0441\u043e\u0441\u044c',    pl: '\u0141oso\u015b',      uk: '\u041b\u043e\u0441\u043e\u0441\u044c'    } },
+    { slug: 'tuna',     nameEn: 'Tuna',     names: { en: 'Tuna',     ru: '\u0422\u0443\u043d\u0435\u0446',     pl: 'Tu\u0144czyk',    uk: '\u0422\u0443\u043d\u0435\u0446\u044c'    } },
+    { slug: 'cod',      nameEn: 'Cod',      names: { en: 'Cod',      ru: '\u0422\u0440\u0435\u0441\u043a\u0430',    pl: 'Dorsz',      uk: '\u0422\u0440\u0456\u0441\u043a\u0430'    } },
+    { slug: 'mackerel', nameEn: 'Mackerel', names: { en: 'Mackerel', ru: '\u0421\u043a\u0443\u043c\u0431\u0440\u0438\u044f',  pl: 'Makrela',    uk: '\u0421\u043a\u0443\u043c\u0431\u0440\u0456\u044f'  } },
+  ],
+  dairy: [
+    { slug: 'milk',         nameEn: 'Milk',         names: { en: 'Milk',         ru: '\u041c\u043e\u043b\u043e\u043a\u043e',     pl: 'Mleko',      uk: '\u041c\u043e\u043b\u043e\u043a\u043e'     } },
+    { slug: 'butter',       nameEn: 'Butter',       names: { en: 'Butter',       ru: '\u041c\u0430\u0441\u043b\u043e',      pl: 'Mas\u0142o',      uk: '\u041c\u0430\u0441\u043b\u043e'      } },
+    { slug: 'cheese',       nameEn: 'Cheese',       names: { en: 'Cheese',       ru: '\u0421\u044b\u0440',        pl: 'Ser',        uk: '\u0421\u0438\u0440'        } },
+    { slug: 'greek-yogurt', nameEn: 'Greek Yogurt', names: { en: 'Greek Yogurt', ru: '\u0413\u0440\u0435\u0447\u0435\u0441\u043a\u0438\u0439 \u0439\u043e\u0433\u0443\u0440\u0442', pl: 'Jogurt grecki', uk: '\u0413\u0440\u0435\u0446\u044c\u043a\u0438\u0439 \u0439\u043e\u0433\u0443\u0440\u0442' } },
+  ],
+  grains: [
+    { slug: 'rice',        nameEn: 'Rice',       names: { en: 'Rice',       ru: '\u0420\u0438\u0441',        pl: 'Ry\u017c',        uk: '\u0420\u0438\u0441'        } },
+    { slug: 'oats',        nameEn: 'Oats',       names: { en: 'Oats',       ru: '\u041e\u0432\u0451\u0441',       pl: 'Owies',      uk: '\u041e\u0432\u0435\u0441'       } },
+    { slug: 'wheat-flour', nameEn: 'Wheat Flour',names: { en: 'Wheat Flour',ru: '\u041c\u0443\u043a\u0430',       pl: 'M\u0105ka',       uk: '\u0411\u043e\u0440\u043e\u0448\u043d\u043e'    } },
+    { slug: 'barley',      nameEn: 'Barley',     names: { en: 'Barley',     ru: '\u042f\u0447\u043c\u0435\u043d\u044c',     pl: 'J\u0119czmie\u0144',   uk: '\u042f\u0447\u043c\u0456\u043d\u044c'    } },
+  ],
+  nuts: [
+    { slug: 'almonds',  nameEn: 'Almonds',  names: { en: 'Almonds',  ru: '\u041c\u0438\u043d\u0434\u0430\u043b\u044c',    pl: 'Migda\u0142y',    uk: '\u041c\u0438\u0433\u0434\u0430\u043b\u044c'   } },
+    { slug: 'walnuts',  nameEn: 'Walnuts',  names: { en: 'Walnuts',  ru: '\u0413\u0440\u0435\u0446\u043a\u0438\u0439 \u043e\u0440\u0435\u0445', pl: 'Orzechy w\u0142oskie', uk: '\u0413\u0440\u0435\u0446\u044c\u043a\u0438\u0439 \u0433\u043e\u0440\u0456\u0445' } },
+    { slug: 'cashews',  nameEn: 'Cashews',  names: { en: 'Cashews',  ru: '\u041a\u0435\u0448\u044c\u044e',      pl: 'Nerkowce',   uk: '\u041a\u0435\u0448\u044c\u044e'     } },
+    { slug: 'peanuts',  nameEn: 'Peanuts',  names: { en: 'Peanuts',  ru: '\u0410\u0440\u0430\u0445\u0438\u0441',     pl: 'Orzeszki ziemne', uk: '\u0410\u0440\u0430\u0445\u0456\u0441' } },
+  ],
+  legumes: [
+    { slug: 'lentils',      nameEn: 'Lentils',      names: { en: 'Lentils',      ru: '\u0427\u0435\u0447\u0435\u0432\u0438\u0446\u0430',   pl: 'Soczewica',  uk: '\u0421\u043e\u0447\u0435\u0432\u0438\u0446\u044f'  } },
+    { slug: 'chickpeas',    nameEn: 'Chickpeas',    names: { en: 'Chickpeas',    ru: '\u041d\u0443\u0442',        pl: 'Ciecierzyca', uk: '\u041d\u0443\u0442'       } },
+    { slug: 'black-beans',  nameEn: 'Black Beans',  names: { en: 'Black Beans',  ru: '\u0427\u0451\u0440\u043d\u0430\u044f \u0444\u0430\u0441\u043e\u043b\u044c', pl: 'Czarna fasola', uk: '\u0427\u043e\u0440\u043d\u0430 \u043a\u0432\u0430\u0441\u043e\u043b\u044f' } },
+    { slug: 'kidney-beans', nameEn: 'Kidney Beans', names: { en: 'Kidney Beans', ru: '\u041a\u0440\u0430\u0441\u043d\u0430\u044f \u0444\u0430\u0441\u043e\u043b\u044c', pl: 'Fasola czerwona', uk: '\u0427\u0435\u0440\u0432\u043e\u043d\u0430 \u043a\u0432\u0430\u0441\u043e\u043b\u044f' } },
+  ],
+  spices: [
+    { slug: 'cinnamon', nameEn: 'Cinnamon', names: { en: 'Cinnamon', ru: '\u041a\u043e\u0440\u0438\u0446\u0430',     pl: 'Cynamon',    uk: '\u041a\u043e\u0440\u0438\u0446\u044f'    } },
+    { slug: 'turmeric', nameEn: 'Turmeric', names: { en: 'Turmeric', ru: '\u041a\u0443\u0440\u043a\u0443\u043c\u0430',    pl: 'Kurkuma',    uk: '\u041a\u0443\u0440\u043a\u0443\u043c\u0430'   } },
+    { slug: 'ginger',   nameEn: 'Ginger',   names: { en: 'Ginger',   ru: '\u0418\u043c\u0431\u0438\u0440\u044c',    pl: 'Imbir',      uk: '\u0406\u043c\u0431\u0438\u0440'     } },
+    { slug: 'garlic',   nameEn: 'Garlic',   names: { en: 'Garlic',   ru: '\u0427\u0435\u0441\u043d\u043e\u043a',    pl: 'Czosnek',    uk: '\u0427\u0430\u0441\u043d\u0438\u043a'    } },
+  ],
+  oils: [
+    { slug: 'olive-oil',     nameEn: 'Olive Oil',     names: { en: 'Olive Oil',     ru: '\u041e\u043b\u0438\u0432\u043a\u043e\u0432\u043e\u0435 \u043c\u0430\u0441\u043b\u043e', pl: 'Oliwa z oliwek', uk: '\u041e\u043b\u0438\u0432\u043a\u043e\u0432\u0430 \u043e\u043b\u0456\u044f' } },
+    { slug: 'coconut-oil',   nameEn: 'Coconut Oil',   names: { en: 'Coconut Oil',   ru: '\u041a\u043e\u043a\u043e\u0441\u043e\u0432\u043e\u0435 \u043c\u0430\u0441\u043b\u043e', pl: 'Olej kokosowy', uk: '\u041a\u043e\u043a\u043e\u0441\u043e\u0432\u0430 \u043e\u043b\u0456\u044f' } },
+    { slug: 'sunflower-oil', nameEn: 'Sunflower Oil', names: { en: 'Sunflower Oil', ru: '\u041f\u043e\u0434\u0441\u043e\u043b\u043d\u0435\u0447\u043d\u043e\u0435 \u043c\u0430\u0441\u043b\u043e', pl: 'Olej s\u0142onecznikowy', uk: '\u0421\u043e\u043d\u044f\u0448\u043d\u0438\u043a\u043e\u0432\u0430 \u043e\u043b\u0456\u044f' } },
+  ],
+};
+
+function getRelated(category: string | undefined | null, currentSlug: string) {
+  if (!category) return [];
+  const key = category.toLowerCase();
+  const list = CATEGORY_RELATED[key] ?? [];
+  return list.filter((r) => r.slug !== currentSlug).slice(0, 4);
 }
 
 function localName(item: ApiIngredient, locale: string): string {
@@ -475,20 +545,83 @@ export default async function IngredientSlugPage({
           </Section>
         )}
 
-        {/* ── Kitchen measures & density ── */}
+        {/* ── Kitchen measures & density (with converter deep-links) ── */}
         {(measures || item.density_g_per_ml != null) && (
           <Section
             title={t4(locale, 'Kitchen Measures', 'Кухонные меры', 'Miary kuchenne', 'Кухонні міри')}
             icon={<Droplets className="h-4 w-4 text-primary" />}
           >
             <div className="divide-y divide-border/30">
-              {measures?.grams_per_cup != null && <MiniRow label={t4(locale, '1 Cup', '1 Стакан', '1 Szklanka', '1 Склянка')} value={measures.grams_per_cup} unit="g" />}
-              {measures?.grams_per_tbsp != null && <MiniRow label={t4(locale, '1 Tablespoon', '1 Ст. ложка', '1 Łyżka', '1 Ст. ложка')} value={measures.grams_per_tbsp} unit="g" />}
-              {measures?.grams_per_tsp != null && <MiniRow label={t4(locale, '1 Teaspoon', '1 Ч. ложка', '1 Łyżeczka', '1 Ч. ложка')} value={measures.grams_per_tsp} unit="g" />}
+              {measures?.grams_per_cup != null && (
+                <div className="flex items-center justify-between py-2 px-3 sm:px-4">
+                  <span className="text-[11px] sm:text-xs font-bold text-muted-foreground">{t4(locale, '1 Cup', '1 Стакан', '1 Szklanka', '1 Склянка')}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs sm:text-sm font-black text-foreground">{fmt(measures.grams_per_cup)} <span className="text-[9px] sm:text-[10px] font-bold text-muted-foreground">g</span></span>
+                    <Link href="/chef-tools/converter/cup-to-grams" className="text-[9px] font-bold text-primary hover:underline border border-primary/20 rounded-full px-1.5 py-0.5 shrink-0">
+                      {t4(locale, '1 cup to grams', 'стакан → г', 'szklanka → g', 'склянка → г')}
+                    </Link>
+                  </div>
+                </div>
+              )}
+              {measures?.grams_per_tbsp != null && (
+                <div className="flex items-center justify-between py-2 px-3 sm:px-4 bg-muted/20">
+                  <span className="text-[11px] sm:text-xs font-bold text-muted-foreground">{t4(locale, '1 Tablespoon', '1 Ст. ложка', '1 Łyżka', '1 Ст. ложка')}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs sm:text-sm font-black text-foreground">{fmt(measures.grams_per_tbsp)} <span className="text-[9px] sm:text-[10px] font-bold text-muted-foreground">g</span></span>
+                    <Link href="/chef-tools/converter/tablespoon-to-grams" className="text-[9px] font-bold text-primary hover:underline border border-primary/20 rounded-full px-1.5 py-0.5 shrink-0">
+                      {t4(locale, 'tablespoon to grams', 'ложка → г', 'łyżka → g', 'ложка → г')}
+                    </Link>
+                  </div>
+                </div>
+              )}
+              {measures?.grams_per_tsp != null && (
+                <div className="flex items-center justify-between py-2 px-3 sm:px-4">
+                  <span className="text-[11px] sm:text-xs font-bold text-muted-foreground">{t4(locale, '1 Teaspoon', '1 Ч. ложка', '1 Łyżeczka', '1 Ч. ложка')}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs sm:text-sm font-black text-foreground">{fmt(measures.grams_per_tsp)} <span className="text-[9px] sm:text-[10px] font-bold text-muted-foreground">g</span></span>
+                    <Link href="/chef-tools/converter/teaspoon-to-grams" className="text-[9px] font-bold text-primary hover:underline border border-primary/20 rounded-full px-1.5 py-0.5 shrink-0">
+                      {t4(locale, 'teaspoon to grams', 'ложка → г', 'łyżeczka → g', 'ложка → г')}
+                    </Link>
+                  </div>
+                </div>
+              )}
               {item.density_g_per_ml != null && <MiniRow label={t4(locale, 'Density', 'Плотность', 'Gęstość', 'Щільність')} value={item.density_g_per_ml} unit="g/ml" />}
             </div>
           </Section>
         )}
+
+        {/* ── Used in Cooking — semantic SEO block ── */}
+        <Section
+          title={t4(locale, 'Used in Cooking', 'Применение в кулинарии', 'Zastosowanie w kuchni', 'Використання у кулінарії')}
+          icon={<ExternalLink className="h-4 w-4 text-primary" />}
+        >
+          <div className="divide-y divide-border/30">
+            <Link href="/chef-tools/converter/cup-to-grams" className="flex items-center justify-between py-2.5 px-3 sm:px-4 hover:bg-muted/30 transition-colors group">
+              <span className="text-xs sm:text-sm font-bold text-foreground group-hover:text-primary transition-colors">
+                {t4(locale, `How many grams in 1 cup of ${name}?`, `Сколько граммов в 1 стакане ${name}?`, `Ile gramów w 1 szklance ${name}?`, `Скільки грамів у 1 склянці ${name}?`)}
+              </span>
+              <ChevronRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary shrink-0" />
+            </Link>
+            <Link href={`/chef-tools/nutrition/${slug}` as never} className="flex items-center justify-between py-2.5 px-3 sm:px-4 bg-muted/20 hover:bg-muted/40 transition-colors group">
+              <span className="text-xs sm:text-sm font-bold text-foreground group-hover:text-primary transition-colors">
+                {t4(locale, `${name} — calories per 100g`, `${name} — калории на 100г`, `${name} — kalorie na 100g`, `${name} — калорії на 100г`)}
+              </span>
+              <ChevronRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary shrink-0" />
+            </Link>
+            <Link href="/chef-tools/converter/tablespoon-to-grams" className="flex items-center justify-between py-2.5 px-3 sm:px-4 hover:bg-muted/30 transition-colors group">
+              <span className="text-xs sm:text-sm font-bold text-foreground group-hover:text-primary transition-colors">
+                {t4(locale, `${name} — tablespoon to grams`, `${name} — столовая ложка в граммы`, `${name} — łyżka stołowa na gramy`, `${name} — столова ложка в грами`)}
+              </span>
+              <ChevronRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary shrink-0" />
+            </Link>
+            <Link href={`/chef-tools/converter?ingredient=${slug}&from=cup&to=g` as never} className="flex items-center justify-between py-2.5 px-3 sm:px-4 bg-muted/20 hover:bg-muted/40 transition-colors group">
+              <span className="text-xs sm:text-sm font-bold text-foreground group-hover:text-primary transition-colors">
+                {t4(locale, `Convert ${name}: grams, cups, oz`, `Конвертер ${name}: граммы, стаканы, унции`, `Przelicz ${name}: gramy, szklanki, oz`, `Конвертер ${name}: грами, склянки, унції`)}
+              </span>
+              <ChevronRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary shrink-0" />
+            </Link>
+          </div>
+        </Section>
 
         {/* ── Allergens & Seasons ── */}
         {((item.allergens && item.allergens.length > 0) || (item.seasons && item.seasons.length > 0)) && (
@@ -564,38 +697,28 @@ export default async function IngredientSlugPage({
           </Section>
         )}
 
-        {/* ── Converter CTA ── */}
-        <Link
-          href="/chef-tools/converter"
-          className="group flex items-center gap-3 sm:gap-4 rounded-xl sm:rounded-2xl border border-primary/30 bg-primary/5 hover:bg-primary/10 p-3 sm:p-5 mb-4 sm:mb-6 transition-all hover:shadow-md"
-        >
-          <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-primary/10 group-hover:bg-primary/20 transition-colors shrink-0">
-            <Scale className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-xs sm:text-sm font-black uppercase tracking-wider text-foreground group-hover:text-primary transition-colors">
-              {t4(locale,
-                'Kitchen Unit Converter',
-                'Конвертер кухонных единиц',
-                'Przelicznik jednostek kuchennych',
-                'Конвертер кухонних одиниць',
-              )}
-            </p>
-            <p className="text-[11px] sm:text-xs text-muted-foreground mt-0.5 leading-relaxed line-clamp-2 sm:line-clamp-none">
-              {t4(locale,
-                'Instantly convert grams, ounces, liters, spoons and other kitchen measures.',
-                'Мгновенно переводите граммы, унции, литры, ложки и другие кухонные меры.',
-                'Błyskawicznie przeliczaj gramy, uncje, litry, łyżki i inne miary kuchenne.',
-                'Миттєво переводьте грами, унції, літри, ложки та інші кухонні міри.',
-              )}
-            </p>
-          </div>
-          <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
-        </Link>
+        {/* ── Quick conversions pill bar ── */}
+        <div className="flex flex-wrap gap-2 mb-4 sm:mb-5">
+          <p className="w-full text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+            {t4(locale, 'Quick conversions', 'Быстрые конвертации', 'Szybkie przeliczenia', 'Швидкі конвертації')}
+          </p>
+          <Link href="/chef-tools/converter/cup-to-grams" className="px-3 py-1.5 rounded-full text-xs font-bold border border-border/50 text-muted-foreground hover:border-primary/40 hover:text-primary transition-colors">
+            {t4(locale, '1 cup to grams converter', 'Стакан в граммы', 'Szklanka na gramy', '1 склянка в грами')}
+          </Link>
+          <Link href="/chef-tools/converter/tablespoon-to-grams" className="px-3 py-1.5 rounded-full text-xs font-bold border border-border/50 text-muted-foreground hover:border-primary/40 hover:text-primary transition-colors">
+            {t4(locale, 'tablespoon to grams', 'Столовая ложка в граммы', 'Łyżka na gramy', 'Столова ложка в грами')}
+          </Link>
+          <Link href="/chef-tools/converter/teaspoon-to-grams" className="px-3 py-1.5 rounded-full text-xs font-bold border border-border/50 text-muted-foreground hover:border-primary/40 hover:text-primary transition-colors">
+            {t4(locale, 'teaspoon to grams', 'Чайная ложка в граммы', 'Łyżeczka na gramy', 'Чайна ложка в грами')}
+          </Link>
+          <Link href="/chef-tools/converter/grams-to-oz" className="px-3 py-1.5 rounded-full text-xs font-bold border border-border/50 text-muted-foreground hover:border-primary/40 hover:text-primary transition-colors">
+            {t4(locale, 'grams to ounces (oz)', 'Граммы в унции', 'Gramy na uncje', 'Грами в унції')}
+          </Link>
+        </div>
 
-        {/* ── Nutrition deep-dive link ── */}
+        {/* ── Nutrition deep-dive: direct to this ingredient ── */}
         <Link
-          href={`/chef-tools/nutrition` as never}
+          href={`/chef-tools/nutrition/${slug}` as never}
           className="group flex items-center gap-3 sm:gap-4 rounded-xl sm:rounded-2xl border border-border/50 bg-muted/20 hover:bg-muted/40 p-3 sm:p-5 mb-6 sm:mb-8 transition-all hover:shadow-md"
         >
           <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-orange-500/10 group-hover:bg-orange-500/20 transition-colors shrink-0">
@@ -604,23 +727,58 @@ export default async function IngredientSlugPage({
           <div className="flex-1 min-w-0">
             <p className="text-xs sm:text-sm font-black uppercase tracking-wider text-foreground group-hover:text-primary transition-colors">
               {t4(locale,
-                'Nutrition Calculator',
-                'Калькулятор питания',
-                'Kalkulator odżywczy',
-                'Калькулятор харчування',
+                `${name} — nutrition facts & calories`,
+                `${name} — пищевая ценность и калории`,
+                `${name} — wartości odżywcze i kalorie`,
+                `${name} — харчова цінність і калорії`,
               )}
             </p>
-            <p className="text-[11px] sm:text-xs text-muted-foreground mt-0.5 leading-relaxed line-clamp-2 sm:line-clamp-none">
+            <p className="text-[11px] sm:text-xs text-muted-foreground mt-0.5 leading-relaxed">
               {t4(locale,
-                'Compare nutrition data, analyze recipes and plan balanced meals.',
-                'Сравнивайте данные о питании, анализируйте рецепты и планируйте сбалансированное питание.',
-                'Porównaj dane odżywcze, analizuj przepisy i planuj zbilansowane posiłki.',
-                'Порівнюйте дані про харчування, аналізуйте рецепти та плануйте збалансоване харчування.',
+                'Protein, fat, carbs, vitamins & minerals — full profile.',
+                'Белки, жиры, углеводы, витамины и минералы — полный профиль.',
+                'Białko, tłuszcze, węglowodany, witaminy i minerały — pełny profil.',
+                'Білки, жири, вуглеводи, вітаміни та мінерали — повний профіль.',
               )}
             </p>
           </div>
           <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
         </Link>
+
+        {/* ── Similar ingredients (category-based SEO cross-links) ── */}
+        {(() => {
+          const related = getRelated(item.category, slug);
+          if (related.length === 0) return null;
+          return (
+            <Section
+              title={t4(locale, `Similar ${item.category ?? 'ingredients'}`, `Похожие: ${item.category ?? 'продукты'}`, `Podobne: ${item.category ?? 'składniki'}`, `Схожі: ${item.category ?? 'інгредієнти'}`)}
+              icon={<Leaf className="h-4 w-4 text-primary" />}
+            >
+              <div className="divide-y divide-border/30">
+                {related.map((r) => {
+                  const rName = r.names[locale] ?? r.nameEn;
+                  return (
+                    <Link
+                      key={r.slug}
+                      href={`/chef-tools/ingredients/${r.slug}` as never}
+                      className="flex items-center justify-between py-2.5 px-3 sm:px-4 hover:bg-muted/30 transition-colors group"
+                    >
+                      <span className="text-xs sm:text-sm font-bold text-foreground group-hover:text-primary transition-colors">
+                        {t4(locale,
+                          `${rName} — calories & nutrition`,
+                          `${rName} — калории и питание`,
+                          `${rName} — kalorie i odżywczość`,
+                          `${rName} — калорії та харчування`,
+                        )}
+                      </span>
+                      <ChevronRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary shrink-0" />
+                    </Link>
+                  );
+                })}
+              </div>
+            </Section>
+          );
+        })()}
 
         {/* ── Back link ── */}
         <Link href="/chef-tools/ingredients" className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-primary hover:underline">
