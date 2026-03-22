@@ -1238,8 +1238,23 @@ export type RelatedIntentPage = {
 };
 
 /**
+ * GET /public/ingredients/:slug/intent-pages?locale=en
+ * Returns all published intent pages for an ingredient (hub page).
+ */
+export async function fetchIngredientIntentPages(
+  ingredientSlug: string,
+  locale: string,
+): Promise<RelatedIntentPage[]> {
+  const pages = await apiFetchFresh<RelatedIntentPage[]>(
+    `/public/ingredients/${encodeURIComponent(ingredientSlug)}/intent-pages?locale=${encodeURIComponent(locale)}`,
+    ['intent-pages-hub'],
+  );
+  return pages ?? [];
+}
+
+/**
  * GET /public/intent-pages/:slug/related?locale=en
- * Returns up to 5 related published intent pages for internal linking.
+ * Returns up to 8 related published intent pages for internal linking.
  */
 export async function fetchRelatedPages(
   slug: string,

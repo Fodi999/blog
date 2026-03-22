@@ -16,7 +16,51 @@ type Props = {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-/** Extract nutrition data from text blocks (kcal, protein, etc.) */
+/**
+ * Render a text string with inline [text](url) markdown links.
+ * Returns an array of React nodes (strings and <a> elements).
+ */
+function renderInlineLinks(
+  text: string,
+  locale: string,
+): React.ReactNode {
+  const parts: React.ReactNode[] = [];
+  const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = linkRegex.exec(text)) !== null) {
+    // Text before link
+    if (match.index > lastIndex) {
+      parts.push(text.slice(lastIndex, match.index));
+    }
+    const [, linkText, href] = match;
+    // Resolve relative links to include locale prefix
+    const resolvedHref =
+      href.startsWith('http') || href.startsWith('//')
+        ? href
+        : href.startsWith('/')
+          ? `/${locale}${href}`
+          : href;
+    parts.push(
+      <Link
+        key={match.index}
+        href={resolvedHref as never}
+        className="text-primary underline underline-offset-2 hover:no-underline"
+      >
+        {linkText}
+      </Link>,
+    );
+    lastIndex = match.index + match[0].length;
+  }
+
+  // Remaining text
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex));
+  }
+
+  return parts.length === 1 ? parts[0] : <>{parts}</>;
+}
 function extractNutrition(blocks: ContentBlock[]): {
   calories?: string;
   protein?: string;
@@ -381,6 +425,32 @@ export default async function IntentPageRoute({ params }: Props) {
   const clusterLinks = related.filter((r) => r.entity_a === page.entity_a);
   const crossLinks = related.filter((r) => r.entity_a !== page.entity_a);
 
+  // ── 6. ItemList JSON-LD for the topic cluster (same ingredient) ───────────
+  const clusterListSchema =
+    clusterLinks.length > 0
+      ? {
+          '@context': 'https://schema.org',
+          '@type': 'ItemList',
+          name: `${entityName} — articles`,
+          url: `https://dima-fomin.pl/${locale}/chef-tools/ingredients/${page.entity_a}`,
+          itemListElement: [
+            // Include the current page too
+            {
+              '@type': 'ListItem',
+              position: 1,
+              url,
+              name: page.title,
+            },
+            ...clusterLinks.map((r, idx) => ({
+              '@type': 'ListItem',
+              position: idx + 2,
+              url: `https://dima-fomin.pl/${locale}/chef-tools/seo/${r.slug}`,
+              name: r.title,
+            })),
+          ],
+        }
+      : null;
+
   return (
     <>
       {/* JSON-LD schemas */}
@@ -391,6 +461,7 @@ export default async function IntentPageRoute({ params }: Props) {
         <JsonLd key={`img-${i}`} data={schema} />
       ))}
       {nutritionSchema && <JsonLd data={nutritionSchema} />}
+      {clusterListSchema && <JsonLd data={clusterListSchema} />}
 
       <div className="min-h-screen bg-background">
         {nav}
@@ -448,7 +519,7 @@ export default async function IntentPageRoute({ params }: Props) {
                         className="prose prose-neutral dark:prose-invert max-w-none"
                       >
                         <p className="text-base leading-relaxed whitespace-pre-line">
-                          {block.content}
+                          {renderInlineLinks(block.content, locale)}
                         </p>
                       </div>
                     );
@@ -570,6 +641,24 @@ export default async function IntentPageRoute({ params }: Props) {
           {/* ── Cluster Links (same ingredient — topical authority) ── */}
           {clusterLinks.length > 0 && (
             <section className="space-y-4">
+              {/* Hub link — ingredient page gets a strong inbound link */}
+              <Link
+                href={`/${locale}/chef-tools/ingredients/${page.entity_a}`}
+                className="flex items-center gap-3 rounded-xl border border-primary/30 bg-primary/5 hover:bg-primary/10 px-4 py-3 transition-colors group"
+              >
+                <span className="text-lg">📖</span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wide">
+                    {labels.readMore}
+                  </p>
+                  <p className="text-sm font-bold text-foreground group-hover:text-primary transition-colors capitalize">
+                    {entityName} — {labels.articles}
+                  </p>
+                </div>
+                <svg className="w-4 h-4 text-muted-foreground group-hover:text-primary shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
               <h2 className="text-xl font-semibold">
                 {labels.topics}: <span className="capitalize">{entityName}</span>
               </h2>
@@ -633,13 +722,13 @@ export default async function IntentPageRoute({ params }: Props) {
             </section>
           )}
 
-          {/* ── Back link ── */}
+          {/* ── Back link (Ingredient Hub) ── */}
           <div className="pt-4 border-t text-sm text-muted-foreground">
             <Link
               href={`/${locale}/chef-tools/ingredients/${page.entity_a}`}
-              className="hover:underline"
+              className="inline-flex items-center gap-1.5 hover:text-primary transition-colors font-medium"
             >
-              {labels.backTo} <span className="capitalize">{entityName}</span>
+              ← {labels.backTo} <span className="capitalize">{entityName}</span>
             </Link>
           </div>
         </main>

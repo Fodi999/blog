@@ -1,12 +1,12 @@
 import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { generateMetadata as genMeta } from '@/lib/metadata';
-import { fetchIngredient as apiFetchIngredient, fetchIngredientsMeta, fetchIngredientStates } from '@/lib/api';
+import { fetchIngredient as apiFetchIngredient, fetchIngredientsMeta, fetchIngredientStates, fetchIngredientIntentPages } from '@/lib/api';
 import type { ApiIngredient } from '@/lib/api';
 import { ChefToolsNav } from '../../ChefToolsNav';
 import { Link } from '@/i18n/routing';
 import Image from 'next/image';
-import { ChevronRight, Package, Leaf, Flame, Droplets, FlaskConical, Apple, Scale, Heart, CalendarDays, ShieldAlert, ArrowRight, ExternalLink } from 'lucide-react';
+import { ChevronRight, Package, Leaf, Flame, Droplets, FlaskConical, Apple, Scale, Heart, CalendarDays, ShieldAlert, ArrowRight, ExternalLink, BookOpen } from 'lucide-react';
 import type { Metadata } from 'next';
 import CategoryPage, { CATEGORY_MAP } from './category-page';
 import IngredientStateClient from './IngredientStateClient';
@@ -227,9 +227,10 @@ export default async function IngredientSlugPage({
   }
 
   /* ── individual ingredient page ── */
-  const [item, statesResp] = await Promise.all([
+  const [item, statesResp, intentPages] = await Promise.all([
     apiFetchIngredient(slug),
     fetchIngredientStates(slug).catch(() => null),
+    fetchIngredientIntentPages(slug, locale).catch(() => []),
   ]);
   if (!item) notFound();
 
@@ -782,6 +783,40 @@ export default async function IngredientSlugPage({
             </Section>
           );
         })()}
+
+        {/* ── Ingredient Article Hub (intent pages) ── */}
+        {intentPages.length > 0 && (
+          <Section
+            title={t4(
+              locale,
+              `Articles about ${name}`,
+              `Статьи о ${name}`,
+              `Artykuły o ${name}`,
+              `Статті про ${name}`,
+            )}
+            icon={<BookOpen className="h-4 w-4 text-primary" />}
+          >
+            <div className="divide-y divide-border/30">
+              {intentPages.map((p) => (
+                <Link
+                  key={p.slug}
+                  href={`/chef-tools/seo/${p.slug}` as never}
+                  className="flex items-center justify-between py-3 px-3 sm:px-4 hover:bg-muted/30 transition-colors group"
+                >
+                  <div className="flex flex-col gap-0.5 min-w-0">
+                    <span className="text-xs sm:text-sm font-bold text-foreground group-hover:text-primary transition-colors leading-snug truncate">
+                      {p.title}
+                    </span>
+                    <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">
+                      {p.intent_type}
+                    </span>
+                  </div>
+                  <ChevronRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary shrink-0 ml-2" />
+                </Link>
+              ))}
+            </div>
+          </Section>
+        )}
 
         {/* ── Back link ── */}
         <Link href="/chef-tools/ingredients" className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-primary hover:underline">
