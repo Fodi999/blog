@@ -1176,3 +1176,37 @@ export async function fetchRankingPage(
     ['ingredients'],
   );
 }
+
+// ─── Intent Pages (pSEO) ─────────────────────────────────────────────────────
+
+export type IntentPageFaq = { question: string; answer: string };
+
+export type IntentPage = {
+  id: string;
+  intent_type: string;
+  entity_a: string;
+  entity_b: string | null;
+  locale: string;
+  title: string;
+  description: string;
+  answer: string;
+  faq: IntentPageFaq[];
+  slug: string;
+  status: string;
+  published_at: string | null;
+  updated_at: string;
+};
+
+/**
+ * GET /public/intent-pages/:slug?locale=en
+ * Returns a single published intent page by slug.
+ */
+export async function fetchIntentPage(
+  slug: string,
+  locale: string,
+): Promise<IntentPage | null> {
+  return apiFetchFresh<IntentPage>(
+    `/public/intent-pages/${encodeURIComponent(slug)}?locale=${encodeURIComponent(locale)}`,
+    ['intent-pages'],
+  );
+}

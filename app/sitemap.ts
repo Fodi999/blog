@@ -99,8 +99,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       { path: '/chef-tools/recipe-analyzer', priority: 0.8, changeFrequency: 'weekly' },
       { path: '/chef-tools/flavor-pairing', priority: 0.8, changeFrequency: 'weekly' },
       { path: '/chef-tools/nutrition', priority: 0.85, changeFrequency: 'daily' },
-      { path: '/chef-tools/diet', priority: 0.85, changeFrequency: 'weekly' },
-      { path: '/chef-tools/ranking', priority: 0.85, changeFrequency: 'weekly' },
+      // /chef-tools/diet and /chef-tools/ranking have NO index page
+      // — only /chef-tools/diet/[flag] and /chef-tools/ranking/[metric] exist
       // Fish season — 12 monthly pages (slug = month name, matches [month] route)
       ...['january','february','march','april','may','june','july','august','september','october','november','december'].map((month) => ({
         path: `/chef-tools/fish-season/${month}`,

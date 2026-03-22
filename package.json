@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "seo-check": "node scripts/post-build-check.mjs",
+    "seo-check:full": "FULL_CHECK=1 node scripts/post-build-check.mjs",
+    "seo-check:local": "node scripts/post-build-check.mjs http://localhost:3000"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.12",
