@@ -17,8 +17,12 @@ const canonicalLocale = 'pl';
  */
 export const revalidate = 300;
 
-/** Fixed at build time — avoids marking every page as "updated today" on every deploy */
-const BUILD_DATE = new Date();
+/**
+ * Static content date — used ONLY for truly static pages (legal, about, etc.)
+ * Dynamic content (ingredients, recipes) uses their own updated_at from DB.
+ * Using a fixed date prevents Google from seeing "all 7000 pages updated simultaneously".
+ */
+const STATIC_DATE = new Date('2026-03-01');
 
 /** Normalize any date string to a valid Date. Falls back to yesterday (not a fixed date). */
 function toDate(raw?: string): Date {
@@ -97,9 +101,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       { path: '/chef-tools/nutrition', priority: 0.85, changeFrequency: 'daily' },
       { path: '/chef-tools/diet', priority: 0.85, changeFrequency: 'weekly' },
       { path: '/chef-tools/ranking', priority: 0.85, changeFrequency: 'weekly' },
-      // Fish season — 12 monthly pages
-      ...Array.from({ length: 12 }, (_, i) => ({
-        path: `/chef-tools/fish-season/${String(i + 1).padStart(2, '0')}`,
+      // Fish season — 12 monthly pages (slug = month name, matches [month] route)
+      ...['january','february','march','april','may','june','july','august','september','october','november','december'].map((month) => ({
+        path: `/chef-tools/fish-season/${month}`,
         priority: 0.7 as number,
         changeFrequency: 'monthly' as const,
       })),
@@ -125,7 +129,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticUrls: MetadataRoute.Sitemap = staticPages.flatMap(
     ({ path, priority, changeFrequency }) =>
       multiLocaleEntry(path, {
-        lastModified: BUILD_DATE,
+        lastModified: STATIC_DATE,
         changeFrequency,
         priority,
         images:
@@ -240,6 +244,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const howManyUrls: MetadataRoute.Sitemap = ingredientList
     ? ingredientList
         .filter((ing) => ing.slug)
+        .slice(0, 50) // cap at 50 ingredients to avoid sitemap bloat (50×14×4=2800 URLs)
         .flatMap((ing) =>
           HOW_MANY_COMBOS.flatMap(({ unit, measure }) =>
             multiLocaleEntry(
@@ -283,7 +288,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const recipeAnalysisUrls: MetadataRoute.Sitemap = RECIPE_TEMPLATES.flatMap(
     (recipe) =>
       multiLocaleEntry(`/chef-tools/recipe-analysis/${recipe.slug}`, {
-        lastModified: BUILD_DATE,
+        lastModified: STATIC_DATE,
         changeFrequency: 'weekly',
         priority: 0.85,
       })
@@ -294,7 +299,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const dietUrls: MetadataRoute.Sitemap = DIET_FLAGS.flatMap((flag) =>
     multiLocaleEntry(`/chef-tools/diet/${flag}`, {
-      lastModified: BUILD_DATE,
+      lastModified: STATIC_DATE,
       changeFrequency: 'weekly',
       priority: 0.85,
     })
@@ -309,7 +314,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const rankingUrls: MetadataRoute.Sitemap = RANKING_METRICS.flatMap((metric) =>
     multiLocaleEntry(`/chef-tools/ranking/${metric}`, {
-      lastModified: BUILD_DATE,
+      lastModified: STATIC_DATE,
       changeFrequency: 'weekly',
       priority: 0.85,
     })
