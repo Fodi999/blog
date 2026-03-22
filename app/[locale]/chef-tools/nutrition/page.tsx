@@ -1,5 +1,7 @@
 import { redirect } from 'next/navigation';
 
+export const revalidate = 86400; // static redirect, ISR 1 day
+
 export default async function NutritionPage({
   params,
 }: {

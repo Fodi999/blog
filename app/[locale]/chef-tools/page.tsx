@@ -3,8 +3,7 @@ import { generateMetadata as genMeta } from '@/lib/metadata';
 import { JsonLd } from '@/components/JsonLd';
 import { DashboardClient } from './dashboard/DashboardClient';
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 300;
+export const revalidate = 300; // ISR: 5 min
 
 export async function generateMetadata({
   params,

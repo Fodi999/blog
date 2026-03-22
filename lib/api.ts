@@ -1119,6 +1119,7 @@ export async function fetchDietPage(
 ): Promise<DietPageResponse | null> {
   return apiFetchFresh<DietPageResponse>(
     `/public/diet/${encodeURIComponent(flag)}?lang=${encodeURIComponent(lang)}&limit=${limit}`,
+    ['ingredients'],
   );
 }
 
@@ -1157,5 +1158,6 @@ export async function fetchRankingPage(
 ): Promise<RankingPageResponse | null> {
   return apiFetchFresh<RankingPageResponse>(
     `/public/ranking/${encodeURIComponent(metric)}?lang=${encodeURIComponent(lang)}&limit=${limit}`,
+    ['ingredients'],
   );
 }

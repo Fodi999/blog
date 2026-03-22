@@ -15,7 +15,7 @@ import type { Metadata } from 'next';
 import IngredientStateClient from '../IngredientStateClient';
 import { JsonLd } from '@/components/JsonLd';
 
-export const dynamic = "force-dynamic";
+export const revalidate = 86400; // ISR: 1 day, on-demand via revalidateTag
 
 /* ─── SEO-indexable states (high search volume) ────────────────────── */
 
