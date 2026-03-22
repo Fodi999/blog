@@ -1205,8 +1205,19 @@ export async function fetchIntentPage(
   slug: string,
   locale: string,
 ): Promise<IntentPage | null> {
-  return apiFetchFresh<IntentPage>(
+  // API returns faq as [{q, a}], but our type expects [{question, answer}]
+  type RawFaq = { q?: string; a?: string; question?: string; answer?: string };
+  type RawPage = Omit<IntentPage, 'faq'> & { faq: RawFaq[] };
+  const raw = await apiFetchFresh<RawPage>(
     `/public/intent-pages/${encodeURIComponent(slug)}?locale=${encodeURIComponent(locale)}`,
     ['intent-pages'],
   );
+  if (!raw) return null;
+  return {
+    ...raw,
+    faq: (raw.faq || []).map((f) => ({
+      question: f.question || f.q || '',
+      answer: f.answer || f.a || '',
+    })),
+  };
 }
