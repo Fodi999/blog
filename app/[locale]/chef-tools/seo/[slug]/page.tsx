@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { fetchIntentPage } from '@/lib/api';
+import { fetchIntentPage, fetchRelatedPages } from '@/lib/api';
 import type { Metadata } from 'next';
 import { ChefToolsNav } from '../../ChefToolsNav';
 import { JsonLd } from '@/components/JsonLd';
@@ -38,8 +38,9 @@ export default async function IntentPageRoute({ params }: Props) {
   const { locale, slug } = await params;
   setRequestLocale(locale);
 
-  const [page, t] = await Promise.all([
+  const [page, related, t] = await Promise.all([
     fetchIntentPage(slug, locale),
+    fetchRelatedPages(slug, locale),
     getTranslations({ locale, namespace: 'chefTools' }),
   ]);
   if (!page) notFound();
@@ -144,6 +145,34 @@ export default async function IntentPageRoute({ params }: Props) {
                     <h3 className="font-semibold text-base">{f.question}</h3>
                     <p className="text-sm text-muted-foreground leading-relaxed">{f.answer}</p>
                   </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Related pages — internal linking */}
+          {related.length > 0 && (
+            <section className="space-y-4">
+              <h2 className="text-xl font-semibold">
+                {locale === 'ru' ? 'Читайте также' :
+                 locale === 'pl' ? 'Przeczytaj również' :
+                 locale === 'uk' ? 'Читайте також' :
+                 'Related Articles'}
+              </h2>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {related.map((r) => (
+                  <a
+                    key={r.slug}
+                    href={`/${locale}/chef-tools/seo/${r.slug}`}
+                    className="block border rounded-xl p-4 hover:bg-muted/40 transition-colors group"
+                  >
+                    <span className="text-xs text-muted-foreground uppercase tracking-wide">
+                      {r.intent_type} · {r.entity_a.replace(/-/g, ' ')}
+                    </span>
+                    <h3 className="font-medium mt-1 group-hover:underline leading-snug">
+                      {r.title}
+                    </h3>
+                  </a>
                 ))}
               </div>
             </section>

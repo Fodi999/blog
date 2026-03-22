@@ -1221,3 +1221,27 @@ export async function fetchIntentPage(
     })),
   };
 }
+
+// ─── Related Intent Pages (internal linking) ────────────────────────────────
+
+export type RelatedIntentPage = {
+  title: string;
+  slug: string;
+  intent_type: string;
+  entity_a: string;
+};
+
+/**
+ * GET /public/intent-pages/:slug/related?locale=en
+ * Returns up to 5 related published intent pages for internal linking.
+ */
+export async function fetchRelatedPages(
+  slug: string,
+  locale: string,
+): Promise<RelatedIntentPage[]> {
+  const pages = await apiFetchFresh<RelatedIntentPage[]>(
+    `/public/intent-pages/${encodeURIComponent(slug)}/related?locale=${encodeURIComponent(locale)}`,
+    ['intent-pages-related'],
+  );
+  return pages ?? [];
+}
