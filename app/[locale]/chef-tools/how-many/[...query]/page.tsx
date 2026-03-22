@@ -10,6 +10,7 @@ import { JsonLd } from '@/components/JsonLd';
 import { fetchEquivalents, fetchIngredients, fetchIngredient } from '@/lib/api';
 import type { Metadata } from 'next';
 import { ChefToolsNav } from '../../ChefToolsNav';
+import { generateHowManySEO } from '@/lib/seo-ingredients';
 
 export const revalidate = 86400;
 
@@ -183,9 +184,10 @@ export async function generateMetadata({
   const toEq = data.equivalents.find((e) => e.unit === toApi);
   if (!toEq) return {};
 
+  const seo = generateHowManySEO(data.name, fromApi, toApi, toEq.value, locale);
   return genMeta({
-    title:       buildH1(fromApi, toApi, data.name, locale),
-    description: buildAnswer(fromApi, toApi, data.name, toEq.value, locale),
+    title:       seo.title,
+    description: seo.description,
     locale: locale as 'pl' | 'en' | 'uk' | 'ru',
     path: `/chef-tools/how-many/${query[0]}`,
   });

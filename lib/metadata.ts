@@ -27,6 +27,8 @@ interface GenerateMetadataParams {
   // Optional: choose x-default locale
   xDefaultLocale?: 'pl' | 'en' | 'uk' | 'ru';
   article?: ArticleMeta;
+  /** Set true to add noindex,follow — thin/duplicate pages that shouldn't be indexed */
+  noIndex?: boolean;
 }
 
 const articleTitleSuffix: Record<string, string> = {
@@ -45,6 +47,7 @@ export function generateMetadata({
   availableLocales,
   xDefaultLocale = 'pl',
   article,
+  noIndex = false,
 }: GenerateMetadataParams): Metadata {
   const normalizedPath = path.endsWith('/') && path !== '/' ? path.slice(0, -1) : path;
   const url = `${BASE_URL}/${locale}${normalizedPath}`;
@@ -107,10 +110,10 @@ export function generateMetadata({
       images: [image],
     },
     robots: {
-      index: true,
+      index: !noIndex,
       follow: true,
       googleBot: {
-        index: true,
+        index: !noIndex,
         follow: true,
         'max-video-preview': -1,
         'max-image-preview': 'large',

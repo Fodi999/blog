@@ -17,6 +17,10 @@ import { JsonLd } from '@/components/JsonLd';
 
 export const dynamic = "force-dynamic";
 
+/* ─── SEO-indexable states (high search volume) ────────────────────── */
+
+const INDEXABLE_STATES: ReadonlySet<string> = new Set(['raw', 'boiled', 'fried']);
+
 /* ─── valid states ─────────────────────────────────────────────────────── */
 
 const VALID_STATES = [
@@ -115,6 +119,7 @@ export async function generateMetadata({
     locale: locale as 'pl' | 'en' | 'uk' | 'ru',
     path: `/chef-tools/ingredients/${slug}/${state}`,
     image: item.og_image ?? item.image_url ?? undefined,
+    noIndex: !INDEXABLE_STATES.has(state),
   });
 }
 

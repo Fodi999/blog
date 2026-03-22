@@ -1084,3 +1084,78 @@ export async function fetchRecipeAnalysis(
     return null;
   }
 }
+
+// ─── Diet Pages ───────────────────────────────────────────────────────────────
+
+export type DietProduct = {
+  slug: string;
+  name_en: string | null;
+  name_ru: string | null;
+  name_pl: string | null;
+  name_uk: string | null;
+  product_type: string | null;
+  image_url: string | null;
+  calories_kcal: number | null;
+  protein_g: number | null;
+  fat_g: number | null;
+  carbs_g: number | null;
+};
+
+export type DietPageResponse = {
+  lang: string;
+  flag: string;
+  total: number;
+  products: DietProduct[];
+};
+
+/**
+ * GET /public/diet/:flag?lang=en&limit=200
+ * Returns all products matching a diet flag.
+ */
+export async function fetchDietPage(
+  flag: string,
+  lang = 'en',
+  limit = 200,
+): Promise<DietPageResponse | null> {
+  return apiFetchFresh<DietPageResponse>(
+    `/public/diet/${encodeURIComponent(flag)}?lang=${encodeURIComponent(lang)}&limit=${limit}`,
+  );
+}
+
+// ─── Ranking Pages ────────────────────────────────────────────────────────────
+
+export type RankingProduct = {
+  rank: number | null;
+  slug: string;
+  name_en: string | null;
+  name_ru: string | null;
+  name_pl: string | null;
+  name_uk: string | null;
+  product_type: string | null;
+  image_url: string | null;
+  metric_value: number | null;
+};
+
+export type RankingPageResponse = {
+  lang: string;
+  metric: string;
+  metric_label_en: string;
+  unit: string;
+  order: string;
+  total: number;
+  products: RankingProduct[];
+};
+
+/**
+ * GET /public/ranking/:metric?lang=en&limit=50
+ * Returns ranked products by a nutritional metric.
+ */
+export async function fetchRankingPage(
+  metric: string,
+  lang = 'en',
+  limit = 50,
+): Promise<RankingPageResponse | null> {
+  return apiFetchFresh<RankingPageResponse>(
+    `/public/ranking/${encodeURIComponent(metric)}?lang=${encodeURIComponent(lang)}&limit=${limit}`,
+  );
+}

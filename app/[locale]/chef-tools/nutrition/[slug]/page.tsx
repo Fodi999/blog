@@ -7,6 +7,7 @@ import { fetchIngredient, fetchIngredients } from '@/lib/api';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { ChefToolsNav } from '../../ChefToolsNav';
+import { generateNutritionSEO } from '@/lib/seo-ingredients';
 
 export const revalidate = 86400;
 
@@ -76,13 +77,13 @@ export async function generateMetadata({
   setRequestLocale(locale);
   const ingredient = await fetchIngredient(slug);
   if (!ingredient) return {};
-  const t = await getTranslations({ locale, namespace: 'chefTools' });
-  const name = localizedName(ingredient, locale);
+  const seo = generateNutritionSEO(ingredient, locale);
   return genMeta({
-    title: `${name} — ${t('nutrition.title')}`,
-    description: ingredient.description ?? `${name}: ${ingredient.calories} kcal, protein ${ingredient.protein ?? '?'}g, fat ${ingredient.fat ?? '?'}g, carbs ${ingredient.carbs ?? '?'}g per 100g.`,
+    title: seo.title,
+    description: seo.description,
     locale: locale as 'pl' | 'en' | 'uk' | 'ru',
     path: `/chef-tools/nutrition/${slug}`,
+    image: ingredient.og_image ?? ingredient.image_url ?? undefined,
   });
 }
 

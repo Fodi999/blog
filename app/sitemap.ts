@@ -63,6 +63,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       { path: '/chef-tools/recipe-analyzer', priority: 0.8, changeFrequency: 'weekly' },
       { path: '/chef-tools/flavor-pairing', priority: 0.8, changeFrequency: 'weekly' },
       { path: '/chef-tools/nutrition', priority: 0.85, changeFrequency: 'daily' },
+      { path: '/chef-tools/diet', priority: 0.85, changeFrequency: 'weekly' },
+      { path: '/chef-tools/ranking', priority: 0.85, changeFrequency: 'weekly' },
       // Fish season — 12 monthly pages
       ...Array.from({ length: 12 }, (_, i) => ({
         path: `/chef-tools/fish-season/${String(i + 1).padStart(2, '0')}`,
@@ -170,6 +172,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           lastModified: toDate(ing.updated_at ?? undefined),
           changeFrequency: 'monthly' as const,
           priority: 0.8,
+          // Image sitemap: Google Images will index product photos
+          ...(ing.image_url ? { images: [ing.image_url] } : {}),
           alternates: {
             languages: {
               ...Object.fromEntries(
@@ -190,6 +194,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           lastModified: toDate(ing.updated_at ?? undefined),
           changeFrequency: 'monthly' as const,
           priority: 0.75,
+          // Image sitemap: Google Images will index product photos
+          ...(ing.image_url ? { images: [ing.image_url] } : {}),
           alternates: {
             languages: {
               ...Object.fromEntries(
@@ -246,17 +252,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     : [];
 
   // ─── Ingredient state pages ──────────────────────────────────────────
-  // /chef-tools/ingredients/{slug}/{state} — 10 states per ingredient
-  const PROCESSING_STATES = [
-    'raw', 'boiled', 'steamed', 'baked', 'grilled',
-    'fried', 'smoked', 'frozen', 'dried', 'pickled',
-  ];
+  // Only high-value states go into sitemap (raw/boiled/fried have real search volume).
+  // Other states (steamed, baked, grilled, smoked, frozen, dried, pickled) are
+  // rendered with noindex — they exist for users but won't pollute Google's index.
+  const INDEXABLE_STATES = ['raw', 'boiled', 'fried'];
 
   const ingredientStateUrls: MetadataRoute.Sitemap = ingredientList
     ? ingredientList
         .filter((ing) => ing.slug)
         .flatMap((ing) =>
-          PROCESSING_STATES.map((state) => ({
+          INDEXABLE_STATES.map((state) => ({
             url: `${BASE_URL}/${canonicalLocale}/chef-tools/ingredients/${ing.slug}/${state}`,
             lastModified: toDate(ing.updated_at ?? undefined),
             changeFrequency: 'weekly' as const,
@@ -297,5 +302,51 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }),
   );
 
-  return [...staticUrls, ...postUrls, ...ingredientUrls, ...ingredientProfileUrls, ...howManyUrls, ...ingredientStateUrls, ...recipeAnalysisUrls];
+  // ─── Diet pages ──────────────────────────────────────────────────────
+  // 7 diets × 4 locales = 28 pages
+  const DIET_FLAGS = ['vegan', 'vegetarian', 'keto', 'paleo', 'gluten-free', 'mediterranean', 'low-carb'];
+
+  const dietUrls: MetadataRoute.Sitemap = DIET_FLAGS.flatMap((flag) => [
+    {
+      url: `${BASE_URL}/${canonicalLocale}/chef-tools/diet/${flag}`,
+      lastModified: BUILD_DATE,
+      changeFrequency: 'weekly' as const,
+      priority: 0.85,
+      alternates: {
+        languages: {
+          ...Object.fromEntries(
+            locales.map((l) => [l, `${BASE_URL}/${l}/chef-tools/diet/${flag}`])
+          ),
+          'x-default': `${BASE_URL}/${canonicalLocale}/chef-tools/diet/${flag}`,
+        },
+      },
+    },
+  ]);
+
+  // ─── Ranking pages ──────────────────────────────────────────────────
+  // 15 metrics × 4 locales = 60 pages
+  const RANKING_METRICS = [
+    'calories', 'protein', 'fat', 'carbs', 'fiber', 'sugar',
+    'vitamin-c', 'vitamin-d', 'vitamin-b12',
+    'iron', 'calcium', 'potassium', 'magnesium', 'zinc', 'sodium',
+  ];
+
+  const rankingUrls: MetadataRoute.Sitemap = RANKING_METRICS.flatMap((metric) => [
+    {
+      url: `${BASE_URL}/${canonicalLocale}/chef-tools/ranking/${metric}`,
+      lastModified: BUILD_DATE,
+      changeFrequency: 'weekly' as const,
+      priority: 0.85,
+      alternates: {
+        languages: {
+          ...Object.fromEntries(
+            locales.map((l) => [l, `${BASE_URL}/${l}/chef-tools/ranking/${metric}`])
+          ),
+          'x-default': `${BASE_URL}/${canonicalLocale}/chef-tools/ranking/${metric}`,
+        },
+      },
+    },
+  ]);
+
+  return [...staticUrls, ...postUrls, ...ingredientUrls, ...ingredientProfileUrls, ...howManyUrls, ...ingredientStateUrls, ...recipeAnalysisUrls, ...dietUrls, ...rankingUrls];
 }

@@ -11,6 +11,7 @@ import type { Metadata } from 'next';
 import CategoryPage, { CATEGORY_MAP } from './category-page';
 import IngredientStateClient from './IngredientStateClient';
 import { JsonLd } from '@/components/JsonLd';
+import { generateIngredientSEO } from '@/lib/seo-ingredients';
 
 export const revalidate = 86400;
 
@@ -145,27 +146,20 @@ export async function generateMetadata({
   const item = await apiFetchIngredient(slug);
   if (!item) return {};
 
-  const name = localName(item, locale);
-  const desc = localDesc(item, locale);
-
-  // Use AI-generated SEO data if available
-  const seoTitle = item.seo_title
-    ? item.seo_title
-    : `${name} — Nutrition Facts, Calories, Protein`;
-  const seoDesc = item.seo_description
-    ? item.seo_description
-    : desc ?? `${name} — nutrition facts and kitchen conversions`;
+  // SEO engine: locale-specific formulas (PL/RU/UK), EN uses backend seo_title
+  const seo = generateIngredientSEO(item, locale);
 
   const meta = genMeta({
-    title: seoTitle,
-    description: seoDesc,
+    title: seo.title,
+    description: seo.description,
     locale: locale as 'pl' | 'en' | 'uk' | 'ru',
     path: `/chef-tools/ingredients/${slug}`,
-    image: item.og_image ?? undefined,
+    image: item.og_image ?? item.image_url ?? undefined,
   });
 
-  // Override OpenGraph with dedicated OG fields if available
-  if (item.og_title || item.og_description) {
+  // OG override: backend og_title/og_description are English-only.
+  // For PL/RU/UK, use locale SEO title/desc to avoid EN leaking into hreflang variants.
+  if (locale === 'en' && (item.og_title || item.og_description)) {
     meta.openGraph = {
       ...meta.openGraph,
       ...(item.og_title && { title: item.og_title }),
@@ -321,7 +315,16 @@ export default async function IngredientSlugPage({
       '@type': 'Thing',
       additionalType: 'https://schema.org/Food',
       name,
-      ...(absImage && { image: absImage }),
+      ...(absImage && {
+        image: {
+          '@type': 'ImageObject',
+          contentUrl: absImage,
+          url: absImage,
+          caption: `${name} — ${t4(locale, 'nutrition facts per 100g', 'пищевая ценность на 100г', 'wartości odżywcze na 100g', 'харчова цінність на 100г')}`,
+          width: 800,
+          height: 800,
+        },
+      }),
       ...(description && { description }),
       ...(item.category && { category: item.category }),
       nutrition: nutritionLd,
@@ -375,8 +378,8 @@ export default async function IngredientSlugPage({
         {/* ── Header ── */}
         <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 mb-6 sm:mb-10">
           {item.image_url ? (
-            <div className="relative w-32 h-32 sm:w-56 sm:h-auto sm:aspect-square mx-auto sm:mx-0 rounded-2xl overflow-hidden border border-border/50 bg-muted shrink-0">
-              <Image src={item.image_url} alt={name} fill className="object-cover" unoptimized />
+            <div className="w-32 h-32 sm:w-56 sm:aspect-square mx-auto sm:mx-0 rounded-2xl overflow-hidden border border-border/50 bg-muted shrink-0">
+              <Image src={item.image_url} alt={name} width={800} height={800} className="object-cover w-full h-full" unoptimized />
             </div>
           ) : (
             <div className="w-32 h-32 sm:w-56 sm:h-auto sm:aspect-square mx-auto sm:mx-0 rounded-2xl border border-border/50 bg-muted flex items-center justify-center shrink-0">
