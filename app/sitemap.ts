@@ -1,6 +1,6 @@
 import { MetadataRoute } from 'next';
 import { getAllPosts } from '@/lib/posts';
-import { fetchIngredients } from '@/lib/api';
+import { fetchIngredients, fetchIngredientsStatesMap } from '@/lib/api';
 import { locales } from '@/i18n';
 import { CATEGORY_MAP } from './[locale]/chef-tools/ingredients/[slug]/category-page';
 import { CONVERSION_MAP } from './[locale]/chef-tools/converter/[conversion]/page';
@@ -255,23 +255,28 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     : [];
 
   // ─── Ingredient state pages ──────────────────────────────────────────
-  // Only high-value states go into sitemap (raw/boiled/fried have real search volume).
-  // Other states (steamed, baked, grilled, smoked, frozen, dried, pickled) are
-  // rendered with noindex — they exist for users but won't pollute Google's index.
-  const INDEXABLE_STATES = ['raw', 'boiled', 'fried'];
+  // ✅ Only emit state URLs that ACTUALLY EXIST in the database.
+  // We fetch a single { slug → [states] } map from the backend (one query).
+  // This eliminates 404s caused by sitemap listing states that haven't been
+  // generated for a given ingredient.
+  // Only high-value states (raw/boiled/fried) are indexed — others get noindex.
+  const INDEXABLE_STATES = new Set(['raw', 'boiled', 'fried']);
 
-  const ingredientStateUrls: MetadataRoute.Sitemap = ingredientList
+  const statesMap = await fetchIngredientsStatesMap().catch(() => null);
+
+  const ingredientStateUrls: MetadataRoute.Sitemap = ingredientList && statesMap
     ? ingredientList
-        .filter((ing) => ing.slug)
-        .flatMap((ing) =>
-          INDEXABLE_STATES.flatMap((state) =>
+        .filter((ing) => ing.slug && statesMap[ing.slug])
+        .flatMap((ing) => {
+          const availableStates = statesMap[ing.slug!].filter((s) => INDEXABLE_STATES.has(s));
+          return availableStates.flatMap((state) =>
             multiLocaleEntry(`/chef-tools/ingredients/${ing.slug}/${state}`, {
               lastModified: toDate(ing.updated_at ?? undefined),
               changeFrequency: 'weekly',
               priority: 0.7,
             })
-          )
-        )
+          );
+        })
     : [];
 
   // ─── Recipe analysis pages ───────────────────────────────────────────

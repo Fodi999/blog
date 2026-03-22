@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { generateMetadata as genMeta } from '@/lib/metadata';
 import {
@@ -142,7 +142,13 @@ export default async function IngredientStatePage({
   ]);
 
   if (!item) notFound();
-  if (!stateDetail) notFound();
+
+  // ✅ State doesn't exist in DB → 301 redirect to ingredient profile page.
+  // This tells Google the state URL was valid but the content moved/doesn't exist,
+  // and passes SEO juice to the ingredient page instead of returning 404.
+  if (!stateDetail) {
+    redirect(`/${locale}/chef-tools/ingredients/${slug}`);
+  }
 
   const t = await getTranslations({ locale, namespace: 'chefTools' });
   const name = localName(item, locale);

@@ -997,6 +997,21 @@ export async function fetchIngredientStateSingle(slug: string, state: string): P
   );
 }
 
+/**
+ * GET /public/ingredients-states-map
+ *
+ * Returns { slug: [state, ...] } for all active ingredients that have states in DB.
+ * Used by sitemap.ts to emit ONLY state URLs that actually exist — avoids 404s
+ * for ingredients where states haven't been generated yet.
+ * Single round-trip instead of N+1 per ingredient.
+ */
+export async function fetchIngredientsStatesMap(): Promise<Record<string, string[]> | null> {
+  return apiFetchFresh<Record<string, string[]>>(
+    "/public/ingredients-states-map",
+    ["ingredients-states-map"],
+  );
+}
+
 // ─── Recipe Analysis (POST) ──────────────────────────────────────────────
 
 export type RecipeAnalysisNutrition = {
