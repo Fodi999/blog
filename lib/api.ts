@@ -1181,6 +1181,11 @@ export async function fetchRankingPage(
 
 export type IntentPageFaq = { question: string; answer: string };
 
+export type ContentBlock =
+  | { type: 'heading'; level: number; text: string }
+  | { type: 'text'; content: string }
+  | { type: 'image'; key: string; alt: string; src?: string };
+
 export type IntentPage = {
   id: string;
   intent_type: string;
@@ -1191,6 +1196,7 @@ export type IntentPage = {
   description: string;
   answer: string;
   faq: IntentPageFaq[];
+  content_blocks: ContentBlock[];
   slug: string;
   status: string;
   published_at: string | null;

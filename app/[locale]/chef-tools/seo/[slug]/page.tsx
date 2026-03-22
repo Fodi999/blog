@@ -1,7 +1,9 @@
 import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { fetchIntentPage, fetchRelatedPages } from '@/lib/api';
+import type { ContentBlock } from '@/lib/api';
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import { ChefToolsNav } from '../../ChefToolsNav';
 import { JsonLd } from '@/components/JsonLd';
 
@@ -83,6 +85,18 @@ export default async function IntentPageRoute({ params }: Props) {
   } : null;
 
   // ── Article JSON-LD ──────────────────────────────────────────────────────
+  // Check if we have structured content_blocks
+  const hasBlocks = page.content_blocks && page.content_blocks.length > 0;
+
+  // Find hero image for OpenGraph
+  const heroBlock = hasBlocks
+    ? page.content_blocks.find(
+        (b): b is Extract<ContentBlock, { type: 'image' }> =>
+          b.type === 'image' && b.key === 'hero' && !!b.src,
+      )
+    : undefined;
+
+  // ── Article JSON-LD (with image if available) ────────────────────────────
   const articleSchema = {
     '@context': 'https://schema.org',
     '@type': 'Article',
@@ -92,6 +106,7 @@ export default async function IntentPageRoute({ params }: Props) {
     inLanguage: locale,
     datePublished: page.published_at ?? page.updated_at,
     dateModified: page.updated_at,
+    ...(heroBlock?.src ? { image: heroBlock.src } : {}),
     author: { '@type': 'Person', name: 'Dima Fomin' },
     publisher: {
       '@type': 'Organization',
@@ -109,26 +124,74 @@ export default async function IntentPageRoute({ params }: Props) {
         {nav}
 
         <main className="max-w-3xl mx-auto px-4 py-10 space-y-10">
-          {/* Header */}
-          <header className="space-y-3">
-            <div className="flex items-center gap-2 text-xs text-muted-foreground uppercase tracking-wide">
-              <span>{page.intent_type}</span>
-              <span>·</span>
-              <span>{page.entity_a.replace(/-/g, ' ')}</span>
-              {page.entity_b && <><span>·</span><span>{page.entity_b.replace(/-/g, ' ')}</span></>}
-            </div>
-            <h1 className="text-3xl sm:text-4xl font-bold leading-tight tracking-tight">
-              {page.title}
-            </h1>
-            <p className="text-lg text-muted-foreground leading-relaxed">
-              {page.description}
-            </p>
-          </header>
+          {/* Breadcrumb */}
+          <div className="flex items-center gap-2 text-xs text-muted-foreground uppercase tracking-wide">
+            <span>{page.intent_type}</span>
+            <span>·</span>
+            <span>{page.entity_a.replace(/-/g, ' ')}</span>
+            {page.entity_b && <><span>·</span><span>{page.entity_b.replace(/-/g, ' ')}</span></>}
+          </div>
 
-          {/* Main answer */}
-          <section className="prose prose-neutral dark:prose-invert max-w-none">
-            <p className="text-base leading-relaxed whitespace-pre-line">{page.answer}</p>
-          </section>
+          {/* Structured article (content_blocks) OR legacy answer */}
+          {hasBlocks ? (
+            <article className="space-y-8">
+              {page.content_blocks.map((block, i) => {
+                switch (block.type) {
+                  case 'heading':
+                    return block.level === 1 ? (
+                      <h1 key={i} className="text-3xl sm:text-4xl font-bold leading-tight tracking-tight">
+                        {block.text}
+                      </h1>
+                    ) : (
+                      <h2 key={i} className="text-xl sm:text-2xl font-semibold mt-2">
+                        {block.text}
+                      </h2>
+                    );
+                  case 'text':
+                    return (
+                      <div key={i} className="prose prose-neutral dark:prose-invert max-w-none">
+                        <p className="text-base leading-relaxed whitespace-pre-line">
+                          {block.content}
+                        </p>
+                      </div>
+                    );
+                  case 'image':
+                    return block.src ? (
+                      <figure key={i} className="my-6">
+                        <Image
+                          src={block.src}
+                          alt={block.alt}
+                          width={800}
+                          height={500}
+                          className="rounded-xl w-full h-auto object-cover"
+                          loading={block.key === 'hero' ? 'eager' : 'lazy'}
+                        />
+                        <figcaption className="text-xs text-muted-foreground mt-2 text-center">
+                          {block.alt}
+                        </figcaption>
+                      </figure>
+                    ) : null; // No src yet — image not uploaded, skip rendering
+                  default:
+                    return null;
+                }
+              })}
+            </article>
+          ) : (
+            /* Legacy: title + description + answer only */
+            <>
+              <header className="space-y-3">
+                <h1 className="text-3xl sm:text-4xl font-bold leading-tight tracking-tight">
+                  {page.title}
+                </h1>
+                <p className="text-lg text-muted-foreground leading-relaxed">
+                  {page.description}
+                </p>
+              </header>
+              <section className="prose prose-neutral dark:prose-invert max-w-none">
+                <p className="text-base leading-relaxed whitespace-pre-line">{page.answer}</p>
+              </section>
+            </>
+          )}
 
           {/* FAQ */}
           {page.faq && page.faq.length > 0 && (
