@@ -39,6 +39,8 @@ export interface SmartResponse {
   confidence:      ConfidenceInfo;
   next_actions:    NextAction[];
   explain:         string[];
+  variants:        RecipeVariant[];
+  mode:            'build' | 'analyze';
   session_id:      string;
   meta:            SmartMeta;
 }
@@ -163,4 +165,32 @@ export interface SmartMeta {
   cached:         boolean;
   cache_key:      string;
   engine_version: string;
+}
+
+/* ── Recipe Builder v2 types ───────────────────────────────── */
+
+export type IngredientRole = 'base' | 'side' | 'sauce' | 'aromatic' | 'fat';
+
+export type DishType = 'salad' | 'bowl' | 'main_course' | 'sauce_based';
+
+export type VariantType = 'healthy' | 'balanced' | 'heavy';
+
+export interface VariantIngredient {
+  slug:       string;
+  name:       string;
+  image_url?: string | null;
+  role:       IngredientRole;
+  grams:      number;
+  calories:   number;
+}
+
+export interface RecipeVariant {
+  variant_type:   VariantType;
+  title:          string;
+  dish_type:      DishType;
+  ingredients:    VariantIngredient[];
+  total_calories: number;
+  score:          number;        // 0–100
+  balance_score:  number;        // 0–100  real flavor balance
+  explanation:    string;
 }

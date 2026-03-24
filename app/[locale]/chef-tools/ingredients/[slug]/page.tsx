@@ -146,31 +146,36 @@ export async function generateMetadata({
   const item = await apiFetchIngredient(slug);
   if (!item) return {};
 
-  // SEO engine: locale-specific formulas (PL/RU/UK), EN uses backend seo_title
-  const seo = generateIngredientSEO(item, locale);
+  // Frontend SEO engine — locale-specific formulas win over static backend EN fields
+  const generatedSEO = generateIngredientSEO(item, locale);
+
+  // Optional per-locale backend override (e.g. seo_title_pl / seo_title_ru from CMS)
+  const seoTitle =
+    (item as Record<string, unknown>)[`seo_title_${locale}`] as string | undefined
+    || generatedSEO.title;
+  const seoDesc =
+    (item as Record<string, unknown>)[`seo_description_${locale}`] as string | undefined
+    || generatedSEO.description;
 
   const meta = genMeta({
-    title: seo.title,
-    description: seo.description,
+    title: seoTitle,
+    description: seoDesc,
     locale: locale as 'pl' | 'en' | 'uk' | 'ru',
     path: `/chef-tools/ingredients/${slug}`,
     image: item.og_image ?? item.image_url ?? undefined,
   });
 
-  // OG override: backend og_title/og_description are English-only.
-  // For PL/RU/UK, use locale SEO title/desc to avoid EN leaking into hreflang variants.
-  if (locale === 'en' && (item.og_title || item.og_description)) {
-    meta.openGraph = {
-      ...meta.openGraph,
-      ...(item.og_title && { title: item.og_title }),
-      ...(item.og_description && { description: item.og_description }),
-    };
-    meta.twitter = {
-      ...meta.twitter,
-      ...(item.og_title && { title: item.og_title }),
-      ...(item.og_description && { description: item.og_description }),
-    };
-  }
+  // OG / Twitter always use the resolved locale SEO title — never raw EN backend fields
+  meta.openGraph = {
+    ...meta.openGraph,
+    title: locale === 'en' && item.og_title ? item.og_title : seoTitle,
+    description: locale === 'en' && item.og_description ? item.og_description : seoDesc,
+  };
+  meta.twitter = {
+    ...meta.twitter,
+    title: locale === 'en' && item.og_title ? item.og_title : seoTitle,
+    description: locale === 'en' && item.og_description ? item.og_description : seoDesc,
+  };
 
   return meta;
 }
