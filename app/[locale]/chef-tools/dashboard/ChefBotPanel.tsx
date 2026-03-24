@@ -11,7 +11,7 @@
  */
 
 import { useState, useEffect, useRef } from 'react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import {
   X, Plus, ChefHat, Zap, ArrowRight, Flame,
   Shield, Check, Lightbulb, BarChart3,
@@ -30,6 +30,7 @@ export type DishIngredient = {
   name: string;
   image_url?: string | null;
   grams?: number;
+  role?: string;
 };
 
 export type ChefBotPanelProps = {
@@ -172,6 +173,7 @@ export function ChefBotPanel({
   onRemoveExtra,
   onSelectIngredient,
 }: ChefBotPanelProps) {
+  const locale = useLocale();
   const t = useTranslations('chefTools.dashboard');
 
   const addedSlugs = new Set([primarySlug, ...extras.map((e) => e.slug)]);
@@ -229,10 +231,10 @@ export function ChefBotPanel({
       </div>
 
       {/* ══════════════════════════════════════════════════════
-          ① DISH FORMULA — [ Egg ] + [ Bacon ] + [ Avocado ]
+          ① DISH FORMULA — Grouped by Roles
           ══════════════════════════════════════════════════════ */}
       <div>
-        <div className="flex items-center justify-between mb-2.5">
+        <div className="flex items-center justify-between mb-4">
           <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
             🍽 {t('currentDish')}
           </p>
@@ -246,29 +248,54 @@ export function ChefBotPanel({
           )}
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
-          <DishChip name={primaryName} image_url={primaryImage} isPrimary />
-          {extras.map((e) => (
-            <span key={e.slug} className="contents">
-              <PlusSign />
-              <DishChip
-                name={e.name}
-                image_url={e.image_url}
-                isPrimary={false}
-                onRemove={() => onRemoveExtra(e.slug)}
-              />
-            </span>
-          ))}
-          {/* Ghost "add" slot */}
-          {extras.length < 5 && (
-            <>
-              <PlusSign />
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl border-2 border-dashed border-primary/20 text-primary/40 text-[11px] font-bold cursor-default">
-                <Plus className="h-3 w-3" />
-                ?
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-4">
+          {(() => {
+            const allIngredients = [
+              { slug: primarySlug, name: primaryName, image_url: primaryImage, role: 'base', isPrimary: true },
+              ...extras.map(e => ({ ...e, isPrimary: false }))
+            ];
+
+            const roleGroups = [
+              { id: 'base', emoji: '🥩', title: locale === 'ru' ? 'Основное' : 'Main', items: [] as typeof allIngredients },
+              { id: 'side', emoji: '🥦', title: locale === 'ru' ? 'Гарнир' : 'Garnish', items: [] as typeof allIngredients },
+              { id: 'aromatic', emoji: '🧄', title: locale === 'ru' ? 'Ароматика' : 'Aromatic', items: [] as typeof allIngredients },
+              { id: 'fat', emoji: '🧈', title: locale === 'ru' ? 'Жиры / соус' : 'Fats & Sauces', items: [] as typeof allIngredients },
+              { id: 'other', emoji: '🍴', title: locale === 'ru' ? 'Другое' : 'Other', items: [] as typeof allIngredients },
+            ];
+
+            allIngredients.forEach(ing => {
+              let r = ing.role || 'other';
+              if (r === 'sauce') r = 'fat'; // merge sauce and fat
+              const group = roleGroups.find(g => g.id === r) || roleGroups.find(g => g.id === 'other')!;
+              group.items.push(ing);
+            });
+
+            return roleGroups.filter(g => g.items.length > 0).map(group => (
+              <div key={group.id} className="space-y-2">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 flex items-center gap-1.5">
+                  <span className="text-[12px]">{group.emoji}</span>
+                  {group.title}
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {group.items.map(ing => (
+                    <DishChip
+                      key={ing.slug}
+                      name={ing.name}
+                      image_url={ing.image_url}
+                      isPrimary={ing.isPrimary}
+                      onRemove={!ing.isPrimary ? () => onRemoveExtra(ing.slug) : undefined}
+                    />
+                  ))}
+                  {/* Ghost slot for aromatic or side if empty */}
+                  {group.id === 'side' && group.items.length === 0 && (
+                    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl border border-dashed border-border text-muted-foreground/40 text-[11px] font-bold cursor-default">
+                      +
+                    </div>
+                  )}
+                </div>
               </div>
-            </>
-          )}
+            ));
+          })()}
         </div>
       </div>
 

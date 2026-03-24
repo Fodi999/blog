@@ -84,7 +84,7 @@ function ScoreBar({ label, value, max = 100, color }: { label: string; value: nu
   const pct = Math.round((value / max) * 5);
   return (
     <div className="flex items-center gap-2">
-      <span className="text-[10px] text-muted-foreground/70 w-14 shrink-0 font-medium">{label}</span>
+      <span className="text-[10px] text-muted-foreground/70 w-16 sm:w-20 shrink-0 font-medium truncate" title={label}>{label}</span>
       <div className="flex gap-0.5">
         {[1, 2, 3, 4, 5].map((dot) => (
           <span key={dot} className={cn('w-1.5 h-1.5 rounded-full', dot <= pct ? color : 'bg-muted/40')} />
@@ -138,6 +138,7 @@ function VariantCardUI({
         isFeatured ? cfg.containerFeatured : cfg.containerBase,
         isFeatured ? 'p-6' : 'p-4',
         visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6 pointer-events-none',
+        'hover:scale-[1.02] hover:shadow-lg'
       )}
       style={{ transitionDelay: visible ? `${index * 100}ms` : '0ms' }}
       onClick={() => onSelect(variant)}
@@ -249,7 +250,6 @@ function VariantCardUI({
         </p>
       )}
 
-      {/* ── CTA ──────────────────────────────────────── */}
       <button
         className={cn(
           'w-full px-3 py-2 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all',
@@ -259,7 +259,7 @@ function VariantCardUI({
         )}
         onClick={(e) => { e.stopPropagation(); onSelect(variant); }}
       >
-        {t(cfg.ctaKey)}
+        Готовить это →
       </button>
     </div>
   );
@@ -351,11 +351,11 @@ export function DashboardClient() {
       if (ingredients.length > 0) {
         const primary = ingredients[0];
         setSelected({ slug: primary.slug, name: primary.name, image: primary.image_url });
-        // Set the rest as dish extras (for when user selects a card)
         const extras: DishIngredient[] = ingredients.slice(1).map((ing) => ({
           slug: ing.slug,
           name: ing.name,
           image_url: ing.image_url,
+          role: ing.role,
         }));
         setDishExtras(extras);
       }
@@ -373,6 +373,13 @@ export function DashboardClient() {
     // Use the first ingredient (base) as primary for the SmartResult view
     const base = v.ingredients[0];
     setSelected({ slug: base?.slug ?? '', name: v.title, image: base?.image_url });
+    const extras: DishIngredient[] = v.ingredients.slice(1).map((ing) => ({
+      slug: ing.slug,
+      name: ing.name,
+      image_url: ing.image_url,
+      role: ing.role,
+    }));
+    setDishExtras(extras);
     // Keep existing textResult — it already has the full SmartResponse
     setVariantCards([]);
     setVisibleCardCount(0);
@@ -429,7 +436,11 @@ export function DashboardClient() {
   const showVariants = mode === 'recipe' && variantCards.length > 0 && !isAnalyzing;
 
   /* ── Progressive loading labels ──────────────────────────── */
-  const loadingLabels = [
+  const loadingLabels = locale === 'ru' ? [
+    '⚡ Анализ вкуса...',
+    '⚡ Подбор сочетаний...',
+    '⚡ Создание блюд...',
+  ] : [
     '⚡ Analyzing flavor profiles…',
     '⚡ Matching best pairings…',
     '⚡ Generating variants…',
@@ -477,11 +488,11 @@ export function DashboardClient() {
           <div className="animate-in fade-in duration-500">
             {/* Tagline — only idle: strong "sell the magic" headline */}
             {!showVariants && !isAnalyzing && mode === 'idle' && (
-              <div className="mb-8 space-y-3">
-                <h1 className="text-3xl sm:text-4xl font-black text-foreground tracking-tight leading-tight">
+              <div className="mb-8 space-y-3 px-2">
+                <h1 className="text-3xl sm:text-4xl font-black text-foreground tracking-tight leading-tight text-balance break-words">
                   {t('heroHeadline')}
                 </h1>
-                <p className="text-sm sm:text-base text-muted-foreground/70 font-medium max-w-lg mx-auto leading-relaxed">
+                <p className="text-sm sm:text-base text-muted-foreground/70 font-medium max-w-lg mx-auto leading-relaxed text-balance">
                   {t('heroSub')}
                 </p>
               </div>
@@ -522,7 +533,7 @@ export function DashboardClient() {
             {!isAnalyzing && !analyzeError && mode === 'idle' && (
               <div className="mt-8 space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
                 {/* ── Mini preview: what you'll get ─────────── */}
-                <div className="flex justify-center gap-3">
+                <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
                   {[
                     { emoji: '🟢', label: t('previewHealthy'), blur: true },
                     { emoji: '🟡', label: t('previewBalanced'), blur: false },
@@ -531,15 +542,15 @@ export function DashboardClient() {
                     <div
                       key={i}
                       className={cn(
-                        "flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border/40 bg-muted/30 transition-all duration-500",
+                        "flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl border border-border/40 bg-muted/30 transition-all duration-500",
                         card.blur && "opacity-60 blur-[1px]",
                         !card.blur && "opacity-90 shadow-sm",
                         "animate-in fade-in slide-in-from-bottom-2",
                       )}
                       style={{ animationDelay: `${300 + i * 150}ms` }}
                     >
-                      <span className="text-lg">{card.emoji}</span>
-                      <span className="text-[11px] font-bold text-muted-foreground whitespace-nowrap">{card.label}</span>
+                      <span className="text-base sm:text-lg">{card.emoji}</span>
+                      <span className="text-[10px] sm:text-[11px] font-bold text-muted-foreground truncate">{card.label}</span>
                     </div>
                   ))}
                 </div>
@@ -603,29 +614,13 @@ export function DashboardClient() {
             <div
               key={i}
               className={cn(
-                'rounded-2xl border border-border/40 p-5 transition-all duration-500',
+                'animate-pulse h-32 rounded-xl bg-muted/30 transition-all duration-500 mt-3',
                 i <= loadingStep
                   ? 'opacity-100 translate-y-0'
                   : 'opacity-30 translate-y-4',
               )}
               style={{ transitionDelay: `${i * 150}ms` }}
-            >
-              <div className="flex items-start gap-4">
-                <div className="w-14 h-14 rounded-xl bg-muted animate-pulse shrink-0" />
-                <div className="flex-1 space-y-2.5">
-                  <div className="flex items-center gap-2">
-                    <div className="h-4 w-16 rounded-full bg-muted animate-pulse" />
-                    <div className="h-3 w-12 rounded-full bg-muted/60 animate-pulse" />
-                  </div>
-                  <div className="h-4 w-3/4 rounded bg-muted animate-pulse" />
-                  <div className="flex gap-1.5">
-                    <div className="h-5 w-14 rounded-full bg-muted/50 animate-pulse" />
-                    <div className="h-5 w-16 rounded-full bg-muted/50 animate-pulse" />
-                    <div className="h-5 w-12 rounded-full bg-muted/50 animate-pulse" />
-                  </div>
-                </div>
-              </div>
-            </div>
+            />
           ))}
         </section>
       )}
@@ -635,6 +630,9 @@ export function DashboardClient() {
           ══════════════════════════════════════════════════════ */}
       {showVariants && (
         <section className="space-y-3 animate-in fade-in duration-300">
+          <p className="text-xs uppercase tracking-wider text-muted-foreground font-bold text-center mt-2 mb-4">
+            {locale === 'ru' ? '3 варианта блюда' : '3 variation options'}
+          </p>
           {/* Sort: balanced first (featured), then healthy, then heavy */}
           {[...variantCards]
             .sort((a, b) => {

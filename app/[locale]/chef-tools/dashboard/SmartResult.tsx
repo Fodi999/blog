@@ -507,6 +507,20 @@ export function SmartResult({
         <MiniLab slug={slug} name={nutrition.name} cookingState={cookingState} onSelectIngredient={onSelectIngredient} />
       </CollapsibleSection>
 
+      {/* ══════════════════════════════════════════════════════════
+          BLOCK 7 — 🔁 Loop (Reset)
+          ══════════════════════════════════════════════════════════ */}
+      {onClose && (
+        <div className="pt-6 pb-8">
+          <button
+            onClick={onClose}
+            className="w-full py-4 rounded-2xl border-2 border-primary/20 bg-primary/5 text-primary text-[13px] font-black uppercase tracking-wider hover:bg-primary/10 hover:border-primary/30 transition-all shadow-sm active:scale-[0.98]"
+          >
+            {locale === 'ru' ? 'Попробовать другой рецепт' : 'Try another recipe'}
+          </button>
+        </div>
+      )}
+
     </section>
   );
 }

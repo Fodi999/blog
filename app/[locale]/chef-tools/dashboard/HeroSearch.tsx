@@ -237,18 +237,31 @@ export function HeroSearch({
           onFocus={() => { setIsFocused(true); if (results.length > 0 && !isRecipeMode) setOpen(true); }}
           onBlur={() => setIsFocused(false)}
           onKeyDown={handleKeyDown}
-          onPaste={() => setTimeout(autoGrow, 0)}
-          placeholder={isFocused ? t('searchPlaceholder') : ''}
-          rows={isResultMode ? 1 : 2}
+          onPaste={(e) => {
+            const text = e.clipboardData.getData('text');
+            if (text.includes('\n')) {
+              e.preventDefault();
+              setQuery(text);
+              onSubmitText(text);
+            } else {
+              setTimeout(autoGrow, 0);
+            }
+          }}
+          onInput={(e) => {
+            e.currentTarget.style.height = 'auto';
+            e.currentTarget.style.height = e.currentTarget.scrollHeight + 'px';
+          }}
+          placeholder={isFocused ? "лосось, рис, авокадо или вставь список ингредиентов" : ''}
+          rows={isResultMode ? 1 : 3}
           className={cn(
             'relative z-10 w-full bg-transparent text-foreground font-medium',
-            'placeholder:text-muted-foreground/30 focus:outline-none',
+            'placeholder:text-muted-foreground/40 focus:outline-none',
             'resize-none overflow-y-auto',
             isResultMode
               ? 'text-base pl-10 pr-24 py-3 min-h-[44px]'
-              : 'text-base pl-14 pr-6 pt-4 pb-14 min-h-[88px]',
+              : 'text-base pl-14 pr-6 pt-4 pb-14 min-h-[88px] sm:min-h-[100px]',
           )}
-          style={{ lineHeight: 1.6, maxHeight: 200 }}
+          style={{ lineHeight: 1.6, maxHeight: 200, height: 'auto' }}
         />
 
         {/* Bottom action bar (hero mode only) */}
@@ -335,11 +348,36 @@ export function HeroSearch({
         </div>
       )}
 
-      {/* Single-word hint */}
-      {query.trim().length >= 2 && !isRecipeMode && !open && !selectedName && !isResultMode && (
-        <p className="mt-2 text-center text-[10px] font-bold uppercase tracking-wider text-muted-foreground/40 animate-in fade-in duration-200">
-          Add more words or paste a full recipe
+      {/* Single-word hint & Example Chips */}
+      {query.trim().length > 0 && query.trim().length < 5 && !isRecipeMode && !open && !selectedName && !isResultMode && (
+        <p className="mt-4 text-center text-[11px] font-bold uppercase tracking-wider text-muted-foreground/50 animate-in fade-in duration-200">
+          Нажми Enter или введи больше слов
         </p>
+      )}
+
+      {/* Example chips below the hero input for mobile & desktop */}
+      {!isResultMode && query.length === 0 && (
+        <div className="mt-4 sm:mt-6 animate-in fade-in duration-500">
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            {[
+              { label: 'лосось', text: 'лосось\nрис\nавокадо' },
+              { label: 'курица рис', text: 'курица\nрис\nброкколи\nсоевый соус' },
+              { label: 'авокадо тост', text: 'авокадо\nхлеб\nяйцо\nоливковое масло' }
+            ].map((chip, i) => (
+              <button
+                key={i}
+                onClick={() => {
+                  setQuery(chip.text);
+                  setTimeout(autoGrow, 0);
+                  onSubmitText(chip.text);
+                }}
+                className="px-3 py-1.5 rounded-full border border-border/40 bg-muted/20 text-xs font-bold text-muted-foreground hover:text-primary hover:border-primary/30 hover:bg-primary/5 transition-all"
+              >
+                {chip.label}
+              </button>
+            ))}
+          </div>
+        </div>
       )}
 
       {/* Selection indicator */}

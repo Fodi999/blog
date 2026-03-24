@@ -51,11 +51,11 @@ export default async function ChefToolsPage({
       />
 
       {/* Header */}
-      <div className="mb-12 md:mb-16 border-t border-primary/20 pt-12">
-        <h1 className="text-6xl md:text-8xl font-black mb-6 text-foreground tracking-tighter uppercase italic">
+      <div className="mb-8 sm:mb-12 md:mb-16 border-t border-primary/20 pt-8 sm:pt-12">
+        <h1 className="text-4xl sm:text-6xl md:text-8xl font-black mb-4 sm:mb-6 text-foreground tracking-tighter uppercase italic text-balance break-words">
           {t('title')}<span className="text-primary">.</span>
         </h1>
-        <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl font-medium tracking-tight">
+        <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground max-w-2xl font-medium tracking-tight text-balance break-words">
           {t('description')}
         </p>
       </div>

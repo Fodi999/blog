@@ -53,6 +53,7 @@ export type ResolvedIngredient = {
   slug: string;
   name: string;
   image_url?: string | null;
+  role?: string;
 };
 
 /**
