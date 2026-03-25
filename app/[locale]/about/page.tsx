@@ -172,38 +172,39 @@ export default async function AboutPage({
 
   return (
     <div className="min-h-screen bg-background selection:bg-primary/10 selection:text-primary">
+      {/* ── Single JSON-LD with @graph — один script вместо 4+1 ── */}
       <JsonLd
         data={{
           "@context": "https://schema.org",
-          "@type": "AboutPage",
-          "mainEntity": {
-            "@type": "Person",
-            "name": "Dmitrij Fomin",
-            "jobTitle": "Sushi Chef & Food Technologist",
-            "url": "https://dima-fomin.pl",
-            "image": heroImage
-          }
+          "@graph": [
+            {
+              "@type": "AboutPage",
+              "@id": `https://dima-fomin.pl/${locale}/about`,
+              "url": `https://dima-fomin.pl/${locale}/about`,
+              "mainEntity": {
+                "@type": "Person",
+                "@id": "https://dima-fomin.pl/#person",
+                "name": "Dmitrij Fomin",
+                "jobTitle": "Sushi Chef & Food Technologist",
+                "url": "https://dima-fomin.pl",
+                "image": heroImage,
+              },
+            },
+            ...galleryImages.map((img) => ({
+              "@type": "ImageObject",
+              "contentUrl": img.src,
+              "name": img.title || img.alt,
+              "description": img.description || img.alt,
+              "url": `https://dima-fomin.pl/${locale}/about`,
+              "author": {
+                "@type": "Person",
+                "@id": "https://dima-fomin.pl/#person",
+                "name": "Dmitrij Fomin",
+              },
+            })),
+          ],
         }}
       />
-
-      {/* ── ImageObject structured data for gallery (Google Images SEO) ── */}
-      {galleryImages.map((img, i) => (
-        <JsonLd
-          key={i}
-          data={{
-            "@context": "https://schema.org",
-            "@type": "ImageObject",
-            "contentUrl": img.src,
-            "name": img.title || img.alt,
-            "description": img.description || img.alt,
-            "url": `https://dima-fomin.pl/${locale}/about`,
-            "author": {
-              "@type": "Person",
-              "name": "Dmitrij Fomin"
-            }
-          }}
-        />
-      ))}
 
       <main className="mx-auto max-w-6xl px-4 sm:px-6">
 

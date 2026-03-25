@@ -285,57 +285,42 @@ export default async function IntentPageRoute({ params }: Props) {
   );
   const heroBlock = imageBlocks.find((b) => b.key === 'hero');
 
-  // Extract nutrition data from text
-  const nutrition = hasBlocks ? extractNutrition(blocks) : null;
-
   // Editor rating
   const rating = generateEditorRating(page);
 
-  // ── 1. BreadcrumbList JSON-LD ────────────────────────────────────────────
-  const breadcrumbSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      {
-        '@type': 'ListItem',
-        position: 1,
-        name: labels.home,
-        item: `https://dima-fomin.pl/${locale}`,
-      },
-      {
-        '@type': 'ListItem',
-        position: 2,
-        name: labels.tools,
-        item: `https://dima-fomin.pl/${locale}/chef-tools`,
-      },
-      {
-        '@type': 'ListItem',
-        position: 3,
-        name: entityName,
-        item: `https://dima-fomin.pl/${locale}/chef-tools/ingredients/${page.entity_a}`,
-      },
-      {
-        '@type': 'ListItem',
-        position: 4,
-        name: page.title,
-        item: url,
-      },
-    ],
-  };
+  // Cluster links
+  const clusterLinks = related.filter((r) => r.entity_a === page.entity_a);
+  const crossLinks = related.filter((r) => r.entity_a !== page.entity_a);
 
-  // ── 2. Full Article JSON-LD (with rating + nutrition + images) ───────────
-  const articleSchema: Record<string, any> = {
-    '@context': 'https://schema.org',
+  /** Normalize any date string to strict ISO 8601 UTC: "2026-03-22T22:41:54Z" */
+  function toISO(raw: string | undefined | null): string | undefined {
+    if (!raw) return undefined;
+    try {
+      const d = new Date(raw);
+      if (isNaN(d.getTime())) return undefined;
+      return d.toISOString(); // always "YYYY-MM-DDTHH:mm:ss.sssZ"
+    } catch {
+      return undefined;
+    }
+  }
+
+  const datePublished = toISO(page.published_at ?? page.updated_at);
+  const dateModified  = toISO(page.updated_at);
+
+  // ── 1. Article (core) ───────────────────────────────────────────────────
+  const articleNode: Record<string, unknown> = {
     '@type': 'Article',
+    '@id': `${url}#article`,
     headline: page.title,
     description: page.description,
     url,
     inLanguage: locale,
-    datePublished: page.published_at ?? page.updated_at,
-    dateModified: page.updated_at,
+    ...(datePublished && { datePublished }),
+    ...(dateModified  && { dateModified }),
     mainEntityOfPage: { '@type': 'WebPage', '@id': url },
     author: {
       '@type': 'Person',
+      '@id': 'https://dima-fomin.pl/#person',
       name: 'Dima Fomin',
       url: 'https://dima-fomin.pl',
     },
@@ -348,7 +333,6 @@ export default async function IntentPageRoute({ params }: Props) {
         url: 'https://dima-fomin.pl/logo.png',
       },
     },
-    // Rating (editor rating — not fake reviews)
     aggregateRating: {
       '@type': 'AggregateRating',
       ratingValue: rating.ratingValue,
@@ -357,111 +341,100 @@ export default async function IntentPageRoute({ params }: Props) {
     },
   };
 
-  // Add hero image
+  // Article.image — массив всех изображений страницы (рекомендация Google)
+  const allImageObjects = imageBlocks.map((img) => ({
+    '@type': 'ImageObject',
+    url: img.src,
+    ...(img.key === 'hero' ? { width: 1200, height: 630 } : {}),
+    description: img.alt,
+  }));
+  if (allImageObjects.length === 1) {
+    articleNode.image = allImageObjects[0];
+  } else if (allImageObjects.length > 1) {
+    articleNode.image = allImageObjects;
+  }
   if (heroBlock?.src) {
-    articleSchema.image = {
-      '@type': 'ImageObject',
-      url: heroBlock.src,
-      width: 1200,
-      height: 630,
-      description: heroBlock.alt,
-    };
-    articleSchema.thumbnailUrl = heroBlock.src;
+    articleNode.thumbnailUrl = heroBlock.src;
   }
 
-  // ── 3. ImageObject JSON-LD for each image ────────────────────────────────
-  const imageSchemas = imageBlocks.map((img) => ({
-    '@context': 'https://schema.org',
-    '@type': 'ImageObject',
-    contentUrl: img.src,
-    description: img.alt,
-    name: `${entityName} — ${img.key}`,
-    creditText: 'dima-fomin.pl',
-    copyrightNotice: '© dima-fomin.pl',
-  }));
+  // ── 2. Nutrition → Food → inside Article.about ───────────────────────────
+  const nutrition = hasBlocks ? extractNutrition(blocks) : null;
+  if (nutrition) {
+    const nutritionNode: Record<string, unknown> = {
+      '@type': 'NutritionInformation',
+      servingSize: '100g',
+      ...(nutrition.calories && { calories: nutrition.calories }),
+      ...(nutrition.protein && { proteinContent: nutrition.protein }),
+      ...(nutrition.fat && { fatContent: nutrition.fat }),
+      ...(nutrition.carbs && { carbohydrateContent: nutrition.carbs }),
+      ...(nutrition.fiber && { fiberContent: nutrition.fiber }),
+    };
+    articleNode.about = {
+      '@type': 'Food',
+      name: entityName,
+      nutrition: nutritionNode,
+    };
+  }
 
-  // ── 4. NutritionInformation JSON-LD ──────────────────────────────────────
-  const nutritionSchema = nutrition
+  // ── 3. BreadcrumbList ────────────────────────────────────────────────────
+  const breadcrumbNode = {
+    '@type': 'BreadcrumbList',
+    '@id': `${url}#breadcrumb`,
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: labels.home,  item: `https://dima-fomin.pl/${locale}` },
+      { '@type': 'ListItem', position: 2, name: labels.tools, item: `https://dima-fomin.pl/${locale}/chef-tools` },
+      { '@type': 'ListItem', position: 3, name: entityName,   item: `https://dima-fomin.pl/${locale}/chef-tools/ingredients/${page.entity_a}` },
+      { '@type': 'ListItem', position: 4, name: page.title,   item: url },
+    ],
+  };
+
+  // ── 4. FAQ ───────────────────────────────────────────────────────────────
+  const faqNode = page.faq?.length > 0
     ? {
-        '@context': 'https://schema.org',
-        '@type': 'NutritionInformation',
-        ...(nutrition.calories ? { calories: nutrition.calories } : {}),
-        ...(nutrition.protein ? { proteinContent: nutrition.protein } : {}),
-        ...(nutrition.fat ? { fatContent: nutrition.fat } : {}),
-        ...(nutrition.carbs ? { carbohydrateContent: nutrition.carbs } : {}),
-        ...(nutrition.fiber ? { fiberContent: nutrition.fiber } : {}),
-        servingSize: '100g',
+        '@type': 'FAQPage',
+        '@id': `${url}#faq`,
+        mainEntity: page.faq.map((f: { question: string; answer: string }) => ({
+          '@type': 'Question',
+          name: f.question,
+          acceptedAnswer: { '@type': 'Answer', text: f.answer },
+        })),
       }
     : null;
 
-  // Add nutrition to article if available
-  if (nutritionSchema) {
-    articleSchema.about = {
-      '@type': 'Thing',
-      name: entityName,
-      additionalProperty: {
-        '@type': 'PropertyValue',
-        name: 'nutrition',
-        value: nutritionSchema,
-      },
-    };
-  }
-
-  // ── 5. FAQ JSON-LD ──────────────────────────────────────────────────────
-  const faqSchema =
-    page.faq?.length > 0
-      ? {
-          '@context': 'https://schema.org',
-          '@type': 'FAQPage',
-          mainEntity: page.faq.map((f) => ({
-            '@type': 'Question',
-            name: f.question,
-            acceptedAnswer: { '@type': 'Answer', text: f.answer },
+  // ── 5. ItemList for topic cluster ────────────────────────────────────────
+  const clusterListNode = clusterLinks.length > 0
+    ? {
+        '@type': 'ItemList',
+        '@id': `${url}#cluster`,
+        name: `${entityName} — articles`,
+        url: `https://dima-fomin.pl/${locale}/chef-tools/ingredients/${page.entity_a}`,
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, url, name: page.title },
+          ...clusterLinks.map((r: { slug: string; title: string }, idx: number) => ({
+            '@type': 'ListItem',
+            position: idx + 2,
+            url: `https://dima-fomin.pl/${locale}/chef-tools/seo/${r.slug}`,
+            name: r.title,
           })),
-        }
-      : null;
+        ],
+      }
+    : null;
 
-  // ── Cluster links (related topics for same ingredient) ───────────────────
-  const clusterLinks = related.filter((r) => r.entity_a === page.entity_a);
-  const crossLinks = related.filter((r) => r.entity_a !== page.entity_a);
+  // ── Единый @graph — один <script type="application/ld+json"> ─────────────
+  const graphNodes: unknown[] = [articleNode, breadcrumbNode];
+  if (faqNode) graphNodes.push(faqNode);
+  if (clusterListNode) graphNodes.push(clusterListNode);
+  // ImageObject-ы убраны из @graph — они уже внутри Article.image
 
-  // ── 6. ItemList JSON-LD for the topic cluster (same ingredient) ───────────
-  const clusterListSchema =
-    clusterLinks.length > 0
-      ? {
-          '@context': 'https://schema.org',
-          '@type': 'ItemList',
-          name: `${entityName} — articles`,
-          url: `https://dima-fomin.pl/${locale}/chef-tools/ingredients/${page.entity_a}`,
-          itemListElement: [
-            // Include the current page too
-            {
-              '@type': 'ListItem',
-              position: 1,
-              url,
-              name: page.title,
-            },
-            ...clusterLinks.map((r, idx) => ({
-              '@type': 'ListItem',
-              position: idx + 2,
-              url: `https://dima-fomin.pl/${locale}/chef-tools/seo/${r.slug}`,
-              name: r.title,
-            })),
-          ],
-        }
-      : null;
+  const combinedSchema = {
+    '@context': 'https://schema.org',
+    '@graph': graphNodes,
+  };
 
   return (
     <>
-      {/* JSON-LD schemas */}
-      <JsonLd data={breadcrumbSchema} />
-      <JsonLd data={articleSchema} />
-      {faqSchema && <JsonLd data={faqSchema} />}
-      {imageSchemas.map((schema, i) => (
-        <JsonLd key={`img-${i}`} data={schema} />
-      ))}
-      {nutritionSchema && <JsonLd data={nutritionSchema} />}
-      {clusterListSchema && <JsonLd data={clusterListSchema} />}
+      {/* Единый JSON-LD @graph — один <script> на страницу */}
+      <JsonLd data={combinedSchema} />
 
       <div className="min-h-screen bg-background">
         {nav}
@@ -491,12 +464,7 @@ export default async function IntentPageRoute({ params }: Props) {
 
           {/* ── Structured article (content_blocks) OR legacy answer ── */}
           {hasBlocks ? (
-            <article className="space-y-8" itemScope itemType="https://schema.org/Article">
-              <meta itemProp="headline" content={page.title} />
-              <meta itemProp="datePublished" content={page.published_at ?? page.updated_at} />
-              <meta itemProp="dateModified" content={page.updated_at} />
-              <meta itemProp="author" content="Dima Fomin" />
-
+            <article className="space-y-8">
               {blocks.map((block, i) => {
                 switch (block.type) {
                   case 'heading':
@@ -525,12 +493,7 @@ export default async function IntentPageRoute({ params }: Props) {
                     );
                   case 'image':
                     return block.src ? (
-                      <figure
-                        key={i}
-                        className="my-6"
-                        itemScope
-                        itemType="https://schema.org/ImageObject"
-                      >
+                      <figure key={i} className="my-6">
                         <Image
                           src={block.src}
                           alt={block.alt}
@@ -541,8 +504,6 @@ export default async function IntentPageRoute({ params }: Props) {
                           priority={block.key === 'hero'}
                           sizes="(max-width: 768px) 100vw, 800px"
                         />
-                        <meta itemProp="contentUrl" content={block.src} />
-                        <meta itemProp="description" content={block.alt} />
                         <figcaption className="text-xs text-muted-foreground mt-2 text-center">
                           {block.alt}
                         </figcaption>
