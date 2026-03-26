@@ -303,6 +303,41 @@ export async function fetchIngredientsMeta(
   return map;
 }
 
+// ─── Sitemap-specific lightweight endpoint ────────────────────────────────────
+
+/**
+ * Lightweight payload returned by GET /public/ingredients-sitemap-data.
+ * Contains only the fields needed to build a quality-filtered sitemap:
+ *  - has_conversions  → emit how-many pages only when true
+ *  - states           → emit state pages only for states present in DB
+ *  - updated_at       → real lastModified instead of BUILD_DATE
+ */
+export type SitemapIngredient = {
+  slug: string;
+  updated_at: string | null;
+  image_url?: string | null;
+  has_conversions: boolean;
+  has_nutrition: boolean;
+  states: string[];
+};
+
+/**
+ * GET /public/ingredients-sitemap-data
+ * Single request — returns all published ingredients with sitemap metadata only.
+ * Two requests total for the whole sitemap (this + gallery).
+ */
+export async function fetchIngredientsSitemapData(): Promise<SitemapIngredient[]> {
+  try {
+    const res = await fetch(`${BASE}/public/ingredients-sitemap-data`, {
+      next: { revalidate: 300 },
+    });
+    if (!res.ok) return [];
+    return (await res.json()) as SitemapIngredient[];
+  } catch {
+    return [];
+  }
+}
+
 /** GET /public/ingredients — returns normalized list with full macros */
 export async function fetchIngredients(): Promise<ApiIngredient[] | null> {
   type FullItem = {
