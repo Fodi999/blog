@@ -545,7 +545,21 @@
         },
         "draftRestored": "Szkic przywrócony",
         "clearRecipe": "Wyczyść przepis",
-        "inputPlaceholderBig": "Co gotujesz? Wklej przepis lub wymień składniki — łosoś, ryż, awokado…"
+        "inputPlaceholderBig": "Co gotujesz? Wklej przepis lub wymień składniki — łosoś, ryż, awokado…",
+        "contextGoal": "Cel",
+        "contextMeal": "Posiłek",
+        "goal": {
+          "balanced": "Balans",
+          "high_protein": "Dużo białka",
+          "low_calorie": "Niskokaloryczne",
+          "keto": "Keto",
+          "flavor_boost": "Maks smak"
+        },
+        "meal": {
+          "breakfast": "Śniadanie",
+          "lunch": "Obiad",
+          "dinner": "Kolacja"
+        }
       }
     },
     "season": {

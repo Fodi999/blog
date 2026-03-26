@@ -18,9 +18,19 @@ export interface SmartRequest {
   ingredient: string;              // primary slug
   state?: string;                  // "raw" | "grilled" | …
   additional_ingredients?: string[];
-  goal?: Goal;
+  goal?: Goal | string;
+  meal_type?: MealType | string;
+  diet?: string;
   lang?: string;                   // "en" | "ru" | "pl" | "uk"
   session_id?: string;
+}
+
+/* ── 6D Context enums ──────────────────────────────────────────── */
+
+export enum MealType {
+  Breakfast = 'breakfast',
+  Lunch     = 'lunch',
+  Dinner    = 'dinner',
 }
 
 /* ── Response ──────────────────────────────────────────────────── */

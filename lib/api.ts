@@ -1212,6 +1212,32 @@ export async function fetchRankingPage(
   );
 }
 
+// ─── Intent Pages Sitemap ─────────────────────────────────────────────────────
+
+/** Lightweight sitemap entry from GET /public/intent-pages/sitemap */
+export type IntentPageSitemapEntry = {
+  slug: string;
+  locale: string;
+  published_at: string | null;
+  intent_type: string;
+};
+
+/**
+ * GET /public/intent-pages/sitemap
+ * Single lightweight request — returns all published intent pages for sitemap.
+ */
+export async function fetchIntentPagesSitemap(): Promise<IntentPageSitemapEntry[]> {
+  try {
+    const res = await fetch(`${BASE}/public/intent-pages/sitemap`, {
+      next: { revalidate: 300 },
+    });
+    if (!res.ok) return [];
+    return (await res.json()) as IntentPageSitemapEntry[];
+  } catch {
+    return [];
+  }
+}
+
 // ─── Intent Pages (pSEO) ─────────────────────────────────────────────────────
 
 export type IntentPageFaq = { question: string; answer: string };
@@ -1300,4 +1326,77 @@ export async function fetchRelatedPages(
     ['intent-pages-related'],
   );
   return pages ?? [];
+}
+
+// ─── Lab Combo SEO Pages ──────────────────────────────────────────────────────
+
+/** Full lab combo page from GET /public/lab-combos/:slug */
+export type LabComboPage = {
+  id: string;
+  slug: string;
+  locale: string;
+  ingredients: string[];
+  goal: string | null;
+  meal_type: string | null;
+  diet: string | null;
+  cooking_time: string | null;
+  budget: string | null;
+  cuisine: string | null;
+  title: string;
+  description: string;
+  h1: string;
+  intro: string;
+  smart_response: Record<string, unknown>;
+  faq: { question: string; answer: string }[];
+  status: string;
+  quality_score: number;
+  published_at: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+/** Lightweight sitemap entry from GET /public/lab-combos/sitemap */
+export type LabComboSitemapEntry = {
+  slug: string;
+  locale: string;
+  updated_at: string;
+  ingredients: string[];
+  goal: string | null;
+  meal_type: string | null;
+};
+
+/**
+ * GET /public/lab-combos/sitemap
+ * Lightweight list of all published combo pages for sitemap generation.
+ */
+export async function fetchLabCombosSitemap(): Promise<LabComboSitemapEntry[]> {
+  try {
+    const res = await fetch(`${BASE}/public/lab-combos/sitemap`, {
+      next: { revalidate: 300 },
+    });
+    if (!res.ok) return [];
+    return (await res.json()) as LabComboSitemapEntry[];
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * GET /public/lab-combos/:slug?locale=en
+ * Full published combo page with SmartResponse + SEO metadata.
+ */
+export async function fetchLabCombo(
+  slug: string,
+  locale: string,
+): Promise<LabComboPage | null> {
+  try {
+    const res = await fetch(
+      `${BASE}/public/lab-combos/${encodeURIComponent(slug)}?locale=${encodeURIComponent(locale)}`,
+      { next: { revalidate: 86400 } }, // 24h ISR
+    );
+    if (!res.ok) return null;
+    return (await res.json()) as LabComboPage;
+  } catch {
+    return null;
+  }
 }

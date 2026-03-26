@@ -545,7 +545,21 @@
         },
         "draftRestored": "Чернетку відновлено",
         "clearRecipe": "Очистити рецепт",
-        "inputPlaceholderBig": "Що готуєш? Встав рецепт або перелічи інгредієнти — лосось, рис, авокадо…"
+        "inputPlaceholderBig": "Що готуєш? Встав рецепт або перелічи інгредієнти — лосось, рис, авокадо…",
+        "contextGoal": "Мета",
+        "contextMeal": "Прийом їжі",
+        "goal": {
+          "balanced": "Баланс",
+          "high_protein": "Багато білка",
+          "low_calorie": "Легке",
+          "keto": "Кето",
+          "flavor_boost": "Макс смак"
+        },
+        "meal": {
+          "breakfast": "Сніданок",
+          "lunch": "Обід",
+          "dinner": "Вечеря"
+        }
       }
     },
     "season": {

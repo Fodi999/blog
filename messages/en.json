@@ -545,7 +545,21 @@
         },
         "draftRestored": "Draft restored",
         "clearRecipe": "Clear recipe",
-        "inputPlaceholderBig": "What are you cooking? Paste a recipe or list ingredients — salmon, rice, avocado…"
+        "inputPlaceholderBig": "What are you cooking? Paste a recipe or list ingredients — salmon, rice, avocado…",
+        "contextGoal": "Goal",
+        "contextMeal": "Meal",
+        "goal": {
+          "balanced": "Balanced",
+          "high_protein": "High Protein",
+          "low_calorie": "Low Calorie",
+          "keto": "Keto",
+          "flavor_boost": "Max Flavor"
+        },
+        "meal": {
+          "breakfast": "Breakfast",
+          "lunch": "Lunch",
+          "dinner": "Dinner"
+        }
       }
     },
     "season": {

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef, useEffect } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import {
   Plus,
   Trash2,
@@ -58,7 +59,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
 import type { SmartResponse, NextAction, SuggestionInfo, DiagnosticIssue, FlavorDimension } from "@/types/smart";
-import { fetchSmartFromText, resetSmartSession } from "@/lib/smart-api";
+import { fetchSmartFromText, resetSmartSession, type SmartContext } from "@/lib/smart-api";
 import {
   RadarChart,
   PolarGrid,
@@ -197,6 +198,22 @@ const POPULAR_SLUGS = [
   { slug: "lemon", key: "lemon" },
   { slug: "garlic", key: "garlic" },
   { slug: "avocado", key: "avocado" },
+];
+
+// ── 6D Context chips ─────────────────────────────────────────────────────────
+
+const GOAL_CHIPS: { key: string; icon: string }[] = [
+  { key: "balanced",     icon: "⚖️" },
+  { key: "high_protein", icon: "💪" },
+  { key: "low_calorie",  icon: "🥗" },
+  { key: "keto",         icon: "🥑" },
+  { key: "flavor_boost", icon: "🔥" },
+];
+
+const MEAL_CHIPS: { key: string; icon: string }[] = [
+  { key: "breakfast", icon: "🌅" },
+  { key: "lunch",     icon: "☀️" },
+  { key: "dinner",    icon: "🌙" },
 ];
 
 const CONVERTER_QUICK = [
@@ -509,6 +526,11 @@ function AnalysisSkeleton() {
 }
 
 function RecipeAnalyzerMode({ locale, t }: { locale: string; t: any }) {
+  // ── URL state sync ────────────────────────────────────────────────────
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
   // ── State: chips are source of truth ──────────────────────────────────
   const [inputText, setInputText] = useState("");
   const [chips, setChips] = useState<IngredientChip[]>([]);
@@ -516,6 +538,14 @@ function RecipeAnalyzerMode({ locale, t }: { locale: string; t: any }) {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showManualInput, setShowManualInput] = useState(false);
+
+  // 6D context chips (MVP: goal + meal_type)
+  const [selectedGoal, setSelectedGoal] = useState<string | null>(
+    searchParams.get("goal") || null,
+  );
+  const [selectedMeal, setSelectedMeal] = useState<string | null>(
+    searchParams.get("meal") || null,
+  );
 
   // Details open state
   const [detailsOpen, setDetailsOpen] = useState({
@@ -566,6 +596,8 @@ function RecipeAnalyzerMode({ locale, t }: { locale: string; t: any }) {
         setChips(draft.chips);
         if (draft.inputText) setInputText(draft.inputText);
       }
+      if (draft.selectedGoal) setSelectedGoal(draft.selectedGoal);
+      if (draft.selectedMeal) setSelectedMeal(draft.selectedMeal);
     } catch { /* corrupted */ }
   }, []);
 
@@ -575,18 +607,91 @@ function RecipeAnalyzerMode({ locale, t }: { locale: string; t: any }) {
         chips,
         inputText,
         smartResult,
+        selectedGoal,
+        selectedMeal,
       }));
     } catch { /* quota */ }
-  }, [chips, inputText, smartResult]);
+  }, [chips, inputText, smartResult, selectedGoal, selectedMeal]);
+
+  // ── URL → state (on mount): read ?q=salmon,rice&goal=keto&meal=dinner ─
+  const didReadUrl = useRef(false);
+  useEffect(() => {
+    if (didReadUrl.current) return;
+    didReadUrl.current = true;
+
+    const qParam = searchParams.get("q");
+    const goalParam = searchParams.get("goal");
+    const mealParam = searchParams.get("meal");
+
+    // URL params take priority over localStorage draft
+    if (goalParam) setSelectedGoal(goalParam);
+    if (mealParam) setSelectedMeal(mealParam);
+
+    if (qParam && qParam.trim().length > 0) {
+      // Convert "salmon,rice,avocado" → "salmon rice avocado" for the text analyzer
+      const text = qParam.replace(/,/g, " ").trim();
+      setInputText(text);
+      // Auto-analyze on mount if URL has ingredients
+      const ctx: SmartContext = {};
+      if (goalParam) ctx.goal = goalParam;
+      if (mealParam) ctx.meal_type = mealParam;
+      fetchSmartFromText(text, locale, Object.keys(ctx).length > 0 ? ctx : undefined)
+        .then(({ smart, ingredients }) => {
+          setSmartResult(smart);
+          setChips(ingredients.map(r => ({
+            slug: r.slug, name: r.name, image_url: r.image_url ?? undefined,
+          })));
+        })
+        .catch(() => {});
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // ── State → URL (on change): update browser address bar silently ──────
+  const updateUrl = useCallback((
+    newChips: IngredientChip[],
+    newGoal: string | null,
+    newMeal: string | null,
+  ) => {
+    const params = new URLSearchParams();
+    if (newChips.length > 0) {
+      params.set("q", newChips.map(c => c.slug).join(","));
+    }
+    if (newGoal) params.set("goal", newGoal);
+    if (newMeal) params.set("meal", newMeal);
+    const qs = params.toString();
+    const newUrl = qs ? `${pathname}?${qs}` : pathname;
+    router.replace(newUrl, { scroll: false });
+  }, [pathname, router]);
+
+  // Sync URL whenever chips/goal/meal change (debounced via effect)
+  const urlSyncRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+  useEffect(() => {
+    // Skip during initial URL→state load
+    if (!didReadUrl.current) return;
+    clearTimeout(urlSyncRef.current);
+    urlSyncRef.current = setTimeout(() => {
+      updateUrl(chips, selectedGoal, selectedMeal);
+    }, 300);
+    return () => clearTimeout(urlSyncRef.current);
+  }, [chips, selectedGoal, selectedMeal, updateUrl]);
 
   // ── Smart API: analyze from text ──────────────────────────────────────
+  /** Build 6D context from current UI state */
+  const buildContext = (): SmartContext | undefined => {
+    const ctx: SmartContext = {};
+    if (selectedGoal) ctx.goal = selectedGoal;
+    if (selectedMeal) ctx.meal_type = selectedMeal;
+    return Object.keys(ctx).length > 0 ? ctx : undefined;
+  };
+
   const analyzeFromText = async (text?: string) => {
     const t_text = text ?? inputText;
     if (!t_text.trim()) return;
     setIsAnalyzing(true);
     setError(null);
     try {
-      const { smart: result, ingredients: resolved } = await fetchSmartFromText(t_text, locale);
+      const { smart: result, ingredients: resolved } = await fetchSmartFromText(t_text, locale, buildContext());
       setSmartResult(result);
 
       // Build chips from resolved ingredients
@@ -617,7 +722,7 @@ function RecipeAnalyzerMode({ locale, t }: { locale: string; t: any }) {
     try {
       // Build text from chip names for from-text re-analysis
       const text = updatedChips.map(c => c.name || c.slug).join(" ");
-      const { smart: result } = await fetchSmartFromText(text, locale);
+      const { smart: result } = await fetchSmartFromText(text, locale, buildContext());
       setSmartResult(result);
       setInputText(text);
     } catch (err: any) {
@@ -653,6 +758,8 @@ function RecipeAnalyzerMode({ locale, t }: { locale: string; t: any }) {
     setInputText("");
     setSmartResult(null);
     setError(null);
+    setSelectedGoal(null);
+    setSelectedMeal(null);
     resetSmartSession();
     try { localStorage.removeItem(STORAGE_KEY); } catch { /* ignore */ }
   };
@@ -683,31 +790,18 @@ function RecipeAnalyzerMode({ locale, t }: { locale: string; t: any }) {
   }, [locale]);
 
   // ── Share recipe logic ────────────────────────────────────────────────
-  const [sharing, setSharing] = useState(false);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
-  const shareRecipe = async () => {
+  const shareRecipe = () => {
     if (chips.length === 0) return;
-    setSharing(true);
-    try {
-      const res = await fetch(`${API_URL}/public/tools/share-recipe`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ingredients: chips.map(c => ({ slug: c.slug, grams: c.grams || 100 })),
-          portions: 1,
-          lang: locale,
-        }),
-      });
-      if (!res.ok) throw new Error("Failed to share");
-      const data = await res.json();
-      setShareUrl(`https://dima-fomin.pl/${locale}/chef-tools/lab/r/${data.slug}`);
-    } catch {
-      setError("Failed to create share link");
-    } finally {
-      setSharing(false);
-    }
+    // Build lightweight shareable URL with query params (no server round-trip)
+    const params = new URLSearchParams();
+    params.set("q", chips.map(c => c.slug).join(","));
+    if (selectedGoal) params.set("goal", selectedGoal);
+    if (selectedMeal) params.set("meal", selectedMeal);
+    const url = `https://dima-fomin.pl/${locale}/chef-tools/lab?${params.toString()}`;
+    setShareUrl(url);
   };
 
   const copyShareUrl = async () => {
@@ -836,6 +930,84 @@ function RecipeAnalyzerMode({ locale, t }: { locale: string; t: any }) {
           <p className="text-[10px] text-muted-foreground/50 mt-1.5 px-1">
             {t("inputHint") || 'e.g. "salmon rice avocado" or "лосось рис авокадо"'}
           </p>
+        </div>
+
+        {/* 6D Context chips: goal + meal_type */}
+        <div className="space-y-2.5">
+          {/* Goal chips */}
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 mb-1.5">
+              {t("contextGoal") || "Goal"}
+            </p>
+            <div className="flex flex-wrap gap-1.5">
+              {GOAL_CHIPS.map(({ key, icon }) => (
+                <button
+                  key={key}
+                  onClick={() => {
+                    setSelectedGoal(selectedGoal === key ? null : key);
+                    // Re-analyze if we already have chips
+                    if (chips.length > 0) {
+                      const newGoal = selectedGoal === key ? null : key;
+                      const text = chips.map(c => c.name || c.slug).join(" ");
+                      const ctx: SmartContext = {};
+                      if (newGoal) ctx.goal = newGoal;
+                      if (selectedMeal) ctx.meal_type = selectedMeal;
+                      fetchSmartFromText(text, locale, Object.keys(ctx).length > 0 ? ctx : undefined)
+                        .then(({ smart }) => setSmartResult(smart))
+                        .catch(() => {});
+                    }
+                  }}
+                  className={cn(
+                    "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold",
+                    "border transition-all duration-150",
+                    selectedGoal === key
+                      ? "bg-primary text-primary-foreground border-primary shadow-sm shadow-primary/20"
+                      : "bg-muted/30 text-muted-foreground border-border/50 hover:bg-muted/50 hover:border-border",
+                  )}
+                >
+                  <span>{icon}</span>
+                  <span>{t(`goal.${key}`) || key}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Meal type chips */}
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 mb-1.5">
+              {t("contextMeal") || "Meal"}
+            </p>
+            <div className="flex flex-wrap gap-1.5">
+              {MEAL_CHIPS.map(({ key, icon }) => (
+                <button
+                  key={key}
+                  onClick={() => {
+                    setSelectedMeal(selectedMeal === key ? null : key);
+                    if (chips.length > 0) {
+                      const newMeal = selectedMeal === key ? null : key;
+                      const text = chips.map(c => c.name || c.slug).join(" ");
+                      const ctx: SmartContext = {};
+                      if (selectedGoal) ctx.goal = selectedGoal;
+                      if (newMeal) ctx.meal_type = newMeal;
+                      fetchSmartFromText(text, locale, Object.keys(ctx).length > 0 ? ctx : undefined)
+                        .then(({ smart }) => setSmartResult(smart))
+                        .catch(() => {});
+                    }
+                  }}
+                  className={cn(
+                    "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold",
+                    "border transition-all duration-150",
+                    selectedMeal === key
+                      ? "bg-primary text-primary-foreground border-primary shadow-sm shadow-primary/20"
+                      : "bg-muted/30 text-muted-foreground border-border/50 hover:bg-muted/50 hover:border-border",
+                  )}
+                >
+                  <span>{icon}</span>
+                  <span>{t(`meal.${key}`) || key}</span>
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
 
         {/* Quick recipes */}
@@ -1051,9 +1223,9 @@ function RecipeAnalyzerMode({ locale, t }: { locale: string; t: any }) {
               {/* Share */}
               <div className="flex items-center gap-2">
                 {!shareUrl ? (
-                  <Button variant="outline" size="sm" onClick={shareRecipe} disabled={sharing || chips.length === 0} className="text-xs font-bold gap-1.5 rounded-xl">
-                    {sharing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Share2 className="h-3.5 w-3.5" />}
-                    {sharing ? t("sharing") || "Sharing…" : t("shareRecipe") || "Share Recipe"}
+                  <Button variant="outline" size="sm" onClick={shareRecipe} disabled={chips.length === 0} className="text-xs font-bold gap-1.5 rounded-xl">
+                    <Share2 className="h-3.5 w-3.5" />
+                    {t("shareRecipe") || "Share Recipe"}
                   </Button>
                 ) : (
                   <div className="flex items-center gap-2 flex-wrap">
