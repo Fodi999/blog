@@ -185,7 +185,6 @@ export default async function LabComboPage({ params }: Props) {
   const labUrl = `/${locale}/chef-tools/lab?${labParams.toString()}`;
 
   // Extract data from smart_response
-  const nutrition = smart.nutrition as Record<string, number> | undefined;
   const flavorProfile = smart.flavor_profile as {
     dominant_tastes?: { taste: string; intensity: number }[];
     balance_score?: number;
@@ -221,9 +220,13 @@ export default async function LabComboPage({ params }: Props) {
   // Calculate total cooking time
   const totalMinutes = howToCook.reduce((sum, s) => sum + (s.time_minutes ?? 0), 0);
 
-  // Per-serving macros estimate (~300g portion)
-  const servingProtein = nutrition?.protein ? Math.round(nutrition.protein * 3) : 0;
-  const servingCalories = nutrition?.calories ? Math.round(nutrition.calories * 3) : 0;
+  // Per-serving macros from DB (single source of truth — calculated by backend)
+  const servingProtein = Math.round(page.protein_per_serving);
+  const servingCalories = Math.round(page.calories_per_serving);
+  const servingFat = Math.round(page.fat_per_serving);
+  const servingCarbs = Math.round(page.carbs_per_serving);
+  const servingFiber = Math.round(page.fiber_per_serving);
+  const servingWeight = Math.round(page.total_weight_g);
 
   // Variant type labels
   const variantTypeLabel = (vt: string) => {
@@ -293,9 +296,10 @@ export default async function LabComboPage({ params }: Props) {
               '@type': 'NutritionInformation',
               ...(servingCalories > 0 ? { calories: `${servingCalories} calories` } : {}),
               ...(servingProtein > 0 ? { proteinContent: `${servingProtein}g` } : {}),
-              ...(nutrition?.fat ? { fatContent: `${Math.round(nutrition.fat * 3)}g` } : {}),
-              ...(nutrition?.carbs ? { carbohydrateContent: `${Math.round(nutrition.carbs * 3)}g` } : {}),
-              ...(nutrition?.fiber ? { fiberContent: `${Math.round(nutrition.fiber * 3)}g` } : {}),
+              ...(servingFat > 0 ? { fatContent: `${servingFat}g` } : {}),
+              ...(servingCarbs > 0 ? { carbohydrateContent: `${servingCarbs}g` } : {}),
+              ...(servingFiber > 0 ? { fiberContent: `${servingFiber}g` } : {}),
+              servingSize: `${servingWeight}g`,
             },
           } : {}),
           keywords: page.ingredients.map((ing) => ing.replace(/-/g, ' ')).join(', '),
@@ -455,11 +459,11 @@ export default async function LabComboPage({ params }: Props) {
         )}
       </section>
 
-      {/* Nutrition — per serving (~300g) for real-world usefulness */}
-      {nutrition && (
+      {/* Nutrition — per serving (single source of truth from DB) */}
+      {(servingCalories > 0 || servingProtein > 0) && (
         <section className="mb-10">
           <h2 className="text-xl font-bold mb-3">{labels.nutritionTitle}</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
             {servingCalories > 0 && (
               <div className="bg-muted/30 rounded-xl p-4 text-center">
                 <p className="text-2xl font-black">{servingCalories}</p>
@@ -472,20 +476,26 @@ export default async function LabComboPage({ params }: Props) {
                 <p className="text-xs text-muted-foreground uppercase tracking-wider">protein</p>
               </div>
             )}
-            {nutrition.fat != null && (
+            {servingFat > 0 && (
               <div className="bg-muted/30 rounded-xl p-4 text-center">
-                <p className="text-2xl font-black">{Math.round(nutrition.fat * 3)}g</p>
+                <p className="text-2xl font-black">{servingFat}g</p>
                 <p className="text-xs text-muted-foreground uppercase tracking-wider">fat</p>
               </div>
             )}
-            {nutrition.carbs != null && (
+            {servingCarbs > 0 && (
               <div className="bg-muted/30 rounded-xl p-4 text-center">
-                <p className="text-2xl font-black">{Math.round(nutrition.carbs * 3)}g</p>
+                <p className="text-2xl font-black">{servingCarbs}g</p>
                 <p className="text-xs text-muted-foreground uppercase tracking-wider">carbs</p>
               </div>
             )}
+            {servingFiber > 0 && (
+              <div className="bg-muted/30 rounded-xl p-4 text-center">
+                <p className="text-2xl font-black">{servingFiber}g</p>
+                <p className="text-xs text-muted-foreground uppercase tracking-wider">fiber</p>
+              </div>
+            )}
           </div>
-          <p className="text-[11px] text-muted-foreground mt-2 text-center">≈ 1 serving (~300g)</p>
+          <p className="text-[11px] text-muted-foreground mt-2 text-center">≈ 1 serving (~{servingWeight}g)</p>
         </section>
       )}
 

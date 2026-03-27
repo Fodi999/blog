@@ -1353,6 +1353,20 @@ export interface LabComboPage {
   detail_image_url: string | null;
   smart_response: Record<string, unknown>;
   faq: { question: string; answer: string }[];
+  // Pre-calculated nutrition (single source of truth)
+  total_weight_g: number;
+  servings_count: number;
+  calories_total: number;
+  protein_total: number;
+  fat_total: number;
+  carbs_total: number;
+  fiber_total: number;
+  calories_per_serving: number;
+  protein_per_serving: number;
+  fat_per_serving: number;
+  carbs_per_serving: number;
+  fiber_per_serving: number;
+  // ───────────────────────────────
   status: 'draft' | 'published' | 'archived';
   quality_score: number;
   published_at: string | null;
