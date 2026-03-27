@@ -5,24 +5,18 @@ import { routing } from './i18n/routing';
 const intlMiddleware = createMiddleware(routing);
 
 /**
- * Wrap the default next-intl middleware to upgrade locale redirects
- * from 307 (temporary) → 308 (permanent).
+ * Locale-aware middleware with smart redirect strategy:
  *
- * Safe because localeDetection is false — the redirect target is always
- * deterministic (→ /pl/...) and will never change per-user.
- * 308 tells Google to consolidate link equity on the locale URL.
+ * 1. Root `/` and locale-less paths → 307 (temporary)
+ *    Because the target depends on the user's Accept-Language header.
+ *    `/` → `/en/` for English users, `/pl/` for Polish, etc.
+ *    Google crawls without Accept-Language → gets defaultLocale (pl).
+ *
+ * 2. This enables localeDetection: true in routing.ts,
+ *    improving CTR and engagement for international users.
  */
 export default function middleware(request: NextRequest) {
   const response = intlMiddleware(request);
-
-  // Upgrade temporary locale redirects to permanent
-  if (response.status === 307 && response.headers.has('location')) {
-    return new Response(null, {
-      status: 308,
-      headers: { location: response.headers.get('location')! },
-    });
-  }
-
   return response;
 }
 

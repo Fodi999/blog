@@ -49,7 +49,7 @@ function multiLocaleEntry(
   const alternates = {
     languages: {
       ...Object.fromEntries(locales.map((l) => [l, `${BASE_URL}/${l}${path}`])),
-      'x-default': `${BASE_URL}/${canonicalLocale}${path}`,
+      'x-default': `${BASE_URL}${path}`,
     },
   };
 
@@ -177,7 +177,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           ...Object.fromEntries(
             [...availableLocales].map((l) => [l, `${BASE_URL}/${l}/blog/${slug}`])
           ),
-          'x-default': `${BASE_URL}/${canonicalLocale}/blog/${slug}`,
+          'x-default': `${BASE_URL}/blog/${slug}`,
         },
       };
       // Generate one <url> per locale that has the post file
@@ -316,7 +316,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           ...Object.fromEntries(
             [...pageLocales].map((l) => [l, `${BASE_URL}/${l}/chef-tools/seo/${slug}`])
           ),
-          'x-default': `${BASE_URL}/${canonicalLocale}/chef-tools/seo/${slug}`,
+          'x-default': `${BASE_URL}/chef-tools/seo/${slug}`,
         },
       };
       const freq: MetadataRoute.Sitemap[0]['changeFrequency'] =
@@ -391,7 +391,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           ...Object.fromEntries(
             [...comboLocales].map((l) => [l, `${BASE_URL}/${l}/chef-tools/lab/combo/${slug}`])
           ),
-          'x-default': `${BASE_URL}/${canonicalLocale}/chef-tools/lab/combo/${slug}`,
+          'x-default': `${BASE_URL}/chef-tools/lab/combo/${slug}`,
         },
       };
       return [...comboLocales].map((locale) => ({

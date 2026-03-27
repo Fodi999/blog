@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       canonical: url,
       languages: Object.fromEntries([
         ...locales.map((l) => [l, `https://dima-fomin.pl/${l}/chef-tools/lab/combo/${slug}`]),
-        ['x-default', `https://dima-fomin.pl/pl/chef-tools/lab/combo/${slug}`],
+        ['x-default', `https://dima-fomin.pl/chef-tools/lab/combo/${slug}`],
       ]),
     },
     openGraph: {
