@@ -49,50 +49,70 @@ const LOCALE_LABELS: Record<string, {
   ingredients: string;
   nutritionTitle: string;
   flavorTitle: string;
+  whyItWorksTitle: string;
+  howToCookTitle: string;
+  optimizationTitle: string;
   suggestionsTitle: string;
   variantsTitle: string;
   faqTitle: string;
   tryInLab: string;
+  totalTime: string;
 }> = {
   en: {
     backToLab: '← Back to Lab',
     ingredients: 'Ingredients',
     nutritionTitle: 'Nutrition (per 100g)',
     flavorTitle: 'Flavor Profile',
+    whyItWorksTitle: 'Why This Combo Works',
+    howToCookTitle: 'How to Cook',
+    optimizationTitle: 'Optimization Tips',
     suggestionsTitle: 'What to Add',
     variantsTitle: 'Recipe Variants',
     faqTitle: 'Frequently Asked Questions',
     tryInLab: 'Try this combo in Lab →',
+    totalTime: 'Total time',
   },
   ru: {
     backToLab: '← Назад в Лабораторию',
     ingredients: 'Ингредиенты',
     nutritionTitle: 'Пищевая ценность (на 100 г)',
     flavorTitle: 'Профиль вкуса',
+    whyItWorksTitle: 'Почему эта комбинация работает',
+    howToCookTitle: 'Как приготовить',
+    optimizationTitle: 'Советы по оптимизации',
     suggestionsTitle: 'Что добавить',
     variantsTitle: 'Варианты рецептов',
     faqTitle: 'Часто задаваемые вопросы',
     tryInLab: 'Попробовать в Лаборатории →',
+    totalTime: 'Общее время',
   },
   pl: {
     backToLab: '← Powrót do Laboratorium',
     ingredients: 'Składniki',
     nutritionTitle: 'Wartość odżywcza (na 100 g)',
     flavorTitle: 'Profil smakowy',
+    whyItWorksTitle: 'Dlaczego ta kombinacja działa',
+    howToCookTitle: 'Jak gotować',
+    optimizationTitle: 'Wskazówki optymalizacji',
     suggestionsTitle: 'Co dodać',
     variantsTitle: 'Warianty przepisów',
     faqTitle: 'Często zadawane pytania',
     tryInLab: 'Wypróbuj w Laboratorium →',
+    totalTime: 'Całkowity czas',
   },
   uk: {
     backToLab: '← Назад до Лабораторії',
     ingredients: 'Інгредієнти',
     nutritionTitle: 'Харчова цінність (на 100 г)',
     flavorTitle: 'Профіль смаку',
+    whyItWorksTitle: 'Чому ця комбінація працює',
+    howToCookTitle: 'Як приготувати',
+    optimizationTitle: 'Поради з оптимізації',
     suggestionsTitle: 'Що додати',
     variantsTitle: 'Варіанти рецептів',
     faqTitle: 'Часті запитання',
     tryInLab: 'Спробувати в Лабораторії →',
+    totalTime: 'Загальний час',
   },
 };
 
@@ -124,10 +144,59 @@ export default async function LabComboPage({ params }: Props) {
   const flavorProfile = smart.flavor_profile as {
     dominant_tastes?: { taste: string; intensity: number }[];
     balance_score?: number;
+    balance?: { score?: number; dominant_tastes?: string[] };
   } | undefined;
-  const suggestions = (smart.suggestions as { name?: string; reason?: string }[] | undefined) ?? [];
-  const variants = (smart.variants as { name?: string; ingredients?: string[] }[] | undefined) ?? [];
+
+  // Suggestions: backend sends { slug, name, reasons: string[], fills_gaps: string[], score, suggested_grams }
+  const rawSuggestions = (smart.suggestions ?? []) as {
+    slug?: string;
+    name?: string;
+    reasons?: string[];
+    fills_gaps?: string[];
+    score?: number;
+    suggested_grams?: number;
+  }[];
+
+  // Recipe Variants: backend sends RecipeVariant objects
+  const rawVariants = (smart.variants ?? []) as {
+    variant_type?: string;
+    dish_type?: string;
+    title?: string;
+    ingredients?: { slug?: string; name?: string; role?: string; grams?: number; calories?: number }[];
+    total_calories?: number;
+    score?: number;
+    balance_score?: number;
+    explanation?: string;
+  }[];
+
   const faq = Array.isArray(page.faq) ? page.faq : [];
+  const howToCook = Array.isArray(page.how_to_cook) ? page.how_to_cook : [];
+  const optimizationTips = Array.isArray(page.optimization_tips) ? page.optimization_tips : [];
+
+  // Calculate total cooking time
+  const totalMinutes = howToCook.reduce((sum, s) => sum + (s.time_minutes ?? 0), 0);
+
+  // Variant type labels
+  const variantTypeLabel = (vt: string) => {
+    const map: Record<string, string> = {
+      healthy: '🥗 Healthy',
+      balanced: '⚖️ Balanced',
+      heavy: '🔥 Hearty',
+    };
+    return map[vt] ?? capitalize(vt);
+  };
+
+  // Role badge color
+  const roleBadge = (role: string) => {
+    const colors: Record<string, string> = {
+      base: 'bg-amber-500/15 text-amber-700',
+      side: 'bg-emerald-500/15 text-emerald-700',
+      sauce: 'bg-purple-500/15 text-purple-700',
+      aromatic: 'bg-pink-500/15 text-pink-700',
+      fat: 'bg-yellow-500/15 text-yellow-700',
+    };
+    return colors[role] ?? 'bg-muted text-muted-foreground';
+  };
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -230,6 +299,16 @@ export default async function LabComboPage({ params }: Props) {
         </section>
       )}
 
+      {/* Why This Combo Works */}
+      {page.why_it_works && (
+        <section className="mb-10">
+          <h2 className="text-xl font-bold mb-3">{labels.whyItWorksTitle}</h2>
+          <div className="bg-primary/5 border border-primary/10 rounded-xl p-5">
+            <p className="text-base leading-relaxed text-foreground/90">{page.why_it_works}</p>
+          </div>
+        </section>
+      )}
+
       {/* Flavor Profile */}
       {flavorProfile?.dominant_tastes && flavorProfile.dominant_tastes.length > 0 && (
         <section className="mb-10">
@@ -253,18 +332,25 @@ export default async function LabComboPage({ params }: Props) {
         </section>
       )}
 
-      {/* Suggestions */}
-      {suggestions.length > 0 && (
+      {/* How to Cook */}
+      {howToCook.length > 0 && (
         <section className="mb-10">
-          <h2 className="text-xl font-bold mb-3">{labels.suggestionsTitle}</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {suggestions.slice(0, 6).map((s, i) => (
-              <div key={i} className="flex items-start gap-2 bg-muted/20 rounded-xl p-3">
-                <span className="text-primary font-bold">+</span>
-                <div>
-                  <p className="font-semibold text-sm">{s.name}</p>
-                  {s.reason && (
-                    <p className="text-xs text-muted-foreground mt-0.5">{s.reason}</p>
+          <h2 className="text-xl font-bold mb-3">{labels.howToCookTitle}</h2>
+          {totalMinutes > 0 && (
+            <p className="text-sm text-muted-foreground mb-4">
+              ⏱️ {labels.totalTime}: ~{totalMinutes} min
+            </p>
+          )}
+          <div className="space-y-3">
+            {howToCook.map((step) => (
+              <div key={step.step} className="flex gap-4 bg-muted/20 rounded-xl p-4">
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-sm">
+                  {step.step}
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm leading-relaxed">{step.text}</p>
+                  {step.time_minutes != null && step.time_minutes > 0 && (
+                    <p className="text-xs text-muted-foreground mt-1">~{step.time_minutes} min</p>
                   )}
                 </div>
               </div>
@@ -273,19 +359,113 @@ export default async function LabComboPage({ params }: Props) {
         </section>
       )}
 
-      {/* Recipe Variants */}
-      {variants.length > 0 && (
+      {/* Suggestions — with reasons */}
+      {rawSuggestions.length > 0 && (
+        <section className="mb-10">
+          <h2 className="text-xl font-bold mb-3">{labels.suggestionsTitle}</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {rawSuggestions.slice(0, 6).map((s, i) => (
+              <div key={i} className="flex items-start gap-3 bg-muted/20 rounded-xl p-4">
+                <span className="text-primary font-bold text-lg">+</span>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <p className="font-semibold text-sm">{s.name}</p>
+                    {s.score != null && (
+                      <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded-full font-medium">
+                        {s.score}%
+                      </span>
+                    )}
+                  </div>
+                  {s.reasons && s.reasons.length > 0 && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {s.reasons.join(' · ')}
+                    </p>
+                  )}
+                  {s.fills_gaps && s.fills_gaps.length > 0 && (
+                    <p className="text-[10px] text-muted-foreground/70 mt-0.5">
+                      Fills: {s.fills_gaps.join(', ')}
+                    </p>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Recipe Variants — properly rendered */}
+      {rawVariants.length > 0 && (
         <section className="mb-10">
           <h2 className="text-xl font-bold mb-3">{labels.variantsTitle}</h2>
-          <div className="space-y-3">
-            {variants.map((v, i) => (
-              <div key={i} className="bg-muted/20 rounded-xl p-4">
-                <h3 className="font-bold text-sm mb-1">{v.name}</h3>
-                {v.ingredients && (
-                  <p className="text-xs text-muted-foreground">
-                    {v.ingredients.join(', ')}
-                  </p>
+          <div className="space-y-4">
+            {rawVariants.map((v, i) => (
+              <div key={i} className="bg-muted/20 rounded-xl p-5 space-y-3">
+                {/* Variant header */}
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <h3 className="font-bold text-base">
+                    {v.variant_type && <span className="mr-2">{variantTypeLabel(v.variant_type)}</span>}
+                    {v.title}
+                  </h3>
+                  <div className="flex gap-2 text-xs">
+                    {v.total_calories != null && (
+                      <span className="bg-amber-500/10 text-amber-700 px-2 py-0.5 rounded-full font-medium">
+                        {v.total_calories} kcal
+                      </span>
+                    )}
+                    {v.score != null && (
+                      <span className="bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">
+                        Score: {v.score}/100
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Explanation */}
+                {v.explanation && (
+                  <p className="text-sm text-muted-foreground italic">{v.explanation}</p>
                 )}
+
+                {/* Variant ingredients table */}
+                {v.ingredients && v.ingredients.length > 0 && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {v.ingredients.map((ing, j) => (
+                      <div key={j} className="flex items-center gap-2 text-sm">
+                        <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${roleBadge(ing.role ?? '')}`}>
+                          {ing.role ?? '?'}
+                        </span>
+                        <span className="font-medium">{ing.name}</span>
+                        {ing.grams != null && (
+                          <span className="text-xs text-muted-foreground">{ing.grams}g</span>
+                        )}
+                        {ing.calories != null && (
+                          <span className="text-[10px] text-muted-foreground/60">({Math.round(ing.calories)} kcal)</span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Optimization Tips */}
+      {optimizationTips.length > 0 && (
+        <section className="mb-10">
+          <h2 className="text-xl font-bold mb-3">{labels.optimizationTitle}</h2>
+          <div className="space-y-2">
+            {optimizationTips.map((tip, i) => (
+              <div key={i} className="flex items-start gap-3 bg-muted/10 border border-muted/30 rounded-xl p-4">
+                <span className="text-lg">{tip.icon}</span>
+                <div>
+                  {tip.ingredient && (
+                    <span className="font-semibold text-sm text-primary mr-1">
+                      {capitalize(tip.ingredient)}
+                    </span>
+                  )}
+                  <span className="text-sm text-foreground/80">{tip.tip}</span>
+                </div>
               </div>
             ))}
           </div>

@@ -1346,6 +1346,10 @@ export type LabComboPage = {
   description: string;
   h1: string;
   intro: string;
+  why_it_works: string;
+  how_to_cook: { step: number; text: string; time_minutes?: number; ingredients?: string[] }[];
+  optimization_tips: { icon: string; action: string; ingredient: string; tip: string }[];
+  image_url: string | null;
   smart_response: Record<string, unknown>;
   faq: { question: string; answer: string }[];
   status: string;
