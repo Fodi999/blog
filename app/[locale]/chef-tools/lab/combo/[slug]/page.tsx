@@ -73,7 +73,7 @@ const LOCALE_LABELS: Record<string, {
   en: {
     backToLab: '← Back to Lab',
     ingredients: 'Ingredients',
-    nutritionTitle: 'Nutrition (per 100g)',
+    nutritionTitle: 'Nutrition (per serving)',
     flavorTitle: 'Flavor Profile',
     whyItWorksTitle: 'Why This Combo Works',
     howToCookTitle: 'How to Cook',
@@ -92,7 +92,7 @@ const LOCALE_LABELS: Record<string, {
   ru: {
     backToLab: '← Назад в Лабораторию',
     ingredients: 'Ингредиенты',
-    nutritionTitle: 'Пищевая ценность (на 100 г)',
+    nutritionTitle: 'Пищевая ценность (на порцию)',
     flavorTitle: 'Профиль вкуса',
     whyItWorksTitle: 'Почему эта комбинация работает',
     howToCookTitle: 'Как приготовить',
@@ -111,7 +111,7 @@ const LOCALE_LABELS: Record<string, {
   pl: {
     backToLab: '← Powrót do Laboratorium',
     ingredients: 'Składniki',
-    nutritionTitle: 'Wartość odżywcza (na 100 g)',
+    nutritionTitle: 'Wartość odżywcza (na porcję)',
     flavorTitle: 'Profil smakowy',
     whyItWorksTitle: 'Dlaczego ta kombinacja działa',
     howToCookTitle: 'Jak gotować',
@@ -130,7 +130,7 @@ const LOCALE_LABELS: Record<string, {
   uk: {
     backToLab: '← Назад до Лабораторії',
     ingredients: 'Інгредієнти',
-    nutritionTitle: 'Харчова цінність (на 100 г)',
+    nutritionTitle: 'Харчова цінність (на порцію)',
     flavorTitle: 'Профіль смаку',
     whyItWorksTitle: 'Чому ця комбінація працює',
     howToCookTitle: 'Як приготувати',
@@ -210,6 +210,10 @@ export default async function LabComboPage({ params }: Props) {
   // Calculate total cooking time
   const totalMinutes = howToCook.reduce((sum, s) => sum + (s.time_minutes ?? 0), 0);
 
+  // Per-serving macros estimate (~300g portion)
+  const servingProtein = nutrition?.protein ? Math.round(nutrition.protein * 3) : 0;
+  const servingCalories = nutrition?.calories ? Math.round(nutrition.calories * 3) : 0;
+
   // Variant type labels
   const variantTypeLabel = (vt: string) => {
     const map: Record<string, string> = {
@@ -234,19 +238,47 @@ export default async function LabComboPage({ params }: Props) {
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* JSON-LD structured data */}
+      {/* Recipe JSON-LD — enables Google Recipe Rich Cards + cooking carousel */}
       <JsonLd
         data={{
           '@context': 'https://schema.org',
-          '@type': 'Article',
-          headline: page.title,
+          '@type': 'Recipe',
+          name: page.h1,
           description: page.description,
           url: `https://dima-fomin.pl/${locale}/chef-tools/lab/combo/${slug}`,
           datePublished: page.published_at,
           dateModified: page.updated_at,
-          ...(page.image_url ? { image: page.image_url } : {}),
+          ...(page.image_url ? { image: [page.image_url] } : {}),
           author: { '@type': 'Organization', name: 'Dima Fomin' },
-          publisher: { '@type': 'Organization', name: 'Dima Fomin' },
+          ...(totalMinutes > 0 ? {
+            prepTime: `PT${Math.max(5, Math.round(totalMinutes * 0.3))}M`,
+            cookTime: `PT${Math.round(totalMinutes * 0.7)}M`,
+            totalTime: `PT${totalMinutes}M`,
+          } : {}),
+          recipeYield: '1 serving',
+          recipeCategory: page.meal_type ? capitalize(page.meal_type.replace(/_/g, ' ')) : 'Main Course',
+          ...(page.cuisine ? { recipeCuisine: capitalize(page.cuisine.replace(/_/g, ' ')) } : {}),
+          ...(page.diet ? { suitableForDiet: `https://schema.org/${capitalize(page.diet.replace(/_/g, ''))}Diet` } : {}),
+          recipeIngredient: page.ingredients.map((ing) => capitalize(ing.replace(/-/g, ' '))),
+          ...(howToCook.length > 0 ? {
+            recipeInstructions: howToCook.map((s) => ({
+              '@type': 'HowToStep',
+              position: s.step,
+              name: `Step ${s.step}`,
+              text: s.text,
+            })),
+          } : {}),
+          ...(servingCalories > 0 || servingProtein > 0 ? {
+            nutrition: {
+              '@type': 'NutritionInformation',
+              ...(servingCalories > 0 ? { calories: `${servingCalories} calories` } : {}),
+              ...(servingProtein > 0 ? { proteinContent: `${servingProtein}g` } : {}),
+              ...(nutrition?.fat ? { fatContent: `${Math.round(nutrition.fat * 3)}g` } : {}),
+              ...(nutrition?.carbs ? { carbohydrateContent: `${Math.round(nutrition.carbs * 3)}g` } : {}),
+              ...(nutrition?.fiber ? { fiberContent: `${Math.round(nutrition.fiber * 3)}g` } : {}),
+            },
+          } : {}),
+          keywords: page.ingredients.map((ing) => ing.replace(/-/g, ' ')).join(', '),
         }}
       />
 
@@ -263,26 +295,6 @@ export default async function LabComboPage({ params }: Props) {
                 '@type': 'Answer',
                 text: f.answer,
               },
-            })),
-          }}
-        />
-      )}
-
-      {/* HowTo JSON-LD — enables Google Rich Results for cooking steps */}
-      {howToCook.length > 0 && (
-        <JsonLd
-          data={{
-            '@context': 'https://schema.org',
-            '@type': 'HowTo',
-            name: page.h1,
-            description: page.description,
-            ...(page.image_url ? { image: page.image_url } : {}),
-            ...(totalMinutes > 0 ? { totalTime: `PT${totalMinutes}M` } : {}),
-            step: howToCook.map((s) => ({
-              '@type': 'HowToStep',
-              position: s.step,
-              name: `Step ${s.step}`,
-              text: s.text,
             })),
           }}
         />
@@ -346,10 +358,10 @@ export default async function LabComboPage({ params }: Props) {
       </h1>
 
       {/* Quick Answer — targets featured snippet (paragraph) */}
-      {nutrition && nutrition.protein != null && totalMinutes > 0 && (
+      {servingProtein > 0 && totalMinutes > 0 && (
         <div className="bg-primary/5 border border-primary/15 rounded-xl px-5 py-4 mb-6 max-w-2xl">
           <p className="text-base font-medium text-foreground/90 leading-relaxed">
-            {labels.quickAnswer(Math.round(nutrition.protein), totalMinutes)}
+            {labels.quickAnswer(servingProtein, totalMinutes)}
           </p>
         </div>
       )}
@@ -387,36 +399,37 @@ export default async function LabComboPage({ params }: Props) {
         </div>
       </section>
 
-      {/* Nutrition */}
+      {/* Nutrition — per serving (~300g) for real-world usefulness */}
       {nutrition && (
         <section className="mb-10">
           <h2 className="text-xl font-bold mb-3">{labels.nutritionTitle}</h2>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            {nutrition.calories != null && (
+            {servingCalories > 0 && (
               <div className="bg-muted/30 rounded-xl p-4 text-center">
-                <p className="text-2xl font-black">{Math.round(nutrition.calories)}</p>
+                <p className="text-2xl font-black">{servingCalories}</p>
                 <p className="text-xs text-muted-foreground uppercase tracking-wider">kcal</p>
               </div>
             )}
-            {nutrition.protein != null && (
+            {servingProtein > 0 && (
               <div className="bg-muted/30 rounded-xl p-4 text-center">
-                <p className="text-2xl font-black">{nutrition.protein.toFixed(1)}g</p>
+                <p className="text-2xl font-black">{servingProtein}g</p>
                 <p className="text-xs text-muted-foreground uppercase tracking-wider">protein</p>
               </div>
             )}
             {nutrition.fat != null && (
               <div className="bg-muted/30 rounded-xl p-4 text-center">
-                <p className="text-2xl font-black">{nutrition.fat.toFixed(1)}g</p>
+                <p className="text-2xl font-black">{Math.round(nutrition.fat * 3)}g</p>
                 <p className="text-xs text-muted-foreground uppercase tracking-wider">fat</p>
               </div>
             )}
             {nutrition.carbs != null && (
               <div className="bg-muted/30 rounded-xl p-4 text-center">
-                <p className="text-2xl font-black">{nutrition.carbs.toFixed(1)}g</p>
+                <p className="text-2xl font-black">{Math.round(nutrition.carbs * 3)}g</p>
                 <p className="text-xs text-muted-foreground uppercase tracking-wider">carbs</p>
               </div>
             )}
           </div>
+          <p className="text-[11px] text-muted-foreground mt-2 text-center">≈ 1 serving (~300g)</p>
         </section>
       )}
 
