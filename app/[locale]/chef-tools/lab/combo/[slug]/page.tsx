@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import { setRequestLocale } from 'next-intl/server';
-import { fetchLabCombo, fetchRelatedCombos } from '@/lib/api';
+import { fetchLabCombo, fetchRelatedCombos, fetchAlsoCook } from '@/lib/api';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { JsonLd } from '@/components/JsonLd';
@@ -67,6 +67,8 @@ const LOCALE_LABELS: Record<string, {
   quickAnswer: (protein: number, minutes: number) => string;
   relatedTitle: string;
   relatedCta: string;
+  alsoCookTitle: string;
+  alsoCookCta: string;
   breadcrumbHome: string;
   breadcrumbLab: string;
 }> = {
@@ -86,6 +88,8 @@ const LOCALE_LABELS: Record<string, {
     quickAnswer: (p, m) => `This dish delivers ~${p}g protein and is ready in ${m} minutes.`,
     relatedTitle: 'Related Combos',
     relatedCta: 'View recipe →',
+    alsoCookTitle: 'People Also Cook',
+    alsoCookCta: 'View recipe →',
     breadcrumbHome: 'Home',
     breadcrumbLab: 'Food Lab',
   },
@@ -105,6 +109,8 @@ const LOCALE_LABELS: Record<string, {
     quickAnswer: (p, m) => `Это блюдо содержит ~${p} г белка и готовится за ${m} минут.`,
     relatedTitle: 'Похожие комбинации',
     relatedCta: 'Смотреть рецепт →',
+    alsoCookTitle: 'Люди также готовят',
+    alsoCookCta: 'Смотреть рецепт →',
     breadcrumbHome: 'Главная',
     breadcrumbLab: 'Лаборатория',
   },
@@ -124,6 +130,8 @@ const LOCALE_LABELS: Record<string, {
     quickAnswer: (p, m) => `To danie dostarcza ~${p} g białka i jest gotowe w ${m} minut.`,
     relatedTitle: 'Powiązane kombinacje',
     relatedCta: 'Zobacz przepis →',
+    alsoCookTitle: 'Ludzie też gotują',
+    alsoCookCta: 'Zobacz przepis →',
     breadcrumbHome: 'Strona główna',
     breadcrumbLab: 'Laboratorium',
   },
@@ -143,6 +151,8 @@ const LOCALE_LABELS: Record<string, {
     quickAnswer: (p, m) => `Ця страва містить ~${p} г білка і готується за ${m} хвилин.`,
     relatedTitle: 'Схожі комбінації',
     relatedCta: 'Дивитись рецепт →',
+    alsoCookTitle: 'Люди також готують',
+    alsoCookCta: 'Дивитись рецепт →',
     breadcrumbHome: 'Головна',
     breadcrumbLab: 'Лабораторія',
   },
@@ -162,6 +172,7 @@ export default async function LabComboPage({ params }: Props) {
   if (!page) notFound();
 
   const relatedCombos = await fetchRelatedCombos(slug, locale, 6);
+  const alsoCookCombos = await fetchAlsoCook(slug, locale, 4);
 
   const labels = LOCALE_LABELS[locale] ?? LOCALE_LABELS.en;
   const smart = page.smart_response;
@@ -248,8 +259,17 @@ export default async function LabComboPage({ params }: Props) {
           url: `https://dima-fomin.pl/${locale}/chef-tools/lab/combo/${slug}`,
           datePublished: page.published_at,
           dateModified: page.updated_at,
-          ...(page.image_url ? { image: [page.image_url] } : {}),
-          author: { '@type': 'Organization', name: 'Dima Fomin' },
+          ...(() => {
+            const imgs = [page.image_url, page.process_image_url, page.detail_image_url].filter(Boolean);
+            return imgs.length > 0 ? { image: imgs } : {};
+          })(),
+          author: { '@type': 'Person', name: 'Dima Fomin', url: 'https://dima-fomin.pl/about' },
+          publisher: {
+            '@type': 'Organization',
+            name: 'Dima Fomin — Chef Tools',
+            url: 'https://dima-fomin.pl',
+            logo: { '@type': 'ImageObject', url: 'https://dima-fomin.pl/logo.png' },
+          },
           ...(totalMinutes > 0 ? {
             prepTime: `PT${Math.max(5, Math.round(totalMinutes * 0.3))}M`,
             cookTime: `PT${Math.round(totalMinutes * 0.7)}M`,
@@ -371,15 +391,39 @@ export default async function LabComboPage({ params }: Props) {
         {page.intro}
       </p>
 
-      {/* Hero image */}
+      {/* Hero image — Pinterest-style with gradient overlay */}
       {page.image_url && (
-        <div className="mb-10 rounded-2xl overflow-hidden border bg-muted/10">
+        <div className="mb-10 rounded-2xl overflow-hidden border bg-muted/10 relative group">
           <img
             src={page.image_url}
             alt={page.h1}
-            className="w-full max-h-[420px] object-cover"
+            className="w-full h-[320px] sm:h-[420px] object-cover"
             loading="eager"
           />
+          {/* Dark gradient overlay — bottom 40% */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+          {/* Text overlay */}
+          <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-7">
+            {/* Meal type + goal badges */}
+            <div className="flex gap-2 mb-2 flex-wrap">
+              {page.meal_type && (
+                <span className="text-[11px] bg-white/20 backdrop-blur-sm text-white px-2.5 py-1 rounded-full font-medium uppercase tracking-wider">
+                  {capitalize(page.meal_type.replace(/_/g, ' '))}
+                </span>
+              )}
+              {page.goal && (
+                <span className="text-[11px] bg-primary/80 backdrop-blur-sm text-white px-2.5 py-1 rounded-full font-medium uppercase tracking-wider">
+                  {capitalize(page.goal.replace(/_/g, ' '))}
+                </span>
+              )}
+            </div>
+            {/* Quick stats on image */}
+            <div className="flex gap-4 text-white/90 text-sm font-medium">
+              {servingProtein > 0 && <span>🔥 {servingProtein}g protein</span>}
+              {totalMinutes > 0 && <span>⏱️ {totalMinutes} min</span>}
+              {servingCalories > 0 && <span>💪 {servingCalories} kcal</span>}
+            </div>
+          </div>
         </div>
       )}
 
@@ -397,6 +441,18 @@ export default async function LabComboPage({ params }: Props) {
             </Link>
           ))}
         </div>
+
+        {/* Detail image — ingredient close-up for visual richness */}
+        {page.detail_image_url && (
+          <div className="mt-4 rounded-xl overflow-hidden border bg-muted/10">
+            <img
+              src={page.detail_image_url}
+              alt={`${page.h1} — ingredients`}
+              className="w-full h-[200px] sm:h-[260px] object-cover"
+              loading="lazy"
+            />
+          </div>
+        )}
       </section>
 
       {/* Nutrition — per serving (~300g) for real-world usefulness */}
@@ -490,6 +546,18 @@ export default async function LabComboPage({ params }: Props) {
               </div>
             ))}
           </div>
+
+          {/* Process image — cooking action shot (searing, plating) */}
+          {page.process_image_url && (
+            <div className="mt-5 rounded-xl overflow-hidden border bg-muted/10">
+              <img
+                src={page.process_image_url}
+                alt={`${page.h1} — cooking process`}
+                className="w-full h-[220px] sm:h-[300px] object-cover"
+                loading="lazy"
+              />
+            </div>
+          )}
         </section>
       )}
 
@@ -679,6 +747,46 @@ export default async function LabComboPage({ params }: Props) {
                   )}
                   <p className="text-[11px] text-primary font-medium mt-2 group-hover:underline">
                     {labels.relatedCta}
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* People Also Cook — discovery links (different ingredients, same goal/meal) */}
+      {alsoCookCombos.length > 0 && (
+        <section className="mb-10">
+          <h2 className="text-xl font-bold mb-4">{labels.alsoCookTitle}</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {alsoCookCombos.map((ac) => (
+              <Link
+                key={ac.slug}
+                href={`/${locale}/chef-tools/lab/combo/${ac.slug}`}
+                className="group block bg-muted/20 rounded-xl overflow-hidden border border-muted/30 hover:border-primary/40 transition"
+              >
+                {ac.image_url ? (
+                  <img
+                    src={ac.image_url}
+                    alt={ac.title}
+                    className="w-full h-24 object-cover"
+                    loading="lazy"
+                  />
+                ) : (
+                  <div className="w-full h-24 bg-muted/30 flex items-center justify-center text-2xl">
+                    🍳
+                  </div>
+                )}
+                <div className="p-2.5">
+                  <h3 className="font-bold text-xs mb-1 group-hover:text-primary transition line-clamp-2">
+                    {ac.title}
+                  </h3>
+                  <p className="text-[10px] text-muted-foreground line-clamp-1">
+                    {ac.ingredients.map(capitalize).join(' · ')}
+                  </p>
+                  <p className="text-[10px] text-primary font-medium mt-1.5 group-hover:underline">
+                    {labels.alsoCookCta}
                   </p>
                 </div>
               </Link>

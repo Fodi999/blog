@@ -1349,6 +1349,8 @@ export interface LabComboPage {
   how_to_cook: { step: number; text: string; time_minutes?: number }[];
   optimization_tips: { icon: string; action: string; ingredient: string; tip: string }[];
   image_url: string | null;
+  process_image_url: string | null;
+  detail_image_url: string | null;
   smart_response: Record<string, unknown>;
   faq: { question: string; answer: string }[];
   status: 'draft' | 'published' | 'archived';
@@ -1411,6 +1413,23 @@ export async function fetchRelatedCombos(
   const combos = await apiFetchFresh<RelatedCombo[]>(
     `/public/lab-combos/${encodeURIComponent(slug)}/related?locale=${encodeURIComponent(locale)}&limit=${limit}`,
     [`lab-combo-related-${slug}`],
+  );
+  return combos ?? [];
+}
+
+/**
+ * GET /public/lab-combos/:slug/also-cook?locale=en&limit=4
+ * "People also cook" — combos with same goal/meal but different ingredients.
+ * Discovery-based internal linking, complements related combos.
+ */
+export async function fetchAlsoCook(
+  slug: string,
+  locale: string,
+  limit = 4,
+): Promise<RelatedCombo[]> {
+  const combos = await apiFetchFresh<RelatedCombo[]>(
+    `/public/lab-combos/${encodeURIComponent(slug)}/also-cook?locale=${encodeURIComponent(locale)}&limit=${limit}`,
+    [`lab-combo-also-cook-${slug}`],
   );
   return combos ?? [];
 }
