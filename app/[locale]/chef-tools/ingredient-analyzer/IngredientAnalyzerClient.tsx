@@ -671,7 +671,7 @@ function NutritionTableView({
                   </TableCell>
                   <TableCell className="text-right w-10">
                     <Link
-                      href={`/${locale}/chef-tools/nutrition/${item.slug}?from=analyzer`}
+                      href={`/${locale}/chef-tools/nutrition/${item.slug}`}
                       onClick={(e) => e.stopPropagation()}
                       className="inline-flex items-center justify-center h-7 w-7 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
                       title="Open detail page"

@@ -269,7 +269,7 @@ export function NutritionClient({ initialIngredients, locale, i18n }: Props) {
                   <td className="px-4 py-3 text-right">
                     {item.slug && (
                       <Link
-                        href={`/chef-tools/nutrition/${item.slug}?from=table` as never}
+                        href={`/chef-tools/nutrition/${item.slug}` as never}
                         className="inline-flex items-center gap-1 text-primary text-[10px] font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity"
                       >
                         <ArrowRight className="h-3 w-3 stroke-[3px]" />

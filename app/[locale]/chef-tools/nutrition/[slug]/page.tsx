@@ -2,12 +2,13 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
 import { generateMetadata as genMeta } from '@/lib/metadata';
 import { JsonLd } from '@/components/JsonLd';
-import { ChevronLeft, ChevronRight, Flame, Beef, Droplets, Wheat, ArrowRight } from 'lucide-react';
+import { ChevronRight, Flame, Beef, Droplets, Wheat, ArrowRight } from 'lucide-react';
 import { fetchIngredient, fetchIngredients } from '@/lib/api';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { ChefToolsNav } from '../../ChefToolsNav';
 import { generateNutritionSEO } from '@/lib/seo-ingredients';
+import { NutritionBackNav } from './NutritionBackNav';
 
 export const revalidate = 86400;
 
@@ -109,21 +110,11 @@ function localizedDescription(
 
 export default async function IngredientDetailPage({
   params,
-  searchParams,
 }: {
   params: Promise<{ locale: string; slug: string }>;
-  searchParams?: Promise<{ from?: string }>;
 }) {
   const { locale, slug } = await params;
   setRequestLocale(locale);
-  const sp = searchParams ? await searchParams : {};
-  const from = sp?.from; // 'catalog' | 'table' | 'analyzer' | undefined
-
-  // Resolve back navigation
-  const backHref =
-    from === 'table' ? '/chef-tools/nutrition' :
-    from === 'analyzer' ? '/chef-tools/ingredient-analyzer' :
-    '/chef-tools/ingredients'; // default: catalog
 
   const [ingredient, t] = await Promise.all([
     fetchIngredient(slug),
@@ -182,33 +173,19 @@ export default async function IngredientDetailPage({
         }}
       />
 
-      {/* Breadcrumb + back button */}
-      <div className="mb-8 space-y-2">
-        <div className="flex items-center gap-2 text-[11px] text-muted-foreground font-medium uppercase tracking-wider">
-          <Link href="/chef-tools" className="hover:text-foreground transition-colors">Chef Tools</Link>
-          <ChevronRight className="h-3 w-3" />
-          <Link href={backHref as never} className="hover:text-foreground transition-colors">
-            {from === 'table'
-              ? t('nutrition.seoTitle')
-              : from === 'analyzer'
-              ? t('tools.ingredientAnalyzer.title')
-              : t('ingredients.catalog.title')}
-          </Link>
-          <ChevronRight className="h-3 w-3" />
-          <span className="text-foreground">{name}</span>
-        </div>
-        <Link
-          href={backHref as never}
-          className="inline-flex items-center gap-2 text-sm font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors"
-        >
-          <ChevronLeft className="h-4 w-4" />
-          {from === 'table'
-            ? t('nutrition.backToTable')
-            : from === 'analyzer'
-            ? t('nutrition.backToAnalyzer')
-            : t('nutrition.backToCatalog')}
-        </Link>
-      </div>
+      {/* Breadcrumb + back button (client-side — no ?from= in URL for SEO) */}
+      <NutritionBackNav
+        name={name}
+        labels={{
+          chefTools: 'Chef Tools',
+          table: t('nutrition.seoTitle'),
+          analyzer: t('tools.ingredientAnalyzer.title'),
+          catalog: t('ingredients.catalog.title'),
+          backTable: t('nutrition.backToTable'),
+          backAnalyzer: t('nutrition.backToAnalyzer'),
+          backCatalog: t('nutrition.backToCatalog'),
+        }}
+      />
 
       {/* Two-column layout: photo left, data right */}
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.4fr] gap-6 mb-10 items-start">
