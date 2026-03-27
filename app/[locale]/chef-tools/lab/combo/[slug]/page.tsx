@@ -38,6 +38,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       type: 'article',
       siteName: 'Dima Fomin',
       locale,
+      ...(page.image_url ? { images: [{ url: page.image_url, width: 1200, height: 630, alt: page.h1 }] } : {}),
+    },
+    twitter: {
+      card: page.image_url ? 'summary_large_image' : 'summary',
+      title: page.title,
+      description: page.description,
+      ...(page.image_url ? { images: [page.image_url] } : {}),
     },
   };
 }
@@ -210,6 +217,7 @@ export default async function LabComboPage({ params }: Props) {
           url: `https://dima-fomin.pl/${locale}/chef-tools/lab/combo/${slug}`,
           datePublished: page.published_at,
           dateModified: page.updated_at,
+          ...(page.image_url ? { image: page.image_url } : {}),
           author: { '@type': 'Organization', name: 'Dima Fomin' },
           publisher: { '@type': 'Organization', name: 'Dima Fomin' },
         }}
@@ -233,6 +241,26 @@ export default async function LabComboPage({ params }: Props) {
         />
       )}
 
+      {/* HowTo JSON-LD — enables Google Rich Results for cooking steps */}
+      {howToCook.length > 0 && (
+        <JsonLd
+          data={{
+            '@context': 'https://schema.org',
+            '@type': 'HowTo',
+            name: page.h1,
+            description: page.description,
+            ...(page.image_url ? { image: page.image_url } : {}),
+            ...(totalMinutes > 0 ? { totalTime: `PT${totalMinutes}M` } : {}),
+            step: howToCook.map((s) => ({
+              '@type': 'HowToStep',
+              position: s.step,
+              text: s.text,
+              ...(s.time_minutes ? { estimatedCost: undefined } : {}),
+            })),
+          }}
+        />
+      )}
+
       {/* Breadcrumbs */}
       <nav className="text-sm text-muted-foreground mb-6">
         <Link href={`/${locale}/chef-tools/lab`} className="hover:text-primary transition">
@@ -249,6 +277,18 @@ export default async function LabComboPage({ params }: Props) {
       <p className="text-lg text-muted-foreground mb-8 max-w-2xl leading-relaxed">
         {page.intro}
       </p>
+
+      {/* Hero image */}
+      {page.image_url && (
+        <div className="mb-10 rounded-2xl overflow-hidden border bg-muted/10">
+          <img
+            src={page.image_url}
+            alt={page.h1}
+            className="w-full max-h-[420px] object-cover"
+            loading="eager"
+          />
+        </div>
+      )}
 
       {/* Ingredient chips */}
       <section className="mb-10">
