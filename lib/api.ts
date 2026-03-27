@@ -1364,6 +1364,15 @@ export interface LabComboSitemapEntry {
   updated_at: string;
 }
 
+export interface RelatedCombo {
+  slug: string;
+  title: string;
+  ingredients: string[];
+  goal?: string;
+  meal_type?: string;
+  image_url?: string;
+}
+
 /**
  * GET /public/lab-combos/:slug?locale=en
  * Single published combo page with full SmartResponse + SEO metadata.
@@ -1388,4 +1397,20 @@ export async function fetchLabCombosSitemap(): Promise<LabComboSitemapEntry[]> {
     ['lab-combos-sitemap'],
   );
   return entries ?? [];
+}
+
+/**
+ * GET /public/lab-combos/:slug/related?locale=en&limit=6
+ * Related combos that share ingredients — for internal linking.
+ */
+export async function fetchRelatedCombos(
+  slug: string,
+  locale: string,
+  limit = 6,
+): Promise<RelatedCombo[]> {
+  const combos = await apiFetchFresh<RelatedCombo[]>(
+    `/public/lab-combos/${encodeURIComponent(slug)}/related?locale=${encodeURIComponent(locale)}&limit=${limit}`,
+    [`lab-combo-related-${slug}`],
+  );
+  return combos ?? [];
 }

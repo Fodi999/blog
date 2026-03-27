@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import { setRequestLocale } from 'next-intl/server';
-import { fetchLabCombo } from '@/lib/api';
+import { fetchLabCombo, fetchRelatedCombos } from '@/lib/api';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { JsonLd } from '@/components/JsonLd';
@@ -64,6 +64,11 @@ const LOCALE_LABELS: Record<string, {
   faqTitle: string;
   tryInLab: string;
   totalTime: string;
+  quickAnswer: (protein: number, minutes: number) => string;
+  relatedTitle: string;
+  relatedCta: string;
+  breadcrumbHome: string;
+  breadcrumbLab: string;
 }> = {
   en: {
     backToLab: '← Back to Lab',
@@ -78,6 +83,11 @@ const LOCALE_LABELS: Record<string, {
     faqTitle: 'Frequently Asked Questions',
     tryInLab: 'Try this combo in Lab →',
     totalTime: 'Total time',
+    quickAnswer: (p, m) => `This dish delivers ~${p}g protein and is ready in ${m} minutes.`,
+    relatedTitle: 'Related Combos',
+    relatedCta: 'View recipe →',
+    breadcrumbHome: 'Home',
+    breadcrumbLab: 'Food Lab',
   },
   ru: {
     backToLab: '← Назад в Лабораторию',
@@ -92,6 +102,11 @@ const LOCALE_LABELS: Record<string, {
     faqTitle: 'Часто задаваемые вопросы',
     tryInLab: 'Попробовать в Лаборатории →',
     totalTime: 'Общее время',
+    quickAnswer: (p, m) => `Это блюдо содержит ~${p} г белка и готовится за ${m} минут.`,
+    relatedTitle: 'Похожие комбинации',
+    relatedCta: 'Смотреть рецепт →',
+    breadcrumbHome: 'Главная',
+    breadcrumbLab: 'Лаборатория',
   },
   pl: {
     backToLab: '← Powrót do Laboratorium',
@@ -106,6 +121,11 @@ const LOCALE_LABELS: Record<string, {
     faqTitle: 'Często zadawane pytania',
     tryInLab: 'Wypróbuj w Laboratorium →',
     totalTime: 'Całkowity czas',
+    quickAnswer: (p, m) => `To danie dostarcza ~${p} g białka i jest gotowe w ${m} minut.`,
+    relatedTitle: 'Powiązane kombinacje',
+    relatedCta: 'Zobacz przepis →',
+    breadcrumbHome: 'Strona główna',
+    breadcrumbLab: 'Laboratorium',
   },
   uk: {
     backToLab: '← Назад до Лабораторії',
@@ -120,6 +140,11 @@ const LOCALE_LABELS: Record<string, {
     faqTitle: 'Часті запитання',
     tryInLab: 'Спробувати в Лабораторії →',
     totalTime: 'Загальний час',
+    quickAnswer: (p, m) => `Ця страва містить ~${p} г білка і готується за ${m} хвилин.`,
+    relatedTitle: 'Схожі комбінації',
+    relatedCta: 'Дивитись рецепт →',
+    breadcrumbHome: 'Головна',
+    breadcrumbLab: 'Лабораторія',
   },
 };
 
@@ -135,6 +160,8 @@ export default async function LabComboPage({ params }: Props) {
 
   const page = await fetchLabCombo(slug, locale);
   if (!page) notFound();
+
+  const relatedCombos = await fetchRelatedCombos(slug, locale, 6);
 
   const labels = LOCALE_LABELS[locale] ?? LOCALE_LABELS.en;
   const smart = page.smart_response;
@@ -254,24 +281,78 @@ export default async function LabComboPage({ params }: Props) {
             step: howToCook.map((s) => ({
               '@type': 'HowToStep',
               position: s.step,
+              name: `Step ${s.step}`,
               text: s.text,
-              ...(s.time_minutes ? { estimatedCost: undefined } : {}),
             })),
           }}
         />
       )}
 
+      {/* BreadcrumbList JSON-LD — structured navigation for Google */}
+      <JsonLd
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            {
+              '@type': 'ListItem',
+              position: 1,
+              name: labels.breadcrumbHome,
+              item: `https://dima-fomin.pl/${locale}`,
+            },
+            {
+              '@type': 'ListItem',
+              position: 2,
+              name: labels.breadcrumbLab,
+              item: `https://dima-fomin.pl/${locale}/chef-tools/lab`,
+            },
+            {
+              '@type': 'ListItem',
+              position: 3,
+              name: page.h1,
+              item: `https://dima-fomin.pl/${locale}/chef-tools/lab/combo/${slug}`,
+            },
+          ],
+        }}
+      />
+
       {/* Breadcrumbs */}
       <nav className="text-sm text-muted-foreground mb-6">
-        <Link href={`/${locale}/chef-tools/lab`} className="hover:text-primary transition">
-          {labels.backToLab}
-        </Link>
+        <ol className="flex items-center gap-1 flex-wrap" itemScope itemType="https://schema.org/BreadcrumbList">
+          <li itemProp="itemListElement" itemScope itemType="https://schema.org/ListItem">
+            <Link href={`/${locale}`} itemProp="item" className="hover:text-primary transition">
+              <span itemProp="name">{labels.breadcrumbHome}</span>
+            </Link>
+            <meta itemProp="position" content="1" />
+          </li>
+          <li className="text-muted-foreground/50">/</li>
+          <li itemProp="itemListElement" itemScope itemType="https://schema.org/ListItem">
+            <Link href={`/${locale}/chef-tools/lab`} itemProp="item" className="hover:text-primary transition">
+              <span itemProp="name">{labels.breadcrumbLab}</span>
+            </Link>
+            <meta itemProp="position" content="2" />
+          </li>
+          <li className="text-muted-foreground/50">/</li>
+          <li itemProp="itemListElement" itemScope itemType="https://schema.org/ListItem">
+            <span itemProp="name" className="text-foreground font-medium">{page.h1}</span>
+            <meta itemProp="position" content="3" />
+          </li>
+        </ol>
       </nav>
 
       {/* H1 */}
       <h1 className="text-3xl md:text-5xl font-black tracking-tighter mb-4 text-foreground">
         {page.h1}
       </h1>
+
+      {/* Quick Answer — targets featured snippet (paragraph) */}
+      {nutrition && nutrition.protein != null && totalMinutes > 0 && (
+        <div className="bg-primary/5 border border-primary/15 rounded-xl px-5 py-4 mb-6 max-w-2xl">
+          <p className="text-base font-medium text-foreground/90 leading-relaxed">
+            {labels.quickAnswer(Math.round(nutrition.protein), totalMinutes)}
+          </p>
+        </div>
+      )}
 
       {/* Intro */}
       <p className="text-lg text-muted-foreground mb-8 max-w-2xl leading-relaxed">
@@ -399,7 +480,7 @@ export default async function LabComboPage({ params }: Props) {
         </section>
       )}
 
-      {/* Suggestions — with reasons */}
+      {/* Suggestions — with reasons + linked to ingredient pages */}
       {rawSuggestions.length > 0 && (
         <section className="mb-10">
           <h2 className="text-xl font-bold mb-3">{labels.suggestionsTitle}</h2>
@@ -409,7 +490,16 @@ export default async function LabComboPage({ params }: Props) {
                 <span className="text-primary font-bold text-lg">+</span>
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <p className="font-semibold text-sm">{s.name}</p>
+                    {s.slug ? (
+                      <Link
+                        href={`/${locale}/ingredients/${s.slug}`}
+                        className="font-semibold text-sm text-primary hover:underline"
+                      >
+                        {s.name}
+                      </Link>
+                    ) : (
+                      <p className="font-semibold text-sm">{s.name}</p>
+                    )}
                     {s.score != null && (
                       <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded-full font-medium">
                         {s.score}%
@@ -525,6 +615,60 @@ export default async function LabComboPage({ params }: Props) {
                 </summary>
                 <p className="px-4 pb-3 text-sm text-muted-foreground">{f.answer}</p>
               </details>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Related Combos — internal linking for SEO */}
+      {relatedCombos.length > 0 && (
+        <section className="mb-10">
+          <h2 className="text-xl font-bold mb-4">{labels.relatedTitle}</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {relatedCombos.map((rc) => (
+              <Link
+                key={rc.slug}
+                href={`/${locale}/chef-tools/lab/combo/${rc.slug}`}
+                className="group block bg-muted/20 rounded-xl overflow-hidden border border-muted/30 hover:border-primary/40 transition"
+              >
+                {rc.image_url ? (
+                  <img
+                    src={rc.image_url}
+                    alt={rc.title}
+                    className="w-full h-32 object-cover"
+                    loading="lazy"
+                  />
+                ) : (
+                  <div className="w-full h-32 bg-muted/30 flex items-center justify-center text-3xl">
+                    🍽️
+                  </div>
+                )}
+                <div className="p-3">
+                  <h3 className="font-bold text-sm mb-1 group-hover:text-primary transition line-clamp-2">
+                    {rc.title}
+                  </h3>
+                  <p className="text-[11px] text-muted-foreground line-clamp-1">
+                    {rc.ingredients.map(capitalize).join(' · ')}
+                  </p>
+                  {(rc.goal || rc.meal_type) && (
+                    <div className="flex gap-1.5 mt-2 flex-wrap">
+                      {rc.goal && (
+                        <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded-full font-medium">
+                          {capitalize(rc.goal)}
+                        </span>
+                      )}
+                      {rc.meal_type && (
+                        <span className="text-[10px] bg-amber-500/10 text-amber-700 px-1.5 py-0.5 rounded-full font-medium">
+                          {capitalize(rc.meal_type)}
+                        </span>
+                      )}
+                    </div>
+                  )}
+                  <p className="text-[11px] text-primary font-medium mt-2 group-hover:underline">
+                    {labels.relatedCta}
+                  </p>
+                </div>
+              </Link>
             ))}
           </div>
         </section>
