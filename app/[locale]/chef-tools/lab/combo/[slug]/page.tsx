@@ -191,10 +191,11 @@ export default async function LabComboPage({ params }: Props) {
     balance?: { score?: number; dominant_tastes?: string[] };
   } | undefined;
 
-  // Suggestions: backend sends { slug, name, reasons: string[], fills_gaps: string[], score, suggested_grams }
+  // Suggestions: backend sends { slug, name, image_url, reasons, fills_gaps, score, suggested_grams }
   const rawSuggestions = (smart.suggestions ?? []) as {
     slug?: string;
     name?: string;
+    image_url?: string | null;
     reasons?: string[];
     fills_gaps?: string[];
     score?: number;
@@ -571,19 +572,42 @@ export default async function LabComboPage({ params }: Props) {
         </section>
       )}
 
-      {/* Suggestions — with reasons + linked to ingredient pages */}
+      {/* Suggestions — with catalog images, reasons & linked to ingredient pages */}
       {rawSuggestions.length > 0 && (
         <section className="mb-10">
           <h2 className="text-xl font-bold mb-3">{labels.suggestionsTitle}</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {rawSuggestions.slice(0, 6).map((s, i) => (
               <div key={i} className="flex items-start gap-3 bg-muted/20 rounded-xl p-4">
-                <span className="text-primary font-bold text-lg">+</span>
-                <div className="flex-1">
+                {/* Ingredient photo from catalog */}
+                {s.image_url ? (
+                  <div className="flex-shrink-0 w-12 h-12 rounded-lg overflow-hidden bg-muted/30">
+                    {s.slug ? (
+                      <Link href={`/${locale}/chef-tools/ingredients/${s.slug}`}>
+                        <img
+                          src={s.image_url}
+                          alt={s.name ?? 'ingredient'}
+                          className="w-full h-full object-cover"
+                          loading="lazy"
+                        />
+                      </Link>
+                    ) : (
+                      <img
+                        src={s.image_url}
+                        alt={s.name ?? 'ingredient'}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
+                    )}
+                  </div>
+                ) : (
+                  <span className="flex-shrink-0 w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-bold text-lg">+</span>
+                )}
+                <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     {s.slug ? (
                       <Link
-                        href={`/${locale}/ingredients/${s.slug}`}
+                        href={`/${locale}/chef-tools/ingredients/${s.slug}`}
                         className="font-semibold text-sm text-primary hover:underline"
                       >
                         {s.name}
