@@ -5,6 +5,17 @@ const withNextIntl = createNextIntlPlugin('./i18n.ts');
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
+  async redirects() {
+    // 301 permanent redirect: /chef-tools/lab/combo/{slug} → /recipes/{slug}
+    // Preserves SEO equity from old URLs (Google, backlinks, bookmarks).
+    return [
+      {
+        source: '/:locale/chef-tools/lab/combo/:slug',
+        destination: '/:locale/recipes/:slug',
+        permanent: true,
+      },
+    ];
+  },
   images: {
     remotePatterns: [
       {

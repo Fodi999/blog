@@ -366,8 +366,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })
   );
 
-  // ─── Lab combo SEO pages ─────────────────────────────────────────────
-  // Prerendered ingredient combo pages: /chef-tools/lab/combo/{slug}
+  // ─── Recipe pages (AI-generated) ──────────────────────────────────────
+  // SEO-friendly recipe pages: /recipes/{slug}
   // Clean URL equivalents of /lab?q=salmon,rice&goal=high_protein&meal=dinner
   const comboEntries = await fetchLabCombosSitemap();
 
@@ -384,24 +384,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
-  const labComboUrls: MetadataRoute.Sitemap = Array.from(comboBySlug.entries())
+  const recipeUrls: MetadataRoute.Sitemap = Array.from(comboBySlug.entries())
     .flatMap(([slug, { locales: comboLocales, updated_at }]) => {
       const alternates = {
         languages: {
           ...Object.fromEntries(
-            [...comboLocales].map((l) => [l, `${BASE_URL}/${l}/chef-tools/lab/combo/${slug}`])
+            [...comboLocales].map((l) => [l, `${BASE_URL}/${l}/recipes/${slug}`])
           ),
-          'x-default': `${BASE_URL}/chef-tools/lab/combo/${slug}`,
+          'x-default': `${BASE_URL}/recipes/${slug}`,
         },
       };
       return [...comboLocales].map((locale) => ({
-        url: `${BASE_URL}/${locale}/chef-tools/lab/combo/${slug}`,
+        url: `${BASE_URL}/${locale}/recipes/${slug}`,
         lastModified: toDate(updated_at),
         changeFrequency: 'weekly' as const,
-        priority: 0.85,
+        priority: 0.9,
         alternates,
       }));
     });
 
-  return [...staticUrls, ...postUrls, ...ingredientUrls, ...ingredientProfileUrls, ...howManyUrls, ...ingredientStateUrls, ...intentPageUrls, ...recipeAnalysisUrls, ...dietUrls, ...rankingUrls, ...labComboUrls];
+  return [...staticUrls, ...postUrls, ...ingredientUrls, ...ingredientProfileUrls, ...howManyUrls, ...ingredientStateUrls, ...intentPageUrls, ...recipeAnalysisUrls, ...dietUrls, ...rankingUrls, ...recipeUrls];
 }

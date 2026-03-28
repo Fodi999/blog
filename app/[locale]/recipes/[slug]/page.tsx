@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const page = await fetchLabCombo(slug, locale);
   if (!page) return { title: 'Not Found' };
 
-  const url = `https://dima-fomin.pl/${locale}/chef-tools/lab/combo/${slug}`;
+  const url = `https://dima-fomin.pl/${locale}/recipes/${slug}`;
   const locales = ['pl', 'en', 'ru', 'uk'];
 
   return {
@@ -27,8 +27,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     alternates: {
       canonical: url,
       languages: Object.fromEntries([
-        ...locales.map((l) => [l, `https://dima-fomin.pl/${l}/chef-tools/lab/combo/${slug}`]),
-        ['x-default', `https://dima-fomin.pl/chef-tools/lab/combo/${slug}`],
+        ...locales.map((l) => [l, `https://dima-fomin.pl/${l}/recipes/${slug}`]),
+        ['x-default', `https://dima-fomin.pl/recipes/${slug}`],
       ]),
     },
     openGraph: {
@@ -70,91 +70,91 @@ const LOCALE_LABELS: Record<string, {
   alsoCookTitle: string;
   alsoCookCta: string;
   breadcrumbHome: string;
-  breadcrumbLab: string;
+  breadcrumbRecipes: string;
 }> = {
   en: {
     backToLab: '← Back to Lab',
     ingredients: 'Ingredients',
     nutritionTitle: 'Nutrition (per serving)',
     flavorTitle: 'Flavor Profile',
-    whyItWorksTitle: 'Why This Combo Works',
+    whyItWorksTitle: 'Why This Recipe Works',
     howToCookTitle: 'How to Cook',
     optimizationTitle: 'Optimization Tips',
     suggestionsTitle: 'What to Add',
     variantsTitle: 'Recipe Variants',
     faqTitle: 'Frequently Asked Questions',
-    tryInLab: 'Try this combo in Lab →',
+    tryInLab: 'Customize this recipe in Lab →',
     totalTime: 'Total time',
     quickAnswer: (p, m) => `This dish delivers ~${p}g protein and is ready in ${m} minutes.`,
-    relatedTitle: 'Related Combos',
+    relatedTitle: 'Related Recipes',
     relatedCta: 'View recipe →',
     alsoCookTitle: 'People Also Cook',
     alsoCookCta: 'View recipe →',
     breadcrumbHome: 'Home',
-    breadcrumbLab: 'Food Lab',
+    breadcrumbRecipes: 'Recipes',
   },
   ru: {
     backToLab: '← Назад в Лабораторию',
     ingredients: 'Ингредиенты',
     nutritionTitle: 'Пищевая ценность (на порцию)',
     flavorTitle: 'Профиль вкуса',
-    whyItWorksTitle: 'Почему эта комбинация работает',
+    whyItWorksTitle: 'Почему этот рецепт работает',
     howToCookTitle: 'Как приготовить',
     optimizationTitle: 'Советы по оптимизации',
     suggestionsTitle: 'Что добавить',
     variantsTitle: 'Варианты рецептов',
     faqTitle: 'Часто задаваемые вопросы',
-    tryInLab: 'Попробовать в Лаборатории →',
+    tryInLab: 'Настроить рецепт в Лаборатории →',
     totalTime: 'Общее время',
     quickAnswer: (p, m) => `Это блюдо содержит ~${p} г белка и готовится за ${m} минут.`,
-    relatedTitle: 'Похожие комбинации',
+    relatedTitle: 'Похожие рецепты',
     relatedCta: 'Смотреть рецепт →',
     alsoCookTitle: 'Люди также готовят',
     alsoCookCta: 'Смотреть рецепт →',
     breadcrumbHome: 'Главная',
-    breadcrumbLab: 'Лаборатория',
+    breadcrumbRecipes: 'Рецепты',
   },
   pl: {
     backToLab: '← Powrót do Laboratorium',
     ingredients: 'Składniki',
     nutritionTitle: 'Wartość odżywcza (na porcję)',
     flavorTitle: 'Profil smakowy',
-    whyItWorksTitle: 'Dlaczego ta kombinacja działa',
+    whyItWorksTitle: 'Dlaczego ten przepis działa',
     howToCookTitle: 'Jak gotować',
     optimizationTitle: 'Wskazówki optymalizacji',
     suggestionsTitle: 'Co dodać',
     variantsTitle: 'Warianty przepisów',
     faqTitle: 'Często zadawane pytania',
-    tryInLab: 'Wypróbuj w Laboratorium →',
+    tryInLab: 'Dostosuj przepis w Laboratorium →',
     totalTime: 'Całkowity czas',
     quickAnswer: (p, m) => `To danie dostarcza ~${p} g białka i jest gotowe w ${m} minut.`,
-    relatedTitle: 'Powiązane kombinacje',
+    relatedTitle: 'Powiązane przepisy',
     relatedCta: 'Zobacz przepis →',
     alsoCookTitle: 'Ludzie też gotują',
     alsoCookCta: 'Zobacz przepis →',
     breadcrumbHome: 'Strona główna',
-    breadcrumbLab: 'Laboratorium',
+    breadcrumbRecipes: 'Przepisy',
   },
   uk: {
     backToLab: '← Назад до Лабораторії',
     ingredients: 'Інгредієнти',
     nutritionTitle: 'Харчова цінність (на порцію)',
     flavorTitle: 'Профіль смаку',
-    whyItWorksTitle: 'Чому ця комбінація працює',
+    whyItWorksTitle: 'Чому цей рецепт працює',
     howToCookTitle: 'Як приготувати',
     optimizationTitle: 'Поради з оптимізації',
     suggestionsTitle: 'Що додати',
     variantsTitle: 'Варіанти рецептів',
     faqTitle: 'Часті запитання',
-    tryInLab: 'Спробувати в Лабораторії →',
+    tryInLab: 'Налаштувати рецепт в Лабораторії →',
     totalTime: 'Загальний час',
     quickAnswer: (p, m) => `Ця страва містить ~${p} г білка і готується за ${m} хвилин.`,
-    relatedTitle: 'Схожі комбінації',
+    relatedTitle: 'Схожі рецепти',
     relatedCta: 'Дивитись рецепт →',
     alsoCookTitle: 'Люди також готують',
     alsoCookCta: 'Дивитись рецепт →',
     breadcrumbHome: 'Головна',
-    breadcrumbLab: 'Лабораторія',
+    breadcrumbRecipes: 'Рецепти',
   },
 };
 
@@ -164,7 +164,7 @@ function capitalize(s: string): string {
 
 // ─── Page ────────────────────────────────────────────────────────────────────
 
-export default async function LabComboPage({ params }: Props) {
+export default async function RecipePage({ params }: Props) {
   const { locale, slug } = await params;
   setRequestLocale(locale);
 
@@ -260,7 +260,7 @@ export default async function LabComboPage({ params }: Props) {
           '@type': 'Recipe',
           name: page.h1,
           description: page.description,
-          url: `https://dima-fomin.pl/${locale}/chef-tools/lab/combo/${slug}`,
+          url: `https://dima-fomin.pl/${locale}/recipes/${slug}`,
           datePublished: page.published_at,
           dateModified: page.updated_at,
           ...(() => {
@@ -340,14 +340,14 @@ export default async function LabComboPage({ params }: Props) {
             {
               '@type': 'ListItem',
               position: 2,
-              name: labels.breadcrumbLab,
-              item: `https://dima-fomin.pl/${locale}/chef-tools/lab`,
+              name: labels.breadcrumbRecipes,
+              item: `https://dima-fomin.pl/${locale}/recipes`,
             },
             {
               '@type': 'ListItem',
               position: 3,
               name: page.h1,
-              item: `https://dima-fomin.pl/${locale}/chef-tools/lab/combo/${slug}`,
+              item: `https://dima-fomin.pl/${locale}/recipes/${slug}`,
             },
           ],
         }}
@@ -364,8 +364,8 @@ export default async function LabComboPage({ params }: Props) {
           </li>
           <li className="text-muted-foreground/50">/</li>
           <li itemProp="itemListElement" itemScope itemType="https://schema.org/ListItem">
-            <Link href={`/${locale}/chef-tools/lab`} itemProp="item" className="hover:text-primary transition">
-              <span itemProp="name">{labels.breadcrumbLab}</span>
+            <Link href={`/${locale}/recipes`} itemProp="item" className="hover:text-primary transition">
+              <span itemProp="name">{labels.breadcrumbRecipes}</span>
             </Link>
             <meta itemProp="position" content="2" />
           </li>
@@ -500,7 +500,7 @@ export default async function LabComboPage({ params }: Props) {
         </section>
       )}
 
-      {/* Why This Combo Works */}
+      {/* Why This Recipe Works */}
       {page.why_it_works && (
         <section className="mb-10">
           <h2 className="text-xl font-bold mb-3">{labels.whyItWorksTitle}</h2>
@@ -735,7 +735,7 @@ export default async function LabComboPage({ params }: Props) {
         </section>
       )}
 
-      {/* Related Combos — internal linking for SEO */}
+      {/* Related Recipes — internal linking for SEO */}
       {relatedCombos.length > 0 && (
         <section className="mb-10">
           <h2 className="text-xl font-bold mb-4">{labels.relatedTitle}</h2>
@@ -743,7 +743,7 @@ export default async function LabComboPage({ params }: Props) {
             {relatedCombos.map((rc) => (
               <Link
                 key={rc.slug}
-                href={`/${locale}/chef-tools/lab/combo/${rc.slug}`}
+                href={`/${locale}/recipes/${rc.slug}`}
                 className="group block bg-muted/20 rounded-xl overflow-hidden border border-muted/30 hover:border-primary/40 transition"
               >
                 {rc.image_url ? (
@@ -797,7 +797,7 @@ export default async function LabComboPage({ params }: Props) {
             {alsoCookCombos.map((ac) => (
               <Link
                 key={ac.slug}
-                href={`/${locale}/chef-tools/lab/combo/${ac.slug}`}
+                href={`/${locale}/recipes/${ac.slug}`}
                 className="group block bg-muted/20 rounded-xl overflow-hidden border border-muted/30 hover:border-primary/40 transition"
               >
                 {ac.image_url ? (
