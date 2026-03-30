@@ -24,6 +24,8 @@ interface GenerateMetadataParams {
   image?: string;
   // If omitted => assume page exists in all locales
   availableLocales?: Array<'pl' | 'en' | 'uk' | 'ru'>;
+  // Optional: choose x-default locale
+  xDefaultLocale?: 'pl' | 'en' | 'uk' | 'ru';
   article?: ArticleMeta;
   /** Set true to add noindex,follow — thin/duplicate pages that shouldn't be indexed */
   noIndex?: boolean;
@@ -43,6 +45,7 @@ export function generateMetadata({
   path = '',
   image = 'https://i.postimg.cc/RCf8VLFn/DSCF4639.jpg',
   availableLocales,
+  xDefaultLocale = 'pl',
   article,
   noIndex = false,
 }: GenerateMetadataParams): Metadata {
@@ -59,10 +62,8 @@ export function generateMetadata({
     {}
   );
 
-  // Add x-default — neutral URL without locale prefix.
-  // Middleware will detect Accept-Language and redirect to the right locale.
-  // This tells Google: "this is the global entry point, not tied to any language".
-  langs['x-default'] = `${BASE_URL}${normalizedPath}`;
+  // Add x-default (recommended)
+  langs['x-default'] = `${BASE_URL}/${xDefaultLocale}${normalizedPath}`;
 
   const titleSuffix = article ? articleTitleSuffix[locale] ?? 'Blog | Dima Fomin' : 'Dima Fomin';
   const fullTitle = article ? `${title} – ${titleSuffix}` : `${title} | ${titleSuffix}`;

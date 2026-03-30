@@ -384,11 +384,11 @@ export default async function IngredientSlugPage({
         {/* ── Header ── */}
         <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 mb-6 sm:mb-10">
           {item.image_url ? (
-            <div className="w-32 h-32 sm:w-56 sm:aspect-square mx-auto sm:mx-0 rounded-2xl overflow-hidden border border-border/50 bg-muted shrink-0">
-              <Image src={item.image_url} alt={name} width={800} height={800} className="object-cover w-full h-full" unoptimized />
+            <div className="relative w-40 h-40 sm:w-56 sm:h-56 mx-auto sm:mx-0 rounded-2xl overflow-hidden border border-border/50 bg-muted shrink-0">
+              <Image src={item.image_url} alt={name} fill className="object-cover" sizes="(max-width: 640px) 160px, 224px" priority unoptimized />
             </div>
           ) : (
-            <div className="w-32 h-32 sm:w-56 sm:h-auto sm:aspect-square mx-auto sm:mx-0 rounded-2xl border border-border/50 bg-muted flex items-center justify-center shrink-0">
+            <div className="w-40 h-40 sm:w-56 sm:h-56 mx-auto sm:mx-0 rounded-2xl border border-border/50 bg-muted flex items-center justify-center shrink-0">
               <Package className="h-10 w-10 sm:h-12 sm:w-12 text-muted-foreground/30" />
             </div>
           )}

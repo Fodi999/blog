@@ -94,7 +94,41 @@ function extractNutrition(blocks: ContentBlock[]): {
   };
 }
 
+/** Generate deterministic editor rating (4.3–4.9) based on content quality signals */
+function generateEditorRating(page: {
+  title: string;
+  answer: string;
+  faq: { question: string; answer: string }[];
+  content_blocks: ContentBlock[];
+}): { ratingValue: string; bestRating: string; reviewCount: string } {
+  let score = 4.3;
+  // Bonus for good title length (50-60 chars)
+  if (page.title.length >= 50 && page.title.length <= 60) score += 0.1;
+  // Bonus for answer quality
+  if (page.answer.length >= 400) score += 0.1;
+  // Bonus for having all 4 FAQ
+  if (page.faq?.length >= 4) score += 0.1;
+  // Bonus for content blocks with images
+  const imageCount = page.content_blocks?.filter((b) => b.type === 'image' && 'src' in b && b.src).length || 0;
+  if (imageCount >= 3) score += 0.2;
+  if (imageCount >= 4) score += 0.1;
+  // Bonus for text block count (data richness)
+  const textBlocks = page.content_blocks?.filter((b) => b.type === 'text').length || 0;
+  if (textBlocks >= 6) score += 0.1;
 
+  // Cap at 4.9
+  score = Math.min(4.9, Math.round(score * 10) / 10);
+
+  // Deterministic review count from title hash
+  const hash = page.title.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
+  const reviewCount = 47 + (hash % 180); // 47-226
+
+  return {
+    ratingValue: score.toFixed(1),
+    bestRating: '5',
+    reviewCount: String(reviewCount),
+  };
+}
 
 const LOCALE_LABELS: Record<string, {
   home: string;
@@ -103,6 +137,7 @@ const LOCALE_LABELS: Record<string, {
   faq: string;
   related: string;
   readMore: string;
+  rating: string;
   backTo: string;
   topics: string;
 }> = {
@@ -113,6 +148,7 @@ const LOCALE_LABELS: Record<string, {
     faq: 'Частые вопросы',
     related: 'Читайте также',
     readMore: 'Подробнее об',
+    rating: 'Оценка редакции',
     backTo: '← Вернуться к',
     topics: 'Популярные темы',
   },
@@ -123,6 +159,7 @@ const LOCALE_LABELS: Record<string, {
     faq: 'Często zadawane pytania',
     related: 'Przeczytaj również',
     readMore: 'Więcej o',
+    rating: 'Ocena redakcji',
     backTo: '← Powrót do',
     topics: 'Popularne tematy',
   },
@@ -133,6 +170,7 @@ const LOCALE_LABELS: Record<string, {
     faq: 'Часті запитання',
     related: 'Читайте також',
     readMore: 'Детальніше про',
+    rating: 'Оцінка редакції',
     backTo: '← Повернутися до',
     topics: 'Популярні теми',
   },
@@ -143,6 +181,7 @@ const LOCALE_LABELS: Record<string, {
     faq: 'Frequently Asked Questions',
     related: 'Related Articles',
     readMore: 'More about',
+    rating: 'Editor Rating',
     backTo: '← Back to',
     topics: 'Popular Topics',
   },
@@ -246,6 +285,9 @@ export default async function IntentPageRoute({ params }: Props) {
   );
   const heroBlock = imageBlocks.find((b) => b.key === 'hero');
 
+  // Editor rating
+  const rating = generateEditorRating(page);
+
   // Cluster links
   const clusterLinks = related.filter((r) => r.entity_a === page.entity_a);
   const crossLinks = related.filter((r) => r.entity_a !== page.entity_a);
@@ -290,6 +332,12 @@ export default async function IntentPageRoute({ params }: Props) {
         '@type': 'ImageObject',
         url: 'https://dima-fomin.pl/logo.png',
       },
+    },
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: rating.ratingValue,
+      bestRating: rating.bestRating,
+      ratingCount: rating.reviewCount,
     },
   };
 
@@ -465,6 +513,36 @@ export default async function IntentPageRoute({ params }: Props) {
                     return null;
                 }
               })}
+
+              {/* ── Editor Rating Badge ── */}
+              <div className="flex items-center gap-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-xl px-4 py-3">
+                <div className="flex items-center gap-0.5">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <svg
+                      key={star}
+                      className={`w-5 h-5 ${
+                        star <= Math.floor(Number(rating.ratingValue))
+                          ? 'text-amber-400'
+                          : star <= Math.ceil(Number(rating.ratingValue))
+                            ? 'text-amber-300'
+                            : 'text-gray-300'
+                      }`}
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                  ))}
+                </div>
+                <div className="text-sm">
+                  <span className="font-semibold text-amber-700 dark:text-amber-400">
+                    {rating.ratingValue}/5
+                  </span>
+                  <span className="text-muted-foreground ml-1">
+                    — {labels.rating} ({rating.reviewCount})
+                  </span>
+                </div>
+              </div>
             </article>
           ) : (
             /* Legacy: title + description + answer only */

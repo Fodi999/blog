@@ -1,6 +1,6 @@
 import { MetadataRoute } from 'next';
 import { getAllPosts } from '@/lib/posts';
-import { fetchIngredientsSitemapData, fetchIntentPagesSitemap, fetchLabCombosSitemap } from '@/lib/api';
+import { fetchIngredients, fetchIngredientsStatesMap } from '@/lib/api';
 import { locales } from '@/i18n';
 import { CATEGORY_MAP } from './[locale]/chef-tools/ingredients/[slug]/category-page';
 import { CONVERSION_MAP } from './[locale]/chef-tools/converter/[conversion]/page';
@@ -49,7 +49,7 @@ function multiLocaleEntry(
   const alternates = {
     languages: {
       ...Object.fromEntries(locales.map((l) => [l, `${BASE_URL}/${l}${path}`])),
-      'x-default': `${BASE_URL}${path}`,
+      'x-default': `${BASE_URL}/${canonicalLocale}${path}`,
     },
   };
 
@@ -177,7 +177,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           ...Object.fromEntries(
             [...availableLocales].map((l) => [l, `${BASE_URL}/${l}/blog/${slug}`])
           ),
-          'x-default': `${BASE_URL}/blog/${slug}`,
+          'x-default': `${BASE_URL}/${canonicalLocale}/blog/${slug}`,
         },
       };
       // Generate one <url> per locale that has the post file
@@ -190,37 +190,40 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }));
     });
 
-  // ─── Ingredient pages (single lightweight request) ────────────────────
-  const sitemapIngredients = await fetchIngredientsSitemapData();
+  // ─── Ingredient pages ────────────────────────────────────────────────
+  const ingredientList = await fetchIngredients();
 
   // /chef-tools/nutrition/{slug} — nutrition detail pages
-  // Only emit pages for ingredients that have nutrition data
-  const ingredientUrls: MetadataRoute.Sitemap = sitemapIngredients
-    .filter((ing) => ing.has_nutrition)
-    .flatMap((ing) =>
-      multiLocaleEntry(`/chef-tools/nutrition/${ing.slug}`, {
-        lastModified: toDate(ing.updated_at ?? undefined),
-        changeFrequency: 'monthly',
-        priority: 0.8,
-        images: ing.image_url ? [ing.image_url] : undefined,
-      })
-    );
+  const ingredientUrls: MetadataRoute.Sitemap = ingredientList
+    ? ingredientList
+        .filter((ing) => ing.slug)
+        .flatMap((ing) =>
+          multiLocaleEntry(`/chef-tools/nutrition/${ing.slug}`, {
+            lastModified: toDate(ing.updated_at ?? undefined),
+            changeFrequency: 'monthly',
+            priority: 0.8,
+            images: ing.image_url ? [ing.image_url] : undefined,
+          })
+        )
+    : [];
 
   // /chef-tools/ingredients/{slug} — ingredient profile pages
-  const ingredientProfileUrls: MetadataRoute.Sitemap = sitemapIngredients
-    .flatMap((ing) =>
-      multiLocaleEntry(`/chef-tools/ingredients/${ing.slug}`, {
-        lastModified: toDate(ing.updated_at ?? undefined),
-        changeFrequency: 'monthly',
-        priority: 0.75,
-        images: ing.image_url ? [ing.image_url] : undefined,
-      })
-    );
+  const ingredientProfileUrls: MetadataRoute.Sitemap = ingredientList
+    ? ingredientList
+        .filter((ing) => ing.slug)
+        .flatMap((ing) =>
+          multiLocaleEntry(`/chef-tools/ingredients/${ing.slug}`, {
+            lastModified: toDate(ing.updated_at ?? undefined),
+            changeFrequency: 'monthly',
+            priority: 0.75,
+            images: ing.image_url ? [ing.image_url] : undefined,
+          })
+        )
+    : [];
 
   // ─── Natural-language "how many" pages ───────────────────────────────
-  // ✅ Only emit for ingredients that have conversion data (density, measures).
-  // This eliminates spam: no page for "how many grams in a cup of saffron"
-  // if we don't have the density data to answer the question.
+  // Pattern: /chef-tools/how-many/how-many-{unit}-in-a-{measure}-of-{slug}
+  // e.g. /how-many/how-many-grams-in-a-cup-of-rice
   const HOW_MANY_COMBOS = [
     { unit: 'grams', measure: 'cup'  },
     { unit: 'grams', measure: 'tbsp' },
@@ -238,97 +241,48 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { unit: 'kg',    measure: 'lbs'  },
   ];
 
-  const howManyIngredients = sitemapIngredients.filter((ing) => ing.has_conversions);
-
-  const howManyUrls: MetadataRoute.Sitemap = howManyIngredients
-    .flatMap((ing) =>
-      HOW_MANY_COMBOS.flatMap(({ unit, measure }) =>
-        multiLocaleEntry(
-          `/chef-tools/how-many/how-many-${unit}-in-a-${measure}-of-${ing.slug}`,
-          {
-            lastModified: toDate(ing.updated_at ?? undefined),
-            changeFrequency: 'monthly',
-            priority: 0.8,
-          },
+  const howManyUrls: MetadataRoute.Sitemap = ingredientList
+    ? ingredientList
+        .filter((ing) => ing.slug)
+        .slice(0, 50) // cap at 50 ingredients to avoid sitemap bloat (50×14×4=2800 URLs)
+        .flatMap((ing) =>
+          HOW_MANY_COMBOS.flatMap(({ unit, measure }) =>
+            multiLocaleEntry(
+              `/chef-tools/how-many/how-many-${unit}-in-a-${measure}-of-${ing.slug}`,
+              {
+                lastModified: toDate(ing.updated_at ?? undefined),
+                changeFrequency: 'monthly',
+                priority: 0.8,
+              },
+            )
+          )
         )
-      )
-    );
+    : [];
 
   // ─── Ingredient state pages ──────────────────────────────────────────
   // ✅ Only emit state URLs that ACTUALLY EXIST in the database.
-  // states[] comes from the sitemap-data endpoint (one query, no N+1).
+  // We fetch a single { slug → [states] } map from the backend (one query).
+  // This eliminates 404s caused by sitemap listing states that haven't been
+  // generated for a given ingredient.
   // Only high-value states (raw/boiled/fried) are indexed — others get noindex.
   const INDEXABLE_STATES = new Set(['raw', 'boiled', 'fried']);
 
-  const ingredientStateUrls: MetadataRoute.Sitemap = sitemapIngredients
-    .filter((ing) => ing.states.length > 0)
-    .flatMap((ing) => {
-      const availableStates = ing.states.filter((s) => INDEXABLE_STATES.has(s));
-      return availableStates.flatMap((state) =>
-        multiLocaleEntry(`/chef-tools/ingredients/${ing.slug}/${state}`, {
-          lastModified: toDate(ing.updated_at ?? undefined),
-          changeFrequency: 'weekly',
-          priority: 0.7,
+  const statesMap = await fetchIngredientsStatesMap().catch(() => null);
+
+  const ingredientStateUrls: MetadataRoute.Sitemap = ingredientList && statesMap
+    ? ingredientList
+        .filter((ing) => ing.slug && statesMap[ing.slug])
+        .flatMap((ing) => {
+          const availableStates = statesMap[ing.slug!].filter((s) => INDEXABLE_STATES.has(s));
+          return availableStates.flatMap((state) =>
+            multiLocaleEntry(`/chef-tools/ingredients/${ing.slug}/${state}`, {
+              lastModified: toDate(ing.updated_at ?? undefined),
+              changeFrequency: 'weekly',
+              priority: 0.7,
+            })
+          );
         })
-      );
-    });
-
-  // ─── Intent pages (pSEO) ────────────────────────────────────────────
-  // Published AI-generated SEO pages: /chef-tools/seo/{slug}
-  // Uses lightweight sitemap endpoint (slug + locale + published_at + intent_type).
-  const intentEntries = await fetchIntentPagesSitemap();
-
-  // Priority by intent_type:
-  //   recipe_intent → 0.9  (transactional: recipe discovery → conversion)
-  //   comparison    → 0.8  (mid-funnel: "salmon vs chicken" → decision)
-  //   goal          → 0.7  (mid-funnel: "best for muscle building" → intent)
-  //   question      → 0.6  (informational: "is salmon healthy" → awareness)
-  //   default       → 0.5
-  function intentPriority(intentType: string): number {
-    switch (intentType) {
-      case 'recipe_intent': return 0.9;
-      case 'comparison':    return 0.8;
-      case 'goal':          return 0.7;
-      case 'question':      return 0.6;
-      default:              return 0.5;
-    }
-  }
-
-  // Group entries by slug to build proper hreflang alternates
-  const intentBySlug = new Map<string, { locales: Set<string>; published_at: string | null; intent_type: string }>();
-  for (const entry of intentEntries) {
-    const existing = intentBySlug.get(entry.slug);
-    if (existing) {
-      existing.locales.add(entry.locale);
-    } else {
-      intentBySlug.set(entry.slug, {
-        locales: new Set([entry.locale]),
-        published_at: entry.published_at,
-        intent_type: entry.intent_type,
-      });
-    }
-  }
-
-  const intentPageUrls: MetadataRoute.Sitemap = Array.from(intentBySlug.entries())
-    .flatMap(([slug, { locales: pageLocales, published_at, intent_type }]) => {
-      const alternates = {
-        languages: {
-          ...Object.fromEntries(
-            [...pageLocales].map((l) => [l, `${BASE_URL}/${l}/chef-tools/seo/${slug}`])
-          ),
-          'x-default': `${BASE_URL}/chef-tools/seo/${slug}`,
-        },
-      };
-      const freq: MetadataRoute.Sitemap[0]['changeFrequency'] =
-        intent_type === 'recipe_intent' ? 'weekly' : 'monthly';
-      return [...pageLocales].map((locale) => ({
-        url: `${BASE_URL}/${locale}/chef-tools/seo/${slug}`,
-        lastModified: toDate(published_at ?? undefined),
-        changeFrequency: freq,
-        priority: intentPriority(intent_type),
-        alternates,
-      }));
-    });
+    : [];
 
   // ─── Recipe analysis pages ───────────────────────────────────────────
   const recipeAnalysisUrls: MetadataRoute.Sitemap = RECIPE_TEMPLATES.flatMap(
@@ -366,42 +320,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })
   );
 
-  // ─── Recipe pages (AI-generated) ──────────────────────────────────────
-  // SEO-friendly recipe pages: /recipes/{slug}
-  // Clean URL equivalents of /lab?q=salmon,rice&goal=high_protein&meal=dinner
-  const comboEntries = await fetchLabCombosSitemap();
-
-  const comboBySlug = new Map<string, { locales: Set<string>; updated_at: string }>();
-  for (const entry of comboEntries) {
-    const existing = comboBySlug.get(entry.slug);
-    if (existing) {
-      existing.locales.add(entry.locale);
-    } else {
-      comboBySlug.set(entry.slug, {
-        locales: new Set([entry.locale]),
-        updated_at: entry.updated_at,
-      });
-    }
-  }
-
-  const recipeUrls: MetadataRoute.Sitemap = Array.from(comboBySlug.entries())
-    .flatMap(([slug, { locales: comboLocales, updated_at }]) => {
-      const alternates = {
-        languages: {
-          ...Object.fromEntries(
-            [...comboLocales].map((l) => [l, `${BASE_URL}/${l}/recipes/${slug}`])
-          ),
-          'x-default': `${BASE_URL}/recipes/${slug}`,
-        },
-      };
-      return [...comboLocales].map((locale) => ({
-        url: `${BASE_URL}/${locale}/recipes/${slug}`,
-        lastModified: toDate(updated_at),
-        changeFrequency: 'weekly' as const,
-        priority: 0.9,
-        alternates,
-      }));
-    });
-
-  return [...staticUrls, ...postUrls, ...ingredientUrls, ...ingredientProfileUrls, ...howManyUrls, ...ingredientStateUrls, ...intentPageUrls, ...recipeAnalysisUrls, ...dietUrls, ...rankingUrls, ...recipeUrls];
+  return [...staticUrls, ...postUrls, ...ingredientUrls, ...ingredientProfileUrls, ...howManyUrls, ...ingredientStateUrls, ...recipeAnalysisUrls, ...dietUrls, ...rankingUrls];
 }

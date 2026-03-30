@@ -214,9 +214,9 @@ export default async function RecipePage({ params }: Props) {
     explanation?: string;
   }[];
 
-  const faq = Array.isArray(page.faq) ? page.faq : [];
-  const howToCook = Array.isArray(page.how_to_cook) ? page.how_to_cook : [];
-  const optimizationTips = Array.isArray(page.optimization_tips) ? page.optimization_tips : [];
+  const faq = page.faq ?? [];
+  const howToCook = page.how_to_cook ?? [];
+  const optimizationTips = page.optimization_tips ?? [];
 
   // Calculate total cooking time
   const totalMinutes = howToCook.reduce((sum, s) => sum + (s.time_minutes ?? 0), 0);
