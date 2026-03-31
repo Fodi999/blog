@@ -1,8 +1,9 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { Mail, MessageSquare, ArrowUpRight } from 'lucide-react';
+import { Mail, MessageSquare, ArrowUpRight, Sparkles, MapPin } from 'lucide-react';
 import type { Metadata } from 'next';
 import { JsonLd } from '@/components/JsonLd';
 import { generateMetadata as sharedGenerateMetadata } from '@/lib/metadata';
+import { ScrollReveal, StaggerReveal } from '@/components/ScrollReveal';
 
 export const dynamic = 'force-static';
 
@@ -47,75 +48,101 @@ export default async function ContactPage({
         }}
       />
 
-      <div className="grid lg:grid-cols-2 gap-16 md:gap-24 items-start">
-        <div className="border-t border-primary/20 pt-12">
-          <h1 className="text-6xl md:text-8xl lg:text-9xl font-black mb-8 text-foreground tracking-tighter uppercase italic leading-none">
-            {t('title')}<span className="text-primary italic">.</span>
-          </h1>
-          <p className="text-xl md:text-3xl text-muted-foreground font-medium tracking-tight mb-12 max-w-xl">
-            {t('description')}
-          </p>
-          
-          <div className="hidden lg:block relative group overflow-hidden bg-primary/5 p-12 mt-20 border border-primary/10">
-            <span className="absolute -bottom-10 -right-10 text-[10rem] font-black italic text-primary/5 select-none pointer-events-none uppercase">
-               Talk
-            </span>
-            <p className="relative z-10 text-primary font-black uppercase tracking-tighter italic text-2xl">
-              Open for collaboration
+      <div className="grid lg:grid-cols-2 gap-12 md:gap-20 items-start">
+        <div className="lg:sticky lg:top-24">
+          <ScrollReveal direction="left" delay={0} duration={800} distance={20}>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-black uppercase tracking-[0.2em] mb-6 border border-primary/20 backdrop-blur-md">
+              <Sparkles className="w-3 h-3 fill-primary" />
+              <span>Contact</span>
+            </div>
+          </ScrollReveal>
+
+          <ScrollReveal direction="left" delay={200} duration={900} distance={30} blur={8}>
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-black mb-6 text-foreground tracking-tighter uppercase italic leading-[0.85] text-shimmer">
+              {t('title')}<span className="text-primary not-italic">.</span>
+            </h1>
+          </ScrollReveal>
+
+          <ScrollReveal direction="left" delay={400} duration={800} distance={20}>
+            <p className="text-lg md:text-2xl text-muted-foreground font-medium tracking-tight mb-10 max-w-xl leading-relaxed">
+              {t('description')}
             </p>
-          </div>
+          </ScrollReveal>
+          
+          <ScrollReveal direction="up" delay={600} duration={1000} scale={0.95}>
+            <div className="relative group overflow-hidden bg-primary/[0.03] p-10 mt-12 md:mt-20 border border-primary/10 rounded-3xl hover-glow">
+              <span className="absolute -bottom-8 -right-8 text-[8rem] font-black italic text-primary/[0.03] select-none pointer-events-none uppercase">
+                 Talk
+              </span>
+              <div className="relative z-10 flex items-center gap-3">
+                <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                <p className="text-primary font-black uppercase tracking-tighter italic text-xl md:text-2xl">
+                  Open for collaboration
+                </p>
+              </div>
+            </div>
+          </ScrollReveal>
         </div>
 
-        <div className="space-y-6 md:space-y-8 lg:pt-12">
-          {/* Email Card */}
-          <a 
-            href={`mailto:${t('email.primary')}`}
-            className="group block p-8 md:p-10 bg-card border-2 border-primary/10 hover:border-primary transition-all duration-500 relative overflow-hidden"
-          >
-            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-100 transition-opacity">
-               <ArrowUpRight className="w-8 h-8" />
-            </div>
-            
-            <div className="flex items-center gap-4 mb-6">
-              <div className="p-3 bg-primary/10 text-primary rotate-45 group-hover:rotate-0 transition-transform duration-500">
-                <Mail className="h-6 w-6 -rotate-45 group-hover:rotate-0 transition-transform duration-500" />
+        <div className="space-y-6 md:space-y-8 lg:pt-4">
+          <StaggerReveal staggerMs={150} direction="up" distance={30}>
+            {/* Email Card */}
+            <a 
+              href={`mailto:${t('email.primary')}`}
+              className="group block p-8 md:p-10 bg-card border-2 border-border/40 hover:border-primary transition-all duration-500 rounded-3xl relative overflow-hidden hover-lift hover-glow active:scale-[0.98]"
+            >
+              <div className="absolute top-0 right-0 p-6 text-primary/0 group-hover:text-primary transition-all translate-x-4 -translate-y-4 group-hover:translate-x-0 group-hover:translate-y-0">
+                 <ArrowUpRight className="w-8 h-8" />
               </div>
-              <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tighter italic">{t('email.title')}</h2>
-            </div>
-            
-            <p className="text-xl md:text-2xl font-medium tracking-tight text-muted-foreground group-hover:text-foreground transition-colors break-all">
-              {t('email.primary')}
-            </p>
-          </a>
+              
+              <div className="flex items-center gap-5 mb-8">
+                <div className="p-4 bg-primary/10 text-primary rounded-2xl group-hover:bg-primary group-hover:text-white transition-all duration-500 shadow-sm">
+                  <Mail className="h-6 w-6" />
+                </div>
+                <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tighter italic text-foreground/90">{t('email.title')}</h2>
+              </div>
+              
+              <div className="space-y-1">
+                <p className="text-xs font-black uppercase tracking-widest text-muted-foreground/50">Primary Email</p>
+                <p className="text-xl md:text-2xl font-bold tracking-tight text-foreground group-hover:text-primary transition-colors break-all">
+                  {t('email.primary')}
+                </p>
+              </div>
+            </a>
 
-          {/* Social Card */}
-          <a 
-            href={t('social.instagramUrl')} 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="group block p-8 md:p-10 bg-card border-2 border-primary/10 hover:border-primary transition-all duration-500 relative overflow-hidden"
-          >
-            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-100 transition-opacity">
-               <ArrowUpRight className="w-8 h-8" />
-            </div>
-            
-            <div className="flex items-center gap-4 mb-6">
-              <div className="p-3 bg-primary/10 text-primary rotate-45 group-hover:rotate-0 transition-transform duration-500">
-                <MessageSquare className="h-6 w-6 -rotate-45 group-hover:rotate-0 transition-transform duration-500" />
+            {/* Social Card */}
+            <a 
+              href={t('social.instagramUrl')} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="group block p-8 md:p-10 bg-card border-2 border-border/40 hover:border-primary transition-all duration-500 rounded-3xl relative overflow-hidden hover-lift hover-glow active:scale-[0.98]"
+            >
+              <div className="absolute top-0 right-0 p-6 text-primary/0 group-hover:text-primary transition-all translate-x-4 -translate-y-4 group-hover:translate-x-0 group-hover:translate-y-0">
+                 <ArrowUpRight className="w-8 h-8" />
               </div>
-              <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tighter italic">{t('social.title')}</h2>
-            </div>
+              
+              <div className="flex items-center gap-5 mb-8">
+                <div className="p-4 bg-primary/10 text-primary rounded-2xl group-hover:bg-primary group-hover:text-white transition-all duration-500 shadow-sm">
+                  <MessageSquare className="h-6 w-6" />
+                </div>
+                <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tighter italic text-foreground/90">{t('social.title')}</h2>
+              </div>
+              
+              <div className="space-y-1">
+                <p className="text-xs font-black uppercase tracking-widest text-muted-foreground/50">Instagram</p>
+                <p className="text-xl md:text-2xl font-bold tracking-tight text-foreground group-hover:text-primary transition-colors">
+                  {t('social.instagram')}
+                </p>
+              </div>
+            </a>
             
-            <p className="text-xl md:text-2xl font-medium tracking-tight text-muted-foreground group-hover:text-foreground transition-colors">
-              {t('social.instagram')}
-            </p>
-          </a>
-          
-          <div className="p-6 md:p-8 border-l-4 border-primary bg-muted/30">
-            <p className="text-sm md:text-base font-bold uppercase tracking-widest text-muted-foreground italic">
-              {t('location')}
-            </p>
-          </div>
+            <div className="p-8 md:p-10 rounded-3xl border-2 border-dashed border-border/40 bg-muted/[0.02] flex items-start gap-4">
+              <MapPin className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+              <p className="text-sm md:text-base font-bold uppercase tracking-widest text-muted-foreground leading-relaxed italic">
+                {t('location')}
+              </p>
+            </div>
+          </StaggerReveal>
         </div>
       </div>
     </div>

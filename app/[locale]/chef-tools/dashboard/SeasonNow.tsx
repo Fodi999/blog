@@ -8,10 +8,10 @@ import { fetchBestInSeason, type SeasonItem } from '@/lib/tools';
 import { Badge } from '@/components/ui/badge';
 
 const statusColor: Record<string, string> = {
-  peak: 'bg-green-500/15 text-green-700 dark:text-green-400 border-green-500/20',
-  good: 'bg-blue-500/15 text-blue-700 dark:text-blue-400 border-blue-500/20',
-  off: 'bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/20',
-  avoid: 'bg-red-500/15 text-red-700 dark:text-red-400 border-red-500/20',
+  peak: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 shadow-emerald-500/5',
+  good: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20 shadow-blue-500/5',
+  off: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20 shadow-amber-500/5',
+  avoid: 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20 shadow-rose-500/5',
 };
 
 type SeasonNowProps = {
@@ -36,20 +36,20 @@ export function SeasonNow({ onSelect }: SeasonNowProps) {
   return (
     <section>
       <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-green-500/10 flex items-center justify-center">
-            <TrendingUp className="h-4.5 w-4.5 text-green-600 dark:text-green-400" />
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-emerald-500/5 border border-emerald-500/10 flex items-center justify-center shadow-inner">
+            <TrendingUp className="h-6 w-6 text-emerald-500" />
           </div>
-          <h2 className="text-xl font-black uppercase tracking-tight text-foreground italic">
+          <h2 className="text-2xl font-black uppercase tracking-tighter text-foreground italic text-shimmer leading-none">
             {t('seasonNow')}
           </h2>
         </div>
         <Link
           href="/chef-tools/fish-season"
-          className="text-xs font-bold uppercase tracking-widest text-primary hover:underline flex items-center gap-1"
+          className="px-4 py-2 rounded-xl bg-emerald-500/5 border border-emerald-500/10 text-[10px] font-black uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500 hover:text-white transition-all italic flex items-center gap-2 group/link"
         >
           {t('viewAll')}
-          <ArrowRight className="h-3.5 w-3.5" />
+          <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover/link:translate-x-1" />
         </Link>
       </div>
 
@@ -60,41 +60,42 @@ export function SeasonNow({ onSelect }: SeasonNowProps) {
       ) : items.length === 0 ? (
         <p className="text-sm text-muted-foreground text-center py-8">{t('noData')}</p>
       ) : (
-        <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4">
           {items.map((item) => (
             <button
               key={item.slug}
               onClick={() => onSelect(item.slug, item.name, item.image_url)}
-              className="group relative rounded-2xl border border-border/60 bg-background p-4 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 flex flex-col items-center text-center cursor-pointer"
+              className="group relative rounded-[2.5rem] border-2 border-border/20 bg-card/30 backdrop-blur-xl p-6 hover:border-emerald-500/30 hover:bg-card/50 shadow-xl shadow-black/5 transition-all duration-700 flex flex-col items-center text-center cursor-pointer hover-lift hover-glow"
             >
               {item.image_url ? (
-                <img
-                  src={item.image_url}
-                  alt={item.name}
-                  className="w-14 h-14 rounded-xl object-cover mb-3"
-                />
+                <div className="relative w-16 h-16 rounded-2xl overflow-hidden shadow-2xl border-2 border-white/10 mb-4 transition-transform duration-500 group-hover:scale-110">
+                  <img
+                    src={item.image_url}
+                    alt={item.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
               ) : (
-                <div className="w-14 h-14 rounded-xl bg-muted flex items-center justify-center mb-3">
+                <div className="w-16 h-16 rounded-2xl bg-muted/20 border-2 border-border/10 flex items-center justify-center mb-4 transition-transform duration-500 group-hover:scale-110">
                   {item.water_type ? (
-                    <Fish className="h-6 w-6 text-muted-foreground" />
+                    <Fish className="h-8 w-8 text-muted-foreground/40" />
                   ) : (
-                    <Leaf className="h-6 w-6 text-muted-foreground" />
+                    <Leaf className="h-8 w-8 text-muted-foreground/40" />
                   )}
                 </div>
               )}
-              <p className="text-xs font-bold text-foreground truncate w-full group-hover:text-primary transition-colors">
+              <p className="text-[13px] font-black italic uppercase tracking-tighter text-foreground leading-[1.1] w-full transition-colors group-hover:text-emerald-500">
                 {item.name}
               </p>
-              <Badge
-                variant="outline"
-                className={`mt-2 text-[10px] font-bold uppercase px-2 py-0 ${statusColor[item.status] ?? ''}`}
+              <div
+                className={`mt-3 text-[9px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-full border italic transition-all duration-500 ${statusColor[item.status] ?? ''}`}
               >
                 {t(`status.${item.status}`)}
-              </Badge>
+              </div>
               {item.sushi_grade && (
-                <span className="absolute top-2 right-2 text-[10px] font-bold text-primary">
+                <div className="absolute top-4 right-4 text-sm filter drop-shadow-sm transition-transform group-hover:scale-125 duration-500">
                   🍣
-                </span>
+                </div>
               )}
             </button>
           ))}

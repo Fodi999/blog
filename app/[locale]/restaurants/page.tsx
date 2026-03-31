@@ -44,8 +44,8 @@ export default async function RestaurantsPage({
         }}></div>
 
         <div className="relative">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-foreground bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text">
-            {t('title')}
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 italic uppercase tracking-tighter text-shimmer">
+            {t('title')}<span className="text-primary not-italic">.</span>
           </h1>
           <p className="text-lg md:text-xl text-foreground/80 leading-relaxed">
             {t('subtitle')}

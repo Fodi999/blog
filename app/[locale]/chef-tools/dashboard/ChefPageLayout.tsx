@@ -1,8 +1,6 @@
 'use client';
 
-import { useState, type ReactNode } from 'react';
-import { cn } from '@/lib/utils';
-import { ChefHeroHeader } from './ChefHeroHeader';
+import { type ReactNode } from 'react';
 
 export function ChefPageLayout({
   title,
@@ -13,27 +11,6 @@ export function ChefPageLayout({
   description: string;
   children: ReactNode;
 }) {
-  const [ready, setReady] = useState(false);
-
-  return (
-    <>
-      {!ready && (
-        <ChefHeroHeader
-          title={title}
-          description={description}
-          onDone={() => setReady(true)}
-        />
-      )}
-      <div
-        className={cn(
-          'transition-opacity duration-700',
-          ready
-            ? 'opacity-100'
-            : 'opacity-0 pointer-events-none',
-        )}
-      >
-        {children}
-      </div>
-    </>
-  );
+  // Skip the hero animation — go straight to tools
+  return <>{children}</>;
 }

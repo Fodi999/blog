@@ -38,7 +38,7 @@ export function BlogSearch({ value, onChange }: BlogSearchProps) {
           onFocus={() => setShowSuggestions(true)}
           onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
           placeholder={t('searchPlaceholder')}
-          className="h-14 w-full pl-12 pr-12 text-base rounded-2xl border-2 border-border bg-background focus-visible:ring-primary/20 focus-visible:border-primary transition-all shadow-sm"
+          className="h-16 w-full pl-14 pr-12 text-lg rounded-2xl border-2 border-border/40 bg-background/50 backdrop-blur-xl focus-visible:ring-primary/20 focus-visible:border-primary transition-all shadow-sm hover:border-primary/20 group-hover:shadow-xl"
         />
         {value && (
           <Button

@@ -18,21 +18,26 @@ export function ChefToolsTabs({
 
   return (
     <div>
-      {/* Tab selector */}
-      <div className="flex justify-center mb-8">
-        <select
-          value={active}
-          onChange={(e) => setActive(e.target.value as Tab)}
-          className={cn(
-            'w-full max-w-xs rounded-xl border border-border/50 bg-muted/30 px-4 py-2.5',
-            'text-sm font-bold text-foreground',
-            'focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50',
-            'transition-all duration-200 cursor-pointer appearance-none',
-          )}
-        >
-          <option value="sous-chef">{t('sousChef')}</option>
-          <option value="recipe-builder">{t('recipeBuilder')}</option>
-        </select>
+      <div className="flex justify-center mb-10">
+        <div className="inline-flex rounded-full bg-muted/20 backdrop-blur-md border border-border/40 p-1.5 gap-1.5 shadow-sm">
+          {([
+            { id: 'sous-chef' as Tab, label: t('sousChef') },
+            { id: 'recipe-builder' as Tab, label: t('recipeBuilder') },
+          ]).map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActive(tab.id)}
+              className={cn(
+                'px-5 py-2 sm:px-8 sm:py-3 rounded-full text-[10px] sm:text-[11px] font-black uppercase tracking-[0.2em] transition-all duration-500',
+                active === tab.id
+                  ? 'bg-primary text-primary-foreground shadow-xl shadow-primary/20 scale-105 mx-1'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/30',
+              )}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Content */}

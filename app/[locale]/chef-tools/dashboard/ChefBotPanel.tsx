@@ -13,9 +13,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import {
-  X, Plus, ChefHat, Zap, ArrowRight, Flame,
+  X, Plus, Sparkles, Zap, ArrowRight, Flame,
   Shield, Check, Lightbulb, BarChart3,
 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import type {
   SmartResponse,
   NextAction,
@@ -106,26 +107,27 @@ function DishChip({
   onRemove?: () => void;
 }) {
   return (
-    <div className={`group flex items-center gap-1.5 pl-1.5 pr-2 py-1.5 rounded-2xl border text-[13px] font-black transition-all
-      ${isPrimary
-        ? 'border-primary/40 bg-primary/10 text-primary shadow-sm shadow-primary/10'
-        : 'border-border/50 bg-background text-foreground hover:border-primary/30 hover:shadow-sm'}`}
-    >
+    <div className={cn(
+      "group flex items-center gap-2 pl-2 pr-2.5 py-2 rounded-full border text-[13px] font-black transition-all duration-500 hover-lift",
+      isPrimary
+        ? 'border-primary/40 bg-primary/10 text-primary shadow-lg shadow-primary/10'
+        : 'border-border/40 bg-card/60 backdrop-blur-md text-foreground hover:border-primary/40'
+    )}>
       {image_url ? (
-        <img src={image_url} alt={name} className="w-6 h-6 rounded-lg object-cover shrink-0" />
+        <img src={image_url} alt={name} className="w-7 h-7 rounded-full object-cover shrink-0 border border-white/10" />
       ) : (
-        <div className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 ${isPrimary ? 'bg-primary/20' : 'bg-muted'}`}>
-          <ChefHat className="h-3 w-3" />
+        <div className={cn('w-7 h-7 rounded-full flex items-center justify-center shrink-0 shadow-inner', isPrimary ? 'bg-primary/20' : 'bg-muted/40')}>
+          <Sparkles className="h-3.5 w-3.5" />
         </div>
       )}
-      <span className="truncate max-w-[90px] capitalize">{name}</span>
+      <span className="truncate max-w-[100px] capitalize tracking-tight font-black">{name}</span>
       {!isPrimary && onRemove && (
         <button
           onClick={onRemove}
-          className="ml-0.5 opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-all"
+          className="ml-1 opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-all hover:scale-125"
           aria-label={`Remove ${name}`}
         >
-          <X className="h-3 w-3" />
+          <X className="h-3.5 w-3.5" />
         </button>
       )}
     </div>
@@ -223,8 +225,8 @@ export function ChefBotPanel({
 
       {/* ── Header ────────────────────────────────────────── */}
       <div className="flex items-center justify-between">
-        <p className="text-[11px] font-black uppercase tracking-wider text-primary flex items-center gap-1.5">
-          <ChefHat className="h-3.5 w-3.5" />
+        <p className="text-[12px] font-black uppercase tracking-[0.3em] text-primary flex items-center gap-2 text-shimmer">
+          <Sparkles className="h-4 w-4 animate-pulse" />
           {t('aiSousChef')}
         </p>
         {confidence && <ConfidenceBadge confidence={confidence} />}
@@ -234,14 +236,14 @@ export function ChefBotPanel({
           ① DISH FORMULA — Grouped by Roles
           ══════════════════════════════════════════════════════ */}
       <div>
-        <div className="flex items-center justify-between mb-4">
-          <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-            🍽 {t('currentDish')}
+        <div className="flex items-center justify-between mb-5">
+          <p className="text-[11px] font-black uppercase tracking-[0.3em] text-muted-foreground/40 italic">
+            {t('currentDish')}
           </p>
           {extras.length > 0 && (
             <button
               onClick={() => extras.forEach((e) => onRemoveExtra(e.slug))}
-              className="text-[10px] text-muted-foreground hover:text-destructive transition-colors font-bold"
+              className="text-[10px] text-muted-foreground/40 hover:text-destructive transition-all font-black uppercase tracking-widest border-b border-transparent hover:border-destructive/20"
             >
               {t('clearDish')}
             </button>
@@ -271,9 +273,9 @@ export function ChefBotPanel({
             });
 
             return roleGroups.filter(g => g.items.length > 0).map(group => (
-              <div key={group.id} className="space-y-2">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 flex items-center gap-1.5">
-                  <span className="text-[12px]">{group.emoji}</span>
+              <div key={group.id} className="space-y-3">
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/30 flex items-center gap-2">
+                  <span className="text-[14px] grayscale group-hover:grayscale-0 transition-all">{group.emoji}</span>
                   {group.title}
                 </p>
                 <div className="flex flex-wrap gap-2">
@@ -390,19 +392,19 @@ export function ChefBotPanel({
           ② HERO NEXT STEP — single CTA, not a list
           ══════════════════════════════════════════════════════ */}
       {(bestAction || bestSuggestion) && (
-        <div className="p-4 rounded-2xl bg-primary/[0.04] border-2 border-primary/25 relative overflow-hidden">
-          <p className="text-[10px] font-black uppercase tracking-widest text-primary mb-3 flex items-center gap-1.5">
-            <Lightbulb className="h-3.5 w-3.5" />
+        <div className="p-6 rounded-[2.5rem] bg-primary/10 border-2 border-primary/20 relative overflow-hidden shadow-2xl shadow-primary/5 hover-lift animate-glow">
+          <p className="text-[11px] font-black uppercase tracking-[0.4em] text-primary mb-4 flex items-center gap-2 italic">
+            <Lightbulb className="h-4 w-4 animate-bounce" />
             {t('nextStep')}
           </p>
 
           {bestAction && (
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-black text-foreground capitalize leading-snug">
-                  {t('addAction')} <span className="text-primary">{actionName(bestAction)}</span>
+                <p className="text-xl font-black text-foreground capitalize leading-none tracking-tighter italic">
+                  {t('addAction')} <span className="text-primary text-shimmer">{actionName(bestAction)}</span>
                 </p>
-                <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                <p className="text-sm text-muted-foreground/70 mt-2 leading-relaxed font-medium">
                   {bestAction.reason}
                 </p>
               </div>
@@ -412,26 +414,27 @@ export function ChefBotPanel({
                   name: actionName(bestAction),
                   grams: 50,
                 })}
-                className="shrink-0 flex items-center gap-2 px-5 py-3 rounded-2xl bg-primary text-primary-foreground text-sm font-black uppercase tracking-wide hover:opacity-90 transition-all shadow-lg shadow-primary/20 active:scale-95"
+                className="shrink-0 w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-4 rounded-[1.5rem] bg-primary text-primary-foreground text-[13px] font-black uppercase tracking-[0.2em] hover:shadow-2xl hover:shadow-primary/30 active:scale-95 transition-all duration-500 shadow-xl shadow-primary/20"
               >
-                <Plus className="h-4 w-4" />
+                <Plus className="h-5 w-5" />
                 {t('addToDish')}
               </button>
             </div>
           )}
 
           {!bestAction && bestSuggestion && (
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
               {bestSuggestion.image_url && (
-                <img src={bestSuggestion.image_url} alt={bestSuggestion.name}
-                  className="w-12 h-12 rounded-xl object-cover shrink-0 border border-border/20" />
+                <div className="relative w-16 h-16 rounded-2xl overflow-hidden border-2 border-white/20 shadow-xl shrink-0">
+                  <img src={bestSuggestion.image_url} alt={bestSuggestion.name} className="w-full h-full object-cover" />
+                </div>
               )}
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-black text-foreground capitalize leading-snug">
-                  {t('addAction')} <span className="text-primary">{bestSuggestion.name}</span>
+                <p className="text-xl font-black text-foreground capitalize leading-none tracking-tighter italic">
+                  {t('addAction')} <span className="text-primary text-shimmer">{bestSuggestion.name}</span>
                 </p>
                 {bestSuggestion.fills_gaps.length > 0 && (
-                  <p className="text-xs text-muted-foreground mt-1">
+                  <p className="text-sm text-muted-foreground/70 mt-2 font-medium">
                     + {bestSuggestion.fills_gaps.map(f => {
                       try { return t(`flavor.${f}` as any); } catch { return f; }
                     }).join(', ')}
@@ -445,9 +448,9 @@ export function ChefBotPanel({
                   image_url: bestSuggestion.image_url,
                   grams: bestSuggestion.suggested_grams || 50,
                 })}
-                className="shrink-0 flex items-center gap-2 px-5 py-3 rounded-2xl bg-primary text-primary-foreground text-sm font-black uppercase tracking-wide hover:opacity-90 transition-all shadow-lg shadow-primary/20 active:scale-95"
+                className="shrink-0 w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-4 rounded-[1.5rem] bg-primary text-primary-foreground text-[13px] font-black uppercase tracking-[0.2em] hover:shadow-2xl hover:shadow-primary/30 active:scale-95 transition-all duration-500 shadow-xl shadow-primary/20"
               >
-                <Plus className="h-4 w-4" />
+                <Plus className="h-5 w-5" />
                 {t('addToDish')}
               </button>
             </div>
@@ -459,25 +462,25 @@ export function ChefBotPanel({
           ④ TABS — [ Recommendations ] [ Analysis ]
           ══════════════════════════════════════════════════════ */}
       <div>
-        <div className="flex border-b border-border/40 mb-4">
+        <div className="flex border-b border-border/20 mb-6 gap-2">
           <button
             onClick={() => setTab('recs')}
-            className={`flex items-center gap-1.5 px-4 py-2.5 text-[11px] font-black uppercase tracking-wider transition-all border-b-2 -mb-[1px]
+            className={`flex items-center gap-2 px-6 py-3 text-[11px] font-black uppercase tracking-[0.2em] transition-all border-b-2 -mb-[1px]
               ${tab === 'recs'
                 ? 'border-primary text-primary'
-                : 'border-transparent text-muted-foreground hover:text-foreground'}`}
+                : 'border-transparent text-muted-foreground/40 hover:text-foreground'}`}
           >
-            <Lightbulb className="h-3.5 w-3.5" />
+            <Lightbulb className="h-4 w-4" />
             {t('tabRecommendations')}
           </button>
           <button
             onClick={() => setTab('analysis')}
-            className={`flex items-center gap-1.5 px-4 py-2.5 text-[11px] font-black uppercase tracking-wider transition-all border-b-2 -mb-[1px]
+            className={`flex items-center gap-2 px-6 py-3 text-[11px] font-black uppercase tracking-[0.2em] transition-all border-b-2 -mb-[1px]
               ${tab === 'analysis'
                 ? 'border-primary text-primary'
-                : 'border-transparent text-muted-foreground hover:text-foreground'}`}
+                : 'border-transparent text-muted-foreground/40 hover:text-foreground'}`}
           >
-            <BarChart3 className="h-3.5 w-3.5" />
+            <BarChart3 className="h-4 w-4" />
             {t('tabAnalysis')}
           </button>
         </div>
@@ -645,7 +648,7 @@ export function ChefBotPanel({
             <div className="h-1.5 w-1.5 rounded-full bg-primary animate-bounce [animation-delay:150ms]" />
             <div className="h-1.5 w-1.5 rounded-full bg-primary animate-bounce [animation-delay:300ms]" />
           </div>
-          <span className="font-bold uppercase tracking-wider">Analyzing…</span>
+          <span className="font-bold uppercase tracking-wider">{t('analyzing')}</span>
         </div>
       )}
 

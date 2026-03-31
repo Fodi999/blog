@@ -101,25 +101,25 @@ export function MiniLab({ slug, name, cookingState, onSelectIngredient }: MiniLa
 
             {/* Grams: full controls when expanded, read-only label when collapsed */}
             {expanded ? (
-              <div className="flex items-center gap-1 shrink-0">
+              <div className="flex items-center gap-1.5 shrink-0 bg-background/50 rounded-xl p-1 border border-border/20 shadow-inner">
                 <button
                   onClick={() => updateGrams(ing.slug, ing.grams - 10)}
-                  className="w-6 h-6 rounded-md bg-muted/50 hover:bg-muted flex items-center justify-center"
+                  className="w-7 h-7 rounded-lg bg-muted/40 hover:bg-primary/20 hover:text-primary flex items-center justify-center transition-all"
                 >
-                  <Minus className="h-3 w-3" />
+                  <Minus className="h-4 w-4" />
                 </button>
                 <input
                   type="number"
                   value={ing.grams}
                   onChange={(e) => updateGrams(ing.slug, parseInt(e.target.value) || 1)}
-                  className="w-14 text-center text-sm font-mono border border-border/50 rounded-lg bg-background py-1 focus:outline-none focus:ring-1 focus:ring-primary/30"
+                  className="w-14 text-center text-sm font-black tabular-nums bg-transparent focus:outline-none"
                 />
-                <span className="text-[10px] text-muted-foreground font-bold">g</span>
+                <span className="text-[10px] text-muted-foreground/40 font-black uppercase mr-1">g</span>
                 <button
                   onClick={() => updateGrams(ing.slug, ing.grams + 10)}
-                  className="w-6 h-6 rounded-md bg-muted/50 hover:bg-muted flex items-center justify-center"
+                  className="w-7 h-7 rounded-lg bg-muted/40 hover:bg-primary/20 hover:text-primary flex items-center justify-center transition-all"
                 >
-                  <Plus className="h-3 w-3" />
+                  <Plus className="h-4 w-4" />
                 </button>
               </div>
             ) : (
@@ -155,9 +155,9 @@ export function MiniLab({ slug, name, cookingState, onSelectIngredient }: MiniLa
             {!showSearch ? (
               <button
                 onClick={() => setShowSearch(true)}
-                className="flex items-center gap-2 px-3 py-2 rounded-xl border border-dashed border-border/60 text-muted-foreground hover:border-primary/40 hover:text-primary transition-all text-xs font-bold w-full justify-center"
+                className="flex items-center gap-2 px-4 py-3 rounded-2xl border-2 border-dashed border-border/40 text-muted-foreground/60 hover:border-primary/40 hover:text-primary transition-all text-[11px] font-black uppercase tracking-[0.2em] w-full justify-center bg-card/20"
               >
-                <Plus className="h-3.5 w-3.5" />
+                <Plus className="h-4 w-4" />
                 {t('addIngredient')}
               </button>
             ) : (
@@ -223,9 +223,9 @@ export function MiniLab({ slug, name, cookingState, onSelectIngredient }: MiniLa
       <button
         onClick={analyze}
         disabled={analyzing}
-        className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary text-primary-foreground text-xs font-black uppercase tracking-wider hover:opacity-90 transition-opacity disabled:opacity-50 w-full"
+        className="flex items-center justify-center gap-3 py-4 rounded-2xl bg-primary text-primary-foreground text-[13px] font-black uppercase tracking-[0.2em] hover:shadow-2xl hover:shadow-primary/30 active:scale-95 transition-all disabled:opacity-50 w-full shadow-xl shadow-primary/10"
       >
-        {analyzing ? <Loader2 className="h-4 w-4 animate-spin" /> : <FlaskConical className="h-4 w-4" />}
+        {analyzing ? <Loader2 className="h-5 w-5 animate-spin" /> : <FlaskConical className="h-5 w-5" />}
         {analyzing ? t('analyzing') : t('analyzeRecipe')}
       </button>
 
@@ -234,18 +234,18 @@ export function MiniLab({ slug, name, cookingState, onSelectIngredient }: MiniLa
         const pp = result.per_portion ?? result.nutrition;
         if (!pp) return null;
         return (
-          <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 space-y-3 animate-in fade-in duration-300">
-            <div className="grid grid-cols-4 gap-2 text-center">
+          <div className="rounded-[2rem] border border-primary/20 bg-primary/5 p-6 space-y-5 animate-in fade-in duration-700 shadow-xl shadow-primary/5">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
               {[
                 { label: t('calories'), value: Math.round(pp.calories),                         unit: 'kcal', color: 'text-primary' },
                 { label: t('protein'),  value: Math.round((pp.protein ?? 0) * 10) / 10,         unit: 'g',    color: 'text-blue-500' },
                 { label: t('fat'),      value: Math.round((pp.fat ?? 0) * 10) / 10,             unit: 'g',    color: 'text-amber-500' },
                 { label: t('carbs'),    value: Math.round((pp.carbs ?? 0) * 10) / 10,           unit: 'g',    color: 'text-emerald-500' },
               ].map(({ label, value, unit, color }) => (
-                <div key={label} className="rounded-lg bg-background p-2 border border-border/40">
-                  <p className={`text-sm font-black tabular-nums ${color}`}>{value}</p>
-                  <p className="text-[10px] text-muted-foreground font-bold">{unit}</p>
-                  <p className="text-[9px] text-muted-foreground uppercase tracking-wide">{label}</p>
+                <div key={label} className="rounded-2xl bg-card/60 backdrop-blur-md p-3 border border-border/40 shadow-sm transition-transform hover:scale-105">
+                  <p className={`text-base font-black tabular-nums tracking-tighter ${color}`}>{value}</p>
+                  <p className="text-[10px] text-muted-foreground/40 font-black uppercase tracking-widest">{unit}</p>
+                  <p className="text-[9px] text-muted-foreground/60 font-black uppercase tracking-[0.2em] mt-1 border-t border-border/10 pt-1">{label}</p>
                 </div>
               ))}
             </div>

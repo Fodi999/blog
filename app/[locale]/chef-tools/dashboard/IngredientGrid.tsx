@@ -51,11 +51,15 @@ const healthConfig: Record<HealthStatus, {
 /* ── Macro bar tiny component ───────────────────────────────── */
 function MacroBar({ protein, fat, carbs }: { protein: number; fat: number; carbs: number }) {
   const total = protein + fat + carbs || 1;
+  const pPct = (protein / total) * 100;
+  const fPct = (fat / total) * 100;
+  const cPct = (carbs / total) * 100;
+
   return (
-    <div className="flex h-1.5 w-full rounded-full overflow-hidden bg-muted/50">
-      <div className="bg-blue-500" style={{ width: `${(protein / total) * 100}%` }} />
-      <div className="bg-amber-500" style={{ width: `${(fat / total) * 100}%` }} />
-      <div className="bg-emerald-500" style={{ width: `${(carbs / total) * 100}%` }} />
+    <div className="flex h-1 gap-0.5 w-full rounded-full overflow-hidden bg-muted/10 my-2">
+      <div className="bg-blue-500/80 shadow-[0_0_8px_rgba(59,130,246,0.3)]" style={{ width: `${pPct}%` }} />
+      <div className="bg-amber-500/80 shadow-[0_0_8px_rgba(245,158,11,0.3)]" style={{ width: `${fPct}%` }} />
+      <div className="bg-emerald-500/80 shadow-[0_0_8px_rgba(16,185,129,0.3)]" style={{ width: `${cPct}%` }} />
     </div>
   );
 }
@@ -111,18 +115,18 @@ export function IngredientGrid({ onSelect, activeSlug, compact }: IngredientGrid
   };
 
   return (
-    <section>
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
-            <LayoutGrid className="h-4.5 w-4.5 text-primary" />
+    <section className="px-4">
+      <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-primary/5 border border-primary/10 flex items-center justify-center shadow-inner">
+            <LayoutGrid className="h-6 w-6 text-primary" />
           </div>
-          <div>
-            <h2 className="text-xl font-black uppercase tracking-tight text-foreground italic leading-none">
+          <div className="flex flex-col gap-1 min-w-0">
+            <h2 className="text-3xl sm:text-5xl font-black uppercase tracking-tighter text-foreground italic leading-none text-shimmer pr-6">
               {t('ingredients')}
             </h2>
             {!loading && total > 0 && (
-              <p className="text-[11px] text-muted-foreground font-medium mt-0.5">
+              <p className="text-[10px] text-muted-foreground/30 font-black uppercase tracking-[0.2em] italic ml-1 mt-1">
                 {total} {t('ingredientsTotal')}
               </p>
             )}
@@ -130,32 +134,34 @@ export function IngredientGrid({ onSelect, activeSlug, compact }: IngredientGrid
         </div>
         <Link
           href="/chef-tools/ingredients"
-          className="text-xs font-bold uppercase tracking-widest text-primary hover:underline flex items-center gap-1"
+          className="px-4 py-2 rounded-xl bg-primary/5 border border-primary/10 text-[10px] font-black uppercase tracking-[0.2em] text-primary hover:bg-primary hover:text-white transition-all italic flex items-center gap-2 group/link"
         >
           {t('viewAll')}
-          <ArrowRight className="h-3.5 w-3.5" />
+          <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover/link:translate-x-1" />
         </Link>
       </div>
 
       {/* Search + category chips */}
-      <div className="space-y-3 mb-5">
-        <div className="relative max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+      <div className="space-y-3 mb-8">
+        <div className="relative max-w-sm group/search">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/40 group-focus-within/search:text-primary transition-colors" />
           <input
             type="text"
             value={filter}
             onChange={(e) => { setFilter(e.target.value); setActiveCategory(null); }}
             placeholder={t('searchIngredients')}
-            className="w-full pl-9 pr-4 py-2 rounded-xl border border-border/60 bg-muted/30 text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/20"
+            className="w-full pl-11 pr-4 py-3 rounded-2xl border border-border/40 bg-card/40 backdrop-blur-md text-sm font-medium text-foreground placeholder:text-muted-foreground/30 focus:outline-none focus:border-primary/30 focus:ring-4 focus:ring-primary/5 transition-all"
           />
         </div>
 
         {/* Fixed category list — always shows all 11 categories */}
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex flex-wrap gap-2">
           <button
             onClick={() => { setActiveCategory(null); setFilter(''); }}
-            className={`px-2.5 py-1 rounded-lg text-[11px] font-bold uppercase tracking-wider transition-all ${
-              !activeCategory ? 'bg-primary text-primary-foreground' : 'bg-muted/50 text-muted-foreground hover:text-foreground'
+            className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all italic border ${
+              !activeCategory 
+                ? 'bg-primary text-white border-primary shadow-lg shadow-primary/20' 
+                : 'bg-card/40 text-muted-foreground border-border/40 hover:border-primary/20 hover:text-foreground'
             }`}
           >
             {t('categories.all')}
@@ -164,10 +170,10 @@ export function IngredientGrid({ onSelect, activeSlug, compact }: IngredientGrid
             <button
               key={cat}
               onClick={() => { setActiveCategory(activeCategory === cat ? null : cat); setFilter(''); }}
-              className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all whitespace-nowrap ${
+              className={`px-4 py-2 rounded-xl text-[10px] font-black transition-all whitespace-nowrap italic uppercase tracking-[0.1em] border ${
                 activeCategory === cat
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted/50 text-muted-foreground hover:text-foreground'
+                  ? 'bg-primary text-white border-primary shadow-lg shadow-primary/20'
+                  : 'bg-card/40 text-muted-foreground border-border/40 hover:border-primary/20 hover:text-foreground'
               }`}
             >
               {catLabel(cat)}
@@ -193,28 +199,32 @@ export function IngredientGrid({ onSelect, activeSlug, compact }: IngredientGrid
                   <button
                     key={item.slug}
                     onClick={() => onSelect(item.slug, item.name, item.image_url)}
-                    className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-xl border transition-all text-left ${
+                    className={`flex items-center gap-4 w-full px-4 py-3 rounded-[2rem] border transition-all text-left group/item ${
                       isActive
-                        ? 'border-primary bg-primary/5 shadow-sm'
-                        : 'border-border/40 bg-background hover:border-primary/30 hover:bg-primary/5'
+                        ? 'border-primary/40 bg-primary/5 shadow-xl shadow-primary/5'
+                        : 'border-border/40 bg-card/20 backdrop-blur-sm hover:border-primary/20 hover:bg-card/40 shadow-sm'
                     }`}
                   >
                     {item.image_url ? (
-                      <img src={item.image_url} alt={item.name}
-                        className="w-8 h-8 rounded-lg object-cover shrink-0" />
+                      <div className="relative w-10 h-10 rounded-xl overflow-hidden shadow-lg border border-white/10 shrink-0">
+                        <img src={item.image_url} alt={item.name} className="w-full h-full object-cover transition-transform group-hover/item:scale-110" />
+                      </div>
                     ) : (
-                      <div className="w-8 h-8 rounded-lg bg-muted shrink-0" />
+                      <div className="w-10 h-10 rounded-xl bg-muted/40 shrink-0 border border-border/10 flex items-center justify-center opacity-40">
+                         <Search className="h-4 w-4" />
+                      </div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <p className={`text-xs font-bold truncate ${isActive ? 'text-primary' : 'text-foreground'}`}>
+                      <p className={`text-sm font-black italic uppercase tracking-tighter transition-colors ${isActive ? 'text-shimmer' : 'text-foreground group-hover:text-primary'}`}>
                         {item.name}
                       </p>
-                      <p className="text-[10px] text-muted-foreground">
-                        {item.per_100g.calories} {t('kcal')} / 100 g
-                      </p>
+                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/30 mt-0.5">
+                      {item.per_100g.calories} <span className="opacity-60">{t('kcal')}</span>
+                      <span className="text-[7px] opacity-20 font-bold ml-1 italic truncate">/ {t('unit100g')}</span>
+                    </p>
                     </div>
                     {/* Health status dot in compact mode */}
-                    <span className="text-sm shrink-0" title={t(
+                    <span className="text-xl filter grayscale group-hover/item:grayscale-0 transition-all opacity-40 group-hover/item:opacity-100" title={t(
                       (getHealthStatus(item.per_100g.protein_g, item.per_100g.fat_g, item.per_100g.calories) === 'healthy'
                         ? 'healthyLabel'
                         : getHealthStatus(item.per_100g.protein_g, item.per_100g.fat_g, item.per_100g.calories) === 'moderate'
@@ -243,32 +253,35 @@ export function IngredientGrid({ onSelect, activeSlug, compact }: IngredientGrid
               <button
                 key={item.slug}
                 onClick={() => onSelect(item.slug, item.name, item.image_url)}
-                className={`group rounded-2xl border p-4 transition-all duration-300 text-left cursor-pointer ${
+                className={`group rounded-[2.5rem] border-2 p-6 transition-all duration-700 text-left cursor-pointer relative overflow-hidden flex flex-col ${
                   isActive
-                    ? 'border-primary bg-primary/5 shadow-md shadow-primary/10 ring-1 ring-primary/20'
-                    : `${hc.cardBg} hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5`
+                    ? 'border-primary/40 bg-primary/10 shadow-2xl shadow-primary/10 ring-4 ring-primary/5'
+                    : 'border-border/20 bg-card/30 backdrop-blur-xl hover:border-primary/30 hover:bg-card/50 shadow-xl shadow-black/5 hover-lift hover-glow'
                 }`}
               >
                 {/* Header: image + name + calories */}
-                <div className="flex items-start gap-3 mb-3">
+                <div className="flex items-start gap-4 mb-4">
                   {item.image_url ? (
-                    <img
-                      src={item.image_url}
-                      alt={item.name}
-                      className="w-10 h-10 rounded-lg object-cover shrink-0"
-                    />
+                    <div className="relative w-14 h-14 rounded-[1.5rem] overflow-hidden shadow-2xl border-2 border-white/10 shrink-0 transition-transform duration-500 group-hover:scale-110">
+                      <img
+                        src={item.image_url}
+                        alt={item.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
                   ) : (
-                    <div className="w-10 h-10 rounded-lg bg-muted shrink-0" />
+                    <div className="w-14 h-14 rounded-[1.5rem] bg-muted/20 border-2 border-border/10 flex items-center justify-center shrink-0 opacity-40">
+                       <Search className="h-6 w-6" />
+                    </div>
                   )}
                   <div className="min-w-0 flex-1">
-                    <p className={`text-sm font-bold truncate transition-colors ${isActive ? 'text-primary' : 'text-foreground group-hover:text-primary'}`}>
+                    <p className={`text-[15px] font-black italic uppercase tracking-tighter transition-colors leading-[1.1] ${isActive ? 'text-shimmer' : 'text-foreground group-hover:text-primary'}`}>
                       {item.name}
                     </p>
                     {/* Calories with unit context */}
-                    <p className="text-[11px] text-muted-foreground leading-tight">
-                      <span className="font-black text-foreground">{item.per_100g.calories}</span>
-                      {' '}{t('kcal')} / 100 g
-                      <span className="ml-1.5 opacity-60">{catLabel(item.product_type)}</span>
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/30 mt-1">
+                      {item.per_100g.calories} <span className="opacity-60">{t('kcal')}</span>
+                      <span className="text-[7px] opacity-20 font-bold ml-1 italic truncate">/ {t('unit100g')}</span>
                     </p>
                   </div>
                 </div>
@@ -281,17 +294,25 @@ export function IngredientGrid({ onSelect, activeSlug, compact }: IngredientGrid
                 />
 
                 {/* Full macro labels instead of P/F/C */}
-                <p className="mt-1.5 text-[10px] text-muted-foreground leading-snug">
-                  <span className="text-blue-500 font-bold">{t('protein')}</span>{' '}{item.per_100g.protein_g} g
-                  {' · '}
-                  <span className="text-amber-500 font-bold">{t('fat')}</span>{' '}{item.per_100g.fat_g} g
-                  {' · '}
-                  <span className="text-emerald-500 font-bold">{t('carbs')}</span>{' '}{item.per_100g.carbs_g} g
-                </p>
+                <div className="mt-2 space-y-1 opacity-50 transition-opacity group-hover:opacity-100">
+                  <div className="flex justify-between items-center text-[9px] font-black uppercase tracking-wider">
+                    <span className="text-blue-500">{t('protein')}</span>
+                    <span className="text-foreground">{item.per_100g.protein_g}г</span>
+                  </div>
+                  <div className="flex justify-between items-center text-[9px] font-black uppercase tracking-wider">
+                    <span className="text-amber-500">{t('fat')}</span>
+                    <span className="text-foreground">{item.per_100g.fat_g}г</span>
+                  </div>
+                  <div className="flex justify-between items-center text-[9px] font-black uppercase tracking-wider">
+                    <span className="text-emerald-500">{t('carbs')}</span>
+                    <span className="text-foreground">{item.per_100g.carbs_g}г</span>
+                  </div>
+                </div>
 
                 {/* Health status badge */}
-                <div className={`mt-2.5 inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-black uppercase tracking-wide ${hc.badgeBg} ${hc.badgeText}`}>
-                  {hc.emoji} {t(statusKey as any)}
+                <div className={`mt-auto pt-4 inline-flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.2em] italic ${hc.badgeText}`}>
+                   <span className="text-base filter saturate-150 drop-shadow-sm">{hc.emoji}</span>
+                   {t(statusKey as any)}
                 </div>
               </button>
               );

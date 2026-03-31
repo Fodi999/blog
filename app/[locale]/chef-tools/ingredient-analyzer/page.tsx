@@ -160,8 +160,8 @@ export default async function IngredientAnalyzerPage({
 
         {/* Header */}
         <div className="mb-10">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tighter text-foreground uppercase italic leading-tight mb-3">
-            {t('tools.ingredientAnalyzer.title')}<span className="text-primary">.</span>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tighter text-foreground uppercase italic leading-tight mb-3 text-shimmer">
+            {t('tools.ingredientAnalyzer.title')}<span className="text-primary not-italic">.</span>
           </h1>
           <p className="text-sm md:text-base text-muted-foreground font-medium max-w-xl">
             {t('tools.ingredientAnalyzer.description')}

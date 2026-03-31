@@ -268,6 +268,7 @@ export default async function RecipePage({ params }: Props) {
             const imgs = [page.image_url, page.process_image_url, page.detail_image_url].filter(Boolean);
             return imgs.length > 0 ? { image: imgs } : {};
           })(),
+          inLanguage: locale,
           author: { '@type': 'Person', name: 'Dima Fomin', url: 'https://dima-fomin.pl/about' },
           publisher: {
             '@type': 'Organization',

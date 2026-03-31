@@ -1,4 +1,4 @@
-import { getTranslations, getLocale } from 'next-intl/server';
+import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
 import { ManageCookiesButton } from '@/components/ManageCookiesButton';
 
@@ -6,38 +6,32 @@ export async function Footer({ locale }: { locale: string }) {
   const t = await getTranslations({ locale, namespace: 'footer' });
 
   return (
-    <footer className="border-t border-border mt-20">
-      <div className="container mx-auto px-4 py-8">
+    <footer className="relative mt-20">
+      {/* Animated gradient divider */}
+      <div className="gradient-line" />
+      
+      <div className="container mx-auto px-4 py-10">
         {/* Legal links */}
-        <div className="flex justify-center flex-wrap gap-x-6 gap-y-2 mb-4">
-          <Link
-            href={`/${locale}/privacy`}
-            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-          >
-            {t('privacy')}
-          </Link>
-          <Link
-            href={`/${locale}/terms`}
-            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-          >
-            {t('terms')}
-          </Link>
-          <Link
-            href={`/${locale}/cookies`}
-            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-          >
-            {t('cookies')}
-          </Link>
-          <Link
-            href={`/${locale}/contact`}
-            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-          >
-            {t('contact')}
-          </Link>
+        <div className="flex justify-center flex-wrap gap-x-8 gap-y-3 mb-6">
+          {[
+            { href: `/${locale}/privacy`, label: t('privacy') },
+            { href: `/${locale}/terms`, label: t('terms') },
+            { href: `/${locale}/cookies`, label: t('cookies') },
+            { href: `/${locale}/contact`, label: t('contact') },
+          ].map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="text-xs text-muted-foreground hover:text-primary transition-colors duration-300 font-medium link-underline"
+            >
+              {link.label}
+            </Link>
+          ))}
           <ManageCookiesButton label={t('manageCookies')} />
         </div>
-        {/* Copyright */}
-        <div className="text-center text-sm text-muted">
+        
+        {/* Copyright with subtle styling */}
+        <div className="text-center text-sm text-muted-foreground/50 font-medium">
           {t('rights')}
         </div>
       </div>

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Loader2, Leaf, ArrowRight, Plus, Check } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { analyzeForPairing, type FlavorProfile, type PairingSuggestion } from '@/lib/tools';
 import type { DishIngredient } from './ChefBotPanel';
 
@@ -20,14 +21,14 @@ const DIMS: Array<{ key: keyof FlavorProfile; color: string }> = [
 function FlavorBar({ label, value, color }: { label: string; value: number; color: string }) {
   const pct = Math.min((value / 10) * 100, 100);
   return (
-    <div className="flex items-center gap-2">
-      <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground w-16 shrink-0 text-right">
+    <div className="flex items-center gap-3 group/bar">
+      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/40 w-16 shrink-0 text-right transition-colors group-hover/bar:text-foreground">
         {label}
       </span>
-      <div className="flex-1 h-2 rounded-full bg-muted/40 overflow-hidden">
-        <div className={`h-full rounded-full transition-all duration-700 ${color}`} style={{ width: `${pct}%` }} />
+      <div className="flex-1 h-2 rounded-full bg-muted/20 overflow-hidden relative shadow-inner">
+        <div className={cn("h-full rounded-full transition-all duration-1000 ease-out shadow-lg", color)} style={{ width: `${pct}%` }} />
       </div>
-      <span className="text-[10px] font-mono text-muted-foreground w-6 tabular-nums">{value}</span>
+      <span className="text-[11px] font-black tabular-nums text-foreground w-6 text-right opacity-60">{value}</span>
     </div>
   );
 }
@@ -53,11 +54,12 @@ function SuggestionCard({
   const displayName = localName ?? item.name;
 
   return (
-    <div className={`group flex items-start gap-3 p-3 rounded-xl border transition-all text-left w-full
-      ${isInDish
-        ? 'border-emerald-500/30 bg-emerald-500/5'
-        : 'border-border/60 bg-muted/20 hover:border-primary/40 hover:bg-primary/5'}`}
-    >
+    <div className={cn(
+      "group flex items-start gap-4 p-4 rounded-2xl border transition-all duration-500 hover-lift w-full",
+      isInDish
+        ? "border-emerald-500/40 bg-emerald-500/10 shadow-lg shadow-emerald-500/5 scale-[1.02]"
+        : "border-border/40 bg-card/60 backdrop-blur-md hover:border-primary/40 hover:bg-primary/5 shadow-sm"
+    )}>
       {/* Clickable area — navigates to ingredient */}
       <button
         onClick={() => onSelect(item.slug, displayName)}
@@ -100,10 +102,12 @@ function SuggestionCard({
               grams: 50,
             })}
             disabled={isInDish}
-            className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-black uppercase transition-all
-              ${isInDish
-                ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 cursor-default'
-                : 'bg-primary/10 text-primary hover:bg-primary/20 border border-primary/20'}`}
+            className={cn(
+              "flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase transition-all duration-500 shadow-sm",
+              isInDish
+                ? "bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 cursor-default border border-emerald-500/20"
+                : "bg-primary text-primary-foreground hover:shadow-xl hover:shadow-primary/20 active:scale-95"
+            )}
           >
             {isInDish ? <Check className="h-3 w-3" /> : <Plus className="h-3 w-3" />}
             {isInDish ? t('addedToDish') : t('addToDish')}

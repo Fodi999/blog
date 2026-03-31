@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { cn } from '@/lib/utils';
 import { BLOG_CATEGORIES } from '@/lib/blog-categories';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -54,11 +55,14 @@ export function BlogFilters({
           variant={selectedCategory === 'all' ? 'default' : 'outline'}
           size="sm"
           onClick={() => onCategoryChange('all')}
-          className={`rounded-full px-5 py-5 text-sm font-bold transition-all ${
-            selectedCategory === 'all' ? 'shadow-lg shadow-primary/20' : 'hover:border-primary/50'
-          }`}
+          className={cn(
+            "rounded-full px-6 py-6 text-sm font-black uppercase tracking-widest transition-all duration-300 backdrop-blur-md",
+            selectedCategory === 'all' 
+              ? "shadow-xl shadow-primary/30 bg-primary border-primary" 
+              : "border-border/40 hover:border-primary/50 hover:bg-primary/5"
+          )}
         >
-          <LayoutGrid className="mr-2 h-4 w-4" /> {t('categories.all')}
+          <LayoutGrid className="mr-2.5 h-4 w-4" /> {t('categories.all')}
         </Button>
         {BLOG_CATEGORIES.map((cat) => {
           const isActive = categories.includes(cat.key);
@@ -72,11 +76,14 @@ export function BlogFilters({
               variant={selectedCategory === cat.key ? 'default' : 'outline'}
               size="sm"
               onClick={() => onCategoryChange(cat.key)}
-              className={`rounded-full px-5 py-5 text-sm font-bold transition-all ${
-                selectedCategory === cat.key ? 'shadow-lg shadow-primary/20' : 'hover:border-primary/50'
-              }`}
+              className={cn(
+                "rounded-full px-6 py-6 text-sm font-black uppercase tracking-widest transition-all duration-300 backdrop-blur-md",
+                selectedCategory === cat.key 
+                  ? "shadow-xl shadow-primary/30 bg-primary border-primary" 
+                  : "border-border/40 hover:border-primary/50 hover:bg-primary/10"
+              )}
             >
-              {Icon && <Icon className="mr-2 h-4 w-4" />} {t(`categories.${cat.i18nKey}`)}
+              {Icon && <Icon className="mr-2.5 h-4 w-4" />} {t(`categories.${cat.i18nKey}`)}
             </Button>
           );
         })}

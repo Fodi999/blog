@@ -4,6 +4,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { BlogFilters } from '@/components/BlogFilters';
 import { BlogSearch } from '@/components/BlogSearch';
 import { BlogList } from '@/components/BlogList';
+import { ScrollReveal } from '@/components/ScrollReveal';
 
 interface Post {
   slug: string;
@@ -65,20 +66,23 @@ export function BlogContent({ posts, categories }: BlogContentProps) {
   }
 
   return (
-    <div className="space-y-8">
-      {/* Search */}
-      <BlogSearch value={searchQuery} onChange={setSearchQuery} />
+    <div className="space-y-12 md:space-y-16">
+      {/* Search & Filters */}
+      <ScrollReveal direction="up" delay={500} duration={800} threshold={0}>
+        <div className="space-y-8">
+          <BlogSearch value={searchQuery} onChange={setSearchQuery} />
 
-      {/* Filters */}
-      <BlogFilters
-        categories={categories}
-        selectedCategory={selectedCategory}
-        searchQuery={searchQuery}
-        onCategoryChange={setSelectedCategory}
-        onSearchChange={setSearchQuery}
-        totalPosts={posts.length}
-        filteredCount={filteredPosts.length}
-      />
+          <BlogFilters
+            categories={categories}
+            selectedCategory={selectedCategory}
+            searchQuery={searchQuery}
+            onCategoryChange={setSelectedCategory}
+            onSearchChange={setSearchQuery}
+            totalPosts={posts.length}
+            filteredCount={filteredPosts.length}
+          />
+        </div>
+      </ScrollReveal>
 
       {/* List */}
       <BlogList 

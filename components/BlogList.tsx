@@ -1,6 +1,7 @@
 import { PostCard } from '@/components/PostCard';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
+import { StaggerReveal } from '@/components/ScrollReveal';
 
 interface Post {
   slug: string;
@@ -45,11 +46,32 @@ export function BlogList({ posts, searchQuery, onClearFilters }: BlogListProps) 
     );
   }
 
+  const featuredPost = !searchQuery && posts.length > 0 ? posts[0] : null;
+  const remainingPosts = featuredPost ? posts.slice(1) : posts;
+
   return (
-    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-      {posts.map((post) => (
-        <PostCard key={post.slug} {...post} />
-      ))}
+    <div className="space-y-12 md:space-y-16 lg:space-y-20">
+      {/* Featured Header Card */}
+      {featuredPost && (
+        <PostCard {...featuredPost} variant="wide" />
+      )}
+
+      {/* Grid of Remaining Posts */}
+      {remainingPosts.length > 0 && (
+        <StaggerReveal 
+          direction="up" 
+          staggerMs={100} 
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10"
+        >
+          {remainingPosts.map((post) => (
+            <PostCard 
+              key={post.slug} 
+              {...post} 
+              variant="grid"
+            />
+          ))}
+        </StaggerReveal>
+      )}
     </div>
   );
 }

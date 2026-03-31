@@ -6,12 +6,17 @@ import type { ApiIngredient } from '@/lib/api';
 import { ChefToolsNav } from '../../ChefToolsNav';
 import { Link } from '@/i18n/routing';
 import Image from 'next/image';
-import { ChevronRight, Package, Leaf, Flame, Droplets, FlaskConical, Apple, Scale, Heart, CalendarDays, ShieldAlert, ArrowRight, ExternalLink, BookOpen } from 'lucide-react';
+import { 
+  ChevronRight, Package, Leaf, Flame, Droplets, FlaskConical, 
+  Apple, Scale, Heart, CalendarDays, ShieldAlert, ArrowRight, 
+  ExternalLink, BookOpen, ChevronLeft, Info
+} from 'lucide-react';
 import type { Metadata } from 'next';
 import CategoryPage, { CATEGORY_MAP } from './category-page';
 import IngredientStateClient from './IngredientStateClient';
 import { JsonLd } from '@/components/JsonLd';
 import { generateIngredientSEO } from '@/lib/seo-ingredients';
+import { cn } from '@/lib/utils';
 
 export const revalidate = 86400;
 
@@ -28,66 +33,65 @@ function t4(locale: string, en: string, ru: string, pl: string, uk: string): str
   return en;
 }
 
-/** Static map: category → related ingredient slugs for cross-linking */
 const CATEGORY_RELATED: Record<string, { slug: string; nameEn: string; names: Record<string, string> }[]> = {
   vegetables: [
-    { slug: 'broccoli',    nameEn: 'Broccoli',    names: { en: 'Broccoli',    ru: '\u0411\u0440\u043e\u043a\u043a\u043e\u043b\u0438',   pl: 'Broku\u0142y',    uk: '\u0411\u0440\u043e\u043a\u043e\u043b\u0456'    } },
-    { slug: 'cauliflower', nameEn: 'Cauliflower', names: { en: 'Cauliflower', ru: '\u0426\u0432\u0435\u0442\u043d\u0430\u044f \u043a\u0430\u043f\u0443\u0441\u0442\u0430', pl: 'Kalafior',  uk: '\u0426\u0432\u0456\u0442\u043d\u0430 \u043a\u0430\u043f\u0443\u0441\u0442\u0430' } },
-    { slug: 'spinach',     nameEn: 'Spinach',     names: { en: 'Spinach',     ru: '\u0428\u043f\u0438\u043d\u0430\u0442',     pl: 'Szpinak',    uk: '\u0428\u043f\u0438\u043d\u0430\u0442'     } },
-    { slug: 'zucchini',    nameEn: 'Zucchini',    names: { en: 'Zucchini',    ru: '\u041a\u0430\u0431\u0430\u0447\u043e\u043a',    pl: 'Cukinia',    uk: '\u041a\u0430\u0431\u0430\u0447\u043e\u043a'    } },
+    { slug: 'broccoli',    nameEn: 'Broccoli',    names: { en: 'Broccoli',    ru: 'Брокколи',   pl: 'Brokuły',    uk: 'Брокколі'    } },
+    { slug: 'cauliflower', nameEn: 'Cauliflower', names: { en: 'Cauliflower', ru: 'Цветная капуста', pl: 'Kalafior',  uk: 'Цвітна капуста' } },
+    { slug: 'spinach',     nameEn: 'Spinach',     names: { en: 'Spinach',     ru: 'Шпинат',     pl: 'Szpinak',    uk: 'Шпинат'     } },
+    { slug: 'zucchini',    nameEn: 'Zucchini',    names: { en: 'Zucchini',    ru: 'Кабачок',    pl: 'Cukinia',    uk: 'Кабачок'    } },
   ],
   fruits: [
-    { slug: 'apple',       nameEn: 'Apple',       names: { en: 'Apple',       ru: '\u042f\u0431\u043b\u043e\u043a\u043e',     pl: 'Jab\u0142ko',     uk: '\u042f\u0431\u043b\u0443\u043a\u043e'     } },
-    { slug: 'banana',      nameEn: 'Banana',      names: { en: 'Banana',      ru: '\u0411\u0430\u043d\u0430\u043d',      pl: 'Banan',      uk: '\u0411\u0430\u043d\u0430\u043d'      } },
-    { slug: 'orange',      nameEn: 'Orange',      names: { en: 'Orange',      ru: '\u0410\u043f\u0435\u043b\u044c\u0441\u0438\u043d',   pl: 'Pomara\u0144cza', uk: '\u0410\u043f\u0435\u043b\u044c\u0441\u0438\u043d'   } },
-    { slug: 'strawberry',  nameEn: 'Strawberry',  names: { en: 'Strawberry',  ru: '\u041a\u043b\u0443\u0431\u043d\u0438\u043a\u0430',   pl: 'Truskawka',  uk: '\u041f\u043e\u043b\u0443\u043d\u0438\u0446\u044f'   } },
+    { slug: 'apple',       nameEn: 'Apple',       names: { en: 'Apple',       ru: 'Яблоко',     pl: 'Jabłko',     uk: 'Яблуко'     } },
+    { slug: 'banana',      nameEn: 'Banana',      names: { en: 'Banana',      ru: 'Банан',      pl: 'Banan',      uk: 'Банан'      } },
+    { slug: 'orange',      nameEn: 'Orange',      names: { en: 'Orange',      ru: 'Апельсин',   pl: 'Pomarańcza', uk: 'Апельсин'   } },
+    { slug: 'strawberry',  nameEn: 'Strawberry',  names: { en: 'Strawberry',  ru: 'Клубника',   pl: 'Truskawka',  uk: 'Полуниця'   } },
   ],
   meat: [
-    { slug: 'beef',           nameEn: 'Beef',         names: { en: 'Beef',         ru: '\u0413\u043e\u0432\u044f\u0434\u0438\u043d\u0430',   pl: 'Wo\u0142owina',   uk: '\u042f\u043b\u043e\u0432\u0438\u0447\u0438\u043d\u0430'  } },
-    { slug: 'chicken-breast', nameEn: 'Chicken',      names: { en: 'Chicken',      ru: '\u041a\u0443\u0440\u0438\u0446\u0430',     pl: 'Kurczak',    uk: '\u041a\u0443\u0440\u043a\u0430'      } },
-    { slug: 'pork',           nameEn: 'Pork',         names: { en: 'Pork',         ru: '\u0421\u0432\u0438\u043d\u0438\u043d\u0430',    pl: 'Wieprzowina', uk: '\u0421\u0432\u0438\u043d\u0438\u043d\u0430'    } },
-    { slug: 'turkey',         nameEn: 'Turkey',       names: { en: 'Turkey',       ru: '\u0418\u043d\u0434\u0435\u0439\u043a\u0430',    pl: 'Indyk',      uk: '\u0406\u043d\u0434\u0438\u043a'      } },
+    { slug: 'beef',           nameEn: 'Beef',         names: { en: 'Beef',         ru: 'Говядина',   pl: 'Wołowina',   uk: 'Яловичина'  } },
+    { slug: 'chicken-breast', nameEn: 'Chicken',      names: { en: 'Chicken',      ru: 'Курица',     pl: 'Kurczak',    uk: 'Курка'      } },
+    { slug: 'pork',           nameEn: 'Pork',         names: { en: 'Pork',         ru: 'Свинина',    pl: 'Wieprzowina', uk: 'Свинина'    } },
+    { slug: 'turkey',         nameEn: 'Turkey',       names: { en: 'Turkey',       ru: 'Индейка',    pl: 'Indyk',      uk: 'Індичка'      } },
   ],
   fish: [
-    { slug: 'salmon',   nameEn: 'Salmon',   names: { en: 'Salmon',   ru: '\u041b\u043e\u0441\u043e\u0441\u044c',    pl: '\u0141oso\u015b',      uk: '\u041b\u043e\u0441\u043e\u0441\u044c'    } },
-    { slug: 'tuna',     nameEn: 'Tuna',     names: { en: 'Tuna',     ru: '\u0422\u0443\u043d\u0435\u0446',     pl: 'Tu\u0144czyk',    uk: '\u0422\u0443\u043d\u0435\u0446\u044c'    } },
-    { slug: 'cod',      nameEn: 'Cod',      names: { en: 'Cod',      ru: '\u0422\u0440\u0435\u0441\u043a\u0430',    pl: 'Dorsz',      uk: '\u0422\u0440\u0456\u0441\u043a\u0430'    } },
-    { slug: 'mackerel', nameEn: 'Mackerel', names: { en: 'Mackerel', ru: '\u0421\u043a\u0443\u043c\u0431\u0440\u0438\u044f',  pl: 'Makrela',    uk: '\u0421\u043a\u0443\u043c\u0431\u0440\u0456\u044f'  } },
+    { slug: 'salmon',   nameEn: 'Salmon',   names: { en: 'Salmon',   ru: 'Лосось',    pl: 'Łosoś',      uk: 'Лосось'    } },
+    { slug: 'tuna',     nameEn: 'Tuna',     names: { en: 'Tuna',     ru: 'Тунец',     pl: 'Tuńczyk',    uk: 'Тунець'    } },
+    { slug: 'cod',      nameEn: 'Cod',      names: { en: 'Cod',      ru: 'Треска',    pl: 'Dorsz',      uk: 'Тріска'    } },
+    { slug: 'mackerel', nameEn: 'Mackerel', names: { en: 'Mackerel', ru: 'Скумбрия',  pl: 'Makrela',    uk: 'Скумбрія'  } },
   ],
   dairy: [
-    { slug: 'milk',         nameEn: 'Milk',         names: { en: 'Milk',         ru: '\u041c\u043e\u043b\u043e\u043a\u043e',     pl: 'Mleko',      uk: '\u041c\u043e\u043b\u043e\u043a\u043e'     } },
-    { slug: 'butter',       nameEn: 'Butter',       names: { en: 'Butter',       ru: '\u041c\u0430\u0441\u043b\u043e',      pl: 'Mas\u0142o',      uk: '\u041c\u0430\u0441\u043b\u043e'      } },
-    { slug: 'cheese',       nameEn: 'Cheese',       names: { en: 'Cheese',       ru: '\u0421\u044b\u0440',        pl: 'Ser',        uk: '\u0421\u0438\u0440'        } },
-    { slug: 'greek-yogurt', nameEn: 'Greek Yogurt', names: { en: 'Greek Yogurt', ru: '\u0413\u0440\u0435\u0447\u0435\u0441\u043a\u0438\u0439 \u0439\u043e\u0433\u0443\u0440\u0442', pl: 'Jogurt grecki', uk: '\u0413\u0440\u0435\u0446\u044c\u043a\u0438\u0439 \u0439\u043e\u0433\u0443\u0440\u0442' } },
+    { slug: 'milk',         nameEn: 'Milk',         names: { en: 'Milk',         ru: 'Молоко',     pl: 'Mleko',      uk: 'Молоко'     } },
+    { slug: 'butter',       nameEn: 'Butter',       names: { en: 'Butter',       ru: 'Масло',      pl: 'Masło',      uk: 'Масло'      } },
+    { slug: 'cheese',       nameEn: 'Cheese',       names: { en: 'Cheese',       ru: 'Сыр',        pl: 'Ser',        uk: 'Сир'        } },
+    { slug: 'greek-yogurt', nameEn: 'Greek Yogurt', names: { en: 'Greek Yogurt', ru: 'Греческий йогурт', pl: 'Jogurt grecki', uk: 'Грецький йогурт' } },
   ],
   grains: [
-    { slug: 'rice',        nameEn: 'Rice',       names: { en: 'Rice',       ru: '\u0420\u0438\u0441',        pl: 'Ry\u017c',        uk: '\u0420\u0438\u0441'        } },
-    { slug: 'oats',        nameEn: 'Oats',       names: { en: 'Oats',       ru: '\u041e\u0432\u0451\u0441',       pl: 'Owies',      uk: '\u041e\u0432\u0435\u0441'       } },
-    { slug: 'wheat-flour', nameEn: 'Wheat Flour',names: { en: 'Wheat Flour',ru: '\u041c\u0443\u043a\u0430',       pl: 'M\u0105ka',       uk: '\u0411\u043e\u0440\u043e\u0448\u043d\u043e'    } },
-    { slug: 'barley',      nameEn: 'Barley',     names: { en: 'Barley',     ru: '\u042f\u0447\u043c\u0435\u043d\u044c',     pl: 'J\u0119czmie\u0144',   uk: '\u042f\u0447\u043c\u0456\u043d\u044c'    } },
+    { slug: 'rice',        nameEn: 'Rice',       names: { en: 'Rice',       ru: 'Рис',        pl: 'Ryż',        uk: 'Рис'        } },
+    { slug: 'oats',        nameEn: 'Oats',       names: { en: 'Oats',       ru: 'Овёс',       pl: 'Owies',      uk: 'Овес'       } },
+    { slug: 'wheat-flour', nameEn: 'Wheat Flour',names: { en: 'Wheat Flour',ru: 'Мука',       pl: 'Mąka',       uk: 'Борошно'    } },
+    { slug: 'barley',      nameEn: 'Barley',     names: { en: 'Barley',     ru: 'Ячмень',     pl: 'Jęczmień',   uk: 'Ячмінь'    } },
   ],
   nuts: [
-    { slug: 'almonds',  nameEn: 'Almonds',  names: { en: 'Almonds',  ru: '\u041c\u0438\u043d\u0434\u0430\u043b\u044c',    pl: 'Migda\u0142y',    uk: '\u041c\u0438\u0433\u0434\u0430\u043b\u044c'   } },
-    { slug: 'walnuts',  nameEn: 'Walnuts',  names: { en: 'Walnuts',  ru: '\u0413\u0440\u0435\u0446\u043a\u0438\u0439 \u043e\u0440\u0435\u0445', pl: 'Orzechy w\u0142oskie', uk: '\u0413\u0440\u0435\u0446\u044c\u043a\u0438\u0439 \u0433\u043e\u0440\u0456\u0445' } },
-    { slug: 'cashews',  nameEn: 'Cashews',  names: { en: 'Cashews',  ru: '\u041a\u0435\u0448\u044c\u044e',      pl: 'Nerkowce',   uk: '\u041a\u0435\u0448\u044c\u044e'     } },
-    { slug: 'peanuts',  nameEn: 'Peanuts',  names: { en: 'Peanuts',  ru: '\u0410\u0440\u0430\u0445\u0438\u0441',     pl: 'Orzeszki ziemne', uk: '\u0410\u0440\u0430\u0445\u0456\u0441' } },
+    { slug: 'almonds',  nameEn: 'Almonds',  names: { en: 'Almonds',  ru: 'Миндаль',    pl: 'Migdały',    uk: 'Мигдаль'   } },
+    { slug: 'walnuts',  nameEn: 'Walnuts',  names: { en: 'Walnuts',  ru: 'Грецкий орех', pl: 'Orzechy włoskie', uk: 'Грецький горіх' } },
+    { slug: 'cashews',  nameEn: 'Cashews',  names: { en: 'Cashews',  ru: 'Кешью',      pl: 'Nerkowce',   uk: 'Кешью'     } },
+    { slug: 'peanuts',  nameEn: 'Peanuts',  names: { en: 'Peanuts',  ru: 'Арахис',     pl: 'Orzeszki ziemne', uk: 'Арахіс' } },
   ],
   legumes: [
-    { slug: 'lentils',      nameEn: 'Lentils',      names: { en: 'Lentils',      ru: '\u0427\u0435\u0447\u0435\u0432\u0438\u0446\u0430',   pl: 'Soczewica',  uk: '\u0421\u043e\u0447\u0435\u0432\u0438\u0446\u044f'  } },
-    { slug: 'chickpeas',    nameEn: 'Chickpeas',    names: { en: 'Chickpeas',    ru: '\u041d\u0443\u0442',        pl: 'Ciecierzyca', uk: '\u041d\u0443\u0442'       } },
-    { slug: 'black-beans',  nameEn: 'Black Beans',  names: { en: 'Black Beans',  ru: '\u0427\u0451\u0440\u043d\u0430\u044f \u0444\u0430\u0441\u043e\u043b\u044c', pl: 'Czarna fasola', uk: '\u0427\u043e\u0440\u043d\u0430 \u043a\u0432\u0430\u0441\u043e\u043b\u044f' } },
-    { slug: 'kidney-beans', nameEn: 'Kidney Beans', names: { en: 'Kidney Beans', ru: '\u041a\u0440\u0430\u0441\u043d\u0430\u044f \u0444\u0430\u0441\u043e\u043b\u044c', pl: 'Fasola czerwona', uk: '\u0427\u0435\u0440\u0432\u043e\u043d\u0430 \u043a\u0432\u0430\u0441\u043e\u043b\u044f' } },
+    { slug: 'lentils',      nameEn: 'Lentils',      names: { en: 'Lentils',      ru: 'Чечевица',   pl: 'Soczewica',  uk: 'Сочевиця'  } },
+    { slug: 'chickpeas',    nameEn: 'Chickpeas',    names: { en: 'Chickpeas',    ru: 'Нут',        pl: 'Ciecierzyca', uk: 'Нут'       } },
+    { slug: 'black-beans',  nameEn: 'Black Beans',  names: { en: 'Black Beans',  ru: 'Чёрная фасоль', pl: 'Czarna fasola', uk: 'Чорна квасоля' } },
+    { slug: 'kidney-beans', nameEn: 'Kidney Beans', names: { en: 'Kidney Beans', ru: 'Красная фасоль', pl: 'Fasola czerwona', uk: 'Червона квасоля' } },
   ],
   spices: [
-    { slug: 'cinnamon', nameEn: 'Cinnamon', names: { en: 'Cinnamon', ru: '\u041a\u043e\u0440\u0438\u0446\u0430',     pl: 'Cynamon',    uk: '\u041a\u043e\u0440\u0438\u0446\u044f'    } },
-    { slug: 'turmeric', nameEn: 'Turmeric', names: { en: 'Turmeric', ru: '\u041a\u0443\u0440\u043a\u0443\u043c\u0430',    pl: 'Kurkuma',    uk: '\u041a\u0443\u0440\u043a\u0443\u043c\u0430'   } },
-    { slug: 'ginger',   nameEn: 'Ginger',   names: { en: 'Ginger',   ru: '\u0418\u043c\u0431\u0438\u0440\u044c',    pl: 'Imbir',      uk: '\u0406\u043c\u0431\u0438\u0440'     } },
-    { slug: 'garlic',   nameEn: 'Garlic',   names: { en: 'Garlic',   ru: '\u0427\u0435\u0441\u043d\u043e\u043a',    pl: 'Czosnek',    uk: '\u0427\u0430\u0441\u043d\u0438\u043a'    } },
+    { slug: 'cinnamon', nameEn: 'Cinnamon', names: { en: 'Cinnamon', ru: 'Корица',     pl: 'Cynamon',    uk: 'Кориця'    } },
+    { slug: 'turmeric', nameEn: 'Turmeric', names: { en: 'Turmeric', ru: 'Куркума',    pl: 'Kurkuma',    uk: 'Куркума'   } },
+    { slug: 'ginger',   nameEn: 'Ginger',   names: { en: 'Ginger',   ru: 'Имбирь',    pl: 'Imbir',      uk: 'Імбир'     } },
+    { slug: 'garlic',   nameEn: 'Garlic',   names: { en: 'Garlic',   ru: 'Чеснок',    pl: 'Czosnek',    uk: 'Часник'    } },
   ],
   oils: [
-    { slug: 'olive-oil',     nameEn: 'Olive Oil',     names: { en: 'Olive Oil',     ru: '\u041e\u043b\u0438\u0432\u043a\u043e\u0432\u043e\u0435 \u043c\u0430\u0441\u043b\u043e', pl: 'Oliwa z oliwek', uk: '\u041e\u043b\u0438\u0432\u043a\u043e\u0432\u0430 \u043e\u043b\u0456\u044f' } },
-    { slug: 'coconut-oil',   nameEn: 'Coconut Oil',   names: { en: 'Coconut Oil',   ru: '\u041a\u043e\u043a\u043e\u0441\u043e\u0432\u043e\u0435 \u043c\u0430\u0441\u043b\u043e', pl: 'Olej kokosowy', uk: '\u041a\u043e\u043a\u043e\u0441\u043e\u0432\u0430 \u043e\u043b\u0456\u044f' } },
-    { slug: 'sunflower-oil', nameEn: 'Sunflower Oil', names: { en: 'Sunflower Oil', ru: '\u041f\u043e\u0434\u0441\u043e\u043b\u043d\u0435\u0447\u043d\u043e\u0435 \u043c\u0430\u0441\u043b\u043e', pl: 'Olej s\u0142onecznikowy', uk: '\u0421\u043e\u043d\u044f\u0448\u043d\u0438\u043a\u043e\u0432\u0430 \u043e\u043b\u0456\u044f' } },
+    { slug: 'olive-oil',     nameEn: 'Olive Oil',     names: { en: 'Olive Oil',     ru: 'Оливковое масло', pl: 'Oliwa z oliwek', uk: 'Оливкова олія' } },
+    { slug: 'coconut-oil',   nameEn: 'Coconut Oil',   names: { en: 'Coconut Oil',   ru: 'Кокосовое масло', pl: 'Olej kokosowy', uk: 'Кокосова олія' } },
+    { slug: 'sunflower-oil', nameEn: 'Sunflower Oil', names: { en: 'Sunflower Oil', ru: 'Подсолнечное масло', pl: 'Olej słonecznikowy', uk: 'Соняшникова олія' } },
   ],
 };
 
@@ -119,7 +123,6 @@ function pairingName(p: { name_en: string; name_ru?: string; name_pl?: string; n
   return p.name_en;
 }
 
-/** Format a number: round to 1 decimal, strip trailing .0 */
 function fmt(v: number | null | undefined): string {
   if (v == null) return '—';
   const r = Math.round(v * 10) / 10;
@@ -146,16 +149,9 @@ export async function generateMetadata({
   const item = await apiFetchIngredient(slug);
   if (!item) return {};
 
-  // Frontend SEO engine — locale-specific formulas win over static backend EN fields
   const generatedSEO = generateIngredientSEO(item, locale);
-
-  // Optional per-locale backend override (e.g. seo_title_pl / seo_title_ru from CMS)
-  const seoTitle =
-    (item as Record<string, unknown>)[`seo_title_${locale}`] as string | undefined
-    || generatedSEO.title;
-  const seoDesc =
-    (item as Record<string, unknown>)[`seo_description_${locale}`] as string | undefined
-    || generatedSEO.description;
+  const seoTitle = (item as Record<string, unknown>)[`seo_title_${locale}`] as string | undefined || generatedSEO.title;
+  const seoDesc = (item as Record<string, unknown>)[`seo_description_${locale}`] as string | undefined || generatedSEO.description;
 
   const meta = genMeta({
     title: seoTitle,
@@ -165,7 +161,6 @@ export async function generateMetadata({
     image: item.og_image ?? item.image_url ?? undefined,
   });
 
-  // OG / Twitter always use the resolved locale SEO title — never raw EN backend fields
   meta.openGraph = {
     ...meta.openGraph,
     title: locale === 'en' && item.og_title ? item.og_title : seoTitle,
@@ -182,36 +177,39 @@ export async function generateMetadata({
 
 /* ─── Reusable section card ─────────────────────────────────────────────── */
 
-function Section({ title, icon, children }: { title: string; icon?: React.ReactNode; children: React.ReactNode }) {
+function Section({ title, icon, children, className }: { title: string; icon?: React.ReactNode; children: React.ReactNode; className?: string }) {
   return (
-    <div className="rounded-xl sm:rounded-2xl border border-border/50 overflow-hidden mb-4 sm:mb-6">
-      <div className="bg-muted/30 px-3 sm:px-5 py-2.5 sm:py-3 border-b border-border/50 flex items-center gap-2">
+    <div className={cn("rounded-[2.5rem] bg-card/40 dark:bg-white/[0.02] backdrop-blur-3xl border border-border dark:border-white/5 overflow-hidden mb-6 shadow-2xl", className)}>
+      <div className="bg-muted/50 dark:bg-white/5 px-6 py-4 border-b border-border dark:border-white/5 flex items-center gap-3">
         {icon}
-        <h2 className="text-xs sm:text-sm font-black uppercase tracking-wider text-foreground">{title}</h2>
+        <h2 className="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-muted-foreground/60 dark:text-slate-400 italic">{title}</h2>
       </div>
-      {children}
+      <div className="p-1 sm:p-2">{children}</div>
     </div>
   );
 }
 
-/** Stat cell for grid layouts */
 function Stat({ label, value, unit }: { label: string; value: string; unit?: string }) {
   return (
-    <div className="p-2.5 sm:p-4 text-center">
-      <p className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-0.5 sm:mb-1">{label}</p>
-      <p className="text-lg sm:text-2xl font-black text-foreground">{value}</p>
-      {unit && <p className="text-[9px] sm:text-[10px] text-muted-foreground font-bold">{unit}</p>}
+    <div className="p-4 sm:p-6 text-center group">
+      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 dark:text-slate-500 mb-2 italic group-hover:text-primary transition-colors">{label}</p>
+      <div className="flex flex-col items-center">
+        <p className="text-3xl sm:text-5xl font-black text-foreground italic tracking-tighter leading-none">{value}</p>
+        <span className="text-[10px] text-muted-foreground/40 dark:text-slate-600 font-bold uppercase tracking-widest mt-2">{unit}</span>
+      </div>
     </div>
   );
 }
 
-/** Mini stat row for minerals / vitamins */
 function MiniRow({ label, value, unit }: { label: string; value: number | null | undefined; unit: string }) {
   if (value == null) return null;
   return (
-    <div className="flex items-center justify-between py-2 px-3 sm:px-4 even:bg-muted/20">
-      <span className="text-[11px] sm:text-xs font-bold text-muted-foreground">{label}</span>
-      <span className="text-xs sm:text-sm font-black text-foreground">{fmt(value)} <span className="text-[9px] sm:text-[10px] font-bold text-muted-foreground">{unit}</span></span>
+    <div className="flex items-center justify-between py-3 px-5 hover:bg-white/[0.03] transition-colors rounded-2xl group">
+      <span className="text-xs font-bold text-muted-foreground/60 dark:text-slate-400 group-hover:text-foreground transition-colors uppercase tracking-tight italic">{label}</span>
+      <div className="flex items-baseline gap-1.5">
+        <span className="text-sm sm:text-base font-black text-foreground italic">{fmt(value)}</span>
+        <span className="text-[10px] font-black text-muted-foreground/30 dark:text-slate-600 italic uppercase">{unit}</span>
+      </div>
     </div>
   );
 }
@@ -226,12 +224,10 @@ export default async function IngredientSlugPage({
   const { locale, slug } = await params;
   setRequestLocale(locale);
 
-  /* ── category page ── */
   if (isCategory(slug)) {
     return <CategoryPage params={Promise.resolve({ locale, category: slug })} />;
   }
 
-  /* ── individual ingredient page ── */
   const [item, statesResp, intentPages] = await Promise.all([
     apiFetchIngredient(slug),
     fetchIngredientStates(slug).catch(() => null),
@@ -245,7 +241,6 @@ export default async function IngredientSlugPage({
   const t = await getTranslations({ locale, namespace: 'chefTools' });
   const name = localName(item, locale);
   const description = localDesc(item, locale);
-
   const seoH1 = item.seo_h1 || null;
 
   const macros = item.macros_full;
@@ -257,22 +252,16 @@ export default async function IngredientSlugPage({
   const pairings = item.pairings;
   const measures = item.measures;
 
-  /* Enrich pairings with real images from ingredient meta */
   if (pairings && pairings.length > 0) {
-    const slugsNeedingImages = pairings
-      .filter((p) => !p.image_url)
-      .map((p) => p.slug);
+    const slugsNeedingImages = pairings.filter((p) => !p.image_url).map((p) => p.slug);
     if (slugsNeedingImages.length > 0) {
       const meta = await fetchIngredientsMeta(slugsNeedingImages);
       for (const p of pairings) {
-        if (!p.image_url && meta[p.slug]?.image_url) {
-          p.image_url = meta[p.slug].image_url!;
-        }
+        if (!p.image_url && meta[p.slug]?.image_url) p.image_url = meta[p.slug].image_url!;
       }
     }
   }
 
-  /* Diet flag labels */
   const flagLabels: Record<string, string> = {
     vegan: t4(locale, 'Vegan', 'Веган', 'Wegański', 'Веган'),
     vegetarian: t4(locale, 'Vegetarian', 'Вегетарианский', 'Wegetariański', 'Вегетаріанський'),
@@ -282,13 +271,6 @@ export default async function IngredientSlugPage({
     mediterranean: t4(locale, 'Mediterranean', 'Средиземноморская', 'Śródziemnomorski', 'Середземноморська'),
     low_carb: 'Low-carb',
   };
-
-  /* ── Build Food + NutritionInformation JSON-LD ── */
-  const SITE = 'https://dima-fomin.pl';
-  const pageUrl = `${locale}/chef-tools/ingredients/${slug}`;
-  const absImage = item.image_url
-    ? item.image_url.startsWith('http') ? item.image_url : `https://dima-fomin.pl${item.image_url}`
-    : undefined;
 
   const calories = macros?.calories_kcal ?? item.calories;
   const proteinG = macros?.protein_g ?? item.protein;
@@ -321,23 +303,15 @@ export default async function IngredientSlugPage({
       '@type': 'Thing',
       additionalType: 'https://schema.org/Food',
       name,
-      ...(absImage && {
+      ...(item.image_url && {
         image: {
           '@type': 'ImageObject',
-          contentUrl: absImage,
-          url: absImage,
-          caption: `${name} — ${t4(locale, 'nutrition facts per 100g', 'пищевая ценность на 100г', 'wartości odżywcze na 100g', 'харчова цінність на 100г')}`,
-          width: 800,
-          height: 800,
+          contentUrl: item.image_url.startsWith('http') ? item.image_url : `https://dima-fomin.pl${item.image_url}`,
+          url: item.image_url.startsWith('http') ? item.image_url : `https://dima-fomin.pl${item.image_url}`,
+          width: 800, height: 800,
         },
       }),
-      ...(description && { description }),
-      ...(item.category && { category: item.category }),
       nutrition: nutritionLd,
-      additionalProperty: [
-        ...(calories != null ? [{ '@type': 'PropertyValue', name: 'Calories', value: `${fmt(calories)} kcal per 100g` }] : []),
-        ...(proteinG != null ? [{ '@type': 'PropertyValue', name: 'Protein', value: `${fmt(proteinG)} g per 100g` }] : []),
-      ],
     },
     breadcrumb: {
       '@type': 'BreadcrumbList',
@@ -350,483 +324,338 @@ export default async function IngredientSlugPage({
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-3 sm:px-6 lg:px-8 pt-6 sm:pt-12 pb-12 sm:pb-16">
+    <div className="relative min-h-screen bg-background text-foreground transition-colors duration-500 overflow-hidden pt-12 pb-24">
+      {/* ── Background Mesh ── */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-primary/5 blur-[140px] animate-pulse-slow dark:opacity-100 opacity-30" />
+        <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-blue-500/5 blur-[120px] animate-pulse-slow delay-1000 dark:opacity-100 opacity-20" />
+      </div>
+
       <JsonLd data={foodLd} />
-      <ChefToolsNav
-        locale={locale}
-        translations={{
-          back: t('back'),
-          tabs: { tools: t('tabs.tools'), tables: t('tabs.tables'), products: t('tabs.products') },
-          tools: {
-            converter: { title: t('tools.converter.title') },
-            fishSeason: { title: t('tools.fishSeason.title') },
-            ingredientAnalyzer: { title: t('tools.ingredientAnalyzer.title') },
-            ingredientsCatalog: { title: t('ingredients.catalog.title') },
-            lab: { title: t('tools.lab.title') },
-            recipeAnalyzer: { title: t('tools.recipeAnalyzer.title') },
-            flavorPairing: { title: t('tools.flavorPairing.title') },
-            nutrition: { title: t('nutrition.title') },
-          },
-        }}
-      />
+      
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 relative z-10">
+        <ChefToolsNav
+          locale={locale}
+          translations={{
+            back: t('back'),
+            tabs: { tools: t('tabs.tools'), tables: t('tabs.tables'), products: t('tabs.products') },
+            tools: {
+              converter: { title: t('tools.converter.title') },
+              fishSeason: { title: t('tools.fishSeason.title') },
+              ingredientAnalyzer: { title: t('tools.ingredientAnalyzer.title') },
+              ingredientsCatalog: { title: t('ingredients.catalog.title') },
+              lab: { title: t('tools.lab.title') },
+              recipeAnalyzer: { title: t('tools.recipeAnalyzer.title') },
+              flavorPairing: { title: t('tools.flavorPairing.title') },
+              nutrition: { title: t('nutrition.title') },
+            },
+          }}
+        />
 
-      <div className="mb-8 sm:mb-12 border-t border-primary/20 pt-6 sm:pt-10">
+        <div className="mt-8 sm:mt-12 mb-8 sm:mb-12 border-t border-border/50 dark:border-white/5 pt-8 sm:pt-12">
+          {/* ── Breadcrumb ── */}
+          <div className="flex items-center gap-2 text-[10px] sm:text-[11px] text-muted-foreground font-black uppercase tracking-[0.2em] mb-6 sm:mb-8 italic overflow-x-auto scrollbar-hide">
+            <Link href="/chef-tools" className="hover:text-primary transition-colors shrink-0">Chef Tools</Link>
+            <ChevronRight className="h-3 w-3 opacity-30 shrink-0" />
+            <Link href="/chef-tools/ingredients" className="hover:text-primary transition-colors shrink-0">{t('ingredients.catalog.title')}</Link>
+            <ChevronRight className="h-3 w-3 opacity-30 shrink-0" />
+            <span className="text-foreground shrink-0">{name}</span>
+          </div>
 
-        {/* ── Breadcrumb ── */}
-        <div className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-[11px] text-muted-foreground font-medium uppercase tracking-wider mb-4 sm:mb-6 overflow-x-auto scrollbar-hide">
-          <Link href="/chef-tools" className="hover:text-foreground transition-colors shrink-0">Chef Tools</Link>
-          <ChevronRight className="h-3 w-3 shrink-0" />
-          <Link href="/chef-tools/ingredients" className="hover:text-foreground transition-colors shrink-0">{t('ingredients.catalog.title')}</Link>
-          <ChevronRight className="h-3 w-3 shrink-0" />
-          <span className="text-foreground truncate">{name}</span>
-        </div>
-
-        {/* ── Header ── */}
-        <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 mb-6 sm:mb-10">
-          {item.image_url ? (
-            <div className="relative w-40 h-40 sm:w-56 sm:h-56 mx-auto sm:mx-0 rounded-2xl overflow-hidden border border-border/50 bg-muted shrink-0">
-              <Image src={item.image_url} alt={name} fill className="object-cover" sizes="(max-width: 640px) 160px, 224px" priority unoptimized />
+          {/* ── Header ── */}
+          <div className="ingredient-header-stack flex flex-col sm:flex-row items-center sm:items-start gap-6 sm:gap-8 mb-10 sm:mb-16">
+            <div className="relative w-32 h-32 sm:w-64 sm:h-64 shrink-0">
+               <div className="absolute inset-0 bg-primary/20 blur-3xl opacity-20 animate-pulse-slow" />
+               <div className="relative w-full h-full rounded-[2.5rem] sm:rounded-[3.5rem] overflow-hidden border border-border dark:border-white/10 bg-card dark:bg-white/[0.02] backdrop-blur-3xl shadow-2xl p-3 sm:p-4 group">
+                 {item.image_url ? (
+                   <div className="relative w-full h-full rounded-[1.8rem] sm:rounded-[2.5rem] overflow-hidden shadow-inner bg-muted dark:bg-slate-900 border border-border/50 dark:border-white/5">
+                      <Image src={item.image_url} alt={name} fill className="object-cover group-hover:scale-110 transition-transform duration-700 brightness-95 dark:brightness-90 group-hover:brightness-100" priority unoptimized />
+                   </div>
+                 ) : (
+                   <div className="w-full h-full rounded-[1.8rem] sm:rounded-[2.5rem] bg-muted flex items-center justify-center opacity-30 border border-border dark:border-white/5">
+                     <Package className="h-8 sm:h-12 w-8 sm:w-12 text-muted-foreground" />
+                   </div>
+                 )}
+               </div>
             </div>
-          ) : (
-            <div className="w-40 h-40 sm:w-56 sm:h-56 mx-auto sm:mx-0 rounded-2xl border border-border/50 bg-muted flex items-center justify-center shrink-0">
-              <Package className="h-10 w-10 sm:h-12 sm:w-12 text-muted-foreground/30" />
+
+            <div className="flex-1 text-center sm:text-left min-w-0 py-1 sm:py-2">
+              <h1 className="text-3xl sm:text-6xl font-black tracking-tighter text-foreground uppercase italic leading-none mb-3 sm:mb-4">
+                {name}<span className="text-primary italic">.</span>
+              </h1>
+              {seoH1 && seoH1 !== name && (
+                <p className="text-[10px] sm:text-sm font-black text-primary/80 uppercase tracking-[0.2em] italic mb-3 sm:mb-4">{seoH1}</p>
+              )}
+              
+              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2.5 sm:gap-3 mb-5 sm:mb-6">
+                {item.category && (
+                  <span className="px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] bg-muted/50 dark:bg-white/[0.03] border border-border/50 dark:border-white/5 text-muted-foreground italic">
+                    {item.category}
+                  </span>
+                )}
+                {item.product_type && (
+                  <span className="px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] bg-primary/10 border border-primary/20 text-primary italic">
+                    {item.product_type}
+                  </span>
+                )}
+              </div>
+
+              {description && (
+                <p className="text-[11px] sm:text-[13px] text-muted-foreground leading-relaxed border-l-4 border-primary/30 pl-4 sm:pl-6 text-left max-w-2xl py-1 italic">
+                  {description}
+                </p>
+              )}
+
+              {dietFlags && (
+                <div className="flex flex-wrap justify-center sm:justify-start gap-2 sm:gap-3 mt-6 sm:mt-8">
+                  {(Object.entries(dietFlags) as [string, boolean | undefined][])
+                    .filter(([, v]) => v === true)
+                    .map(([k]) => (
+                      <span key={k} className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl sm:rounded-2xl text-[8px] sm:text-[9px] font-black uppercase tracking-[0.15em] bg-green-500/5 text-green-600 dark:text-green-400 border border-green-500/20 italic flex items-center gap-2">
+                        <div className="w-1 h-1 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]" />
+                        {flagLabels[k] ?? k}
+                      </span>
+                    ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* ── State Switcher — Glass Container ── */}
+          {statesList.length > 0 && (
+            <div className="mb-8 sm:mb-12 bg-muted/30 dark:bg-white/[0.01] border border-border dark:border-white/5 rounded-[2rem] sm:rounded-[3rem] p-3 sm:p-6 backdrop-blur-md transition-colors">
+              <IngredientStateClient
+                slug={item.slug ?? slug}
+                locale={locale}
+                availableStates={statesList}
+                initialState={initialState}
+              />
             </div>
           )}
-          <div className="flex-1 text-center sm:text-left">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tighter text-foreground uppercase italic mb-1 sm:mb-2">
-              {name}<span className="text-primary">.</span>
-            </h1>
-            {seoH1 && seoH1 !== name && (
-              <p className="text-[11px] sm:text-sm font-semibold text-muted-foreground/80 mb-1 sm:mb-2">{seoH1}</p>
-            )}
-            {item.category && (
-              <p className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2 sm:mb-3">{item.category}</p>
-            )}
-            {item.product_type && (
-              <span className="inline-block text-[10px] font-bold uppercase tracking-wider bg-primary/10 text-primary px-2 py-0.5 rounded-full mb-2 sm:mb-3">
-                {item.product_type}
-              </span>
-            )}
-            {description && (
-              <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed border-l-2 border-primary/30 pl-3 sm:pl-4 text-left">{description}</p>
-            )}
 
-            {/* Diet flags as badges */}
-            {dietFlags && (
-              <div className="flex flex-wrap justify-center sm:justify-start gap-1.5 sm:gap-2 mt-3 sm:mt-4">
-                {(Object.entries(dietFlags) as [string, boolean | undefined][])
-                  .filter(([, v]) => v === true)
-                  .map(([k]) => (
-                    <span key={k} className="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-wider bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20">
-                      ✓ {flagLabels[k] ?? k}
-                    </span>
-                  ))}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* ── State Switcher ── */}
-        {statesList.length > 0 && (
-          <IngredientStateClient
-            slug={item.slug ?? slug}
-            locale={locale}
-            availableStates={statesList}
-            initialState={initialState}
-          />
-        )}
-
-        {/* ── Macros ── */}
-        <Section
-          title={t4(locale, 'Nutrition per 100g', 'Пищевая ценность на 100г', 'Wartości odżywcze na 100g', 'Харчова цінність на 100г')}
-          icon={<Flame className="h-4 w-4 text-primary" />}
-        >
-          <div className="grid grid-cols-2 sm:grid-cols-4 divide-x divide-border/50 border-b border-border/50">
-            <Stat label={t4(locale, 'Calories', 'Калории', 'Kalorie', 'Калорії')} value={fmt(macros?.calories_kcal ?? item.calories)} unit="kcal" />
-            <Stat label={t4(locale, 'Protein', 'Белки', 'Białko', 'Білки')} value={fmt(macros?.protein_g ?? item.protein)} unit="g" />
-            <Stat label={t4(locale, 'Fat', 'Жиры', 'Tłuszcz', 'Жири')} value={fmt(macros?.fat_g ?? item.fat)} unit="g" />
-            <Stat label={t4(locale, 'Carbs', 'Углеводы', 'Węglowodany', 'Вуглеводи')} value={fmt(macros?.carbs_g ?? item.carbs)} unit="g" />
-          </div>
-          {/* Extended macros row */}
-          {macros && (macros.fiber_g != null || macros.sugar_g != null || macros.water_g != null) && (
-            <div className="grid grid-cols-3 divide-x divide-border/50">
-              {macros.fiber_g != null && <Stat label={t4(locale, 'Fiber', 'Клетчатка', 'Błonnik', 'Клітковина')} value={fmt(macros.fiber_g)} unit="g" />}
-              {macros.sugar_g != null && <Stat label={t4(locale, 'Sugar', 'Сахар', 'Cukier', 'Цукор')} value={fmt(macros.sugar_g)} unit="g" />}
-              {macros.water_g != null && <Stat label={t4(locale, 'Water', 'Вода', 'Woda', 'Вода')} value={fmt(macros.water_g)} unit="g" />}
-            </div>
-          )}
-        </Section>
-
-        {/* ── Minerals ── */}
-        {minerals && Object.values(minerals).some((v) => v != null) && (
-          <Section
-            title={t4(locale, 'Minerals per 100g', 'Минералы на 100г', 'Minerały na 100g', 'Мінерали на 100г')}
-            icon={<FlaskConical className="h-4 w-4 text-primary" />}
-          >
-            <div className="divide-y divide-border/30">
-              <MiniRow label={t4(locale, 'Calcium', 'Кальций', 'Wapń', 'Кальцій')} value={minerals.calcium} unit="mg" />
-              <MiniRow label={t4(locale, 'Iron', 'Железо', 'Żelazo', 'Залізо')} value={minerals.iron} unit="mg" />
-              <MiniRow label={t4(locale, 'Magnesium', 'Магний', 'Magnez', 'Магній')} value={minerals.magnesium} unit="mg" />
-              <MiniRow label={t4(locale, 'Phosphorus', 'Фосфор', 'Fosfor', 'Фосфор')} value={minerals.phosphorus} unit="mg" />
-              <MiniRow label={t4(locale, 'Potassium', 'Калий', 'Potas', 'Калій')} value={minerals.potassium} unit="mg" />
-              <MiniRow label={t4(locale, 'Sodium', 'Натрий', 'Sód', 'Натрій')} value={minerals.sodium} unit="mg" />
-              <MiniRow label={t4(locale, 'Zinc', 'Цинк', 'Cynk', 'Цинк')} value={minerals.zinc} unit="mg" />
-              <MiniRow label={t4(locale, 'Copper', 'Медь', 'Miedź', 'Мідь')} value={minerals.copper} unit="mg" />
-              <MiniRow label={t4(locale, 'Manganese', 'Марганец', 'Mangan', 'Марганець')} value={minerals.manganese} unit="mg" />
-              <MiniRow label={t4(locale, 'Selenium', 'Селен', 'Selen', 'Селен')} value={minerals.selenium} unit="µg" />
-            </div>
-          </Section>
-        )}
-
-        {/* ── Vitamins ── */}
-        {vitamins && Object.values(vitamins).some((v) => v != null) && (
-          <Section
-            title={t4(locale, 'Vitamins per 100g', 'Витамины на 100г', 'Witaminy na 100g', 'Вітаміни на 100г')}
-            icon={<Apple className="h-4 w-4 text-primary" />}
-          >
-            <div className="divide-y divide-border/30">
-              <MiniRow label={t4(locale, 'Vitamin A', 'Витамин A', 'Witamina A', 'Вітамін A')} value={vitamins.vitamin_a} unit="µg" />
-              <MiniRow label={t4(locale, 'Vitamin C', 'Витамин C', 'Witamina C', 'Вітамін C')} value={vitamins.vitamin_c} unit="mg" />
-              <MiniRow label={t4(locale, 'Vitamin D', 'Витамин D', 'Witamina D', 'Вітамін D')} value={vitamins.vitamin_d} unit="µg" />
-              <MiniRow label={t4(locale, 'Vitamin E', 'Витамин E', 'Witamina E', 'Вітамін E')} value={vitamins.vitamin_e} unit="mg" />
-              <MiniRow label={t4(locale, 'Vitamin K', 'Витамин K', 'Witamina K', 'Вітамін K')} value={vitamins.vitamin_k} unit="µg" />
-              <MiniRow label={t4(locale, 'Vitamin B1', 'Витамин B1', 'Witamina B1', 'Вітамін B1')} value={vitamins.vitamin_b1} unit="mg" />
-              <MiniRow label={t4(locale, 'Vitamin B2', 'Витамин B2', 'Witamina B2', 'Вітамін B2')} value={vitamins.vitamin_b2} unit="mg" />
-              <MiniRow label={t4(locale, 'Vitamin B3 (Niacin)', 'Витамин B3 (Ниацин)', 'Witamina B3 (Niacyna)', 'Вітамін B3 (Ніацин)')} value={vitamins.vitamin_b3} unit="mg" />
-              <MiniRow label={t4(locale, 'Vitamin B5', 'Витамин B5', 'Witamina B5', 'Вітамін B5')} value={vitamins.vitamin_b5} unit="mg" />
-              <MiniRow label={t4(locale, 'Vitamin B6', 'Витамин B6', 'Witamina B6', 'Вітамін B6')} value={vitamins.vitamin_b6} unit="mg" />
-              <MiniRow label={t4(locale, 'Vitamin B9 (Folate)', 'Витамин B9 (Фолат)', 'Witamina B9 (Kwas foliowy)', 'Вітамін B9 (Фолат)')} value={vitamins.vitamin_b9} unit="µg" />
-              <MiniRow label={t4(locale, 'Vitamin B12', 'Витамин B12', 'Witamina B12', 'Вітамін B12')} value={vitamins.vitamin_b12} unit="µg" />
-            </div>
-          </Section>
-        )}
-
-        {/* ── Culinary profile ── */}
-        {culinary && Object.values(culinary).some((v) => v != null) && (
-          <Section
-            title={t4(locale, 'Culinary Profile', 'Кулинарный профиль', 'Profil kulinarny', 'Кулінарний профіль')}
-            icon={<Leaf className="h-4 w-4 text-primary" />}
-          >
-            <div className="p-3 sm:p-5 space-y-2.5 sm:space-y-3">
-              {[
-                { label: t4(locale, 'Sweetness', 'Сладость', 'Słodycz', 'Солодкість'), val: culinary.sweetness },
-                { label: t4(locale, 'Acidity', 'Кислотность', 'Kwasowość', 'Кислотність'), val: culinary.acidity },
-                { label: t4(locale, 'Bitterness', 'Горечь', 'Gorycz', 'Гіркота'), val: culinary.bitterness },
-                { label: 'Umami', val: culinary.umami },
-                { label: t4(locale, 'Aroma', 'Аромат', 'Aromat', 'Аромат'), val: culinary.aroma },
-              ]
-                .filter((r) => r.val != null)
-                .map((r) => (
-                  <div key={r.label} className="flex items-center gap-2 sm:gap-3">
-                    <span className="text-[11px] sm:text-xs font-bold text-muted-foreground w-20 sm:w-24 shrink-0">{r.label}</span>
-                    <div className="flex-1 bg-muted rounded-full h-2 sm:h-2.5 overflow-hidden">
-                      <div
-                        className="h-full bg-primary rounded-full transition-all"
-                        style={{ width: `${((r.val as number) / 10) * 100}%` }}
-                      />
-                    </div>
-                    <span className="text-[11px] sm:text-xs font-black text-foreground w-7 sm:w-8 text-right">{fmt(r.val)}</span>
-                  </div>
-                ))}
-              {culinary.texture && (
-                <div className="flex items-center gap-2 sm:gap-3 pt-1">
-                  <span className="text-[11px] sm:text-xs font-bold text-muted-foreground w-20 sm:w-24 shrink-0">{t4(locale, 'Texture', 'Текстура', 'Tekstura', 'Текстура')}</span>
-                  <span className="text-xs sm:text-sm font-bold text-foreground capitalize">{culinary.texture}</span>
-                </div>
-              )}
-            </div>
-          </Section>
-        )}
-
-        {/* ── Food properties ── */}
-        {foodProps && Object.values(foodProps).some((v) => v != null) && (
-          <Section
-            title={t4(locale, 'Food Properties', 'Свойства продукта', 'Właściwości', 'Властивості продукту')}
-            icon={<Scale className="h-4 w-4 text-primary" />}
-          >
-            <div className="divide-y divide-border/30">
-              {foodProps.glycemic_index != null && <MiniRow label={t4(locale, 'Glycemic Index', 'Гликемический индекс', 'Indeks glikemiczny', 'Глікемічний індекс')} value={foodProps.glycemic_index} unit="" />}
-              {foodProps.glycemic_load != null && <MiniRow label={t4(locale, 'Glycemic Load', 'Гликемическая нагрузка', 'Ładunek glikemiczny', 'Глікемічне навантаження')} value={foodProps.glycemic_load} unit="" />}
-              {foodProps.ph != null && <MiniRow label="pH" value={foodProps.ph} unit="" />}
-              {foodProps.smoke_point != null && <MiniRow label={t4(locale, 'Smoke Point', 'Точка дымления', 'Punkt dymienia', 'Точка димлення')} value={foodProps.smoke_point} unit="°C" />}
-              {foodProps.water_activity != null && <MiniRow label={t4(locale, 'Water Activity', 'Активность воды', 'Aktywność wody', 'Активність води')} value={foodProps.water_activity} unit="" />}
-            </div>
-          </Section>
-        )}
-
-        {/* ── Kitchen measures & density (with converter deep-links) ── */}
-        {(measures || item.density_g_per_ml != null) && (
-          <Section
-            title={t4(locale, 'Kitchen Measures', 'Кухонные меры', 'Miary kuchenne', 'Кухонні міри')}
-            icon={<Droplets className="h-4 w-4 text-primary" />}
-          >
-            <div className="divide-y divide-border/30">
-              {measures?.grams_per_cup != null && (
-                <div className="flex items-center justify-between py-2 px-3 sm:px-4">
-                  <span className="text-[11px] sm:text-xs font-bold text-muted-foreground">{t4(locale, '1 Cup', '1 Стакан', '1 Szklanka', '1 Склянка')}</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs sm:text-sm font-black text-foreground">{fmt(measures.grams_per_cup)} <span className="text-[9px] sm:text-[10px] font-bold text-muted-foreground">g</span></span>
-                    <Link href="/chef-tools/converter/cup-to-grams" className="text-[9px] font-bold text-primary hover:underline border border-primary/20 rounded-full px-1.5 py-0.5 shrink-0">
-                      {t4(locale, '1 cup to grams', 'стакан → г', 'szklanka → g', 'склянка → г')}
-                    </Link>
-                  </div>
-                </div>
-              )}
-              {measures?.grams_per_tbsp != null && (
-                <div className="flex items-center justify-between py-2 px-3 sm:px-4 bg-muted/20">
-                  <span className="text-[11px] sm:text-xs font-bold text-muted-foreground">{t4(locale, '1 Tablespoon', '1 Ст. ложка', '1 Łyżka', '1 Ст. ложка')}</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs sm:text-sm font-black text-foreground">{fmt(measures.grams_per_tbsp)} <span className="text-[9px] sm:text-[10px] font-bold text-muted-foreground">g</span></span>
-                    <Link href="/chef-tools/converter/tablespoon-to-grams" className="text-[9px] font-bold text-primary hover:underline border border-primary/20 rounded-full px-1.5 py-0.5 shrink-0">
-                      {t4(locale, 'tablespoon to grams', 'ложка → г', 'łyżka → g', 'ложка → г')}
-                    </Link>
-                  </div>
-                </div>
-              )}
-              {measures?.grams_per_tsp != null && (
-                <div className="flex items-center justify-between py-2 px-3 sm:px-4">
-                  <span className="text-[11px] sm:text-xs font-bold text-muted-foreground">{t4(locale, '1 Teaspoon', '1 Ч. ложка', '1 Łyżeczka', '1 Ч. ложка')}</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs sm:text-sm font-black text-foreground">{fmt(measures.grams_per_tsp)} <span className="text-[9px] sm:text-[10px] font-bold text-muted-foreground">g</span></span>
-                    <Link href="/chef-tools/converter/teaspoon-to-grams" className="text-[9px] font-bold text-primary hover:underline border border-primary/20 rounded-full px-1.5 py-0.5 shrink-0">
-                      {t4(locale, 'teaspoon to grams', 'ложка → г', 'łyżeczka → g', 'ложка → г')}
-                    </Link>
-                  </div>
-                </div>
-              )}
-              {item.density_g_per_ml != null && <MiniRow label={t4(locale, 'Density', 'Плотность', 'Gęstość', 'Щільність')} value={item.density_g_per_ml} unit="g/ml" />}
-            </div>
-          </Section>
-        )}
-
-        {/* ── Used in Cooking — semantic SEO block ── */}
-        <Section
-          title={t4(locale, 'Used in Cooking', 'Применение в кулинарии', 'Zastosowanie w kuchni', 'Використання у кулінарії')}
-          icon={<ExternalLink className="h-4 w-4 text-primary" />}
-        >
-          <div className="divide-y divide-border/30">
-            <Link href="/chef-tools/converter/cup-to-grams" className="flex items-center justify-between py-2.5 px-3 sm:px-4 hover:bg-muted/30 transition-colors group">
-              <span className="text-xs sm:text-sm font-bold text-foreground group-hover:text-primary transition-colors">
-                {t4(locale, `How many grams in 1 cup of ${name}?`, `Сколько граммов в 1 стакане ${name}?`, `Ile gramów w 1 szklance ${name}?`, `Скільки грамів у 1 склянці ${name}?`)}
-              </span>
-              <ChevronRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary shrink-0" />
-            </Link>
-            <Link href={`/chef-tools/nutrition/${slug}` as never} className="flex items-center justify-between py-2.5 px-3 sm:px-4 bg-muted/20 hover:bg-muted/40 transition-colors group">
-              <span className="text-xs sm:text-sm font-bold text-foreground group-hover:text-primary transition-colors">
-                {t4(locale, `${name} — calories per 100g`, `${name} — калории на 100г`, `${name} — kalorie na 100g`, `${name} — калорії на 100г`)}
-              </span>
-              <ChevronRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary shrink-0" />
-            </Link>
-            <Link href="/chef-tools/converter/tablespoon-to-grams" className="flex items-center justify-between py-2.5 px-3 sm:px-4 hover:bg-muted/30 transition-colors group">
-              <span className="text-xs sm:text-sm font-bold text-foreground group-hover:text-primary transition-colors">
-                {t4(locale, `${name} — tablespoon to grams`, `${name} — столовая ложка в граммы`, `${name} — łyżka stołowa na gramy`, `${name} — столова ложка в грами`)}
-              </span>
-              <ChevronRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary shrink-0" />
-            </Link>
-            <Link href={`/chef-tools/converter?ingredient=${slug}&from=cup&to=g` as never} className="flex items-center justify-between py-2.5 px-3 sm:px-4 bg-muted/20 hover:bg-muted/40 transition-colors group">
-              <span className="text-xs sm:text-sm font-bold text-foreground group-hover:text-primary transition-colors">
-                {t4(locale, `Convert ${name}: grams, cups, oz`, `Конвертер ${name}: граммы, стаканы, унции`, `Przelicz ${name}: gramy, szklanki, oz`, `Конвертер ${name}: грами, склянки, унції`)}
-              </span>
-              <ChevronRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary shrink-0" />
-            </Link>
-          </div>
-        </Section>
-
-        {/* ── Allergens & Seasons ── */}
-        {((item.allergens && item.allergens.length > 0) || (item.seasons && item.seasons.length > 0)) && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6 mb-4 sm:mb-6">
-            {item.allergens && item.allergens.length > 0 && (
-              <div className="rounded-xl sm:rounded-2xl border border-border/50 p-3 sm:p-5">
-              <div className="flex items-center gap-1.5 text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2 sm:mb-3">
-                  <ShieldAlert className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-                  {t4(locale, 'Allergens', 'Аллергены', 'Alergeny', 'Алергени')}
-                </div>
-                <div className="flex flex-wrap gap-1.5 sm:gap-2">
-                  {item.allergens.map((a) => (
-                    <span key={a} className="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full text-[9px] sm:text-[10px] font-bold uppercase bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20">
-                      {a}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-            {item.seasons && item.seasons.length > 0 && (
-              <div className="rounded-xl sm:rounded-2xl border border-border/50 p-3 sm:p-5">
-              <div className="flex items-center gap-1.5 text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2 sm:mb-3">
-                  <CalendarDays className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-                  {t4(locale, 'Season', 'Сезон', 'Sezon', 'Сезон')}
-                </div>
-                <div className="flex flex-wrap gap-1.5 sm:gap-2">
-                  {item.seasons.map((s) => (
-                    <span key={s} className="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full text-[9px] sm:text-[10px] font-bold uppercase bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 capitalize">
-                      {s}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* ── Best pairings ── */}
-        {pairings && pairings.length > 0 && (
-          <Section
-            title={t4(locale, 'Best Pairings', 'Лучшие сочетания', 'Najlepsze połączenia', 'Найкращі поєднання')}
-            icon={<Heart className="h-4 w-4 text-primary" />}
-          >
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3 p-2.5 sm:p-4">
-              {pairings.map((p) => {
-                const pName = pairingName(p, locale);
-                return (
-                  <Link
-                    key={p.slug}
-                    href={`/chef-tools/ingredients/${p.slug}` as never}
-                    className="group flex flex-col items-center gap-1.5 sm:gap-2 p-2 sm:p-3 rounded-xl sm:rounded-2xl border border-border/50 bg-background hover:border-primary/40 hover:bg-primary/5 hover:shadow-md transition-all"
-                  >
-                    <div className="relative w-full aspect-square rounded-lg sm:rounded-xl overflow-hidden bg-muted border border-border/30">
-                      {p.image_url ? (
-                        <Image src={p.image_url} alt={pName} fill className="object-cover group-hover:scale-105 transition-transform duration-300" unoptimized />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <Package className="h-6 w-6 sm:h-8 sm:w-8 text-muted-foreground/30" />
-                        </div>
-                      )}
-                    </div>
-                    <p className="text-[11px] sm:text-xs font-black text-foreground group-hover:text-primary transition-colors truncate w-full text-center">
-                      {pName}
-                    </p>
-                    <div className="flex items-center gap-1">
-                      <span className="text-[9px] sm:text-[10px] font-bold text-primary">{t4(locale, 'Match', 'Совпадение', 'Dopasowanie', 'Збіг')}</span>
-                      <span className="text-[9px] sm:text-[10px] font-black text-foreground">{fmt(p.pair_score)}/10</span>
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
-          </Section>
-        )}
-
-        {/* ── Quick conversions pill bar ── */}
-        <div className="flex flex-wrap gap-2 mb-4 sm:mb-5">
-          <p className="w-full text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-            {t4(locale, 'Quick conversions', 'Быстрые конвертации', 'Szybkie przeliczenia', 'Швидкі конвертації')}
-          </p>
-          <Link href="/chef-tools/converter/cup-to-grams" className="px-3 py-1.5 rounded-full text-xs font-bold border border-border/50 text-muted-foreground hover:border-primary/40 hover:text-primary transition-colors">
-            {t4(locale, '1 cup to grams converter', 'Стакан в граммы', 'Szklanka na gramy', '1 склянка в грами')}
-          </Link>
-          <Link href="/chef-tools/converter/tablespoon-to-grams" className="px-3 py-1.5 rounded-full text-xs font-bold border border-border/50 text-muted-foreground hover:border-primary/40 hover:text-primary transition-colors">
-            {t4(locale, 'tablespoon to grams', 'Столовая ложка в граммы', 'Łyżka na gramy', 'Столова ложка в грами')}
-          </Link>
-          <Link href="/chef-tools/converter/teaspoon-to-grams" className="px-3 py-1.5 rounded-full text-xs font-bold border border-border/50 text-muted-foreground hover:border-primary/40 hover:text-primary transition-colors">
-            {t4(locale, 'teaspoon to grams', 'Чайная ложка в граммы', 'Łyżeczka na gramy', 'Чайна ложка в грами')}
-          </Link>
-          <Link href="/chef-tools/converter/grams-to-oz" className="px-3 py-1.5 rounded-full text-xs font-bold border border-border/50 text-muted-foreground hover:border-primary/40 hover:text-primary transition-colors">
-            {t4(locale, 'grams to ounces (oz)', 'Граммы в унции', 'Gramy na uncje', 'Грами в унції')}
-          </Link>
-        </div>
-
-        {/* ── Nutrition deep-dive: direct to this ingredient ── */}
-        <Link
-          href={`/chef-tools/nutrition/${slug}` as never}
-          className="group flex items-center gap-3 sm:gap-4 rounded-xl sm:rounded-2xl border border-border/50 bg-muted/20 hover:bg-muted/40 p-3 sm:p-5 mb-6 sm:mb-8 transition-all hover:shadow-md"
-        >
-          <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-orange-500/10 group-hover:bg-orange-500/20 transition-colors shrink-0">
-            <Flame className="h-5 w-5 sm:h-6 sm:w-6 text-orange-500" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-xs sm:text-sm font-black uppercase tracking-wider text-foreground group-hover:text-primary transition-colors">
-              {t4(locale,
-                `${name} — nutrition facts & calories`,
-                `${name} — пищевая ценность и калории`,
-                `${name} — wartości odżywcze i kalorie`,
-                `${name} — харчова цінність і калорії`,
-              )}
-            </p>
-            <p className="text-[11px] sm:text-xs text-muted-foreground mt-0.5 leading-relaxed">
-              {t4(locale,
-                'Protein, fat, carbs, vitamins & minerals — full profile.',
-                'Белки, жиры, углеводы, витамины и минералы — полный профиль.',
-                'Białko, tłuszcze, węglowodany, witaminy i minerały — pełny profil.',
-                'Білки, жири, вуглеводи, вітаміни та мінерали — повний профіль.',
-              )}
-            </p>
-          </div>
-          <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
-        </Link>
-
-        {/* ── Similar ingredients (category-based SEO cross-links) ── */}
-        {(() => {
-          const related = getRelated(item.category, slug);
-          if (related.length === 0) return null;
-          return (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+            {/* ── Nutrition Section ── */}
             <Section
-              title={t4(locale, `Similar ${item.category ?? 'ingredients'}`, `Похожие: ${item.category ?? 'продукты'}`, `Podobne: ${item.category ?? 'składniki'}`, `Схожі: ${item.category ?? 'інгредієнти'}`)}
-              icon={<Leaf className="h-4 w-4 text-primary" />}
+              title={t4(locale, 'Nutrition per 100g', 'Пищевая ценность на 100г', 'Wartości odżywcze na 100g', 'Харчова цінність на 100г')}
+              icon={<Flame className="h-4 w-4 text-primary" />}
+              className="md:col-span-2"
             >
-              <div className="divide-y divide-border/30">
-                {related.map((r) => {
-                  const rName = r.names[locale] ?? r.nameEn;
+              <div className="grid grid-cols-2 sm:grid-cols-4 border-b border-border/50 dark:border-white/5">
+                <Stat label={t4(locale, 'Calories', 'Калории', 'Kalorie', 'Калорії')} value={fmt(macros?.calories_kcal ?? item.calories)} unit="kcal" />
+                <Stat label={t4(locale, 'Protein', 'Белки', 'Białko', 'Білки')} value={fmt(macros?.protein_g ?? item.protein)} unit="g" />
+                <Stat label={t4(locale, 'Fat', 'Жиры', 'Tłuszcz', 'Жири')} value={fmt(macros?.fat_g ?? item.fat)} unit="g" />
+                <Stat label={t4(locale, 'Carbs', 'Углеводы', 'Węglowodany', 'Вуглеводи')} value={fmt(macros?.carbs_g ?? item.carbs)} unit="g" />
+              </div>
+              {macros && (macros.fiber_g != null || macros.sugar_g != null || macros.water_g != null) && (
+                <div className="grid grid-cols-3">
+                  {macros.fiber_g != null && <Stat label={t4(locale, 'Fiber', 'Клетчатка', 'Błonnik', 'Клітковина')} value={fmt(macros.fiber_g)} unit="g" />}
+                  {macros.sugar_g != null && <Stat label={t4(locale, 'Sugar', 'Сахар', 'Cukier', 'Цукор')} value={fmt(macros.sugar_g)} unit="g" />}
+                  {macros.water_g != null && <Stat label={t4(locale, 'Water', 'Вода', 'Woda', 'Вода')} value={fmt(macros.water_g)} unit="g" />}
+                </div>
+              )}
+            </Section>
+
+            {/* ── Minerals Section ── */}
+            {minerals && Object.values(minerals).some((v) => v != null) && (
+              <Section
+                title={t4(locale, 'Minerals', 'Минералы', 'Minerały', 'Мінерали')}
+                icon={<FlaskConical className="h-4 w-4 text-primary" />}
+              >
+                <div className="p-2 sm:p-4 space-y-1">
+                  <MiniRow label={t4(locale, 'Calcium', 'Кальций', 'Wapń', 'Кальцій')} value={minerals.calcium} unit="mg" />
+                  <MiniRow label={t4(locale, 'Iron', 'Железо', 'Żelazo', 'Залізо')} value={minerals.iron} unit="mg" />
+                  <MiniRow label={t4(locale, 'Magnesium', 'Магний', 'Magnez', 'Магній')} value={minerals.magnesium} unit="mg" />
+                  <MiniRow label={t4(locale, 'Phosphorus', 'Фосфор', 'Fosfor', 'Фосфор')} value={minerals.phosphorus} unit="mg" />
+                  <MiniRow label={t4(locale, 'Potassium', 'Калий', 'Potas', 'Калій')} value={minerals.potassium} unit="mg" />
+                  <MiniRow label={t4(locale, 'Sodium', 'Натрий', 'Sód', 'Натрій')} value={minerals.sodium} unit="mg" />
+                  <MiniRow label={t4(locale, 'Zinc', 'Цинк', 'Cynk', 'Цинк')} value={minerals.zinc} unit="mg" />
+                  <MiniRow label={t4(locale, 'Copper', 'Медь', 'Miedź', 'Мідь')} value={minerals.copper} unit="mg" />
+                  <MiniRow label={t4(locale, 'Manganese', 'Марганец', 'Mangan', 'Марганець')} value={minerals.manganese} unit="mg" />
+                  <MiniRow label={t4(locale, 'Selenium', 'Селен', 'Selen', 'Селен')} value={minerals.selenium} unit="µg" />
+                </div>
+              </Section>
+            )}
+
+            {/* ── Vitamins Section ── */}
+            {vitamins && Object.values(vitamins).some((v) => v != null) && (
+              <Section
+                title={t4(locale, 'Vitamins', 'Витамины', 'Witaminy', 'Вітаміни')}
+                icon={<Apple className="h-4 w-4 text-primary" />}
+              >
+                <div className="p-2 sm:p-4 space-y-1">
+                  <MiniRow label="Vitamin A" value={vitamins.vitamin_a} unit="µg" />
+                  <MiniRow label="Vitamin C" value={vitamins.vitamin_c} unit="mg" />
+                  <MiniRow label="Vitamin D" value={vitamins.vitamin_d} unit="µg" />
+                  <MiniRow label="Vitamin E" value={vitamins.vitamin_e} unit="mg" />
+                  <MiniRow label="Vitamin K" value={vitamins.vitamin_k} unit="µg" />
+                  <MiniRow label="Vitamin B1" value={vitamins.vitamin_b1} unit="mg" />
+                  <MiniRow label="Vitamin B2" value={vitamins.vitamin_b2} unit="mg" />
+                  <MiniRow label="B3 (Niacin)" value={vitamins.vitamin_b3} unit="mg" />
+                  <MiniRow label="Vitamin B5" value={vitamins.vitamin_b5} unit="mg" />
+                  <MiniRow label="Vitamin B6" value={vitamins.vitamin_b6} unit="mg" />
+                  <MiniRow label="B9 (Folate)" value={vitamins.vitamin_b9} unit="µg" />
+                  <MiniRow label="Vitamin B12" value={vitamins.vitamin_b12} unit="µg" />
+                </div>
+              </Section>
+            )}
+
+            {/* ── Culinary Section ── */}
+            {culinary && Object.values(culinary).some((v) => v != null) && (
+              <Section
+                title={t4(locale, 'Culinary Profile', 'Кулинарный профиль', 'Profil kulinarny', 'Кулінарний профіль')}
+                icon={<Leaf className="h-4 w-4 text-primary" />}
+              >
+                <div className="p-6 space-y-5">
+                  {[
+                    { label: t4(locale, 'Sweetness', 'Сладость', 'Słodycz', 'Солодкість'), val: culinary.sweetness },
+                    { label: t4(locale, 'Acidity', 'Кислотность', 'Kwasowość', 'Кислотність'), val: culinary.acidity },
+                    { label: t4(locale, 'Bitterness', 'Горечь', 'Gorycz', 'Гіркота'), val: culinary.bitterness },
+                    { label: 'Umami', val: culinary.umami },
+                    { label: t4(locale, 'Aroma', 'Аромат', 'Aromat', 'Аромат'), val: culinary.aroma },
+                  ].filter((r) => r.val != null).map((r) => (
+                    <div key={r.label} className="flex flex-col gap-2">
+                       <div className="flex items-center justify-between">
+                         <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground italic">{r.label}</span>
+                         <span className="text-xs font-black text-foreground italic">{fmt(r.val)}/10</span>
+                       </div>
+                       <div className="w-full bg-muted dark:bg-white/[0.05] rounded-full h-1.5 overflow-hidden">
+                          <div className="h-full bg-primary rounded-full shadow-[0_0_12px_rgba(255,255,255,0.2)]" style={{ width: `${((r.val as number) / 10) * 100}%` }} />
+                       </div>
+                    </div>
+                  ))}
+                  {culinary.texture && (
+                    <div className="flex items-center justify-between pt-2 border-t border-border/50 dark:border-white/5">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground italic">{t4(locale, 'Texture', 'Текстура', 'Tekstura', 'Текстура')}</span>
+                      <span className="text-xs font-black text-foreground italic capitalize tracking-wide">{culinary.texture}</span>
+                    </div>
+                  )}
+                </div>
+              </Section>
+            )}
+
+            {/* ── Food properties section ── */}
+            {foodProps && Object.values(foodProps).some((v) => v != null) && (
+              <Section title="Properties" icon={<Scale className="h-4 w-4 text-primary" />}>
+                 <div className="p-2 sm:p-4 space-y-1">
+                    <MiniRow label="Glycemic Index" value={foodProps.glycemic_index} unit="" />
+                    <MiniRow label="Glycemic Load" value={foodProps.glycemic_load} unit="" />
+                    <MiniRow label="pH Level" value={foodProps.ph} unit="" />
+                    <MiniRow label="Smoke Point" value={foodProps.smoke_point} unit="°C" />
+                    <MiniRow label="Water Activity" value={foodProps.water_activity} unit="" />
+                 </div>
+              </Section>
+            )}
+          </div>
+
+          {/* ── Measures ── */}
+          {(measures || item.density_g_per_ml != null) && (
+             <Section title="Kitchen Measures" icon={<Droplets className="h-4 w-4 text-primary" />} className="mt-8">
+               <div className="p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                 {measures?.grams_per_cup != null && (
+                   <div className="p-5 rounded-3xl bg-muted/50 dark:bg-white/[0.02] border border-border/50 dark:border-white/5 flex flex-col items-center gap-3 group/m transition-all hover:bg-muted dark:hover:bg-white/[0.05]">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground italic">1 Cup</span>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-2xl font-black text-foreground italic">{fmt(measures.grams_per_cup)}</span>
+                        <span className="text-xs font-black text-muted-foreground italic uppercase">G</span>
+                      </div>
+                      <Link href="/chef-tools/converter/cup-to-grams" className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.1em] text-primary hover:text-foreground transition-colors">
+                        Converter <ArrowRight className="h-3 w-3" />
+                      </Link>
+                   </div>
+                 )}
+                 {measures?.grams_per_tbsp != null && (
+                   <div className="p-5 rounded-3xl bg-muted/50 dark:bg-white/[0.02] border border-border/50 dark:border-white/5 flex flex-col items-center gap-3 group/m transition-all hover:bg-muted dark:hover:bg-white/[0.05]">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground italic">1 Tablespoon</span>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-2xl font-black text-foreground italic">{fmt(measures.grams_per_tbsp)}</span>
+                        <span className="text-xs font-black text-muted-foreground italic uppercase">G</span>
+                      </div>
+                      <Link href="/chef-tools/converter/tablespoon-to-grams" className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.1em] text-primary hover:text-foreground transition-colors">
+                        Converter <ArrowRight className="h-3 w-3" />
+                      </Link>
+                   </div>
+                 )}
+                 {item.density_g_per_ml != null && (
+                   <div className="p-5 rounded-3xl bg-muted/50 dark:bg-white/[0.02] border border-border/50 dark:border-white/5 flex flex-col items-center gap-3">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground italic">Density</span>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-2xl font-black text-foreground italic">{fmt(item.density_g_per_ml)}</span>
+                        <span className="text-xs font-black text-muted-foreground italic uppercase">G/ML</span>
+                      </div>
+                      <Info className="h-3 w-3 text-muted-foreground/50" />
+                   </div>
+                 )}
+               </div>
+             </Section>
+          )}
+
+          {/* ── Best pairings — Wide Row ── */}
+          {pairings && pairings.length > 0 && (
+            <Section
+              title={t4(locale, 'Culinary Affinities', 'Гастрономические пары', 'Afinicje kulinarne', 'Кулінарні спорідненості')}
+              icon={<Heart className="h-4 w-4 text-primary" />}
+              className="mt-8 overflow-visible"
+            >
+              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4 p-4 sm:p-6">
+                {pairings.map((p) => {
+                  const pName = pairingName(p, locale);
                   return (
                     <Link
-                      key={r.slug}
-                      href={`/chef-tools/ingredients/${r.slug}` as never}
-                      className="flex items-center justify-between py-2.5 px-3 sm:px-4 hover:bg-muted/30 transition-colors group"
+                      key={p.slug}
+                      href={`/chef-tools/ingredients/${p.slug}` as never}
+                      className="group/p flex flex-col items-center gap-3 p-4 rounded-[2.5rem] bg-card dark:bg-white/[0.02] border border-border/50 dark:border-white/5 hover:border-primary/30 transition-all duration-700 hover-lift hover-glow shadow-2xl"
                     >
-                      <span className="text-xs sm:text-sm font-bold text-foreground group-hover:text-primary transition-colors">
-                        {t4(locale,
-                          `${rName} — calories & nutrition`,
-                          `${rName} — калории и питание`,
-                          `${rName} — kalorie i odżywczość`,
-                          `${rName} — калорії та харчування`,
+                      <div className="relative w-full aspect-square rounded-[1.5rem] overflow-hidden bg-muted dark:bg-slate-900 border border-border/50 dark:border-white/5">
+                        {p.image_url ? (
+                          <Image src={p.image_url} alt={pName} fill className="object-cover group-hover/p:scale-110 transition-transform duration-700 brightness-95 dark:brightness-90 group-hover/p:brightness-100" unoptimized />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center opacity-20">
+                            <Package className="h-6 w-6 text-muted-foreground" />
+                          </div>
                         )}
-                      </span>
-                      <ChevronRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary shrink-0" />
+                      </div>
+                      <p className="text-[11px] font-black text-foreground group-hover/p:text-primary transition-colors italic uppercase tracking-tight text-center truncate w-full">
+                        {pName}
+                      </p>
+                      <div className="px-3 py-1 rounded-full bg-muted dark:bg-white/5 text-[8px] font-black uppercase tracking-widest text-muted-foreground italic">
+                        Score {fmt(p.pair_score)}
+                      </div>
                     </Link>
                   );
                 })}
               </div>
             </Section>
-          );
-        })()}
+          )}
 
-        {/* ── Ingredient Article Hub (intent pages) ── */}
-        {intentPages.length > 0 && (
-          <Section
-            title={t4(
-              locale,
-              `Articles about ${name}`,
-              `Статьи о ${name}`,
-              `Artykuły o ${name}`,
-              `Статті про ${name}`,
-            )}
-            icon={<BookOpen className="h-4 w-4 text-primary" />}
-          >
-            <div className="divide-y divide-border/30">
-              {intentPages.map((p) => (
-                <Link
-                  key={p.slug}
-                  href={`/chef-tools/seo/${p.slug}` as never}
-                  className="flex items-center justify-between py-3 px-3 sm:px-4 hover:bg-muted/30 transition-colors group"
-                >
-                  <div className="flex flex-col gap-0.5 min-w-0">
-                    <span className="text-xs sm:text-sm font-bold text-foreground group-hover:text-primary transition-colors leading-snug truncate">
-                      {p.title}
-                    </span>
-                    <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">
-                      {p.intent_type}
-                    </span>
-                  </div>
-                  <ChevronRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary shrink-0 ml-2" />
-                </Link>
-              ))}
-            </div>
-          </Section>
-        )}
-
-        {/* ── Back link ── */}
-        <Link href="/chef-tools/ingredients" className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-primary hover:underline">
-          ← {t4(locale, 'All ingredients', 'Все ингредиенты', 'Wszystkie składniki', 'Всі інгредієнти')}
-        </Link>
+          {/* ── SEO Footer ── */}
+          <div className="mt-24 p-12 rounded-[4rem] bg-muted/30 dark:bg-white/[0.02] backdrop-blur-3xl border border-border dark:border-white/5 relative overflow-hidden group/seo">
+             <div className="absolute top-0 right-0 w-80 h-80 bg-primary/5 blur-[100px] rounded-full translate-x-1/3 -translate-y-1/3" />
+             <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div>
+                   <h3 className="text-3xl sm:text-5xl font-black text-foreground italic tracking-tighter leading-none mb-6">
+                      Knowledge Hub<span className="text-primary italic">.</span>
+                   </h3>
+                   <p className="text-muted-foreground text-sm leading-relaxed max-w-md italic">
+                      Explore deep culinary insights, nutrition profiles, and intelligent unit conversions for high-end professional kitchens.
+                   </p>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                   <Link href="/chef-tools/converter" className="p-6 rounded-3xl bg-card dark:bg-white/5 border border-border dark:border-white/5 text-xs font-black uppercase tracking-widest text-muted-foreground hover:text-foreground hover:border-primary/20 transition-all italic text-center">
+                      Converter
+                   </Link>
+                   <Link href="/chef-tools/ingredients" className="p-6 rounded-3xl bg-card dark:bg-white/5 border border-border dark:border-white/5 text-xs font-black uppercase tracking-widest text-muted-foreground hover:text-foreground hover:border-primary/20 transition-all italic text-center">
+                      Catalog
+                   </Link>
+                   <Link href="/chef-tools/lab" className="p-6 rounded-3xl bg-card dark:bg-white/5 border border-border dark:border-white/5 text-xs font-black uppercase tracking-widest text-muted-foreground hover:text-foreground hover:border-primary/20 transition-all italic text-center">
+                      AI Lab
+                   </Link>
+                   <Link href="/chef-tools/nutrition" className="p-6 rounded-3xl bg-card dark:bg-white/5 border border-border dark:border-white/5 text-xs font-black uppercase tracking-widest text-muted-foreground hover:text-foreground hover:border-primary/20 transition-all italic text-center">
+                      Analysis
+                   </Link>
+                </div>
+             </div>
+          </div>
+        </div>
       </div>
     </div>
   );

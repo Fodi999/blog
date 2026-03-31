@@ -5,7 +5,6 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import {
   Plus,
   Trash2,
-  ChefHat,
   Loader2,
   Sparkles,
   AlertTriangle,
@@ -244,7 +243,7 @@ const MODES = ["recipeAnalyzer", "ingredientExplorer", "unitConverter", "flavorP
 type Mode = (typeof MODES)[number];
 
 const MODE_ICONS: Record<Mode, any> = {
-  recipeAnalyzer: ChefHat,
+  recipeAnalyzer: Sparkles,
   ingredientExplorer: Apple,
   unitConverter: Scale,
   flavorPairing: Utensils,
@@ -1107,7 +1106,7 @@ function RecipeAnalyzerMode({ locale, t }: { locale: string; t: any }) {
                           <img src={chip.image_url} alt={chip.name} className="w-6 h-6 rounded-lg object-cover shrink-0" />
                         ) : (
                           <div className="w-6 h-6 rounded-lg bg-muted flex items-center justify-center shrink-0">
-                            <ChefHat className="h-3 w-3 text-muted-foreground" />
+                            <Sparkles className="h-3 w-3 text-muted-foreground" />
                           </div>
                         )}
                         <span className="truncate max-w-[100px] capitalize">{chip.name}</span>
@@ -2140,8 +2139,8 @@ function PairingGrid({
                 {/* Score badge — top right */}
                 <div className="absolute top-2.5 right-2.5 z-10">
                   <Badge className={cn(
-                    "text-sm font-black px-2.5 py-1 shadow-lg backdrop-blur-md border-0",
-                    score >= 8 ? "bg-green-500/90 text-white" : score >= 6 ? "bg-amber-500/90 text-white" : "bg-white/20 text-white",
+                    "text-sm font-black px-2.5 py-1 shadow-lg backdrop-blur-md border-0 drop-shadow-sm",
+                    score >= 8 ? "bg-green-500/90 text-white" : score >= 6 ? "bg-amber-500/90 text-white" : "bg-card/80 dark:bg-white/20 text-foreground dark:text-white",
                   )}>
                     {score.toFixed(1)}
                   </Badge>

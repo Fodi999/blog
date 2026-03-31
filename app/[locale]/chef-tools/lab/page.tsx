@@ -70,8 +70,8 @@ export default async function CulinaryLabPage({
 
       {/* Header */}
       <div className="mb-10 md:mb-14">
-        <h1 className="text-4xl md:text-6xl font-black mb-4 text-foreground tracking-tighter uppercase italic">
-          {lab('title')}<span className="text-primary">.</span>
+        <h1 className="text-4xl md:text-6xl font-black mb-4 text-foreground tracking-tighter uppercase italic text-shimmer">
+          {lab('title')}<span className="text-primary not-italic">.</span>
         </h1>
         <p className="text-lg md:text-xl text-muted-foreground max-w-2xl font-medium tracking-tight">
           {lab('subtitle')}
