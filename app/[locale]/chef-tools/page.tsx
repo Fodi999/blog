@@ -1,7 +1,10 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { generateMetadata as genMeta } from '@/lib/metadata';
 import { JsonLd } from '@/components/JsonLd';
+import { SousChefClient } from './dashboard/SousChefClient';
 import { DashboardClient } from './dashboard/DashboardClient';
+import { ChefToolsTabs } from './dashboard/ChefToolsTabs';
+import { ChefPageLayout } from './dashboard/ChefPageLayout';
 
 export const revalidate = 300; // ISR: 5 min
 
@@ -50,18 +53,14 @@ export default async function ChefToolsPage({
         }}
       />
 
-      {/* Header */}
-      <div className="mb-8 sm:mb-12 md:mb-16 border-t border-primary/20 pt-8 sm:pt-12">
-        <h1 className="text-4xl sm:text-6xl md:text-8xl font-black mb-4 sm:mb-6 text-foreground tracking-tighter uppercase italic text-balance break-words">
-          {t('title')}<span className="text-primary">.</span>
-        </h1>
-        <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground max-w-2xl font-medium tracking-tight text-balance break-words">
-          {t('description')}
-        </p>
-      </div>
-
-      {/* Dashboard */}
-      <DashboardClient />
+      {/* Header fades in centered, then reveals the tools below */}
+      <ChefPageLayout title={t('title')} description={t('description')}>
+        {/* Tabbed: Sous-Chef (primary) + Recipe Builder (secondary) */}
+        <ChefToolsTabs
+          sousChef={<SousChefClient />}
+          recipeBuilder={<DashboardClient />}
+        />
+      </ChefPageLayout>
 
       <div className="h-16 md:h-24" />
     </div>

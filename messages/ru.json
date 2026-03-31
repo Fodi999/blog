@@ -57,7 +57,9 @@
       "tables": "Таблицы",
       "tablesDesc": "Готовые таблицы конвертаций и сезонность",
       "products": "Продукты",
-      "productsDesc": "Пищевая ценность и ингредиенты"
+      "productsDesc": "Пищевая ценность и ингредиенты",
+      "sousChef": "AI Су-шеф",
+      "recipeBuilder": "Рецепт-билдер"
     },
     "tools": {
       "converter": {
@@ -895,7 +897,40 @@
       "modeAnalyzeDesc": "Только ваши ингредиенты",
       "modeBuildDesc": "ИИ подбирает лучшие сочетания",
       "variantHeaderAnalyze": "Ваш рецепт — 3 варианта",
-      "variantHeaderBuild": "Выберите вариант или ищите снова"
+      "variantHeaderBuild": "Выберите вариант или ищите снова",
+      "ingredientCatalogLink": "Каталог ингредиентов"
+    },
+    "sousChef": {
+      "heroHeadline": "Твой AI Су-шеф",
+      "heroSub": "Опиши цель → получи 3 варианта меню с КБЖУ и рекомендациями шефа",
+      "placeholder": "Хочу похудеть… / Быстрый завтрак… / Что из: курица, рис…",
+      "loading1": "⚡ Определяю цель…",
+      "loading2": "⚡ Подбираю блюда…",
+      "loading3": "⚡ Считаю КБЖУ…",
+      "chefSays": "Шеф говорит",
+      "cachedBadge": "Мгновенный ответ",
+      "variantsTitle": "3 варианта на выбор",
+      "recommended": "Рекомендуем",
+      "kcal": "ккал",
+      "proteinShort": "Б",
+      "fatShort": "Ж",
+      "carbsShort": "У",
+      "ingredientsList": "Ингредиенты",
+      "whyThisWorks": "Почему это работает",
+      "newSearch": "Новый запрос",
+      "tryAgain": "Попробовать снова",
+      "regenerate": "Сгенерировать заново",
+      "generate": "Сгенерировать",
+      "previewLight": "Лёгкий",
+      "previewBalanced": "Баланс",
+      "previewRich": "Сытный",
+      "hookText": "Хочешь — пересоберу под твои продукты. Или попробуй другую цель.",
+      "hookCta": "Новый запрос",
+      "altLighter": "Легче",
+      "altRicher": "Сытнее",
+      "altQuicker": "Быстрее",
+      "altSection": "Хочешь изменить?",
+      "perServing": "на порцию"
     }
   },
   "home": {

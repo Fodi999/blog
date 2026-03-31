@@ -57,7 +57,9 @@
       "tables": "Таблиці",
       "tablesDesc": "Готові таблиці конвертацій та сезонність",
       "products": "Продукти",
-      "productsDesc": "Харчова цінність та інгредієнти"
+      "productsDesc": "Харчова цінність та інгредієнти",
+      "sousChef": "AI Су-шеф",
+      "recipeBuilder": "Конструктор рецептів"
     },
     "tools": {
       "converter": {
@@ -874,7 +876,40 @@
       "modeAnalyzeDesc": "Лише ваші інгредієнти",
       "modeBuildDesc": "ШІ підбирає найкращі поєднання",
       "variantHeaderAnalyze": "Ваш рецепт — 3 варіанти",
-      "variantHeaderBuild": "Оберіть варіант або шукайте знову"
+      "variantHeaderBuild": "Оберіть варіант або шукайте знову",
+      "ingredientCatalogLink": "Каталог інгредієнтів"
+    },
+    "sousChef": {
+      "heroHeadline": "Твій AI Су-шеф",
+      "heroSub": "Опиши ціль → отримай 3 варіанти меню з КБЖВ та рекомендаціями шефа",
+      "placeholder": "Хочу схуднути… / Швидкий сніданок… / Що з: курка, рис…",
+      "loading1": "⚡ Визначаю ціль…",
+      "loading2": "⚡ Підбираю страви…",
+      "loading3": "⚡ Рахую КБЖВ…",
+      "chefSays": "Шеф каже",
+      "cachedBadge": "Миттєва відповідь",
+      "variantsTitle": "3 варіанти на вибір",
+      "recommended": "Рекомендуємо",
+      "kcal": "ккал",
+      "proteinShort": "Б",
+      "fatShort": "Ж",
+      "carbsShort": "В",
+      "ingredientsList": "Інгредієнти",
+      "whyThisWorks": "Чому це працює",
+      "newSearch": "Новий запит",
+      "tryAgain": "Спробувати знову",
+      "regenerate": "Згенерувати знову",
+      "generate": "Згенерувати",
+      "previewLight": "Легкий",
+      "previewBalanced": "Баланс",
+      "previewRich": "Ситний",
+      "hookText": "Хочеш — переберу під твої продукти. Або спробуй іншу ціль.",
+      "hookCta": "Новий запит",
+      "altLighter": "Легше",
+      "altRicher": "Ситніше",
+      "altQuicker": "Швидше",
+      "altSection": "Хочеш змінити?",
+      "perServing": "на порцію"
     }
   },
   "home": {

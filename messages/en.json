@@ -57,7 +57,9 @@
       "tables": "Tables",
       "tablesDesc": "Ready-made conversion tables and seasonality",
       "products": "Products",
-      "productsDesc": "Nutritional values and ingredients"
+      "productsDesc": "Nutritional values and ingredients",
+      "sousChef": "AI Sous-Chef",
+      "recipeBuilder": "Recipe Builder"
     },
     "tools": {
       "converter": {
@@ -873,7 +875,40 @@
       "modeAnalyzeDesc": "Using only your ingredients",
       "modeBuildDesc": "AI picks the best pairings",
       "variantHeaderAnalyze": "Your recipe — 3 ways",
-      "variantHeaderBuild": "Choose a variant or search again"
+      "variantHeaderBuild": "Choose a variant or search again",
+      "ingredientCatalogLink": "Ingredient catalog"
+    },
+    "sousChef": {
+      "heroHeadline": "Your AI Sous-Chef",
+      "heroSub": "Describe your goal → get 3 menu variants with macros and chef recommendations",
+      "placeholder": "I want to lose weight… / Quick breakfast… / What from: chicken, rice…",
+      "loading1": "⚡ Detecting your goal…",
+      "loading2": "⚡ Selecting meals…",
+      "loading3": "⚡ Calculating macros…",
+      "chefSays": "Chef says",
+      "cachedBadge": "Instant response",
+      "variantsTitle": "3 options to choose from",
+      "recommended": "Recommended",
+      "kcal": "kcal",
+      "proteinShort": "P",
+      "fatShort": "F",
+      "carbsShort": "C",
+      "ingredientsList": "Ingredients",
+      "whyThisWorks": "Why this works",
+      "newSearch": "New search",
+      "tryAgain": "Try again",
+      "regenerate": "Regenerate",
+      "generate": "Generate",
+      "previewLight": "Light",
+      "previewBalanced": "Balanced",
+      "previewRich": "Rich",
+      "hookText": "Want me to rebuild this around your ingredients? Or try a different goal.",
+      "hookCta": "New request",
+      "altLighter": "Lighter",
+      "altRicher": "Heartier",
+      "altQuicker": "Quicker",
+      "altSection": "Want to adjust?",
+      "perServing": "per serving"
     }
   },
   "home": {

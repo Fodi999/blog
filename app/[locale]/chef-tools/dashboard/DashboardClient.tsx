@@ -293,6 +293,15 @@ export function DashboardClient() {
   const [backendMode, setBackendMode] = useState<'analyze' | 'build'>('build');
   const timerRefs = useRef<ReturnType<typeof setTimeout>[]>([]);
 
+  /* ── Tagline: show for 2s then fade out ──────────────────── */
+  const [taglineVisible, setTaglineVisible] = useState(true);
+  const [taglineFading, setTaglineFading] = useState(false);
+  useEffect(() => {
+    const fadeTimer = setTimeout(() => setTaglineFading(true), 2000);
+    const hideTimer = setTimeout(() => setTaglineVisible(false), 2600);
+    return () => { clearTimeout(fadeTimer); clearTimeout(hideTimer); };
+  }, []);
+
   const smartPanelRef = useRef<HTMLDivElement>(null);
 
   /* ── Single ingredient select (old flow) ─────────────────── */
@@ -486,9 +495,14 @@ export function DashboardClient() {
         {/* ── idle / variants / analyzing: big hero input ─── */}
         {(!isActive || showVariants || isAnalyzing) && (
           <div className="animate-in fade-in duration-500">
-            {/* Tagline — only idle: strong "sell the magic" headline */}
-            {!showVariants && !isAnalyzing && mode === 'idle' && (
-              <div className="mb-8 space-y-3 px-2">
+            {/* Tagline — flashes for 2s on first load, then fades out */}
+            {!showVariants && !isAnalyzing && mode === 'idle' && taglineVisible && (
+              <div
+                className={cn(
+                  'mb-8 space-y-3 px-2 transition-all duration-500',
+                  taglineFading ? 'opacity-0 -translate-y-2' : 'opacity-100 translate-y-0',
+                )}
+              >
                 <h1 className="text-3xl sm:text-4xl font-black text-foreground tracking-tight leading-tight text-balance break-words">
                   {t('heroHeadline')}
                 </h1>
@@ -725,59 +739,20 @@ export function DashboardClient() {
       )}
 
       {/* ══════════════════════════════════════════════════════
-          IDLE — light popular picks + catalog on demand
-          AI-first: SeasonNow as teaser, catalog behind button
+          IDLE — catalog access only on demand (clean focus)
           ══════════════════════════════════════════════════════ */}
       {mode === 'idle' && !isAnalyzing && (
-        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="h-px flex-1 bg-border/30" />
-            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 flex items-center gap-1.5">
-              <Zap className="h-3 w-3" />
-              Popular now
-            </p>
-            <div className="h-px flex-1 bg-border/30" />
-          </div>
-
-          {/* Light season picks */}
-          <SeasonNow onSelect={handleSelect} />
-
-          {/* ── Catalog access ─────────────────────────────── */}
-          <div className="pt-8 space-y-4">
-            {/* Link to full catalog page */}
+        <div className="animate-in fade-in duration-700 delay-500">
+          {/* Catalog behind a single subtle link — don't distract from input */}
+          <div className="flex flex-col items-center gap-3 pt-4">
             <Link
               href="/chef-tools/ingredients"
-              className="flex items-center justify-center gap-2 mx-auto px-5 py-2.5 rounded-xl border border-border/60 bg-background hover:border-primary/40 hover:shadow-md hover:shadow-primary/5 transition-all group"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-[11px] font-bold uppercase tracking-widest text-muted-foreground/40 hover:text-muted-foreground hover:bg-muted/20 transition-all group"
             >
-              <LayoutGrid className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
-              <span className="text-xs font-black uppercase tracking-widest text-muted-foreground group-hover:text-foreground transition-colors">
-                Ingredient catalog
-              </span>
-              <ArrowRight className="h-3.5 w-3.5 text-muted-foreground/50 group-hover:text-primary transition-colors" />
+              <LayoutGrid className="h-3.5 w-3.5 group-hover:text-primary transition-colors" />
+              {t('ingredientCatalogLink')}
+              <ArrowRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
             </Link>
-
-            {/* Expand inline catalog */}
-            {!catalogOpen ? (
-              <button
-                onClick={() => setCatalogOpen(true)}
-                className="flex items-center gap-2 mx-auto text-[11px] font-bold uppercase tracking-widest text-muted-foreground/40 hover:text-muted-foreground transition-colors"
-              >
-                <ChevronDown className="h-3 w-3" />
-                or preview here
-                <ChevronDown className="h-3 w-3" />
-              </button>
-            ) : (
-              <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <div className="flex items-center gap-3 mb-8">
-                  <div className="h-px flex-1 bg-border/30" />
-                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40">
-                    Catalog
-                  </p>
-                  <div className="h-px flex-1 bg-border/30" />
-                </div>
-                <IngredientGrid onSelect={handleSelect} activeSlug={selected?.slug} compact={false} />
-              </div>
-            )}
           </div>
         </div>
       )}

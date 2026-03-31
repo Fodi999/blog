@@ -1325,6 +1325,19 @@ export interface LabComboFaq {
   answer: string;
 }
 
+/** Structured ingredient from catalog DB — not AI-generated. */
+export interface StructuredIngredient {
+  slug: string;
+  name: string;
+  grams: number;
+  kcal: number;
+  protein: number;
+  fat: number;
+  carbs: number;
+  image_url: string | null;
+  product_type: string | null;
+}
+
 export type LabComboPage = {
   id: string;
   slug: string;
@@ -1361,6 +1374,8 @@ export type LabComboPage = {
   fat_per_serving: number;
   carbs_per_serving: number;
   fiber_per_serving: number;
+  // Structured ingredients (DB data, not AI)
+  structured_ingredients: StructuredIngredient[];
   status: string;
   quality_score: number;
   published_at: string | null;

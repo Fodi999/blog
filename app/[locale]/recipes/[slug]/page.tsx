@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import { setRequestLocale } from 'next-intl/server';
 import { fetchLabCombo, fetchRelatedCombos, fetchAlsoCook } from '@/lib/api';
+import { IngredientsList } from '@/components/IngredientsList';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { JsonLd } from '@/components/JsonLd';
@@ -283,7 +284,9 @@ export default async function RecipePage({ params }: Props) {
           recipeCategory: page.meal_type ? capitalize(page.meal_type.replace(/_/g, ' ')) : 'Main Course',
           ...(page.cuisine ? { recipeCuisine: capitalize(page.cuisine.replace(/_/g, ' ')) } : {}),
           ...(page.diet ? { suitableForDiet: `https://schema.org/${capitalize(page.diet.replace(/_/g, ''))}Diet` } : {}),
-          recipeIngredient: page.ingredients.map((ing) => capitalize(ing.replace(/-/g, ' '))),
+          recipeIngredient: (page.structured_ingredients && page.structured_ingredients.length > 0)
+            ? page.structured_ingredients.map((si) => `${si.name} — ${si.grams}g`)
+            : page.ingredients.map((ing) => capitalize(ing.replace(/-/g, ' '))),
           ...(howToCook.length > 0 ? {
             recipeInstructions: howToCook.map((s) => ({
               '@type': 'HowToStep',
@@ -432,9 +435,11 @@ export default async function RecipePage({ params }: Props) {
         </div>
       )}
 
-      {/* Ingredient chips */}
+      {/* ── Structured Ingredients (DB data, with portion toggle) ───── */}
+      <IngredientsList ingredients={page.structured_ingredients ?? []} locale={locale} />
+
+      {/* Ingredient chips (SEO internal links) */}
       <section className="mb-10">
-        <h2 className="text-xl font-bold mb-3">{labels.ingredients}</h2>
         <div className="flex flex-wrap gap-2">
           {page.ingredients.map((ing) => (
             <Link

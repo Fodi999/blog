@@ -57,7 +57,9 @@
       "tables": "Tabele",
       "tablesDesc": "Gotowe tabele przeliczeniowe i sezonowość",
       "products": "Produkty",
-      "productsDesc": "Wartości odżywcze i składniki"
+      "productsDesc": "Wartości odżywcze i składniki",
+      "sousChef": "AI Sous-Chef",
+      "recipeBuilder": "Kreator przepisów"
     },
     "tools": {
       "converter": {
@@ -874,7 +876,40 @@
       "modeAnalyzeDesc": "Tylko twoje składniki",
       "modeBuildDesc": "AI dobiera najlepsze połączenia",
       "variantHeaderAnalyze": "Twój przepis — 3 warianty",
-      "variantHeaderBuild": "Wybierz wariant lub szukaj ponownie"
+      "variantHeaderBuild": "Wybierz wariant lub szukaj ponownie",
+      "ingredientCatalogLink": "Katalog składników"
+    },
+    "sousChef": {
+      "heroHeadline": "Twój AI Sous-Chef",
+      "heroSub": "Opisz swój cel → otrzymaj 3 warianty menu z makroskładnikami i rekomendacjami szefa",
+      "placeholder": "Chcę schudnąć… / Szybkie śniadanie… / Co z: kurczak, ryż…",
+      "loading1": "⚡ Rozpoznaję cel…",
+      "loading2": "⚡ Dobieram posiłki…",
+      "loading3": "⚡ Liczę makro…",
+      "chefSays": "Szef mówi",
+      "cachedBadge": "Błyskawiczna odpowiedź",
+      "variantsTitle": "3 warianty do wyboru",
+      "recommended": "Polecamy",
+      "kcal": "kcal",
+      "proteinShort": "B",
+      "fatShort": "T",
+      "carbsShort": "W",
+      "ingredientsList": "Składniki",
+      "whyThisWorks": "Dlaczego to działa",
+      "newSearch": "Nowe wyszukiwanie",
+      "tryAgain": "Spróbuj ponownie",
+      "regenerate": "Generuj ponownie",
+      "generate": "Wygeneruj",
+      "previewLight": "Lekki",
+      "previewBalanced": "Zbilansowany",
+      "previewRich": "Sycący",
+      "hookText": "Chcesz — przebuduję pod Twoje produkty. Albo spróbuj innego celu.",
+      "hookCta": "Nowe zapytanie",
+      "altLighter": "Lżejszy",
+      "altRicher": "Bardziej sycący",
+      "altQuicker": "Szybszy",
+      "altSection": "Chcesz zmienić?",
+      "perServing": "na porcję"
     }
   },
   "home": {
