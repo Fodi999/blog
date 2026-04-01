@@ -4,26 +4,31 @@ import { useState, type ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 
-type Tab = 'sous-chef' | 'recipe-builder';
+type Tab = 'sous-chef' | 'recipe-builder' | 'chef-chat';
 
 export function ChefToolsTabs({
   sousChef,
   recipeBuilder,
+  chefChat,
 }: {
   sousChef: ReactNode;
   recipeBuilder: ReactNode;
+  chefChat: ReactNode;
 }) {
   const t = useTranslations('chefTools.tabs');
   const [active, setActive] = useState<Tab>('sous-chef');
+
+  const tabs: { id: Tab; label: string }[] = [
+    { id: 'sous-chef', label: t('sousChef') },
+    { id: 'recipe-builder', label: t('recipeBuilder') },
+    { id: 'chef-chat', label: 'ChefOS Chat' },
+  ];
 
   return (
     <div>
       <div className="flex justify-center mb-10">
         <div className="inline-flex rounded-full bg-muted/20 backdrop-blur-md border border-border/40 p-1.5 gap-1.5 shadow-sm">
-          {([
-            { id: 'sous-chef' as Tab, label: t('sousChef') },
-            { id: 'recipe-builder' as Tab, label: t('recipeBuilder') },
-          ]).map((tab) => (
+          {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActive(tab.id)}
@@ -46,6 +51,9 @@ export function ChefToolsTabs({
       </div>
       <div className={cn(active === 'recipe-builder' ? 'block' : 'hidden')}>
         {recipeBuilder}
+      </div>
+      <div className={cn(active === 'chef-chat' ? 'block' : 'hidden')}>
+        {chefChat}
       </div>
     </div>
   );

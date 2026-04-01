@@ -5,6 +5,7 @@ import { SousChefClient } from './dashboard/SousChefClient';
 import { DashboardClient } from './dashboard/DashboardClient';
 import { ChefToolsTabs } from './dashboard/ChefToolsTabs';
 import { ChefPageLayout } from './dashboard/ChefPageLayout';
+import { ChefOSChat } from '@/components/chat/ChefOSChat';
 
 export const revalidate = 300; // ISR: 5 min
 
@@ -59,6 +60,7 @@ export default async function ChefToolsPage({
         <ChefToolsTabs
           sousChef={<SousChefClient />}
           recipeBuilder={<DashboardClient />}
+          chefChat={<ChefOSChat />}
         />
       </ChefPageLayout>
 
