@@ -2,7 +2,7 @@ import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
 import { generateMetadata as genMeta } from '@/lib/metadata';
 import { JsonLd } from '@/components/JsonLd';
-import { ChevronLeft, Wifi, WifiOff, Table2 } from 'lucide-react';
+import { ChevronLeft, Wifi, WifiOff, Table2, Sparkles, Fish } from 'lucide-react';
 import { fetchFishSeasonTable, fetchBestRightNow } from '@/lib/api';
 import { FishSeasonClient, type FishRow, type I18n, type Availability, type RegionRows } from './FishSeasonClient';
 import { ChefToolsNav } from '../ChefToolsNav';
@@ -177,18 +177,25 @@ export default async function FishSeasonPage({
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-24">
       {nav}
       {/* Header — centered on mobile, left on desktop */}
-      <div className="mb-12 border-t border-primary/20 pt-10 text-center md:text-left">
-        <div>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tighter text-foreground uppercase italic leading-tight mb-2">
+      <div className="mb-16 sm:mb-24 relative z-10 animate-in fade-in slide-in-from-left-8 duration-700">
+        <div className="max-w-3xl">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-black uppercase tracking-[0.15em] mb-6 border border-primary/20 shadow-xl shadow-primary/5">
+            <Sparkles className="h-3 w-3 fill-primary animate-pulse" />
+            {t('badge')}
+          </div>
+          <h1 className="text-5xl md:text-8xl font-black tracking-tighter uppercase italic mb-6 leading-none text-foreground">
             {t('tools.fishSeason.title')}<span className="text-primary">.</span>
           </h1>
-          <p className="text-sm md:text-base text-muted-foreground font-medium max-w-xl">
-            {t('tools.fishSeason.description')}
-          </p>
-        </div>
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-widest border border-border/60 bg-muted/50 text-muted-foreground shrink-0">
-          <Table2 className="h-3 w-3" />
-          {rows.length} {t('tools.fishSeason.itemsCount' as any) || 'fish'}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
+            <p className="text-lg sm:text-xl text-muted-foreground font-medium max-w-xl leading-relaxed">
+              {t('tools.fishSeason.description')}
+            </p>
+            <div className="h-px sm:h-12 w-12 sm:w-px bg-border/40" />
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl text-xs font-black uppercase tracking-widest border border-border/40 bg-card/40 backdrop-blur-xl text-muted-foreground shadow-2xl shadow-black/5">
+              <Fish className="h-4 w-4 text-primary" />
+              {rows.length} {t('tools.fishSeason.itemsCount' as any) || 'positions'}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -260,6 +267,7 @@ export default async function FishSeasonPage({
         bestRightNow={bestRightNow}
         regionRows={regionRows}
         activeRegion={region}
+        locale={locale}
       />
 
       {/* All-year items */}
