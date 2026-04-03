@@ -46,6 +46,7 @@ export function MobileMenu() {
             {[
               { href: '/', label: t('home'), desc: t('homeDesc') },
               { href: '/blog', label: t('blog'), desc: t('blogDesc'), active: pathname.startsWith('/blog') },
+              { href: '/recipes', label: t('recipes'), desc: t('recipesDesc'), active: pathname.startsWith('/recipes') },
               { href: '/chef-tools', label: t('chefTools'), desc: t('chefToolsDesc'), active: pathname.startsWith('/chef-tools') },
               { href: '/about', label: t('about'), desc: t('aboutDesc') },
               { href: '/contact', label: t('contact'), desc: t('contactDesc') },

@@ -12,7 +12,7 @@ export async function Header({ locale }: { locale: string }) {
   return (
     <header className="glass-nav">
       <nav className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-        <Link href="/" locale={locale} className="flex items-center gap-3 text-xl font-black text-foreground transition-all hover:opacity-80 group">
+        <Link href="/" locale={locale} className="flex items-center gap-3 text-xl font-black text-foreground transition-all hover:opacity-80 group flex-shrink-0">
           <div className="w-10 h-10 rounded-2xl overflow-hidden ring-2 ring-primary/20 bg-muted/10 transition-all duration-500 group-hover:scale-110 group-hover:rotate-6 group-hover:ring-primary/40 shadow-xl group-hover:shadow-primary/20 animate-pulse-glow">
             <Image
               src="https://i.postimg.cc/W1KV4b43/logo1.webp"
@@ -22,7 +22,7 @@ export async function Header({ locale }: { locale: string }) {
               className="object-cover w-full h-full"
             />
           </div>
-          <span className="hidden sm:inline tracking-tighter uppercase italic text-primary text-shimmer">{`Dima Fomin`}</span>
+          <span className="hidden sm:inline tracking-tighter uppercase italic text-primary text-shimmer whitespace-nowrap pr-2">{`Dima Fomin`}</span>
         </Link>
 
         {/* Desktop Navigation */}
@@ -30,11 +30,12 @@ export async function Header({ locale }: { locale: string }) {
           {[
             { href: '/', label: t('home') },
             { href: '/blog', label: t('blog') },
+            { href: '/recipes', label: t('recipes') },
             { href: '/chef-tools', label: t('chefTools') },
             { href: '/about', label: t('about') },
             { href: '/contact', label: t('contact') },
           ].map((item) => (
-            <Button key={item.href} variant="ghost" asChild className="text-sm font-black uppercase tracking-widest hover:text-primary transition-all hover:bg-primary/5 rounded-xl link-underline relative px-4">
+            <Button key={item.href} variant="ghost" asChild className="text-[13px] xl:text-sm font-black uppercase tracking-wider hover:text-primary transition-all hover:bg-primary/5 rounded-xl link-underline relative px-2 xl:px-4">
               <Link href={item.href} locale={locale}>{item.label}</Link>
             </Button>
           ))}

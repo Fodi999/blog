@@ -39,7 +39,9 @@
     "chefToolsDesc": "Tools for cooks",
     "aboutDesc": "20+ years experience",
     "contactDesc": "Get in touch",
-    "restaurantsDesc": "Business solutions"
+    "restaurantsDesc": "Business solutions",
+    "recipes": "Recipes",
+    "recipesDesc": "AI recipes from the chef"
   },
   "chefTools": {
     "meta": {
@@ -51,6 +53,30 @@
     "description": "You cook. I think.\nPaste your ingredients — get a breakdown, flavor balance, and dish improvements in a second.",
     "open": "Open tool",
     "back": "Back to Culinary Helper",
+    "toolGrid": {
+      "title": "Chef's Toolkit",
+      "subtitle": "Pick a tool to help you in the kitchen",
+      "ingredients": "Ingredient Catalog",
+      "ingredientsDesc": "Nutrition, vitamins, minerals, and culinary properties of ingredients.",
+      "fishSeason": "Fish Season Calendar",
+      "fishSeasonDesc": "Check when fish and seafood are freshest and most affordable.",
+      "lab": "Culinary Lab",
+      "labDesc": "Paste ingredients — AI suggests a dish with steps and nutrition.",
+      "converter": "Unit Converter",
+      "converterDesc": "Convert grams, ounces, liters, and kitchen measures.",
+      "recipeAnalyzer": "Recipe Analyzer",
+      "recipeAnalyzerDesc": "Paste a recipe — get nutrition analysis and improvement tips.",
+      "flavorPairing": "Flavor Pairing",
+      "flavorPairingDesc": "Discover the best flavor combinations between ingredients.",
+      "nutrition": "Nutrition Tables",
+      "nutritionDesc": "Detailed nutrition, vitamin, and mineral tables.",
+      "diet": "Diets",
+      "dietDesc": "Ingredients filtered by diet: keto, vegan, paleo, and more.",
+      "ranking": "Ingredient Rankings",
+      "rankingDesc": "Top ingredients by protein, iron, vitamin C, and more.",
+      "aiChat": "AI Sous-Chef",
+      "aiChatDesc": "Ask a cooking question — AI answers like a professional sous-chef."
+    },
     "tabs": {
       "tools": "Tools",
       "toolsDesc": "Kitchen converters and calculators",
@@ -965,7 +991,38 @@
       "nutritionTitle": "Nutrition Calculator",
       "nutritionDesc": "Calories, protein, fat and carbs — with localized names and photos.",
       "suggestionsTitle": "Grams in a cup?",
-      "suggestionsDesc": "Gram table for cup, tablespoon and teaspoon of various products."
+      "suggestionsDesc": "Gram table for cup, tablespoon and teaspoon of various products.",
+      "ingredientsTitle": "Ingredient Catalog",
+      "ingredientsDesc": "Nutrition, vitamins, and minerals for hundreds of ingredients.",
+      "fishSeasonTitle": "Fish Season Calendar",
+      "fishSeasonDesc": "Check when fish and seafood are freshest.",
+      "labTitle": "Culinary Lab",
+      "labDesc": "AI creates a recipe from your ingredients with steps and nutrition.",
+      "flavorPairingTitle": "Flavor Pairing",
+      "flavorPairingDesc": "Discover the best flavor combinations between ingredients."
+    }
+  },
+  "recipesPage": {
+    "meta": {
+      "title": "AI Recipes — Dima Fomin",
+      "description": "AI-generated recipes with precise nutritional values, cooking steps, and curated ingredients."
+    },
+    "title": "AI Recipes",
+    "subtitle": "Recipes with precise nutritional values, crafted by AI from the best ingredients.",
+    "allRecipes": "All Recipes",
+    "noRecipes": "No published recipes yet",
+    "kcal": "kcal",
+    "protein": "protein",
+    "steps": "steps",
+    "viewRecipe": "View recipe",
+    "filters": {
+      "all": "All",
+      "highProtein": "High Protein",
+      "lowCarb": "Low Carb",
+      "keto": "Keto",
+      "breakfast": "Breakfast",
+      "lunch": "Lunch",
+      "dinner": "Dinner"
     }
   },
   "blog": {
@@ -1145,7 +1202,10 @@
     "terms": "Terms of Service",
     "cookies": "Cookie Policy",
     "contact": "Contact",
-    "manageCookies": "Manage Cookies"
+    "manageCookies": "Manage Cookies",
+    "blog": "Blog",
+    "recipes": "Recipes",
+    "chefTools": "Chef Tools"
   },
   "restaurants": {
     "title": "Solutions for Restaurants",

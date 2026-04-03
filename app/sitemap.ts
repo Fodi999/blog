@@ -1,6 +1,6 @@
 import { MetadataRoute } from 'next';
 import { getAllPosts } from '@/lib/posts';
-import { fetchIngredients, fetchIngredientsStatesMap } from '@/lib/api';
+import { fetchIngredients, fetchIngredientsStatesMap, fetchSitemapCombos } from '@/lib/api';
 import { locales } from '@/i18n';
 import { CATEGORY_MAP } from './[locale]/chef-tools/ingredients/[slug]/category-page';
 import { CONVERSION_MAP } from './[locale]/chef-tools/converter/[conversion]/page';
@@ -90,6 +90,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       { path: '/restaurants', priority: 0.7, changeFrequency: 'weekly' },
       { path: '/demos/sushi-delivery', priority: 0.6, changeFrequency: 'monthly' },
       { path: '/demos/restaurant-ai', priority: 0.6, changeFrequency: 'monthly' },
+      { path: '/recipes', priority: 0.9, changeFrequency: 'daily' },
       { path: '/chef-tools', priority: 0.8, changeFrequency: 'monthly' },
       { path: '/chef-tools/ingredients', priority: 0.9, changeFrequency: 'daily' },
       { path: '/chef-tools/ingredient-analyzer', priority: 0.8, changeFrequency: 'weekly' },
@@ -320,5 +321,41 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })
   );
 
-  return [...staticUrls, ...postUrls, ...ingredientUrls, ...ingredientProfileUrls, ...howManyUrls, ...ingredientStateUrls, ...recipeAnalysisUrls, ...dietUrls, ...rankingUrls];
+  // ─── Lab Combo recipe pages ──────────────────────────────────────────
+  const comboEntries = await fetchSitemapCombos().catch(() => []);
+
+  // Group by slug → collect locales and latest date
+  const comboSlugMap = new Map<string, { locales: Set<string>; date: Date }>();
+  for (const entry of comboEntries) {
+    const existing = comboSlugMap.get(entry.slug);
+    const d = toDate(entry.updated_at);
+    if (!existing) {
+      comboSlugMap.set(entry.slug, { locales: new Set([entry.locale]), date: d });
+    } else {
+      existing.locales.add(entry.locale);
+      if (d > existing.date) existing.date = d;
+    }
+  }
+
+  const recipePageUrls: MetadataRoute.Sitemap = Array.from(comboSlugMap.entries()).flatMap(
+    ([slug, { locales: availableLocales, date }]) => {
+      const alternates = {
+        languages: {
+          ...Object.fromEntries(
+            [...availableLocales].map((l) => [l, `${BASE_URL}/${l}/recipes/${slug}`])
+          ),
+          'x-default': `${BASE_URL}/${canonicalLocale}/recipes/${slug}`,
+        },
+      };
+      return [...availableLocales].map((locale) => ({
+        url: `${BASE_URL}/${locale}/recipes/${slug}`,
+        lastModified: date,
+        changeFrequency: 'weekly' as const,
+        priority: 0.9,
+        alternates,
+      }));
+    }
+  );
+
+  return [...staticUrls, ...postUrls, ...ingredientUrls, ...ingredientProfileUrls, ...howManyUrls, ...ingredientStateUrls, ...recipeAnalysisUrls, ...dietUrls, ...rankingUrls, ...recipePageUrls];
 }

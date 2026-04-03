@@ -1437,3 +1437,26 @@ export async function fetchAlsoCook(
   );
   return pages ?? [];
 }
+
+// ── Lab Combo listing / sitemap helpers ──────────────────────────────────────
+
+export type LabComboSitemapEntry = {
+  slug: string;
+  locale: string;
+  updated_at: string;
+  ingredients: string[];
+  goal: string | null;
+  meal_type: string | null;
+};
+
+/**
+ * GET /public/lab-combos/sitemap
+ * Lightweight list of all published combo pages (for sitemap & listing).
+ */
+export async function fetchSitemapCombos(): Promise<LabComboSitemapEntry[]> {
+  const entries = await apiFetchFresh<LabComboSitemapEntry[]>(
+    '/public/lab-combos/sitemap',
+    ['lab-combos-sitemap'],
+  );
+  return entries ?? [];
+}

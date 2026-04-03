@@ -73,11 +73,13 @@ export default async function LocaleLayout({
       <body className="antialiased min-h-screen">
         <Providers>
           <NextIntlClientProvider locale={locale} messages={messages}>
-            <Header locale={locale} />
-            <main className="container mx-auto px-4 py-8">
-              {children}
-            </main>
-            <Footer locale={locale} />
+            <div className="flex flex-col min-h-screen">
+              <Header locale={locale} />
+              <main className="flex-grow py-12 lg:py-20">
+                {children}
+              </main>
+              <Footer locale={locale} />
+            </div>
             <CookieConsent />
             <Toaster position="top-right" richColors />
           </NextIntlClientProvider>

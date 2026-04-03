@@ -39,7 +39,9 @@
     "chefToolsDesc": "Narzędzia dla kucharzy",
     "aboutDesc": "20+ lat doświadczenia",
     "contactDesc": "Skontaktuj się",
-    "restaurantsDesc": "Rozwiązania biznesowe"
+    "restaurantsDesc": "Rozwiązania biznesowe",
+    "recipes": "Przepisy",
+    "recipesDesc": "Przepisy AI od szefa kuchni"
   },
   "chefTools": {
     "meta": {
@@ -51,6 +53,30 @@
     "description": "Ty gotujesz. Ja myślę.\nWklej składniki — otrzymaj analizę, balans smaku i ulepszenia dania w sekundę.",
     "open": "Otwórz narzędzie",
     "back": "Powrót do pomocnika",
+    "toolGrid": {
+      "title": "Narzędzia kucharza",
+      "subtitle": "Wybierz narzędzie, które Ci pomoże w kuchni",
+      "ingredients": "Katalog składników",
+      "ingredientsDesc": "Wartości odżywcze, witaminy, minerały i właściwości kulinarne składników.",
+      "fishSeason": "Kalendarz sezonowości ryb",
+      "fishSeasonDesc": "Sprawdź, kiedy ryby i owoce morza są najświeższe i najtańsze.",
+      "lab": "Laboratorium kulinarne",
+      "labDesc": "Wklej składniki — AI zaproponuje danie z krokami i KBJU.",
+      "converter": "Przelicznik jednostek",
+      "converterDesc": "Przelicz gramy, uncje, litry i miary kuchenne.",
+      "recipeAnalyzer": "Analizator przepisów",
+      "recipeAnalyzerDesc": "Wklej przepis — otrzymaj analizę KBJU i sugestie ulepszeń.",
+      "flavorPairing": "Łączenie smaków",
+      "flavorPairingDesc": "Odkryj najlepsze kombinacje smakowe między składnikami.",
+      "nutrition": "Tabele wartości odżywczych",
+      "nutritionDesc": "Szczegółowe tabele KBJU, witamin i minerałów.",
+      "diet": "Diety",
+      "dietDesc": "Składniki filtrowane według diety: keto, vegan, paleo i inne.",
+      "ranking": "Rankingi składników",
+      "rankingDesc": "Top składniki według białka, żelaza, witaminy C i innych.",
+      "aiChat": "AI Sous-Chef",
+      "aiChatDesc": "Zadaj pytanie o gotowanie — AI odpowie jak profesjonalny sous-chef."
+    },
     "tabs": {
       "tools": "Narzędzia",
       "toolsDesc": "Przeliczniki i kalkulatory kuchenne",
@@ -967,7 +993,38 @@
       "nutritionTitle": "Kalkulator KBJU",
       "nutritionDesc": "Kalorie, białko, tłuszcze i węglowodany — z lokalizowanymi nazwami i zdjęciami.",
       "suggestionsTitle": "Ile gramów w szklance?",
-      "suggestionsDesc": "Tabela gramów dla szklanka, łyżka i łyżeczka różnych produktów."
+      "suggestionsDesc": "Tabela gramów dla szklanka, łyżka i łyżeczka różnych produktów.",
+      "ingredientsTitle": "Katalog składników",
+      "ingredientsDesc": "Wartości odżywcze, witaminy i minerały setek składników.",
+      "fishSeasonTitle": "Sezonowość ryb",
+      "fishSeasonDesc": "Sprawdź, kiedy ryby i owoce morza są najświeższe.",
+      "labTitle": "Laboratorium kulinarne",
+      "labDesc": "AI tworzy przepis z Twoich składników z krokami i KBJU.",
+      "flavorPairingTitle": "Łączenie smaków",
+      "flavorPairingDesc": "Odkryj najlepsze kombinacje smakowe między składnikami."
+    }
+  },
+  "recipesPage": {
+    "meta": {
+      "title": "Przepisy AI — Dima Fomin",
+      "description": "Przepisy wygenerowane przez AI z precyzyjnymi wartościami odżywczymi, krokami gotowania i dobranymi składnikami."
+    },
+    "title": "Przepisy AI",
+    "subtitle": "Przepisy z precyzyjnymi wartościami odżywczymi, tworzone przez AI na bazie najlepszych składników.",
+    "allRecipes": "Wszystkie przepisy",
+    "noRecipes": "Brak opublikowanych przepisów",
+    "kcal": "kcal",
+    "protein": "białko",
+    "steps": "kroków",
+    "viewRecipe": "Zobacz przepis",
+    "filters": {
+      "all": "Wszystkie",
+      "highProtein": "Wysokobiałkowe",
+      "lowCarb": "Niskowęglowodanowe",
+      "keto": "Keto",
+      "breakfast": "Śniadanie",
+      "lunch": "Obiad",
+      "dinner": "Kolacja"
     }
   },
   "blog": {
@@ -1502,7 +1559,10 @@
     "terms": "Regulamin",
     "cookies": "Cookie",
     "contact": "Kontakt",
-    "manageCookies": "Zarządzaj cookie"
+    "manageCookies": "Zarządzaj cookie",
+    "blog": "Blog",
+    "recipes": "Przepisy",
+    "chefTools": "Narzędzia"
   },
   "cookieConsent": {
     "message": "Używamy niezbędnych plików cookie do prawidłowego działania strony. Analityczne pliki cookie są ładowane wyłącznie po Twojej zgodzie. Możesz zmienić lub wycofać zgodę w dowolnym momencie.",

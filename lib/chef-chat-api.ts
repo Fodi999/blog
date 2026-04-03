@@ -45,9 +45,17 @@ export interface NutritionCard {
 
 export type Card = ProductCard | ConversionCard | NutritionCard;
 
+export interface Suggestion {
+  label: string;
+  query: string;
+  emoji?: string;
+}
+
 export interface ChatResponse {
   text?: string;
   cards?: Card[];
+  suggestions?: Suggestion[];
+  chef_tip?: string;
   intent?: string;
   intents?: string[];
   reason?: string;

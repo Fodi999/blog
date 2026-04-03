@@ -166,123 +166,126 @@ export function AISousChef() {
   const isIdle = turns.length === 0 && !loading;
 
   return (
-    <div className="max-w-2xl mx-auto">
-
-      {/* ── Hero headline (idle only) ── */}
-      {isIdle && (
-        <div className="text-center mb-10 animate-in fade-in duration-700">
-          <div className="inline-flex items-center gap-2 mb-4 px-3 py-1 rounded-full bg-primary/10 border border-primary/20">
-            <Sparkles className="w-3.5 h-3.5 text-primary" />
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">AI</span>
+    <div className="max-w-2xl mx-auto flex flex-col min-h-[50vh]">
+      {/* ── Content Area (Headline + Results + Loading) ── */}
+      <div className="flex-grow">
+        {/* ── Hero headline (idle only) ── */}
+        {isIdle && (
+          <div className="text-center mb-10 py-12 animate-in fade-in duration-700">
+            <h2 className="text-3xl sm:text-4xl font-black tracking-tighter leading-none italic mb-3">
+              {copy.headline}<span className="text-primary not-italic">.</span>
+            </h2>
+            <p className="text-sm text-muted-foreground/60 max-w-md mx-auto font-medium leading-relaxed">
+              {copy.sub}
+            </p>
           </div>
-          <h2 className="text-3xl sm:text-4xl font-black tracking-tighter leading-none italic mb-3">
-            {copy.headline}<span className="text-primary not-italic">.</span>
-          </h2>
-          <p className="text-sm text-muted-foreground/60 max-w-md mx-auto font-medium leading-relaxed">
-            {copy.sub}
-          </p>
-        </div>
-      )}
+        )}
 
-      {/* ── Input pod ── */}
-      <div className={cn(
-        'relative group rounded-[2.5rem] border bg-card/60 dark:bg-card/40 backdrop-blur-3xl',
-        'border-border/40 shadow-2xl transition-all duration-500',
-        'focus-within:border-primary/50 focus-within:shadow-primary/10',
-        'hover:border-primary/20',
-      )}>
-        <textarea
-          ref={inputRef}
-          value={query}
-          onChange={e => setQuery(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder={copy.placeholder}
-          rows={1}
-          disabled={loading}
-          className={cn(
-            'w-full resize-none bg-transparent px-6 pt-5 pb-16',
-            'text-base font-medium placeholder:text-muted-foreground/30',
-            'focus:outline-none overflow-hidden',
-            loading && 'opacity-50 pointer-events-none',
-          )}
-        />
+        {/* ── Results ── */}
+        {turns.length > 0 && (
+          <div ref={resultRef} className="space-y-6 pb-12">
+            {turns.map(turn => (
+              <TurnView key={turn.id} turn={turn} onSuggestion={submit} />
+            ))}
+          </div>
+        )}
 
-        <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between gap-2">
-          {/* Reset */}
-          {turns.length > 0 && !loading && (
-            <button
-              onClick={reset}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-muted-foreground/50 hover:text-primary hover:bg-primary/5 transition-all text-[11px] font-black uppercase tracking-widest"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-              {copy.reset}
-            </button>
-          )}
-          {turns.length === 0 && <span />}
-
-          {/* Send */}
-          <button
-            onClick={() => submit(query)}
-            disabled={loading || query.trim().length < 2}
-            className={cn(
-              'flex items-center gap-2 px-6 py-2.5 rounded-2xl transition-all duration-300',
-              'bg-primary text-primary-foreground font-black text-[11px] uppercase tracking-[0.2em]',
-              'hover:opacity-90 hover:shadow-xl hover:shadow-primary/20 hover:-translate-y-0.5 active:scale-95',
-              'disabled:opacity-10 disabled:pointer-events-none',
-            )}
-          >
-            {copy.generate}
-            <ArrowRight className="w-4 h-4" />
-          </button>
-        </div>
+        {/* ── Loading indicator ── */}
+        {loading && (
+          <div className="flex items-center justify-center gap-2 mb-12 animate-in fade-in duration-300">
+            {[0, 1, 2].map(i => (
+              <span
+                key={i}
+                className="w-2 h-2 rounded-full bg-primary animate-bounce"
+                style={{ animationDelay: `${i * 0.15}s` }}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* ── Chips (idle only) ── */}
-      {isIdle && (
-        <div className="flex flex-wrap justify-center gap-2 mt-5 animate-in fade-in slide-in-from-bottom-2 duration-500">
-          {copy.chips.map(chip => (
+      {/* ── Fixed Bottom Bar Area ── */}
+      <div className="sticky bottom-0 z-20 pt-12 pb-8 bg-gradient-to-t from-background via-background/95 to-transparent">
+        
+        {/* ── Chips (idle only, now at bottom) ── */}
+        {isIdle && (
+          <div className="flex flex-wrap justify-center gap-2 mb-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
+            {copy.chips.map(chip => (
+              <button
+                key={chip.query}
+                onClick={() => submit(chip.query)}
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-border/30 bg-muted/10 text-xs font-semibold text-muted-foreground hover:text-primary hover:border-primary/30 hover:bg-primary/5 transition-all hover:scale-[1.03] active:scale-95"
+              >
+                <span>{chip.emoji}</span>
+                {chip.label}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* ── Input pod ── */}
+        <div className={cn(
+          'relative group rounded-[2.5rem] border bg-card/60 dark:bg-card/40 backdrop-blur-3xl',
+          'border-border/40 shadow-2xl transition-all duration-500',
+          'focus-within:border-primary/50 focus-within:shadow-primary/10',
+          'hover:border-primary/20',
+        )}>
+          <textarea
+            ref={inputRef}
+            value={query}
+            onChange={e => setQuery(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder={copy.placeholder}
+            rows={1}
+            disabled={loading}
+            className={cn(
+              'w-full resize-none bg-transparent px-6 pt-5 pb-16',
+              'text-base font-medium placeholder:text-muted-foreground/30',
+              'focus:outline-none overflow-hidden',
+              loading && 'opacity-50 pointer-events-none',
+            )}
+          />
+
+          <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between gap-2">
+            {/* Reset */}
+            {turns.length > 0 && !loading && (
+              <button
+                onClick={reset}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-muted-foreground/50 hover:text-primary hover:bg-primary/5 transition-all text-[11px] font-black uppercase tracking-widest"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                {copy.reset}
+              </button>
+            )}
+            {turns.length === 0 && <span />}
+
+            {/* Send */}
             <button
-              key={chip.query}
-              onClick={() => submit(chip.query)}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-border/30 bg-muted/10 text-xs font-semibold text-muted-foreground hover:text-primary hover:border-primary/30 hover:bg-primary/5 transition-all hover:scale-[1.03] active:scale-95"
+              onClick={() => submit(query)}
+              disabled={loading || query.trim().length < 2}
+              className={cn(
+                'flex items-center gap-2 px-6 py-2.5 rounded-2xl transition-all duration-300',
+                'bg-primary text-primary-foreground font-black text-[11px] uppercase tracking-[0.2em]',
+                'hover:opacity-90 hover:shadow-xl hover:shadow-primary/20 hover:-translate-y-0.5 active:scale-95',
+                'disabled:opacity-10 disabled:pointer-events-none',
+              )}
             >
-              <span>{chip.emoji}</span>
-              {chip.label}
+              {copy.generate}
+              <ArrowRight className="w-4 h-4" />
             </button>
-          ))}
+          </div>
         </div>
-      )}
-
-      {/* ── Loading indicator ── */}
-      {loading && (
-        <div className="flex items-center justify-center gap-2 mt-8 animate-in fade-in duration-300">
-          {[0, 1, 2].map(i => (
-            <span
-              key={i}
-              className="w-2 h-2 rounded-full bg-primary animate-bounce"
-              style={{ animationDelay: `${i * 0.15}s` }}
-            />
-          ))}
-        </div>
-      )}
-
-      {/* ── Results ── */}
-      {turns.length > 0 && (
-        <div ref={resultRef} className="mt-8 space-y-6">
-          {turns.map(turn => (
-            <TurnView key={turn.id} turn={turn} />
-          ))}
-        </div>
-      )}
+      </div>
     </div>
   );
 }
 
 // ── TurnView ──────────────────────────────────────────────────────────────────
 
-function TurnView({ turn }: { turn: Turn }) {
+function TurnView({ turn, onSuggestion }: { turn: Turn; onSuggestion: (q: string) => void }) {
   const res = turn.response;
   const cards = res?.cards ?? [];
+  const suggestions = res?.suggestions ?? [];
 
   return (
     <div className="space-y-3 animate-in fade-in slide-in-from-bottom-3 duration-500">
@@ -319,6 +322,31 @@ function TurnView({ turn }: { turn: Turn }) {
       {cards.length > 0 && (
         <div className="px-1">
           <ChatCardsGrid cards={cards} />
+        </div>
+      )}
+
+      {/* Chef tip callout */}
+      {res?.chef_tip && (
+        <div className="px-1">
+          <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 dark:bg-amber-500/10 px-4 py-2.5 text-sm text-amber-900 dark:text-amber-200/90 font-medium leading-relaxed">
+            {res.chef_tip}
+          </div>
+        </div>
+      )}
+
+      {/* Suggestion buttons */}
+      {suggestions.length > 0 && (
+        <div className="flex flex-wrap gap-2 px-1">
+          {suggestions.map((s, i) => (
+            <button
+              key={i}
+              onClick={() => onSuggestion(s.query)}
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-primary/20 bg-primary/5 text-xs font-semibold text-primary hover:bg-primary/10 hover:border-primary/40 transition-all hover:scale-[1.03] active:scale-95"
+            >
+              {s.emoji && <span>{s.emoji}</span>}
+              {s.label}
+            </button>
+          ))}
         </div>
       )}
 

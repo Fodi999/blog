@@ -4,7 +4,7 @@ import { PostCard } from '@/components/PostCard';
 import { HeroImage } from '@/components/HeroImage';
 import { ImageGallery } from '@/components/ImageGallery';
 import { ScrollReveal } from '@/components/ScrollReveal';
-import { ArrowRight, Sparkles, BookOpen, Scale } from 'lucide-react';
+import { ArrowRight, Sparkles, BookOpen, Scale, Search, Fish, FlaskConical, Utensils } from 'lucide-react';
 import { getLatestPosts } from '@/lib/posts';
 import { Button } from '@/components/ui/button';
 import { JsonLd } from '@/components/JsonLd';
@@ -241,9 +241,13 @@ export default async function HomePage({
         </ScrollReveal>
         
         <ScrollReveal delay={200}>
-          <div className="grid md:grid-cols-1 max-w-md gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
+              { href: '/chef-tools/ingredients', icon: Search, title: t('chefToolsSection.ingredientsTitle'), desc: t('chefToolsSection.ingredientsDesc') },
+              { href: '/chef-tools/fish-season', icon: Fish, title: t('chefToolsSection.fishSeasonTitle'), desc: t('chefToolsSection.fishSeasonDesc') },
+              { href: '/chef-tools/lab', icon: FlaskConical, title: t('chefToolsSection.labTitle'), desc: t('chefToolsSection.labDesc') },
               { href: '/chef-tools/converter', icon: Scale, title: t('chefToolsSection.converterTitle'), desc: t('chefToolsSection.converterDesc') },
+              { href: '/chef-tools/flavor-pairing', icon: Utensils, title: t('chefToolsSection.flavorPairingTitle'), desc: t('chefToolsSection.flavorPairingDesc') },
             ].map(({ href, icon: Icon, title, desc }) => (
               <Link key={href} href={href}>
                 <div className="group border-2 border-border/60 rounded-3xl p-8 hover:border-primary/40 transition-all duration-500 bg-background h-full hover-lift hover-glow glow-border">
