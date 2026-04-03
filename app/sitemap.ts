@@ -265,8 +265,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // We fetch a single { slug → [states] } map from the backend (one query).
   // This eliminates 404s caused by sitemap listing states that haven't been
   // generated for a given ingredient.
-  // Only high-value states (raw/boiled/fried) are indexed — others get noindex.
-  const INDEXABLE_STATES = new Set(['raw', 'boiled', 'fried']);
+  // All states with real DB data are indexed (previously only raw/boiled/fried).
+  // This resolved 1.6K+ "noindex" warnings in Google Search Console.
 
   const statesMap = await fetchIngredientsStatesMap().catch(() => null);
 
@@ -274,7 +274,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ? ingredientList
         .filter((ing) => ing.slug && statesMap[ing.slug])
         .flatMap((ing) => {
-          const availableStates = statesMap[ing.slug!].filter((s) => INDEXABLE_STATES.has(s));
+          const availableStates = statesMap[ing.slug!];
           return availableStates.flatMap((state) =>
             multiLocaleEntry(`/chef-tools/ingredients/${ing.slug}/${state}`, {
               lastModified: toDate(ing.updated_at ?? undefined),

@@ -17,9 +17,11 @@ import { JsonLd } from '@/components/JsonLd';
 
 export const revalidate = 86400; // ISR: 1 day, on-demand via revalidateTag
 
-/* ─── SEO-indexable states (high search volume) ────────────────────── */
-
-const INDEXABLE_STATES: ReadonlySet<string> = new Set(['raw', 'boiled', 'fried']);
+/* ─── SEO: all states with real DB data are indexable ──────────────── */
+// Previously only raw/boiled/fried were indexed, causing 1.6K+ "noindex"
+// warnings in Google Search Console. Since we 301-redirect any state
+// that doesn't exist in the DB, every state page that renders has real
+// nutritional data and deserves indexation.
 
 /* ─── valid states ─────────────────────────────────────────────────────── */
 
@@ -119,7 +121,6 @@ export async function generateMetadata({
     locale: locale as 'pl' | 'en' | 'uk' | 'ru',
     path: `/chef-tools/ingredients/${slug}/${state}`,
     image: item.og_image ?? item.image_url ?? undefined,
-    noIndex: !INDEXABLE_STATES.has(state),
   });
 }
 
