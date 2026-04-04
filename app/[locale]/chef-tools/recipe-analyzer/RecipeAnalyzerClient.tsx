@@ -1,12 +1,14 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { Plus, Trash2, ChefHat, Loader2, Sparkles, AlertTriangle } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { API_URL } from '@/lib/api';
 import { FlavorRadar } from './FlavorRadar';
 import { NutritionCard } from './NutritionCard';
 import { SuggestionCard } from './SuggestionCard';
+import { DiagnosisCard, type RuleDiagnosis } from './DiagnosisCard';
+import { ChefSummary, type NutritionSnapshot } from './ChefSummary';
 import { cn } from '@/lib/utils';
 
 // ── Types ────────────────────────────────────────────────────────────────────
@@ -75,6 +77,7 @@ type AnalyzeResponse = {
   diet: string[];
   suggestions: SuggestionItem[];
   ingredients: IngredientDetail[];
+  diagnosis: RuleDiagnosis;
 };
 
 type SearchResult = {
@@ -145,6 +148,18 @@ export function RecipeAnalyzerClient() {
   const [activeRowIdx, setActiveRowIdx] = useState<number | null>(null);
   const [searchLoading, setSearchLoading] = useState(false);
 
+  // Re-analyze flag (auto-analyze after adding ingredient from suggestion/diagnosis)
+  const [pendingReanalyze, setPendingReanalyze] = useState(false);
+
+  // Auto-improve loading state
+  const [improving, setImproving] = useState(false);
+
+  // Snapshot of nutrition before auto-improve (for before/after comparison)
+  const [previousSnapshot, setPreviousSnapshot] = useState<NutritionSnapshot | null>(null);
+
+  // Top 3 suggestions toggle
+  const [showAllSuggestions, setShowAllSuggestions] = useState(false);
+
   // ── Ingredient search ──
   const searchIngredients = useCallback(async (query: string) => {
     if (query.length < 2) {
@@ -201,6 +216,8 @@ export function RecipeAnalyzerClient() {
   const loadQuickRecipe = async (recipe: typeof QUICK_RECIPES[0]) => {
     setResult(null);
     setError(null);
+    setPreviousSnapshot(null);
+    setShowAllSuggestions(false);
     // Set rows immediately with slug as placeholder name
     const initial: IngredientRow[] = recipe.ingredients.map(i => ({ slug: i.slug, name: i.slug, grams: i.grams }));
     setRows(initial);
@@ -223,6 +240,70 @@ export function RecipeAnalyzerClient() {
     } catch { /* keep slug names */ }
   };
 
+  // ── Add ingredient to recipe (from suggestion/diagnosis) ──
+  const addIngredientToRecipe = useCallback(async (slug: string, name?: string) => {
+    // Check if already in the list
+    const existing = rows.find(r => r.slug === slug);
+    if (existing) return;
+
+    // Try to resolve localized name + image
+    let resolvedName = name || slug;
+    let imageUrl: string | undefined;
+    try {
+      const res = await fetch(`${API_URL}/public/tools/product-search?q=${encodeURIComponent(slug)}&lang=${locale}&limit=1`);
+      if (res.ok) {
+        const data = await res.json();
+        const found = (data.results || []).find((r: any) => r.slug === slug);
+        if (found) {
+          resolvedName = found.name || slug;
+          imageUrl = found.image_url;
+        }
+      }
+    } catch { /* ignore */ }
+
+    // Add to rows (replace empty row if exists, otherwise append)
+    setRows(prev => {
+      const emptyIdx = prev.findIndex(r => !r.slug);
+      const newRow: IngredientRow = { slug, name: resolvedName, grams: 50, image_url: imageUrl };
+      if (emptyIdx >= 0) {
+        const next = [...prev];
+        next[emptyIdx] = newRow;
+        return next;
+      }
+      return [...prev, newRow];
+    });
+
+    // Trigger auto re-analyze
+    setPendingReanalyze(true);
+  }, [rows, locale]);
+
+  // Auto-improve: capture snapshot, add best fix ingredients, then re-analyze
+  const handleAutoImprove = useCallback(async (slugs: string[]) => {
+    // Capture current state as "before" snapshot
+    if (result) {
+      setPreviousSnapshot({
+        score: result.score,
+        health_score: result.diagnosis.health_score,
+        calories: result.nutrition.calories,
+        protein: result.nutrition.protein,
+        fat: result.nutrition.fat,
+        carbs: result.nutrition.carbs,
+        fiber: result.nutrition.fiber,
+        sugar: result.nutrition.sugar,
+      });
+    }
+    setShowAllSuggestions(false);
+    setImproving(true);
+    for (const slug of slugs) {
+      await addIngredientToRecipe(slug);
+      await new Promise(r => setTimeout(r, 100));
+    }
+    setImproving(false);
+  }, [addIngredientToRecipe, result]);
+
+  // Auto re-analyze when ingredient added from suggestion/diagnosis
+  const analyzeRef = useRef<(() => void) | null>(null);
+
   // ── Analyze ──
   const analyze = async () => {
     const validRows = rows.filter(r => r.slug && r.grams > 0);
@@ -234,6 +315,7 @@ export function RecipeAnalyzerClient() {
     setLoading(true);
     setError(null);
     setResult(null);
+    setShowAllSuggestions(false);
 
     try {
       const res = await fetch(`${API_URL}/public/tools/recipe-analyze`, {
@@ -258,6 +340,18 @@ export function RecipeAnalyzerClient() {
       setLoading(false);
     }
   };
+
+  // Keep ref in sync for auto-reanalyze
+  analyzeRef.current = analyze;
+
+  // Auto re-analyze after adding ingredient from suggestion/diagnosis
+  useEffect(() => {
+    if (pendingReanalyze && !loading) {
+      setPendingReanalyze(false);
+      const timer = setTimeout(() => analyzeRef.current?.(), 150);
+      return () => clearTimeout(timer);
+    }
+  }, [pendingReanalyze, loading]);
 
   return (
     <div className="space-y-8">
@@ -414,14 +508,60 @@ export function RecipeAnalyzerClient() {
 
       {/* Results */}
       {result && (
-        <div className="space-y-8 pt-4">
-          {/* Per-ingredient breakdown */}
-          <div className="border border-border/60 rounded-2xl overflow-hidden">
-            <div className="bg-muted/30 px-4 py-3 border-b border-border/40">
+        <div className="space-y-6 pt-4">
+          {/* �‍🍳 Chef Summary — hero verdict + auto-improve */}
+          {result.diagnosis && (
+            <ChefSummary
+              diagnosis={result.diagnosis}
+              score={result.score}
+              locale={locale}
+              onAutoImprove={handleAutoImprove}
+              improving={improving}
+              previous={previousSnapshot}
+              current={{
+                score: result.score,
+                health_score: result.diagnosis.health_score,
+                calories: result.nutrition.calories,
+                protein: result.nutrition.protein,
+                fat: result.nutrition.fat,
+                carbs: result.nutrition.carbs,
+                fiber: result.nutrition.fiber,
+                sugar: result.nutrition.sugar,
+              }}
+            />
+          )}
+
+          {/* 🔍 Grouped Diagnosis — problem → solution pairs */}
+          {result.diagnosis && (
+            <DiagnosisCard
+              diagnosis={result.diagnosis}
+              locale={locale}
+            />
+          )}
+
+          {/* Nutrition + Flavor side by side */}
+          <div className="grid md:grid-cols-2 gap-6">
+            <NutritionCard
+              nutrition={result.nutrition}
+              perPortion={result.per_portion}
+              portions={result.portions}
+              macros={result.macros}
+              score={result.score}
+              diet={result.diet}
+            />
+            <FlavorRadar flavor={result.flavor} />
+          </div>
+
+          {/* Per-ingredient breakdown (collapsible) */}
+          <details className="group border border-border/60 rounded-2xl overflow-hidden">
+            <summary className="bg-muted/30 px-4 py-3 border-b border-border/40 cursor-pointer flex items-center justify-between hover:bg-muted/50 transition-colors">
               <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground">
                 {t('ingredientBreakdown')}
               </h3>
-            </div>
+              <svg className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+            </summary>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
@@ -453,22 +593,9 @@ export function RecipeAnalyzerClient() {
                 </tbody>
               </table>
             </div>
-          </div>
+          </details>
 
-          {/* Nutrition + Flavor side by side */}
-          <div className="grid md:grid-cols-2 gap-6">
-            <NutritionCard
-              nutrition={result.nutrition}
-              perPortion={result.per_portion}
-              portions={result.portions}
-              macros={result.macros}
-              score={result.score}
-              diet={result.diet}
-            />
-            <FlavorRadar flavor={result.flavor} />
-          </div>
-
-          {/* Suggestions */}
+          {/* Suggestions — Top 3 + show more */}
           {result.suggestions.length > 0 && (
             <div>
               <div className="flex items-center gap-2 mb-4">
@@ -478,10 +605,22 @@ export function RecipeAnalyzerClient() {
                 </h3>
               </div>
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {result.suggestions.map(s => (
-                  <SuggestionCard key={s.slug} suggestion={s} />
+                {(showAllSuggestions ? result.suggestions : result.suggestions.slice(0, 3)).map(s => (
+                  <SuggestionCard
+                    key={s.slug}
+                    suggestion={s}
+                    onAdd={(slug, name) => addIngredientToRecipe(slug, name)}
+                  />
                 ))}
               </div>
+              {result.suggestions.length > 3 && !showAllSuggestions && (
+                <button
+                  onClick={() => setShowAllSuggestions(true)}
+                  className="mt-3 w-full py-2.5 text-sm font-bold text-muted-foreground hover:text-primary border border-border/50 hover:border-primary/30 rounded-xl transition-all"
+                >
+                  {t('showMore')} ({result.suggestions.length - 3})
+                </button>
+              )}
             </div>
           )}
         </div>
