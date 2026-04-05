@@ -360,7 +360,17 @@
         "addToRecipe": "Add to recipe",
         "whatToDo": "What to do",
         "autoImprove": "Auto-improve recipe",
+        "improving": "Improving…",
+        "improveMore": "Improve more",
+        "allOptimized": "All optimized",
+        "limitReached": "Optimization limit reached",
+        "changeConcept": "For further improvement, try changing ingredients manually",
+        "perfectBalance": "Recipe is perfectly balanced!",
+        "technicalLimit": "Automatic improvements exhausted",
+        "needsManualFix": "Needs manual changes",
+        "whatBlocks": "What prevents further improvement:",
         "beforeAfter": "Before → After",
+        "whatWeChanged": "What we changed",
         "showMore": "Show more suggestions"
       },
       "flavorPairing": {

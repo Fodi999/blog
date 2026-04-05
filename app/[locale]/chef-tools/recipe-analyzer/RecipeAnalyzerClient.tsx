@@ -8,8 +8,53 @@ import { FlavorRadar } from './FlavorRadar';
 import { NutritionCard } from './NutritionCard';
 import { SuggestionCard } from './SuggestionCard';
 import { DiagnosisCard, type RuleDiagnosis } from './DiagnosisCard';
-import { ChefSummary, type NutritionSnapshot } from './ChefSummary';
+import { ChefSummary, type NutritionSnapshot, type ChangeLogEntry, collectReduceRules } from './ChefSummary';
 import { cn } from '@/lib/utils';
+
+// ── Adaptive grams — smart portions instead of fixed 50g ─────────────────────
+// Maps slug patterns to sensible auto-improve portions.
+// "Don't pour oil" — add just enough to fix the gap.
+
+const SLUG_GRAMS: Record<string, number> = {
+  // Oils & fats — tiny amounts (10-15g)
+  'olive-oil': 10, 'sunflower-oil': 10, 'coconut-oil': 10,
+  'butter': 15, 'lard': 10, 'cream': 20, 'sour-cream': 20,
+  'mayonnaise': 10,
+  // Spices & herbs — micro amounts (2-5g)
+  'black-pepper': 2, 'garlic': 5, 'basil': 3, 'onion': 30,
+  'cinnamon': 2, 'turmeric': 2, 'paprika': 2, 'oregano': 2,
+  'cumin': 2, 'rosemary': 2, 'thyme': 2, 'dill': 3,
+  'parsley': 5, 'cilantro': 3, 'ginger': 3, 'chili': 2,
+  // Acids — small amounts
+  'lemon': 15, 'vinegar': 5, 'lime': 10,
+  // Proteins — moderate (50g)
+  'chicken-breast': 50, 'chicken-eggs': 50, 'salmon': 50,
+  'hard-cheese': 20, 'lentils': 40, 'tofu': 50,
+  // Vegetables — medium (40-60g)
+  'tomato': 50, 'broccoli': 50, 'spinach': 30, 'carrot': 40,
+  // Sweeteners — small
+  'honey': 10, 'sugar': 5, 'maple-syrup': 10,
+  // Nuts & seeds
+  'walnuts': 15, 'almonds': 15, 'flaxseed': 5,
+  // Grains
+  'oatmeal': 30, 'rice': 50, 'bread': 30,
+  // Dairy
+  'milk': 50, 'cottage-cheese': 50, 'yogurt': 50,
+  'soy-sauce': 5,
+};
+
+/** Resolve adaptive grams for an ingredient slug.
+ *  Falls back to 30g for unknown slugs (conservative default). */
+function smartGrams(slug: string): number {
+  if (SLUG_GRAMS[slug]) return SLUG_GRAMS[slug];
+  // Pattern-based fallbacks
+  if (slug.includes('oil')) return 10;
+  if (slug.includes('pepper') || slug.includes('spice')) return 2;
+  if (slug.includes('herb') || slug.includes('leaf')) return 3;
+  if (slug.includes('sauce')) return 10;
+  if (slug.includes('cheese')) return 20;
+  return 30; // conservative default
+}
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -75,6 +120,7 @@ type AnalyzeResponse = {
   score: number;
   flavor: FlavorSummary;
   diet: string[];
+  dish_type?: 'dessert' | 'savory' | 'neutral';
   suggestions: SuggestionItem[];
   ingredients: IngredientDetail[];
   diagnosis: RuleDiagnosis;
@@ -157,8 +203,17 @@ export function RecipeAnalyzerClient() {
   // Snapshot of nutrition before auto-improve (for before/after comparison)
   const [previousSnapshot, setPreviousSnapshot] = useState<NutritionSnapshot | null>(null);
 
+  // Changelog of what auto-improve did
+  const [changeLog, setChangeLog] = useState<ChangeLogEntry[]>([]);
+
   // Top 3 suggestions toggle
   const [showAllSuggestions, setShowAllSuggestions] = useState(false);
+
+  // Improve attempt counter (hard limit = 3)
+  const [improveCount, setImproveCount] = useState(0);
+
+  // True when last improve changed nothing (no-op)
+  const [improveExhausted, setImproveExhausted] = useState(false);
 
   // ── Ingredient search ──
   const searchIngredients = useCallback(async (query: string) => {
@@ -218,6 +273,9 @@ export function RecipeAnalyzerClient() {
     setError(null);
     setPreviousSnapshot(null);
     setShowAllSuggestions(false);
+    setChangeLog([]);
+    setImproveCount(0);
+    setImproveExhausted(false);
     // Set rows immediately with slug as placeholder name
     const initial: IngredientRow[] = recipe.ingredients.map(i => ({ slug: i.slug, name: i.slug, grams: i.grams }));
     setRows(initial);
@@ -264,7 +322,7 @@ export function RecipeAnalyzerClient() {
     // Add to rows (replace empty row if exists, otherwise append)
     setRows(prev => {
       const emptyIdx = prev.findIndex(r => !r.slug);
-      const newRow: IngredientRow = { slug, name: resolvedName, grams: 50, image_url: imageUrl };
+      const newRow: IngredientRow = { slug, name: resolvedName, grams: smartGrams(slug), image_url: imageUrl };
       if (emptyIdx >= 0) {
         const next = [...prev];
         next[emptyIdx] = newRow;
@@ -277,35 +335,184 @@ export function RecipeAnalyzerClient() {
     setPendingReanalyze(true);
   }, [rows, locale]);
 
-  // Auto-improve: capture snapshot, add best fix ingredients, then re-analyze
+  // ── Smart auto-improve: reduce bad → add good → show NET changes ──
   const handleAutoImprove = useCallback(async (slugs: string[]) => {
-    // Capture current state as "before" snapshot
-    if (result) {
-      setPreviousSnapshot({
-        score: result.score,
-        health_score: result.diagnosis.health_score,
-        calories: result.nutrition.calories,
-        protein: result.nutrition.protein,
-        fat: result.nutrition.fat,
-        carbs: result.nutrition.carbs,
-        fiber: result.nutrition.fiber,
-        sugar: result.nutrition.sugar,
-      });
-    }
+    if (!result) return;
+
+    // 1. Capture "before" snapshot
+    setPreviousSnapshot({
+      score: result.score,
+      health_score: result.diagnosis.health_score,
+      calories: result.nutrition.calories,
+      protein: result.nutrition.protein,
+      fat: result.nutrition.fat,
+      carbs: result.nutrition.carbs,
+      fiber: result.nutrition.fiber,
+      sugar: result.nutrition.sugar,
+    });
+
     setShowAllSuggestions(false);
     setImproving(true);
+
+    const reduceRules = collectReduceRules(result.diagnosis.issues);
+
+    // ── Data-driven reduce: use actual ingredient nutrition, not hardcoded lists ──
+    // For each reduce rule, find the biggest contributors in the recipe.
+    const reduceSlugs = new Set<string>();
+    for (const rule of reduceRules) {
+      // Sort recipe ingredients by the problematic nutrient (descending)
+      const sorted = [...result.ingredients]
+        .filter(i => i.found)
+        .sort((a, b) => {
+          if (rule === 'high_fat_ratio') return b.fat - a.fat;
+          if (rule === 'high_sugar')     return b.carbs - a.carbs; // sugar is part of carbs
+          if (rule === 'high_carbs')     return b.carbs - a.carbs;
+          return 0;
+        });
+      // Mark the top 1-2 contributors for reduction
+      for (const ing of sorted.slice(0, 2)) {
+        const nutrient = rule === 'high_fat_ratio' ? ing.fat
+                       : rule === 'high_sugar'     ? ing.carbs
+                       : rule === 'high_carbs'     ? ing.carbs
+                       : 0;
+        if (nutrient > 0) reduceSlugs.add(ing.slug);
+      }
+    }
+
+    // 2. Snapshot BEFORE rows (from latest state)
+    let rowsBefore: IngredientRow[] = [];
+    setRows(prev => { rowsBefore = prev.map(r => ({ ...r })); return prev; });
+    // Small tick to let state settle
+    await new Promise(r => setTimeout(r, 50));
+
+    // 3. Reduce grams for the biggest offenders (single pass)
+    if (reduceSlugs.size > 0) {
+      setRows(prev => {
+        const next = [...prev];
+        for (let i = 0; i < next.length; i++) {
+          if (reduceSlugs.has(next[i].slug) && next[i].grams > 20) {
+            const newGrams = Math.max(Math.round(next[i].grams * 0.6), 10);
+            next[i] = { ...next[i], grams: newGrams };
+          }
+        }
+        return next;
+      });
+    }
+
+    // 4. Add new ingredients — skip if slug is one of the reduce targets
+    const addedSlugs: { slug: string; name: string; grams: number }[] = [];
     for (const slug of slugs) {
-      await addIngredientToRecipe(slug);
+      // Skip if this slug is one of the reduce targets
+      if (reduceSlugs.has(slug)) continue;
+
+      // Check if already in the recipe
+      let alreadyExists = false;
+      setRows(prev => {
+        alreadyExists = prev.some(r => r.slug === slug);
+        return prev;
+      });
+      await new Promise(r => setTimeout(r, 10));
+      if (alreadyExists) continue;
+
+      // Resolve name + image
+      let resolvedName = slug;
+      let imageUrl: string | undefined;
+      try {
+        const res = await fetch(`${API_URL}/public/tools/product-search?q=${encodeURIComponent(slug)}&lang=${locale}&limit=1`);
+        if (res.ok) {
+          const data = await res.json();
+          const found = (data.results || []).find((r: any) => r.slug === slug);
+          if (found) { resolvedName = found.name || slug; imageUrl = found.image_url; }
+        }
+      } catch { /* ignore */ }
+
+      addedSlugs.push({ slug, name: resolvedName, grams: smartGrams(slug) });
+
+      setRows(prev => {
+        const emptyIdx = prev.findIndex(r => !r.slug);
+        const newRow: IngredientRow = { slug, name: resolvedName, grams: smartGrams(slug), image_url: imageUrl };
+        if (emptyIdx >= 0) {
+          const next = [...prev];
+          next[emptyIdx] = newRow;
+          return next;
+        }
+        return [...prev, newRow];
+      });
+
       await new Promise(r => setTimeout(r, 100));
     }
+
+    // 5. Build NET changelog by comparing before → after
+    let rowsAfter: IngredientRow[] = [];
+    setRows(prev => { rowsAfter = prev.map(r => ({ ...r })); return prev; });
+    await new Promise(r => setTimeout(r, 10));
+
+    const log: ChangeLogEntry[] = [];
+    const beforeMap = new Map(rowsBefore.filter(r => r.slug).map(r => [r.slug, r]));
+    const afterMap = new Map(rowsAfter.filter(r => r.slug).map(r => [r.slug, r]));
+
+    // Reductions: existed before with MORE grams
+    for (const [slug, after] of afterMap) {
+      const before = beforeMap.get(slug);
+      if (before && before.grams > after.grams) {
+        log.push({
+          type: 'reduced',
+          slug,
+          name: after.name || slug,
+          grams: after.grams,
+          delta: before.grams - after.grams,
+        });
+      }
+    }
+
+    // Additions: didn't exist before
+    for (const [slug, after] of afterMap) {
+      if (!beforeMap.has(slug)) {
+        log.push({
+          type: 'added',
+          slug,
+          name: after.name || slug,
+          grams: after.grams,
+        });
+      }
+    }
+
+    // 6. NO-OP detection: if nothing changed → mark exhausted
+    const isNoOp = log.length === 0;
+    if (isNoOp) {
+      setImproveExhausted(true);
+      setImproving(false);
+      return; // don't re-analyze, nothing changed
+    }
+
+    // 7. Increment improve counter
+    setImproveCount(prev => prev + 1);
+
+    // 8. Save changelog and trigger re-analyze
+    setChangeLog(prev => {
+      // On "improve more", merge with previous changelog
+      if (prev.length === 0) return log;
+      const merged = [...prev];
+      for (const entry of log) {
+        const idx = merged.findIndex(e => e.slug === entry.slug);
+        if (idx >= 0) {
+          // Update existing: recalculate delta from original
+          merged[idx] = { ...entry, delta: entry.delta };
+        } else {
+          merged.push(entry);
+        }
+      }
+      return merged;
+    });
     setImproving(false);
-  }, [addIngredientToRecipe, result]);
+    setPendingReanalyze(true);
+  }, [result, locale]);
 
   // Auto re-analyze when ingredient added from suggestion/diagnosis
-  const analyzeRef = useRef<(() => void) | null>(null);
+  const analyzeRef = useRef<((keepPrevious?: boolean) => void) | null>(null);
 
   // ── Analyze ──
-  const analyze = async () => {
+  const analyze = async (keepPrevious = false) => {
     const validRows = rows.filter(r => r.slug && r.grams > 0);
     if (validRows.length === 0) {
       setError(t('addAtLeastOne'));
@@ -314,8 +521,18 @@ export function RecipeAnalyzerClient() {
 
     setLoading(true);
     setError(null);
-    setResult(null);
+    if (!keepPrevious) {
+      setResult(null);
+    }
     setShowAllSuggestions(false);
+
+    // Clear previous comparison if user manually re-analyzes
+    if (!keepPrevious) {
+      setPreviousSnapshot(null);
+      setChangeLog([]);
+      setImproveCount(0);
+      setImproveExhausted(false);
+    }
 
     try {
       const res = await fetch(`${API_URL}/public/tools/recipe-analyze`, {
@@ -348,10 +565,12 @@ export function RecipeAnalyzerClient() {
   useEffect(() => {
     if (pendingReanalyze && !loading) {
       setPendingReanalyze(false);
-      const timer = setTimeout(() => analyzeRef.current?.(), 150);
+      // If we have a snapshot, keep previous result visible during loading
+      const keepPrev = !!previousSnapshot;
+      const timer = setTimeout(() => analyzeRef.current?.(keepPrev), 150);
       return () => clearTimeout(timer);
     }
-  }, [pendingReanalyze, loading]);
+  }, [pendingReanalyze, loading, previousSnapshot]);
 
   return (
     <div className="space-y-8">
@@ -476,7 +695,7 @@ export function RecipeAnalyzerClient() {
 
       {/* Analyze button */}
       <button
-        onClick={analyze}
+        onClick={() => analyze()}
         disabled={loading || rows.every(r => !r.slug)}
         className={cn(
           "w-full py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all duration-200",
@@ -528,6 +747,9 @@ export function RecipeAnalyzerClient() {
                 fiber: result.nutrition.fiber,
                 sugar: result.nutrition.sugar,
               }}
+              changeLog={changeLog}
+              improveCount={improveCount}
+              improveExhausted={improveExhausted}
             />
           )}
 

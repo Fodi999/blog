@@ -360,7 +360,17 @@
         "addToRecipe": "Додати до рецепту",
         "whatToDo": "Що зробити",
         "autoImprove": "Покращити автоматично",
+        "improving": "Покращуємо…",
+        "improveMore": "Покращити ще",
+        "allOptimized": "Все оптимізовано",
+        "limitReached": "Досягнуто ліміт оптимізації",
+        "changeConcept": "Для подальшого покращення змініть інгредієнти вручну",
+        "perfectBalance": "Рецепт ідеально збалансований!",
+        "technicalLimit": "Автоматичні покращення вичерпані",
+        "needsManualFix": "Потрібні ручні зміни",
+        "whatBlocks": "Що заважає подальшому покращенню:",
         "beforeAfter": "Було → Стало",
+        "whatWeChanged": "Що ми змінили",
         "showMore": "Показати ще"
       },
       "flavorPairing": {

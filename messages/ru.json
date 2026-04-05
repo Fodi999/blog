@@ -360,7 +360,17 @@
         "addToRecipe": "Добавить в рецепт",
         "whatToDo": "Что делать",
         "autoImprove": "Улучшить автоматически",
+        "improving": "Улучшаем…",
+        "improveMore": "Улучшить ещё",
+        "allOptimized": "Всё оптимизировано",
+        "limitReached": "Достигнут предел оптимизации",
+        "changeConcept": "Для дальнейшего улучшения измените ингредиенты вручную",
+        "perfectBalance": "Рецепт идеально сбалансирован!",
+        "technicalLimit": "Автоматические улучшения исчерпаны",
+        "needsManualFix": "Требуется ручная корректировка",
+        "whatBlocks": "Что мешает дальше улучшить:",
         "beforeAfter": "Было → Стало",
+        "whatWeChanged": "Что мы изменили",
         "showMore": "Показать ещё"
       },
       "flavorPairing": {

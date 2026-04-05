@@ -360,7 +360,17 @@
         "addToRecipe": "Dodaj do przepisu",
         "whatToDo": "Co zrobić",
         "autoImprove": "Ulepsz automatycznie",
+        "improving": "Ulepszanie…",
+        "improveMore": "Ulepsz jeszcze",
+        "allOptimized": "Wszystko zoptymalizowane",
+        "limitReached": "Osiągnięto limit optymalizacji",
+        "changeConcept": "Aby dalej ulepszyć, zmień składniki ręcznie",
+        "perfectBalance": "Przepis jest doskonale zbilansowany!",
+        "technicalLimit": "Automatyczne ulepszenia wyczerpane",
+        "needsManualFix": "Wymaga ręcznych zmian",
+        "whatBlocks": "Co blokuje dalsze ulepszenie:",
         "beforeAfter": "Przed → Po",
+        "whatWeChanged": "Co zmieniliśmy",
         "showMore": "Pokaż więcej"
       },
       "flavorPairing": {
