@@ -225,7 +225,11 @@
         "density": "Gęstość",
         "nutritionResult": "Wartość odżywcza",
         "contains": "zawiera",
-        "microtrust": "Wyniki obliczone na podstawie rzeczywistej gęstości składników"
+        "microtrust": "Wyniki obliczone na podstawie rzeczywistej gęstości składników",
+        "chefTip": "Rada szefa",
+        "useInRecipe": "Użyj w przepisie",
+        "alsoEquals": "To także",
+        "copyResult": "Kopiuj"
       },
       "popularConversions": {
         "title": "Popularne przeliczenia kuchenne",

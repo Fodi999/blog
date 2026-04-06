@@ -80,6 +80,10 @@ export default async function ConverterPage({
     nutritionResult:       t('tools.ingredientConverter.nutritionResult'),
     contains:              t('tools.ingredientConverter.contains'),
     microtrust:            t('tools.ingredientConverter.microtrust'),
+    chefTip:               t('tools.ingredientConverter.chefTip'),
+    useInRecipe:           t('tools.ingredientConverter.useInRecipe'),
+    alsoEquals:            t('tools.ingredientConverter.alsoEquals'),
+    copyResult:            t('tools.ingredientConverter.copyResult'),
   };
 
   return (

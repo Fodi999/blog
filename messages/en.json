@@ -225,7 +225,11 @@
         "density": "Density of",
         "nutritionResult": "Nutritional value",
         "contains": "contains",
-        "microtrust": "Results calculated based on real ingredient density"
+        "microtrust": "Results calculated based on real ingredient density",
+        "chefTip": "Chef's tip",
+        "useInRecipe": "Use in recipe",
+        "alsoEquals": "Also equals",
+        "copyResult": "Copy"
       },
       "popularConversions": {
         "title": "Popular Kitchen Conversions",

@@ -2,8 +2,9 @@
 
 import { useState, useEffect, useRef, useTransition, useCallback } from 'react';
 import { useLocale } from 'next-intl';
+import { Link } from '@/i18n/routing';
 import Image from 'next/image';
-import { Search, X, Flame, Beef, Droplets, Wheat, ArrowRight, Zap, Package } from 'lucide-react';
+import { Search, X, Flame, Beef, Droplets, Wheat, ArrowRight, Zap, Package, ChefHat, Copy, Check, FlaskConical } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
@@ -47,6 +48,10 @@ export type I18nIngConverter = {
   nutritionResult: string;
   contains: string;
   microtrust: string;
+  chefTip: string;
+  useInRecipe: string;
+  alsoEquals: string;
+  copyResult: string;
 };
 
 type ConvertResult = {
@@ -204,13 +209,19 @@ function unitLabel(code: string, locale: string): string {
 }
 
 // Popular preset queries — fill form on click
-const POPULAR_PRESETS: { slug: string; nameEn: string; fromUnit: string; toUnit: string; amount: string }[] = [
-  { slug: 'wheat-flour', nameEn: 'Wheat Flour', fromUnit: 'cup', toUnit: 'g', amount: '1' },
-  { slug: 'butter', nameEn: 'Butter', fromUnit: 'tbsp', toUnit: 'g', amount: '1' },
-  { slug: 'sugar', nameEn: 'Sugar', fromUnit: 'cup', toUnit: 'g', amount: '1' },
-  { slug: 'rice', nameEn: 'Rice', fromUnit: 'cup', toUnit: 'g', amount: '1' },
-  { slug: 'olive-oil', nameEn: 'Olive Oil', fromUnit: 'tbsp', toUnit: 'g', amount: '1' },
-  { slug: 'honey', nameEn: 'Honey', fromUnit: 'tbsp', toUnit: 'g', amount: '1' },
+const POPULAR_PRESETS: { slug: string; nameEn: string; fromUnit: string; toUnit: string; amount: string; question: Record<string, string> }[] = [
+  { slug: 'wheat-flour', nameEn: 'Wheat Flour', fromUnit: 'cup', toUnit: 'g', amount: '1',
+    question: { en: 'How many grams in a cup of flour?', ru: 'Сколько грамм муки в стакане?', pl: 'Ile gramów mąki w szklance?', uk: 'Скільки грамів борошна в склянці?' } },
+  { slug: 'butter', nameEn: 'Butter', fromUnit: 'tbsp', toUnit: 'g', amount: '1',
+    question: { en: 'How many grams in a tbsp of butter?', ru: 'Сколько грамм масла в ложке?', pl: 'Ile gramów masła w łyżce?', uk: 'Скільки грамів масла в ложці?' } },
+  { slug: 'sugar', nameEn: 'Sugar', fromUnit: 'cup', toUnit: 'g', amount: '1',
+    question: { en: 'How many grams in a cup of sugar?', ru: 'Сколько грамм сахара в стакане?', pl: 'Ile gramów cukru w szklance?', uk: 'Скільки грамів цукру в склянці?' } },
+  { slug: 'rice', nameEn: 'Rice', fromUnit: 'cup', toUnit: 'g', amount: '1',
+    question: { en: 'How many grams in a cup of rice?', ru: 'Сколько грамм риса в стакане?', pl: 'Ile gramów ryżu w szklance?', uk: 'Скільки грамів рису в склянці?' } },
+  { slug: 'olive-oil', nameEn: 'Olive Oil', fromUnit: 'tbsp', toUnit: 'g', amount: '1',
+    question: { en: 'How many grams in a tbsp of olive oil?', ru: 'Сколько грамм масла в столовой ложке?', pl: 'Ile gramów oliwy w łyżce?', uk: 'Скільки грамів олії в ложці?' } },
+  { slug: 'honey', nameEn: 'Honey', fromUnit: 'tbsp', toUnit: 'g', amount: '1',
+    question: { en: 'How many grams in a tbsp of honey?', ru: 'Сколько грамм мёда в ложке?', pl: 'Ile gramów miodu w łyżce?', uk: 'Скільки грамів меду в ложці?' } },
 ];
 
 // Quick ingredient shortcut chips
@@ -222,6 +233,55 @@ const QUICK_SLUGS = [
   'olive-oil',
   'honey',
 ];
+
+// ─── Chef tips per ingredient slug ────────────────────────────────────────────
+
+const CHEF_TIPS: Record<string, Record<string, string>> = {
+  'wheat-flour': {
+    en: 'Flour can vary ±10% by weight depending on humidity and how you scoop it. For precision, always weigh it.',
+    ru: 'Мука может отличаться ±10% по весу в зависимости от влажности. Для точности всегда взвешивайте.',
+    pl: 'Mąka może się różnić o ±10% w zależności od wilgotności. Dla precyzji zawsze waż.',
+    uk: 'Борошно може відрізнятись на ±10% залежно від вологості. Для точності завжди зважуйте.',
+  },
+  'butter': {
+    en: 'Cold butter weighs the same as softened, but measures differently in cups. Always cut and weigh for accuracy.',
+    ru: 'Холодное масло весит столько же, но в стакане занимает иначе. Для точности нарежьте и взвесьте.',
+    pl: 'Zimne masło waży tyle samo, ale w szklance zajmuje inaczej. Dla precyzji pokrój i zważ.',
+    uk: 'Холодне масло важить стільки ж, але в склянці займає інакше. Для точності наріжте і зважте.',
+  },
+  'sugar': {
+    en: 'White sugar packs tightly — 1 cup of brown sugar weighs more due to molasses. These values are for white granulated.',
+    ru: 'Белый сахар плотно утрамбовывается — коричневый в стакане весит больше из-за патоки. Значения для белого.',
+    pl: 'Biały cukier się zbija — brązowy w szklance waży więcej przez melasę. Wartości dla białego.',
+    uk: 'Білий цукор щільно утрамбовується — коричневий у склянці важить більше через патоку. Значення для білого.',
+  },
+  'rice': {
+    en: 'Uncooked rice roughly doubles in volume when cooked. 1 cup dry = about 3 cups cooked.',
+    ru: 'Сырой рис увеличивается в объёме примерно в 2 раза. 1 стакан сухого = 3 стакана готового.',
+    pl: 'Surowy ryż podwaja objętość po ugotowaniu. 1 szklanka suchego = 3 szklanki gotowego.',
+    uk: 'Сирий рис збільшується в об\'ємі приблизно вдвічі. 1 склянка сухого = 3 склянки готового.',
+  },
+  'olive-oil': {
+    en: 'Olive oil is lighter than water (density ~0.92). 1 cup of oil weighs less than 1 cup of water.',
+    ru: 'Оливковое масло легче воды (плотность ~0.92). 1 стакан масла весит меньше, чем 1 стакан воды.',
+    pl: 'Oliwa z oliwek jest lżejsza od wody (gęstość ~0.92). 1 szklanka oleju waży mniej niż woda.',
+    uk: 'Оливкова олія легша за воду (густина ~0.92). 1 склянка олії важить менше, ніж склянка води.',
+  },
+  'honey': {
+    en: 'Honey is 40% denser than water — 1 tbsp of honey weighs ~21g, not 15g like water.',
+    ru: 'Мёд на 40% плотнее воды — 1 ст.л. мёда весит ~21г, а не 15г как вода.',
+    pl: 'Miód jest o 40% gęstszy od wody — 1 łyżka miodu waży ~21g, a nie 15g.',
+    uk: 'Мед на 40% густіший за воду — 1 ст.л. меду важить ~21г, а не 15г як вода.',
+  },
+};
+
+// Fallback generic tips when ingredient has no specific tip
+const GENERIC_TIPS: Record<string, string> = {
+  en: 'Kitchen measurements can vary. For baking, always weigh ingredients for best results.',
+  ru: 'Кухонные мерки приблизительны. Для выпечки всегда взвешивайте ингредиенты.',
+  pl: 'Miary kuchenne są przybliżone. Przy pieczeniu zawsze waż składniki.',
+  uk: 'Кухонні міри приблизні. Для випічки завжди зважуйте інгредієнти.',
+};
 
 // ─── Ingredient combobox ──────────────────────────────────────────────────────
 
@@ -385,6 +445,7 @@ export function IngredientConverterClient({ ingredients, i18n }: Props) {
   const [loading, startTransition] = useTransition();
   const [error, setError] = useState(false);
   const [noDensity, setNoDensity] = useState(false);
+  const [copied, setCopied] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const numVal = parseFloat(amount.replace(',', '.'));
@@ -707,110 +768,185 @@ export function IngredientConverterClient({ ingredients, i18n }: Props) {
           </div>
         </div>
 
-        {/* Results section */}
-        {targetValue != null && ingredient && !loading && convertResult && (
-          <div className="space-y-4 pt-1">
+        {/* ═══════════════════════════════════════════════════════
+           HERO RESULT — big number + equivalents + chef tip
+           ═══════════════════════════════════════════════════════ */}
+        {targetValue != null && ingredient && !loading && convertResult && (() => {
+          // Pick top 2 alternative equivalents to show inline
+          const topEquivs: { code: string; val: number }[] = [];
+          if (allEquivalents) {
+            const preferred = ['tbsp', 'tsp', 'cup', 'ml', 'oz', 'kg', 'lb', 'g', 'l'];
+            for (const code of preferred) {
+              if (code === toUnit || code === fromUnit) continue;
+              if (allEquivalents[code] != null && allEquivalents[code] > 0.001) {
+                topEquivs.push({ code, val: allEquivalents[code] });
+              }
+              if (topEquivs.length >= 2) break;
+            }
+          }
 
-            {/* Equation line */}
-            <p className="text-sm text-muted-foreground font-medium">
-              {amount} {fromLabel}{' '}
-              <span className="text-foreground font-black">{ingredient.name}</span>
-              {' = '}
-              <span className="text-primary font-black">{fmtFraction(convertResult.result_fraction, toUnit)} {toLabel}</span>
-            </p>
+          const chefTipText = CHEF_TIPS[ingredient.slug]?.[locale] ?? CHEF_TIPS[ingredient.slug]?.en ?? GENERIC_TIPS[locale] ?? GENERIC_TIPS.en;
 
-            {/* All equivalents — mass group + volume group */}
-            {allEquivalents && Object.keys(allEquivalents).length > 0 && (() => {
-              const massUnits = ['g', 'kg', 'oz', 'lb'].filter((u) => u in allEquivalents);
-              const volUnits = ['ml', 'l', 'cup', 'tbsp', 'tsp'].filter((u) => u in allEquivalents);
-              const renderBtn = (unit: string) => (
-                <Badge
-                  key={unit}
-                  variant={unit === toUnit ? 'default' : 'outline'}
-                  className="cursor-pointer text-[10px] font-black px-2.5 py-1 h-auto rounded-full transition-all hover:scale-105"
-                  onClick={() => { setToUnit(unit); setConvertResult(null); }}
-                >
-                  {fmtUnit(allEquivalents[unit], unit)} {unitLabel(unit, locale)}
-                </Badge>
-              );
-              return (
-                <div className="space-y-2">
-                  {massUnits.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5 items-center">
-                      <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground/50 w-full sm:w-auto">
-                        ⚖ {i18n.allUnits}:
+          const copyText = `${amount} ${fromLabel} ${ingredient.name} = ${fmtFraction(convertResult.result_fraction, toUnit)} ${toLabel}`;
+
+          const handleCopy = () => {
+            navigator.clipboard.writeText(copyText).then(() => {
+              setCopied(true);
+              setTimeout(() => setCopied(false), 2000);
+            });
+          };
+
+          return (
+            <div className="space-y-4 pt-2">
+              {/* ── Hero result card ── */}
+              <div className="rounded-2xl border-2 border-primary/30 bg-primary/5 p-5 sm:p-6 text-center space-y-3">
+                {/* Main equation */}
+                <p className="text-sm sm:text-base text-muted-foreground font-medium">
+                  {amount} {fromLabel}{' '}
+                  <span className="text-foreground font-black">{ingredient.name}</span>
+                </p>
+                <p className="text-4xl sm:text-5xl font-black text-primary tabular-nums leading-none">
+                  {fmtFraction(convertResult.result_fraction, toUnit)}{' '}
+                  <span className="text-xl sm:text-2xl">{toLabel}</span>
+                </p>
+
+                {/* Inline equivalents — 2 lines */}
+                {topEquivs.length > 0 && (
+                  <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 pt-1">
+                    {topEquivs.map(({ code, val }) => (
+                      <span key={code} className="text-sm font-bold text-muted-foreground">
+                        {i18n.alsoEquals}{' '}
+                        <span className="text-foreground font-black">{fmtUnit(val, code)} {unitLabel(code, locale)}</span>
                       </span>
-                      {massUnits.map(renderBtn)}
-                    </div>
-                  )}
-                  {volUnits.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5 items-center">
-                      <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground/50 w-full sm:w-auto">
-                        🥄 {i18n.allUnits}:
-                      </span>
-                      {volUnits.map(renderBtn)}
-                    </div>
-                  )}
-                </div>
-              );
-            })()}
-
-            {/* Nutrition block */}
-            {nutrition && (
-              <Card className="border-2 border-border/40">
-                <CardContent className="p-3 sm:p-4 space-y-2 sm:space-y-3">
-                  <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-muted-foreground/70">
-                    {i18n.nutritionResult}
-                  </p>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
-                    <div className="flex items-center gap-1.5 sm:gap-2">
-                      <Flame className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-orange-500 shrink-0" />
-                      <div>
-                        <p className="text-xs sm:text-sm font-black text-foreground">{Math.round(nutrition.calories)}</p>
-                        <p className="text-[8px] sm:text-[9px] text-muted-foreground font-medium">{i18n.kcal}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-1.5 sm:gap-2">
-                      <Beef className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-red-500 shrink-0" />
-                      <div>
-                        <p className="text-xs sm:text-sm font-black text-foreground">{nutrition.protein} g</p>
-                        <p className="text-[8px] sm:text-[9px] text-muted-foreground font-medium">{i18n.protein}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-1.5 sm:gap-2">
-                      <Droplets className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-yellow-500 shrink-0" />
-                      <div>
-                        <p className="text-xs sm:text-sm font-black text-foreground">{nutrition.fat} g</p>
-                        <p className="text-[8px] sm:text-[9px] text-muted-foreground font-medium">{i18n.fat}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-1.5 sm:gap-2">
-                      <Wheat className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-green-500 shrink-0" />
-                      <div>
-                        <p className="text-xs sm:text-sm font-black text-foreground">{nutrition.carbs} g</p>
-                        <p className="text-[8px] sm:text-[9px] text-muted-foreground font-medium">{i18n.carbs}</p>
-                      </div>
-                    </div>
+                    ))}
                   </div>
-                </CardContent>
-              </Card>
-            )}
+                )}
+              </div>
 
-            {/* Density badge */}
-            {density != null && (
-              <p className="text-[10px] text-muted-foreground/60 font-medium">
-                {i18n.density} <span className="text-foreground font-black">{ingredient.name}</span>:
-                {' ≈ '}<span className="text-foreground font-black">{fmt(density)} g/ml</span>
-              </p>
-            )}
+              {/* ── Action buttons ── */}
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={handleCopy}
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 border-border/50 bg-muted/30 hover:bg-muted/60 font-bold text-xs uppercase tracking-wider transition-all"
+                >
+                  {copied ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5" />}
+                  {copied ? '✓' : i18n.copyResult}
+                </button>
+                <Link
+                  href="/chef-tools/recipe-analyzer"
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground font-bold text-xs uppercase tracking-wider hover:brightness-110 transition-all"
+                >
+                  <FlaskConical className="h-3.5 w-3.5" />
+                  {i18n.useInRecipe}
+                </Link>
+              </div>
 
-            {/* Micro-trust line */}
-            <Separator className="mt-1" />
-            <p className="text-[10px] text-muted-foreground/50 font-medium text-center pt-1">
-              🔬 {i18n.microtrust}
-            </p>
-          </div>
-        )}
+              {/* ── Chef tip ── */}
+              <div className="flex items-start gap-3 px-4 py-4 rounded-xl bg-muted/30 border-2 border-border/40">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                  <ChefHat className="h-5 w-5 text-primary" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-1">
+                    {i18n.chefTip}
+                  </p>
+                  <p className="text-sm font-medium leading-relaxed text-foreground/80 italic">
+                    {chefTipText}
+                  </p>
+                </div>
+              </div>
+
+              {/* ── All equivalents badges ── */}
+              {allEquivalents && Object.keys(allEquivalents).length > 0 && (() => {
+                const massUnits = ['g', 'kg', 'oz', 'lb'].filter((u) => u in allEquivalents);
+                const volUnits = ['ml', 'l', 'cup', 'tbsp', 'tsp'].filter((u) => u in allEquivalents);
+                const renderBtn = (unit: string) => (
+                  <Badge
+                    key={unit}
+                    variant={unit === toUnit ? 'default' : 'outline'}
+                    className="cursor-pointer text-[10px] font-black px-2.5 py-1 h-auto rounded-full transition-all hover:scale-105"
+                    onClick={() => { setToUnit(unit); setConvertResult(null); }}
+                  >
+                    {fmtUnit(allEquivalents[unit], unit)} {unitLabel(unit, locale)}
+                  </Badge>
+                );
+                return (
+                  <div className="space-y-2">
+                    {massUnits.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 items-center">
+                        <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground/50 w-full sm:w-auto">
+                          {i18n.allUnits}:
+                        </span>
+                        {massUnits.map(renderBtn)}
+                      </div>
+                    )}
+                    {volUnits.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 items-center">
+                        <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground/50 w-full sm:w-auto">
+                          {i18n.allUnits}:
+                        </span>
+                        {volUnits.map(renderBtn)}
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
+
+              {/* ── Nutrition block ── */}
+              {nutrition && (
+                <Card className="border-2 border-border/40">
+                  <CardContent className="p-3 sm:p-4 space-y-2 sm:space-y-3">
+                    <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-muted-foreground/70">
+                      {i18n.nutritionResult}
+                    </p>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
+                      <div className="flex items-center gap-1.5 sm:gap-2">
+                        <Flame className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-orange-500 shrink-0" />
+                        <div>
+                          <p className="text-xs sm:text-sm font-black text-foreground">{Math.round(nutrition.calories)}</p>
+                          <p className="text-[8px] sm:text-[9px] text-muted-foreground font-medium">{i18n.kcal}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1.5 sm:gap-2">
+                        <Beef className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-red-500 shrink-0" />
+                        <div>
+                          <p className="text-xs sm:text-sm font-black text-foreground">{nutrition.protein} g</p>
+                          <p className="text-[8px] sm:text-[9px] text-muted-foreground font-medium">{i18n.protein}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1.5 sm:gap-2">
+                        <Droplets className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-yellow-500 shrink-0" />
+                        <div>
+                          <p className="text-xs sm:text-sm font-black text-foreground">{nutrition.fat} g</p>
+                          <p className="text-[8px] sm:text-[9px] text-muted-foreground font-medium">{i18n.fat}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1.5 sm:gap-2">
+                        <Wheat className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-green-500 shrink-0" />
+                        <div>
+                          <p className="text-xs sm:text-sm font-black text-foreground">{nutrition.carbs} g</p>
+                          <p className="text-[8px] sm:text-[9px] text-muted-foreground font-medium">{i18n.carbs}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Density + trust */}
+              <div className="flex flex-wrap items-center justify-between gap-2 text-[10px] text-muted-foreground/60 font-medium">
+                {density != null && (
+                  <span>
+                    {i18n.density} <span className="text-foreground font-black">{ingredient.name}</span>:
+                    {' '}<span className="text-foreground font-black">{fmt(density)} g/ml</span>
+                  </span>
+                )}
+                <span>{i18n.microtrust}</span>
+              </div>
+            </div>
+          );
+        })()}
 
         {/* Popular queries presets */}
         <div className="space-y-3 sm:space-y-4">
@@ -818,23 +954,27 @@ export function IngredientConverterClient({ ingredients, i18n }: Props) {
           <div className="flex items-center gap-2 pt-1">
             <Zap className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary" />
             <p className="text-xs sm:text-sm font-black uppercase tracking-wider text-muted-foreground/70">
-              {locale === 'ru' ? 'Популярные конвертации' : i18n.popularQueries}
+              {locale === 'ru' ? 'Часто ищут' : i18n.popularQueries}
             </p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
             {POPULAR_PRESETS.map((p) => {
               const opt = findBySlug(p.slug);
               if (!opt) return null;
+              const q = p.question[locale] ?? p.question.en;
               return (
                 <button
                   key={`${p.slug}-${p.fromUnit}`}
                   type="button"
                   onClick={() => applyPreset(p)}
-                  className="text-left text-[11px] sm:text-xs font-bold rounded-xl sm:rounded-2xl border-2 border-border/40 bg-background hover:bg-primary/5 hover:border-primary/30 hover:scale-[1.02] shadow-sm transition-all px-3 py-2.5 sm:px-4 sm:py-3 leading-snug group"
+                  className="text-left rounded-xl sm:rounded-2xl border-2 border-border/40 bg-background hover:bg-primary/5 hover:border-primary/30 hover:scale-[1.01] shadow-sm transition-all px-4 py-3 sm:px-5 sm:py-4 group"
                 >
-                  <span className="text-muted-foreground group-hover:text-primary transition-colors">{p.amount} {unitLabel(p.fromUnit, locale)} </span>
-                  <span className="font-black text-foreground group-hover:text-primary transition-colors">{opt.name}</span>
-                  <span className="text-muted-foreground group-hover:text-primary transition-colors"> → {unitLabel(p.toUnit, locale)}</span>
+                  <p className="text-sm sm:text-base font-black text-foreground group-hover:text-primary transition-colors leading-snug">
+                    {q}
+                  </p>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 font-medium">
+                    {p.amount} {unitLabel(p.fromUnit, locale)} {opt.name} → {unitLabel(p.toUnit, locale)}
+                  </p>
                 </button>
               );
             })}
