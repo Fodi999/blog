@@ -371,7 +371,15 @@
         "whatBlocks": "Co blokuje dalsze ulepszenie:",
         "beforeAfter": "Przed → Po",
         "whatWeChanged": "Co zmieniliśmy",
-        "showMore": "Pokaż więcej"
+        "showMore": "Pokaż więcej",
+        "mainProblem": "Główny problem",
+        "keyAction": "Kluczowe działanie",
+        "applyImprovement": "Zastosuj ulepszenie",
+        "chefComment": "Komentarz szefa",
+        "detailedAnalysis": "Szczegółowa analiza",
+        "noProblem": "Brak krytycznych problemów",
+        "greatRecipe": "Świetny przepis — dobry balans!",
+        "viewDetails": "Zobacz szczegóły"
       },
       "flavorPairing": {
         "title": "Łączenie Smaków",

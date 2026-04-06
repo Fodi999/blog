@@ -371,7 +371,15 @@
         "whatBlocks": "Що заважає подальшому покращенню:",
         "beforeAfter": "Було → Стало",
         "whatWeChanged": "Що ми змінили",
-        "showMore": "Показати ще"
+        "showMore": "Показати ще",
+        "mainProblem": "Головна проблема",
+        "keyAction": "Ключова дія",
+        "applyImprovement": "Застосувати покращення",
+        "chefComment": "Коментар шефа",
+        "detailedAnalysis": "Детальний аналіз",
+        "noProblem": "Критичних проблем немає",
+        "greatRecipe": "Чудовий рецепт — гарний баланс!",
+        "viewDetails": "Переглянути деталі"
       },
       "flavorPairing": {
         "title": "Поєднання Смаків",

@@ -371,7 +371,15 @@
         "whatBlocks": "What prevents further improvement:",
         "beforeAfter": "Before → After",
         "whatWeChanged": "What we changed",
-        "showMore": "Show more suggestions"
+        "showMore": "Show more suggestions",
+        "mainProblem": "Main issue",
+        "keyAction": "Key action",
+        "applyImprovement": "Apply Improvement",
+        "chefComment": "Chef's Comment",
+        "detailedAnalysis": "Detailed Analysis",
+        "noProblem": "No critical issues",
+        "greatRecipe": "Great recipe — well balanced!",
+        "viewDetails": "View full details"
       },
       "flavorPairing": {
         "title": "Flavor Pairing Explorer",

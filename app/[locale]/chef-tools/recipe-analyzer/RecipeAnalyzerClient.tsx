@@ -193,6 +193,11 @@ export function RecipeAnalyzerClient() {
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [activeRowIdx, setActiveRowIdx] = useState<number | null>(null);
   const [searchLoading, setSearchLoading] = useState(false);
+  const [searchSelectedIndex, setSearchSelectedIndex] = useState(-1);
+
+  // Refs for focus management
+  const nameInputRefs = useRef<Record<number, HTMLInputElement | null>>({});
+  const gramInputRefs = useRef<Record<number, HTMLInputElement | null>>({});
 
   // Re-analyze flag (auto-analyze after adding ingredient from suggestion/diagnosis)
   const [pendingReanalyze, setPendingReanalyze] = useState(false);
@@ -251,9 +256,53 @@ export function RecipeAnalyzerClient() {
     setSearchResults([]);
     setActiveRowIdx(null);
     setSearchQuery('');
+    setSearchSelectedIndex(-1);
+    // Focus grams after selection
+    setTimeout(() => gramInputRefs.current[idx]?.focus(), 10);
   };
 
-  const addRow = () => setRows(prev => [...prev, { ...EMPTY_ROW }]);
+  const handleKeyDown = (e: React.KeyboardEvent, idx: number) => {
+    if (searchResults.length === 0) {
+      if (e.key === 'Enter' && searchQuery.trim()) {
+        // If no results but name exists, just move to grams
+        gramInputRefs.current[idx]?.focus();
+        e.preventDefault();
+      }
+      return;
+    }
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        setSearchSelectedIndex(prev => (prev < searchResults.length - 1 ? prev + 1 : prev));
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        setSearchSelectedIndex(prev => (prev > 0 ? prev - 1 : prev));
+        break;
+      case 'Enter':
+        e.preventDefault();
+        if (searchSelectedIndex >= 0) {
+          selectIngredient(idx, searchResults[searchSelectedIndex]);
+        } else if (searchResults.length > 0) {
+          selectIngredient(idx, searchResults[0]);
+        }
+        break;
+      case 'Escape':
+        setSearchResults([]);
+        setActiveRowIdx(null);
+        break;
+    }
+  };
+
+  const addRow = () => {
+    setRows(prev => [...prev, { ...EMPTY_ROW }]);
+    // Focus the new row in next tick
+    setTimeout(() => {
+      const lastIdx = rows.length;
+      nameInputRefs.current[lastIdx]?.focus();
+    }, 50);
+  };
 
   const removeRow = (idx: number) => {
     if (rows.length <= 1) return;
@@ -593,7 +642,7 @@ export function RecipeAnalyzerClient() {
       </div>
 
       {/* Ingredient table */}
-      <div className="border border-border/60 rounded-2xl overflow-hidden">
+      <div className="border border-border/60 rounded-2xl overflow-visible">
         <div className="bg-muted/30 px-4 py-3 border-b border-border/40">
           <div className="grid grid-cols-[1fr_100px_40px] gap-3 text-xs font-bold uppercase tracking-widest text-muted-foreground">
             <span>{t('ingredient')}</span>
@@ -610,35 +659,62 @@ export function RecipeAnalyzerClient() {
                 <div className="relative flex items-center gap-2">
                   {row.image_url && <img src={row.image_url} alt="" className="w-8 h-8 rounded-full object-cover flex-shrink-0" />}
                   <input
+                    ref={el => { nameInputRefs.current[idx] = el; }}
                     type="text"
                     value={activeRowIdx === idx ? searchQuery : row.name || ''}
                     onChange={(e) => {
                       setActiveRowIdx(idx);
                       setSearchQuery(e.target.value);
                       searchIngredients(e.target.value);
+                      setSearchSelectedIndex(-1);
                     }}
                     onFocus={() => {
                       setActiveRowIdx(idx);
                       setSearchQuery(row.name || '');
                     }}
+                    onBlur={() => {
+                      // Delay so click on dropdown item fires before closing
+                      setTimeout(() => {
+                        setSearchResults([]);
+                        setActiveRowIdx(null);
+                      }, 150);
+                    }}
+                    onKeyDown={(e) => handleKeyDown(e, idx)}
                     placeholder={t('searchPlaceholder')}
                     className="w-full px-3 py-2 text-sm bg-background border border-border/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
                   />
 
-                  {/* Dropdown */}
+                  {/* Dropdown — absolute, anchored to this relative container */}
                   {activeRowIdx === idx && searchResults.length > 0 && (
-                    <div className="absolute z-50 top-full mt-1 left-0 right-0 bg-background border border-border/60 rounded-xl shadow-lg max-h-48 overflow-y-auto">
-                      {searchResults.map(item => (
+                    <div
+                      className="absolute left-0 top-full mt-1 w-full z-50 bg-background border border-border/60 rounded-xl shadow-2xl max-h-64 overflow-y-auto animate-in fade-in zoom-in-95 duration-100"
+                    >
+                      {searchResults.map((item, sIdx) => (
                         <button
                           key={item.slug}
                           onClick={() => selectIngredient(idx, item)}
-                          className="w-full text-left px-3 py-2 text-sm hover:bg-muted/50 flex items-center gap-2"
-                        >
-                          {item.image_url && (
-                            <img src={item.image_url} alt="" className="w-6 h-6 rounded-full object-cover" />
+                          onMouseEnter={() => setSearchSelectedIndex(sIdx)}
+                          className={cn(
+                            "w-full text-left px-4 py-2.5 text-sm transition-colors flex items-center gap-3",
+                            searchSelectedIndex === sIdx ? "bg-primary/10 text-primary" : "hover:bg-muted/50"
                           )}
-                          <span className="font-medium">{item.name}</span>
-                          <span className="text-xs text-muted-foreground ml-auto">{item.slug}</span>
+                        >
+                          <div className="w-8 h-8 rounded-full bg-muted flex-shrink-0 overflow-hidden border border-border/40">
+                            {item.image_url ? (
+                              <img src={item.image_url} alt="" className="w-full h-full object-cover" />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-[10px] text-muted-foreground">
+                                {item.slug.slice(0, 2).toUpperCase()}
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex flex-col">
+                            <span className="font-semibold">{item.name}</span>
+                            <span className="text-[10px] text-muted-foreground opacity-70">{item.slug}</span>
+                          </div>
+                          {searchSelectedIndex === sIdx && (
+                            <span className="ml-auto text-[10px] font-bold text-primary/60 uppercase tracking-tighter">Enter</span>
+                          )}
                         </button>
                       ))}
                     </div>
@@ -647,10 +723,21 @@ export function RecipeAnalyzerClient() {
 
                 {/* Grams */}
                 <input
+                  ref={el => { gramInputRefs.current[idx] = el; }}
                   type="number"
                   min={1}
                   value={row.grams}
                   onChange={(e) => updateGrams(idx, Number(e.target.value))}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      // If this is the last row, add new row, otherwise focus next name
+                      if (idx === rows.length - 1) {
+                        if (row.slug) addRow();
+                      } else {
+                        nameInputRefs.current[idx + 1]?.focus();
+                      }
+                    }
+                  }}
                   className="w-full px-3 py-2 text-sm bg-background border border-border/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 text-center"
                 />
 
@@ -725,10 +812,14 @@ export function RecipeAnalyzerClient() {
         </div>
       )}
 
-      {/* Results */}
+      {/* ═══════════════════════════════════════════════════════════════
+           RESULTS — FOCUSED AI-ASSISTANT FLOW
+           Priority: Score → Problem → Action → Chef Comment
+           Details (nutrition, flavor, breakdown) → collapsed below
+           ═══════════════════════════════════════════════════════════════ */}
       {result && (
-        <div className="space-y-6 pt-4">
-          {/* �‍🍳 Chef Summary — hero verdict + auto-improve */}
+        <div className="space-y-5 pt-2">
+          {/* ── HERO CARD: Chef Summary — verdict + auto-improve ── */}
           {result.diagnosis && (
             <ChefSummary
               diagnosis={result.diagnosis}
@@ -753,97 +844,118 @@ export function RecipeAnalyzerClient() {
             />
           )}
 
-          {/* 🔍 Grouped Diagnosis — problem → solution pairs */}
-          {result.diagnosis && (
-            <DiagnosisCard
-              diagnosis={result.diagnosis}
-              locale={locale}
-            />
-          )}
-
-          {/* Nutrition + Flavor side by side */}
-          <div className="grid md:grid-cols-2 gap-6">
-            <NutritionCard
-              nutrition={result.nutrition}
-              perPortion={result.per_portion}
-              portions={result.portions}
-              macros={result.macros}
-              score={result.score}
-              diet={result.diet}
-            />
-            <FlavorRadar flavor={result.flavor} />
-          </div>
-
-          {/* Per-ingredient breakdown (collapsible) */}
-          <details className="group border border-border/60 rounded-2xl overflow-hidden">
-            <summary className="bg-muted/30 px-4 py-3 border-b border-border/40 cursor-pointer flex items-center justify-between hover:bg-muted/50 transition-colors">
-              <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground">
-                {t('ingredientBreakdown')}
+          {/* ── DETAILED ANALYSIS — collapsed by default ── */}
+          <details className="group rounded-2xl border border-border/60 overflow-hidden">
+            <summary className="bg-muted/30 px-5 py-4 cursor-pointer flex items-center justify-between hover:bg-muted/50 transition-colors">
+              <h3 className="text-sm font-black uppercase tracking-widest text-muted-foreground">
+                {t('detailedAnalysis')}
               </h3>
               <svg className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
               </svg>
             </summary>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-border/30 text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                    <th className="text-left px-4 py-2">{t('ingredient')}</th>
-                    <th className="text-right px-3 py-2">g</th>
-                    <th className="text-right px-3 py-2">kcal</th>
-                    <th className="text-right px-3 py-2">P</th>
-                    <th className="text-right px-3 py-2">F</th>
-                    <th className="text-right px-3 py-2">C</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {result.ingredients.map((ing) => (
-                    <tr key={ing.slug} className="border-b border-border/20">
-                      <td className="px-4 py-2 font-medium">
-                        {ing.name}
-                        {!ing.found && (
-                          <span className="text-xs text-amber-500 ml-1">{t('notFound')}</span>
-                        )}
-                      </td>
-                      <td className="text-right px-3 py-2 text-muted-foreground">{ing.grams}</td>
-                      <td className="text-right px-3 py-2">{ing.calories}</td>
-                      <td className="text-right px-3 py-2">{ing.protein}g</td>
-                      <td className="text-right px-3 py-2">{ing.fat}g</td>
-                      <td className="text-right px-3 py-2">{ing.carbs}g</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+
+            <div className="p-5 space-y-6 border-t border-border/40">
+              {/* Diagnosis details */}
+              {result.diagnosis && (
+                <DiagnosisCard
+                  diagnosis={result.diagnosis}
+                  locale={locale}
+                />
+              )}
+
+              {/* Nutrition + Flavor */}
+              <div className="grid md:grid-cols-2 gap-6">
+                <NutritionCard
+                  nutrition={result.nutrition}
+                  perPortion={result.per_portion}
+                  portions={result.portions}
+                  macros={result.macros}
+                  score={result.score}
+                  diet={result.diet}
+                />
+                <FlavorRadar flavor={result.flavor} />
+              </div>
+
+              {/* Per-ingredient breakdown */}
+              <details className="group/inner border border-border/40 rounded-xl overflow-hidden">
+                <summary className="bg-muted/20 px-4 py-3 cursor-pointer flex items-center justify-between hover:bg-muted/40 transition-colors">
+                  <h4 className="text-xs font-black uppercase tracking-widest text-muted-foreground">
+                    {t('ingredientBreakdown')}
+                  </h4>
+                  <svg className="h-3.5 w-3.5 text-muted-foreground transition-transform group-open/inner:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </summary>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-border/30 text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                        <th className="text-left px-4 py-2">{t('ingredient')}</th>
+                        <th className="text-right px-3 py-2">g</th>
+                        <th className="text-right px-3 py-2">kcal</th>
+                        <th className="text-right px-3 py-2">P</th>
+                        <th className="text-right px-3 py-2">F</th>
+                        <th className="text-right px-3 py-2">C</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {result.ingredients.map((ing) => (
+                        <tr key={ing.slug} className="border-b border-border/20">
+                          <td className="px-4 py-2 font-medium">
+                            {ing.name}
+                            {!ing.found && (
+                              <span className="text-xs text-amber-500 ml-1">{t('notFound')}</span>
+                            )}
+                          </td>
+                          <td className="text-right px-3 py-2 text-muted-foreground">{ing.grams}</td>
+                          <td className="text-right px-3 py-2">{ing.calories}</td>
+                          <td className="text-right px-3 py-2">{ing.protein}g</td>
+                          <td className="text-right px-3 py-2">{ing.fat}g</td>
+                          <td className="text-right px-3 py-2">{ing.carbs}g</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </details>
             </div>
           </details>
 
-          {/* Suggestions — Top 3 + show more */}
+          {/* ── SUGGESTIONS — collapsed by default ── */}
           {result.suggestions.length > 0 && (
-            <div>
-              <div className="flex items-center gap-2 mb-4">
-                <Sparkles className="h-5 w-5 text-primary" />
-                <h3 className="text-lg font-black uppercase tracking-tight italic">
-                  {t('improveRecipe')}
-                </h3>
+            <details className="group rounded-2xl border border-border/60 overflow-hidden">
+              <summary className="bg-muted/30 px-5 py-4 cursor-pointer flex items-center justify-between hover:bg-muted/50 transition-colors">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-primary" />
+                  <h3 className="text-sm font-black uppercase tracking-widest text-muted-foreground">
+                    {t('improveRecipe')}
+                  </h3>
+                </div>
+                <svg className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </summary>
+              <div className="p-5 border-t border-border/40">
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {(showAllSuggestions ? result.suggestions : result.suggestions.slice(0, 3)).map(s => (
+                    <SuggestionCard
+                      key={s.slug}
+                      suggestion={s}
+                      onAdd={(slug, name) => addIngredientToRecipe(slug, name)}
+                    />
+                  ))}
+                </div>
+                {result.suggestions.length > 3 && !showAllSuggestions && (
+                  <button
+                    onClick={() => setShowAllSuggestions(true)}
+                    className="mt-3 w-full py-2.5 text-sm font-bold text-muted-foreground hover:text-primary border border-border/50 hover:border-primary/30 rounded-xl transition-all"
+                  >
+                    {t('showMore')} ({result.suggestions.length - 3})
+                  </button>
+                )}
               </div>
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {(showAllSuggestions ? result.suggestions : result.suggestions.slice(0, 3)).map(s => (
-                  <SuggestionCard
-                    key={s.slug}
-                    suggestion={s}
-                    onAdd={(slug, name) => addIngredientToRecipe(slug, name)}
-                  />
-                ))}
-              </div>
-              {result.suggestions.length > 3 && !showAllSuggestions && (
-                <button
-                  onClick={() => setShowAllSuggestions(true)}
-                  className="mt-3 w-full py-2.5 text-sm font-bold text-muted-foreground hover:text-primary border border-border/50 hover:border-primary/30 rounded-xl transition-all"
-                >
-                  {t('showMore')} ({result.suggestions.length - 3})
-                </button>
-              )}
-            </div>
+            </details>
           )}
         </div>
       )}

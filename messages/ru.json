@@ -371,7 +371,15 @@
         "whatBlocks": "Что мешает дальше улучшить:",
         "beforeAfter": "Было → Стало",
         "whatWeChanged": "Что мы изменили",
-        "showMore": "Показать ещё"
+        "showMore": "Показать ещё",
+        "mainProblem": "Главная проблема",
+        "keyAction": "Ключевое действие",
+        "applyImprovement": "Применить улучшение",
+        "chefComment": "Комментарий шефа",
+        "detailedAnalysis": "Подробный анализ",
+        "noProblem": "Критических проблем нет",
+        "greatRecipe": "Отличный рецепт — хороший баланс!",
+        "viewDetails": "Посмотреть подробности"
       },
       "flavorPairing": {
         "title": "Сочетание Вкусов",

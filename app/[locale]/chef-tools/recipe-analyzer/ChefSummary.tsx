@@ -420,16 +420,7 @@ export function ChefSummary({
 
   const animatedScore = useAnimatedNumber(d.health_score);
 
-  const scoreBorderColor = d.health_score >= 80
-    ? 'border-emerald-500/30' : d.health_score >= 60
-    ? 'border-green-500/30' : d.health_score >= 40
-    ? 'border-amber-500/30' : 'border-red-500/30';
-
-  const scoreBgGlow = d.health_score >= 80
-    ? 'bg-emerald-500/5' : d.health_score >= 60
-    ? 'bg-green-500/5' : d.health_score >= 40
-    ? 'bg-amber-500/5' : 'bg-red-500/5';
-
+  // ── Score-based colors ──
   const scoreColor = d.health_score >= 80
     ? 'text-emerald-600 dark:text-emerald-400' : d.health_score >= 60
     ? 'text-green-600 dark:text-green-400' : d.health_score >= 40
@@ -440,10 +431,42 @@ export function ChefSummary({
     ? 'bg-green-500' : d.health_score >= 40
     ? 'bg-amber-500' : 'bg-red-500';
 
+  const scoreRing = d.health_score >= 80
+    ? 'ring-emerald-500/30' : d.health_score >= 60
+    ? 'ring-green-500/30' : d.health_score >= 40
+    ? 'ring-amber-500/30' : 'ring-red-500/30';
+
+  const scoreBorderColor = d.health_score >= 80
+    ? 'border-emerald-500/30' : d.health_score >= 60
+    ? 'border-green-500/30' : d.health_score >= 40
+    ? 'border-amber-500/30' : 'border-red-500/30';
+
+  const scoreBgGlow = d.health_score >= 80
+    ? 'bg-emerald-500/5' : d.health_score >= 60
+    ? 'bg-green-500/5' : d.health_score >= 40
+    ? 'bg-amber-500/5' : 'bg-red-500/5';
+
   // Improvement percentage for badge
   const improvePct = previous && previous.health_score > 0
     ? Math.round(((d.health_score - previous.health_score) / previous.health_score) * 100)
     : 0;
+
+  // ── Main problem: the single biggest non-info issue ──
+  const topIssue = [...d.issues]
+    .filter(i => i.severity !== 'info')
+    .sort((a, b) => b.impact - a.impact)[0] || null;
+
+  const mainProblemText = topIssue
+    ? (ISSUE_PHRASES[topIssue.rule]?.[locale as 'en'|'pl'|'ru'|'uk'] || ISSUE_PHRASES[topIssue.rule]?.en || topIssue.rule)
+    : null;
+
+  // ── Key action: first action from sorted issues ──
+  const keyAction = actions[0] || null;
+
+  // SVG circle progress (for the score ring)
+  const circleR = 54;
+  const circleC = 2 * Math.PI * circleR;
+  const circleOffset = circleC * (1 - d.health_score / 100);
 
   return (
     <div className={cn(
@@ -458,14 +481,17 @@ export function ChefSummary({
         </div>
       )}
 
-      <div className="px-5 py-5">
-        {/* ── Score improvement hero badge (after auto-improve) ── */}
+      <div className="px-5 py-6">
+
+        {/* ═══════════════════════════════════════════════════════
+           POST-IMPROVE HERO — Score jump + Before→After
+           ═══════════════════════════════════════════════════════ */}
         {hasImproved && scoreDelta > 0 && (
-          <div className="mb-4 flex flex-col items-center gap-2 py-4 px-5 rounded-xl bg-gradient-to-r from-emerald-500/15 via-emerald-500/10 to-emerald-500/15 border-2 border-emerald-500/30 chef-fade-in">
+          <div className="mb-5 flex flex-col items-center gap-2 py-4 px-5 rounded-xl bg-gradient-to-r from-emerald-500/15 via-emerald-500/10 to-emerald-500/15 border-2 border-emerald-500/30 chef-fade-in">
             <div className="flex items-center gap-3">
               <Zap className="h-6 w-6 text-emerald-500 animate-pulse" />
               <span className="text-3xl font-black text-emerald-600 dark:text-emerald-400 tabular-nums">
-                🟢 +{scoreDelta}
+                +{scoreDelta}
               </span>
               <span className="text-base font-bold text-emerald-700 dark:text-emerald-300">
                 {previous.health_score} → {d.health_score}
@@ -473,81 +499,133 @@ export function ChefSummary({
             </div>
             {improvePct > 0 && (
               <span className="text-sm font-black px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 tabular-nums">
-                +{improvePct}% {locale === 'ru' ? 'улучшение' : locale === 'uk' ? 'покращення' : locale === 'pl' ? 'poprawa' : 'improvement'}
+                +{improvePct}%
               </span>
             )}
           </div>
         )}
 
-        {/* Chef avatar + voice */}
-        <div className="flex items-start gap-4">
+        {/* ═══════════════════════════════════════════════════════
+           FOCUSED LAYOUT: Score Circle + Problem + Action
+           ═══════════════════════════════════════════════════════ */}
+        <div className="flex flex-col items-center text-center gap-5">
+
+          {/* ── Big Score Circle ── */}
+          <div className="relative w-32 h-32">
+            <svg className="w-full h-full -rotate-90" viewBox="0 0 120 120">
+              <circle cx="60" cy="60" r={circleR} fill="none" stroke="currentColor"
+                className="text-muted/30" strokeWidth="8" />
+              <circle cx="60" cy="60" r={circleR} fill="none"
+                className={scoreBg.replace('bg-', 'text-')} strokeWidth="8"
+                strokeLinecap="round"
+                strokeDasharray={circleC}
+                strokeDashoffset={circleOffset}
+                style={{ transition: 'stroke-dashoffset 1.2s ease-out' }} />
+            </svg>
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <span className={cn('text-4xl font-black tabular-nums leading-none', scoreColor)}>
+                {animatedScore}
+              </span>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mt-1">
+                / 100
+              </span>
+            </div>
+          </div>
+
+          {/* ── Category mini-scores ── */}
+          <div className="grid grid-cols-4 gap-2 w-full max-w-md">
+            {(['flavor', 'nutrition', 'dominance', 'structure'] as const).map(cat => {
+              const s = d.category_scores[cat];
+              const c = s >= 80 ? 'text-emerald-600 dark:text-emerald-400' : s >= 60 ? 'text-green-600 dark:text-green-400' : s >= 40 ? 'text-amber-600 dark:text-amber-400' : 'text-red-600 dark:text-red-400';
+              const bg = s >= 80 ? 'bg-emerald-500/10' : s >= 60 ? 'bg-green-500/10' : s >= 40 ? 'bg-amber-500/10' : 'bg-red-500/10';
+              return (
+                <div key={cat} className={cn('flex flex-col items-center gap-0.5 py-2 rounded-lg', bg)}>
+                  <span className={cn('text-xl font-black tabular-nums', c)}>{s}</span>
+                  <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                    {t(`cat_${cat}`)}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* ── Main Problem ── */}
+          {mainProblemText && !isGood && (
+            <div className={cn(
+              'w-full max-w-sm px-4 py-4 rounded-xl border-2',
+              topIssue?.severity === 'critical'
+                ? 'bg-red-500/10 border-red-500/25'
+                : 'bg-amber-500/10 border-amber-500/25',
+            )}>
+              <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">
+                {t('mainProblem')}
+              </p>
+              <p className={cn(
+                'text-xl font-black capitalize leading-tight',
+                topIssue?.severity === 'critical' ? 'text-red-600 dark:text-red-400' : 'text-amber-600 dark:text-amber-400',
+              )}>
+                {mainProblemText}
+              </p>
+            </div>
+          )}
+
+          {/* ── Key Action ── */}
+          {keyAction && !isGood && !hasImproved && (
+            <div className="w-full max-w-sm px-4 py-4 rounded-xl border-2 bg-blue-500/10 border-blue-500/25">
+              <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">
+                {t('keyAction')}
+              </p>
+              <p className="text-lg font-black text-foreground leading-tight">
+                {keyAction}
+              </p>
+            </div>
+          )}
+
+          {/* ── Perfect state ── */}
+          {isGood && !hasImproved && (
+            <p className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
+              {t('greatRecipe')}
+            </p>
+          )}
+        </div>
+
+        {/* ═══════════════════════════════════════════════════════
+           CHEF COMMENT — personality block
+           ═══════════════════════════════════════════════════════ */}
+        <div className="mt-5 flex items-start gap-4 px-5 py-5 rounded-xl bg-muted/40 border-2 border-border/50">
           <div className={cn(
-            'w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 transition-all duration-500',
+            'w-12 h-12 rounded-xl flex items-center justify-center shrink-0',
             hasImproved && scoreDelta >= 5 ? 'bg-emerald-500/15' : 'bg-primary/10',
           )}>
             <ChefHat className={cn(
-              'h-7 w-7 transition-colors duration-500',
+              'h-6 w-6',
               hasImproved && scoreDelta >= 5 ? 'text-emerald-600' : 'text-primary',
             )} />
           </div>
-
-          <div className="flex-1 min-w-0">
-            <p className={cn(
-              'text-base font-bold leading-snug transition-all duration-500',
-              hasImproved && scoreDelta >= 5 && 'text-emerald-700 dark:text-emerald-300',
-            )}>
-              {chefText}
+          <div className="min-w-0">
+            <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">
+              {t('chefComment')}
             </p>
-
-            {/* Score bar with animated number */}
-            <div className="flex items-center gap-3 mt-3">
-              <div className="flex-1 h-3 rounded-full bg-muted overflow-hidden relative">
-                <div
-                  className={cn('h-full rounded-full transition-all duration-[1200ms] ease-out relative', scoreBg)}
-                  style={{ width: `${d.health_score}%` }}
-                >
-                  {/* Pulse glow on the leading edge */}
-                  <div className="absolute right-0 top-0 bottom-0 w-4 rounded-full bg-white/30 animate-pulse" />
-                </div>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className={cn('text-2xl font-black tabular-nums', scoreColor)}>
-                  {animatedScore}
-                </span>
-              </div>
-            </div>
-
-            {/* Category mini-scores */}
-            <div className="flex gap-4 mt-2">
-              {(['flavor', 'nutrition', 'dominance', 'structure'] as const).map(cat => {
-                const s = d.category_scores[cat];
-                const c = s >= 80 ? 'text-emerald-600' : s >= 60 ? 'text-green-600' : s >= 40 ? 'text-amber-600' : 'text-red-600';
-                return (
-                  <span key={cat} className="text-[10px] text-muted-foreground">
-                    {t(`cat_${cat}`)} <span className={cn('font-black', c)}>{s}</span>
-                  </span>
-                );
-              })}
-            </div>
+            <p className={cn(
+              'text-base font-semibold leading-relaxed italic',
+              hasImproved && scoreDelta >= 5 ? 'text-emerald-700 dark:text-emerald-300' : 'text-foreground/90',
+            )}>
+              &ldquo;{chefText}&rdquo;
+            </p>
           </div>
         </div>
 
-        {/* ══════════════════════════════════════════════════════════════════
-           BEFORE → AFTER — the WOW block (shown after auto-improve)
-           ══════════════════════════════════════════════════════════════════ */}
+        {/* ═══════════════════════════════════════════════════════
+           BEFORE → AFTER block (after auto-improve)
+           ═══════════════════════════════════════════════════════ */}
         {previous && current && (
           <div className="mt-5 rounded-xl border-2 border-emerald-500/30 bg-emerald-500/5 overflow-hidden chef-fade-in">
-            {/* Header */}
-            <div className="px-4 py-3 bg-emerald-500/10 border-b border-emerald-500/20 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Flame className="h-4 w-4 text-emerald-600" />
-                <span className="text-sm font-black uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
-                  {t('beforeAfter')}
-                </span>
-              </div>
+            <div className="px-4 py-3 bg-emerald-500/10 border-b border-emerald-500/20 flex items-center gap-2">
+              <Flame className="h-4 w-4 text-emerald-600" />
+              <span className="text-sm font-black uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
+                {t('beforeAfter')}
+              </span>
             </div>
-
-            {/* Delta rows */}
             <div className="p-3 space-y-1">
               <BigDelta label={t('score')}   emoji="🎯" before={previous.health_score} after={d.health_score} unit="" highlight />
               <BigDelta label="kcal"         emoji="🔥" before={previous.calories} after={current.calories} unit="" />
@@ -557,8 +635,6 @@ export function ChefSummary({
               <BigDelta label={t('fat')}     emoji="🧈" before={previous.fat} after={current.fat} unit="g" invert />
               <BigDelta label={t('carbs')}   emoji="🍞" before={previous.carbs} after={current.carbs} unit="g" invert />
             </div>
-
-            {/* What we changed — changelog */}
             {changeLog.length > 0 && (
               <div className="px-4 pb-4 pt-1">
                 <ChangeLogBlock changes={changeLog} locale={locale} />
@@ -567,72 +643,34 @@ export function ChefSummary({
           </div>
         )}
 
-        {/* What to do — prioritized numbered actions (only when NOT just improved) */}
-        {!hasImproved && actions.length > 0 && (
-          <div className="mt-4 pl-16">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5">
-              {t('whatToDo')}
-            </p>
-            <ol className="space-y-1">
-              {actions.map((action, i) => (
-                <li key={i} className="flex items-center gap-2 text-sm">
-                  <span className={cn(
-                    'flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-black shrink-0',
-                    i === 0
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-muted text-muted-foreground',
-                  )}>
-                    {i + 1}
-                  </span>
-                  <span className={cn(
-                    'font-medium',
-                    i === 0 ? 'text-foreground' : 'text-foreground/70',
-                  )}>
-                    {action}
-                  </span>
-                </li>
-              ))}
-            </ol>
-          </div>
-        )}
-
-        {/* Auto-improve button — unified canMeaningfullyImprove logic */}
+        {/* ═══════════════════════════════════════════════════════
+           ACTION BUTTON — single, prominent
+           ═══════════════════════════════════════════════════════ */}
         {(() => {
           const MAX_IMPROVES = 3;
           const reachedLimit = improveCount >= MAX_IMPROVES;
-
-          // ── SINGLE SOURCE OF TRUTH: canMeaningfullyImprove ──
-          // Unifies backend (hasFixableIssues) + frontend (noOp, limit) logic
           const hasFixableIssues = autoFixSlugs.length > 0 || reduceRules.length > 0;
           const canMeaningfullyImprove = hasFixableIssues && !improveExhausted && !reachedLimit;
           const isTerminal = isGood || !canMeaningfullyImprove;
 
-          // Remaining critical+warning issues (not info)
           const remainingIssues = d.issues.filter(i => i.severity !== 'info');
           const hasCriticalRemaining = remainingIssues.some(i => i.severity === 'critical');
           const hasWarningRemaining = remainingIssues.length > 0;
 
-          // ── 3-state classification ──
-          // 1. PERFECT — score ≥ 85 and no meaningful issues
-          // 2. NEEDS_MANUAL — terminal but still has critical/warning issues
-          // 3. OPTIMIZED — terminal, no critical issues (technical limit)
           type TerminalClass = 'perfect' | 'needs_manual' | 'optimized';
-
           const terminalClass: TerminalClass = isGood
             ? 'perfect'
             : (hasCriticalRemaining || hasWarningRemaining)
             ? 'needs_manual'
             : 'optimized';
 
-          // ── Terminal states ──
+          // ── Terminal states (after improve attempts) ──
           if (hasImproved && isTerminal) {
-            // Blockers list — remaining issues as actionable text
             const blockers = buildActions(remainingIssues, locale);
 
             if (terminalClass === 'perfect') {
-              // ✅ State 1: Perfect — green celebration
               return (
-                <div className="mt-4 flex flex-col items-center gap-1.5 chef-fade-in">
+                <div className="mt-5 flex flex-col items-center gap-1.5 chef-fade-in">
                   <div className="flex items-center gap-2.5 px-6 py-3 rounded-xl font-bold text-sm uppercase tracking-wider bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-2 border-emerald-500/30">
                     <CheckCircle className="h-5 w-5" />
                     <span>{t('perfectBalance')}</span>
@@ -642,10 +680,8 @@ export function ChefSummary({
             }
 
             if (terminalClass === 'needs_manual') {
-              // 🧠 State 3: Needs manual intervention — still has problems
               return (
-                <div className="mt-4 space-y-3 chef-fade-in">
-                  {/* Main badge — amber/orange warning */}
+                <div className="mt-5 space-y-3 chef-fade-in">
                   <div className="flex flex-col items-center gap-1.5">
                     <div className={cn(
                       'flex items-center gap-2.5 px-6 py-3 rounded-xl font-bold text-sm uppercase tracking-wider border-2',
@@ -656,24 +692,16 @@ export function ChefSummary({
                       <AlertTriangle className="h-5 w-5" />
                       <span>{t('needsManualFix')}</span>
                     </div>
-                    <p className="text-xs text-muted-foreground/70 italic">
-                      {t('changeConcept')}
-                    </p>
+                    <p className="text-xs text-muted-foreground/70 italic">{t('changeConcept')}</p>
                   </div>
-
-                  {/* Blocker list — "What prevents further improvement" */}
                   {blockers.length > 0 && (
                     <div className={cn(
                       'rounded-xl border p-4 space-y-2',
-                      hasCriticalRemaining
-                        ? 'bg-red-500/5 border-red-500/20'
-                        : 'bg-amber-500/5 border-amber-500/20',
+                      hasCriticalRemaining ? 'bg-red-500/5 border-red-500/20' : 'bg-amber-500/5 border-amber-500/20',
                     )}>
                       <p className={cn(
                         'text-[10px] font-bold uppercase tracking-widest',
-                        hasCriticalRemaining
-                          ? 'text-red-600/70 dark:text-red-400/70'
-                          : 'text-amber-600/70 dark:text-amber-400/70',
+                        hasCriticalRemaining ? 'text-red-600/70 dark:text-red-400/70' : 'text-amber-600/70 dark:text-amber-400/70',
                       )}>
                         {t('whatBlocks')}
                       </p>
@@ -682,9 +710,7 @@ export function ChefSummary({
                           <li key={i} className="flex items-center gap-2 text-sm">
                             <span className={cn(
                               'flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-black shrink-0',
-                              i === 0
-                                ? (hasCriticalRemaining ? 'bg-red-500 text-white' : 'bg-amber-500 text-white')
-                                : 'bg-muted text-muted-foreground',
+                              i === 0 ? (hasCriticalRemaining ? 'bg-red-500 text-white' : 'bg-amber-500 text-white') : 'bg-muted text-muted-foreground',
                             )}>
                               {i + 1}
                             </span>
@@ -698,50 +724,47 @@ export function ChefSummary({
               );
             }
 
-            // ⚙️ State 2: Optimized — technical limit, no critical issues
             return (
-              <div className="mt-4 flex flex-col items-center gap-1.5 chef-fade-in">
+              <div className="mt-5 flex flex-col items-center gap-1.5 chef-fade-in">
                 <div className="flex items-center gap-2.5 px-6 py-3 rounded-xl font-bold text-sm uppercase tracking-wider bg-blue-500/10 text-blue-600 dark:text-blue-400 border-2 border-blue-500/25">
                   <Info className="h-5 w-5" />
                   <span>{t('technicalLimit')}</span>
                 </div>
-                <p className="text-xs text-muted-foreground/70 italic">
-                  {t('changeConcept')}
-                </p>
+                <p className="text-xs text-muted-foreground/70 italic">{t('changeConcept')}</p>
               </div>
             );
           }
 
-          // ── Not terminal but nothing to auto-fix on first analysis ──
+          // ── No action needed ──
           if (!hasImproved && !canMeaningfullyImprove) return null;
           if (!hasImproved && isGood) return null;
 
-          // ── Active: can meaningfully improve ──
+          // ── PRIMARY ACTION BUTTON — "Apply Improvement" ──
           if (canMeaningfullyImprove && !isGood) {
             return (
-              <div className={cn('mt-4', !hasImproved && 'pl-16')}>
+              <div className="mt-5">
                 <button
                   onClick={() => onAutoImprove(autoFixSlugs)}
                   disabled={improving}
                   className={cn(
-                    'flex items-center gap-2.5 px-6 py-3 rounded-xl font-bold text-sm uppercase tracking-wider transition-all duration-300',
-                    'disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100',
+                    'w-full flex items-center justify-center gap-2.5 px-6 py-4 rounded-xl font-black text-sm uppercase tracking-widest transition-all duration-300',
+                    'disabled:opacity-50 disabled:cursor-not-allowed',
                     hasImproved
                       ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-2 border-emerald-500/30 hover:bg-emerald-500/20 hover:scale-[1.02]'
-                      : 'bg-primary text-primary-foreground hover:brightness-110 hover:scale-[1.02]',
+                      : 'bg-primary text-primary-foreground hover:brightness-110 hover:scale-[1.01] shadow-lg',
                   )}
                 >
                   {improving ? (
                     <>
-                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <Loader2 className="h-5 w-5 animate-spin" />
                       <span>{t('improving')}</span>
                     </>
                   ) : (
                     <>
-                      <Wand2 className="h-4 w-4" />
+                      <Wand2 className="h-5 w-5" />
                       {hasImproved
                         ? `${t('improveMore')} (${improveCount}/${MAX_IMPROVES})`
-                        : t('autoImprove')}
+                        : t('applyImprovement')}
                     </>
                   )}
                 </button>
@@ -753,7 +776,7 @@ export function ChefSummary({
         })()}
       </div>
 
-      {/* Shimmer + entrance animations */}
+      {/* Animations */}
       <style jsx>{`
         @keyframes shimmer {
           0% { transform: translateX(-100%); }
