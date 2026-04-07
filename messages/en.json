@@ -74,8 +74,37 @@
       "dietDesc": "Ingredients filtered by diet: keto, vegan, paleo, and more.",
       "ranking": "Ingredient Rankings",
       "rankingDesc": "Top ingredients by protein, iron, vitamin C, and more.",
+      "ingredientAnalyzer": "Ingredient Analyzer",
+      "ingredientAnalyzerDesc": "Deep analysis: vitamins, minerals, comparison, and sushi grade.",
+      "howMany": "How many grams in...",
+      "howManyDesc": "Quick answer: grams in a spoon, cup, or piece.",
       "aiChat": "AI Sous-Chef",
       "aiChatDesc": "Ask a cooking question — AI answers like a professional sous-chef."
+    },
+    "landing": {
+      "heroTitle": "What do you want to do?",
+      "heroSubtitle": "Choose an action — the system picks the right tool",
+      "actions": {
+        "analyzeRecipe": "Analyze a recipe",
+        "analyzeRecipeDesc": "Paste a recipe → nutrition, flavor balance, improvements",
+        "checkIngredient": "Check an ingredient",
+        "checkIngredientDesc": "Vitamins, minerals, seasonality, compatibility",
+        "convertUnits": "Convert units",
+        "convertUnitsDesc": "Grams ↔ spoons ↔ cups ↔ ounces",
+        "createRecipe": "Create a recipe",
+        "createRecipeDesc": "Enter products → AI suggests a dish"
+      },
+      "sections": {
+        "database": "Database",
+        "databaseDesc": "Products, seasonality, deep analysis",
+        "tools": "Tools",
+        "toolsDesc": "Converters, tables, rankings",
+        "ai": "AI Core",
+        "aiDesc": "Analysis, creation, flavor combinations"
+      },
+      "seeAll": "All tools",
+      "flowHint": "Use in recipe →",
+      "flowImprove": "Improve →"
     },
     "tabs": {
       "tools": "Tools",
@@ -997,7 +1026,14 @@
       "tagline": "The technique that holds professional kitchens together.",
       "philosophy": "Practical knowledge that elevates dishes, processes, and business.",
       "cta": "For Restaurants →",
-      "readBlog": "Read the Blog"
+      "readBlog": "Read the Blog",
+      "catalogLabel": "Ingredient Catalog",
+      "ingredientsLabel": "products with nutrition & photos",
+      "kcalLabel": "kcal",
+      "catalogCta": "Find a product",
+      "valueProp1": "Calories & macros per 100g",
+      "valueProp2": "Vitamins & minerals",
+      "valueProp3": "Best flavor pairings"
     },
     "latestPosts": "Latest Articles",
     "featuredArticle": "Featured Article",

@@ -1,9 +1,9 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
 import { PostCard } from '@/components/PostCard';
-import { HeroImage } from '@/components/HeroImage';
 import { ImageGallery } from '@/components/ImageGallery';
 import { ScrollReveal } from '@/components/ScrollReveal';
+import { HeroIngredientCards, type HeroIngredient } from '@/components/HeroIngredientCards';
 import { ArrowRight, Sparkles, BookOpen, Scale, Search, Fish, FlaskConical, Utensils } from 'lucide-react';
 import { getLatestPosts } from '@/lib/posts';
 import { Button } from '@/components/ui/button';
@@ -67,7 +67,7 @@ export default async function HomePage({
   const loc = locale as Locale;
   const t = await getTranslations({ locale, namespace: 'home' });
   
-  const [latestPosts, galleryFromApi, aboutFromApi] = await Promise.all([
+  const [latestPosts, galleryFromApi, aboutFromApi, ingredientsFromApi] = await Promise.all([
     getLatestPosts(locale, 6),
     fetch(`${API}/public/gallery`, { next: { revalidate: 60 } })
       .then(r => r.ok ? r.json() as Promise<GalleryItem[]> : [])
@@ -75,9 +75,33 @@ export default async function HomePage({
     fetch(`${API}/public/about`, { next: { revalidate: 60 } })
       .then(r => r.ok ? r.json() as Promise<AboutData> : null)
       .catch(() => null),
+    fetch(`${API}/public/ingredients-full`, { next: { revalidate: 300 } })
+      .then(r => r.ok ? r.json() as Promise<{ items: Array<{ slug: string; name_en: string; name_ru?: string; name_pl?: string; name_uk?: string; image_url?: string | null; calories_per_100g: number | null; protein_per_100g: number | null }>; total: number }> : null)
+      .catch(() => null),
   ]);
 
   const aboutImage = (aboutFromApi as AboutData | null)?.image_url ?? null;
+
+  // Prepare hero ingredient cards — deterministic selection on server (no Math.random to avoid hydration mismatch)
+  const allWithImages = (ingredientsFromApi?.items ?? [])
+    .filter(i => i.image_url && i.calories_per_100g);
+  // Spread evenly across the list for visual variety
+  const step = Math.max(1, Math.floor(allWithImages.length / 8));
+  const picked: typeof allWithImages = [];
+  for (let idx = 0; picked.length < 8 && idx < allWithImages.length; idx += step) {
+    picked.push(allWithImages[idx]);
+  }
+  const heroIngredients: HeroIngredient[] = picked.map(i => ({
+    slug: i.slug,
+    name: (loc === 'pl' && i.name_pl) ? i.name_pl
+         : (loc === 'ru' && i.name_ru) ? i.name_ru
+         : (loc === 'uk' && i.name_uk) ? i.name_uk
+         : i.name_en,
+    image_url: i.image_url!,
+    calories: i.calories_per_100g!,
+    protein: i.protein_per_100g,
+  }));
+  const totalIngredients = ingredientsFromApi?.total ?? allWithImages.length;
 
   const galleryImages = (galleryFromApi as GalleryItem[])
     .sort((a, b) => a.order_index - b.order_index)
@@ -158,35 +182,23 @@ export default async function HomePage({
         </div>
         
         <ScrollReveal direction="up" delay={400} duration={1200} distance={60}>
-          <div className="mt-24 lg:mt-32 relative">
-            <HeroImage 
-              src="https://i.postimg.cc/RCf8VLFn/DSCF4639.jpg"
-              alt="Dima Fomin - Sushi Chef"
-              priority
+          <div className="mt-20 lg:mt-28">
+            <HeroIngredientCards
+              ingredients={heroIngredients}
+              totalCount={totalIngredients}
+              locale={locale}
+              i18n={{
+                catalogLabel: t('hero.catalogLabel'),
+                ingredientsLabel: t('hero.ingredientsLabel'),
+                kcalLabel: t('hero.kcalLabel'),
+                ctaText: t('hero.catalogCta'),
+                valueProps: [
+                  t('hero.valueProp1'),
+                  t('hero.valueProp2'),
+                  t('hero.valueProp3'),
+                ],
+              }}
             />
-            {/* Article overlay card on hero image */}
-            {latestPosts.length > 0 && (
-              <Link href={`/blog/${latestPosts[0].slug}`} className="group/featured absolute bottom-6 left-6 right-6 md:left-auto md:right-8 md:bottom-8 md:max-w-sm z-10 block">
-                <div className="glass-card rounded-2xl p-5 transition-all duration-500 group-hover/featured:border-primary/40 hover-lift">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest">
-                      <Sparkles className="h-2.5 w-2.5 fill-primary" />
-                      {t('featuredArticle')}
-                    </span>
-                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-                      {latestPosts[0].readTime}
-                    </span>
-                  </div>
-                  <h3 className="text-sm font-black text-white tracking-tight leading-tight line-clamp-2 mb-3 group-hover/featured:text-primary transition-colors uppercase italic">
-                    {latestPosts[0].title}
-                  </h3>
-                  <div className="flex items-center gap-1.5 text-primary text-xs font-black uppercase tracking-widest group-hover/featured:gap-2.5 transition-all">
-                    {t('readMore')}
-                    <ArrowRight className="h-3.5 w-3.5 stroke-[3px]" />
-                  </div>
-                </div>
-              </Link>
-            )}
           </div>
         </ScrollReveal>
       </section>

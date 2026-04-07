@@ -625,10 +625,11 @@ export function IngredientConverterClient({ ingredients, i18n }: Props) {
           <p className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-muted-foreground/60">
             {locale === 'ru' ? 'Быстрый выбор' : i18n.quickIngredients}
           </p>
-          <div className="flex flex-wrap gap-1.5 sm:gap-2">
+          <div className="flex flex-wrap gap-2 sm:gap-2.5">
             {QUICK_SLUGS.map((slug) => {
               const opt = findBySlug(slug);
               if (!opt) return null;
+              const isActive = ingredient?.slug === slug;
               return (
                 <button
                   key={slug}
@@ -638,12 +639,24 @@ export function IngredientConverterClient({ ingredients, i18n }: Props) {
                     setDescription(null);
                     setConvertResult(null);
                   }}
-                  className={`px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm rounded-full border-2 transition-all font-bold ${ingredient?.slug === slug
+                  className={`flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl border-2 transition-all font-bold text-xs sm:text-sm ${isActive
                       ? 'bg-primary text-primary-foreground border-primary shadow-md shadow-primary/20'
                       : 'bg-muted/30 border-border/40 hover:bg-primary/10 hover:border-primary/30 hover:text-primary text-foreground/80'
                     }`}
                 >
-                  {opt.name}
+                  {opt.image ? (
+                    <Image
+                      src={opt.image}
+                      alt={opt.name}
+                      width={24}
+                      height={24}
+                      className="w-5 h-5 sm:w-6 sm:h-6 rounded-md object-cover shrink-0"
+                      unoptimized
+                    />
+                  ) : (
+                    <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-md bg-muted shrink-0" />
+                  )}
+                  <span>{opt.name}</span>
                 </button>
               );
             })}

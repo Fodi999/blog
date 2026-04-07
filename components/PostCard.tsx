@@ -118,25 +118,26 @@ export function PostCard({
           </div>
           
           <div className={cn(
-            "mt-8 md:mt-12 pt-8 border-t border-border/40 flex items-center justify-between",
+            "mt-8 md:mt-12 pt-8 border-t border-border/40 flex flex-wrap items-center justify-between gap-y-4",
             variant === 'wide' ? "lg:mt-16" : ""
           )}>
-            <div className="flex items-center gap-6 text-[11px] font-black uppercase tracking-[0.2em] text-muted-foreground/50 italic">
-              <div className="flex items-center gap-2 group-hover:text-muted-foreground transition-colors duration-500">
-                <Calendar className="w-3.5 h-3.5 text-primary/50 group-hover:text-primary transition-colors" />
+            <div className="flex items-center gap-4 sm:gap-6 text-[10px] sm:text-[11px] font-black uppercase tracking-[0.15em] text-muted-foreground/60">
+              <div className="flex items-center gap-2 group-hover:text-muted-foreground transition-colors duration-500 whitespace-nowrap">
+                <Calendar className="w-3.5 h-3.5 text-primary transition-colors" />
                 <time dateTime={displayDate}>{displayDate}</time>
               </div>
               {readTime && (
-                <div className="flex items-center gap-2">
-                  <Clock className="w-3.5 h-3.5 text-primary/50" />
+                <div className="flex items-center gap-2 whitespace-nowrap">
+                  <div className="w-1 h-1 rounded-full bg-border/60" /> {/* Dot separator */}
+                  <Clock className="w-3.5 h-3.5 text-primary/80" />
                   <span>{readTime}</span>
                 </div>
               )}
             </div>
             
-            <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] text-primary transition-all duration-500 group-hover:gap-4">
-              <span className="hidden sm:inline">Read Full</span>
-              <ArrowUpRight className="w-5 h-5" />
+            <div className="flex items-center gap-2 text-[10px] sm:text-[11px] font-black uppercase tracking-[0.2em] text-primary transition-all duration-500 group-hover:gap-4 whitespace-nowrap">
+              <span>Read Full</span>
+              <ArrowUpRight className="w-4 h-4 sm:w-5 sm:h-5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </div>
           </div>
         </div>

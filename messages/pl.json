@@ -74,8 +74,37 @@
       "dietDesc": "Składniki filtrowane według diety: keto, vegan, paleo i inne.",
       "ranking": "Rankingi składników",
       "rankingDesc": "Top składniki według białka, żelaza, witaminy C i innych.",
+      "ingredientAnalyzer": "Analizator składników",
+      "ingredientAnalyzerDesc": "Głęboka analiza: witaminy, minerały, porównanie i stopień sushi.",
+      "howMany": "Ile gramów w...",
+      "howManyDesc": "Szybka odpowiedź: ile gramów w łyżce, szklance lub sztuce.",
       "aiChat": "AI Sous-Chef",
       "aiChatDesc": "Zadaj pytanie o gotowanie — AI odpowie jak profesjonalny sous-chef."
+    },
+    "landing": {
+      "heroTitle": "Co chcesz zrobić?",
+      "heroSubtitle": "Wybierz akcję — system dobierze odpowiednie narzędzie",
+      "actions": {
+        "analyzeRecipe": "Analizuj przepis",
+        "analyzeRecipeDesc": "Wklej przepis → KBJU, balans smaku, ulepszenia",
+        "checkIngredient": "Sprawdź składnik",
+        "checkIngredientDesc": "Witaminy, minerały, sezonowość, kompatybilność",
+        "convertUnits": "Przelicz jednostki",
+        "convertUnitsDesc": "Gramy ↔ łyżki ↔ szklanki ↔ uncje",
+        "createRecipe": "Stwórz przepis",
+        "createRecipeDesc": "Wpisz produkty → AI zaproponuje danie"
+      },
+      "sections": {
+        "database": "Baza danych",
+        "databaseDesc": "Produkty, sezonowość, głęboka analiza",
+        "tools": "Narzędzia",
+        "toolsDesc": "Przeliczniki, tabele, rankingi",
+        "ai": "AI Rdzeń",
+        "aiDesc": "Analiza, tworzenie, kombinacje smakowe"
+      },
+      "seeAll": "Wszystkie narzędzia",
+      "flowHint": "Użyj w przepisie →",
+      "flowImprove": "Ulepsz →"
     },
     "tabs": {
       "tools": "Narzędzia",
@@ -999,7 +1028,14 @@
       "tagline": "Technika, na której opiera się profesjonalna kuchnia.",
       "philosophy": "Praktyczna wiedza, która podnosi poziom potraw, procesów i biznesu.",
       "cta": "Dla restauracji →",
-      "readBlog": "Czytaj blog"
+      "readBlog": "Czytaj blog",
+      "catalogLabel": "Katalog składników",
+      "ingredientsLabel": "produktów z wartością odżywczą i zdjęciami",
+      "kcalLabel": "kcal",
+      "catalogCta": "Znajdź produkt",
+      "valueProp1": "Kalorie i makro na 100g",
+      "valueProp2": "Witaminy i minerały",
+      "valueProp3": "Najlepsze połączenia smakowe"
     },
     "latestPosts": "Najnowsze artykuły",
     "featuredArticle": "Wyróżniony artykuł",
