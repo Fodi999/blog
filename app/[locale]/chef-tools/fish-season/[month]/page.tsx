@@ -19,11 +19,20 @@ const MONTH_SLUGS = [
 const MONTH_NUMBERS: Record<string, number> = {
   january: 1, february: 2, march: 3, april: 4, may: 5, june: 6,
   july: 7, august: 8, september: 9, october: 10, november: 11, december: 12,
+  // Numeric aliases (01-12) — for SEO and direct links
+  '01': 1, '02': 2, '03': 3, '04': 4, '05': 5, '06': 6,
+  '07': 7, '08': 8, '09': 9, '10': 10, '11': 11, '12': 12,
+  '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6,
+  '7': 7, '8': 8, '9': 9,
 };
 
 export async function generateStaticParams() {
   const locales = ['pl', 'en', 'ru', 'uk'];
-  return locales.flatMap((locale) => MONTH_SLUGS.map((month) => ({ locale, month })));
+  const allSlugs = [
+    ...MONTH_SLUGS,
+    '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12',
+  ];
+  return locales.flatMap((locale) => allSlugs.map((month) => ({ locale, month })));
 }
 
 export async function generateMetadata({
