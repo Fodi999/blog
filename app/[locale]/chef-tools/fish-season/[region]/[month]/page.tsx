@@ -6,11 +6,19 @@ import { JsonLd } from '@/components/JsonLd';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { fetchFishSeasonTable } from '@/lib/api';
 import Image from 'next/image';
+import { VALID_REGIONS, SLUG_TO_API, REGION_NAMES, type RegionSlug } from '../page';
+import type { Metadata } from 'next';
+
+/**
+ * /chef-tools/fish-season/[region]/[month]
+ *
+ * Hierarchical SEO: /fish-season/pl/january, /fish-season/eu/april
+ * Two-dimensional: geography × time
+ */
 
 export const revalidate = 300;
 
-// ─── Month config ─────────────────────────────────────────────────────────────
-
+// ─── Month config ────────────────────────────────────────────────────────
 const MONTH_SLUGS = [
   'january', 'february', 'march', 'april', 'may', 'june',
   'july', 'august', 'september', 'october', 'november', 'december',
@@ -19,44 +27,42 @@ const MONTH_SLUGS = [
 const MONTH_NUMBERS: Record<string, number> = {
   january: 1, february: 2, march: 3, april: 4, may: 5, june: 6,
   july: 7, august: 8, september: 9, october: 10, november: 11, december: 12,
-  // Numeric aliases (01-12) — for SEO and direct links
   '01': 1, '02': 2, '03': 3, '04': 4, '05': 5, '06': 6,
   '07': 7, '08': 8, '09': 9, '10': 10, '11': 11, '12': 12,
   '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6,
   '7': 7, '8': 8, '9': 9,
 };
 
-export async function generateStaticParams() {
-  const locales = ['pl', 'en', 'ru', 'uk'];
-  const allSlugs = [
-    ...MONTH_SLUGS,
-    '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12',
-  ];
-  return locales.flatMap((locale) => allSlugs.map((month) => ({ locale, month })));
+// ─── Static params ───────────────────────────────────────────────────────
+export function generateStaticParams() {
+  return VALID_REGIONS.flatMap((region) =>
+    MONTH_SLUGS.map((month) => ({ region, month })),
+  );
 }
 
+// ─── Metadata ────────────────────────────────────────────────────────────
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ locale: string; month: string }>;
-}) {
-  const { locale, month } = await params;
-  setRequestLocale(locale);
-  if (!MONTH_NUMBERS[month]) return {};
+  params: Promise<{ locale: string; region: string; month: string }>;
+}): Promise<Metadata> {
+  const { locale, region, month } = await params;
+  const regionSlug = region.toLowerCase() as RegionSlug;
+  if (!VALID_REGIONS.includes(regionSlug) || !MONTH_NUMBERS[month]) return {};
+
   const t = await getTranslations({ locale, namespace: 'chefTools' });
-  const monthNum = MONTH_NUMBERS[month];
-  // Capitalize month name
   const monthName = month.charAt(0).toUpperCase() + month.slice(1);
+  const regionName = REGION_NAMES[regionSlug];
+
   return genMeta({
-    title: `Fish in ${monthName} · ${t('tools.fishSeason.title')}`,
-    description: `Best fish and seafood to eat in ${monthName}. Peak season fish, sushi-grade picks, and seasonal availability for Poland region.`,
+    title: `Fish in ${monthName} · ${regionName} · ${t('tools.fishSeason.title')}`,
+    description: `Best fish and seafood to eat in ${monthName} — ${regionName} region. Peak season fish, sushi-grade picks, and seasonal availability.`,
     locale: locale as 'pl' | 'en' | 'uk' | 'ru',
-    path: `/chef-tools/fish-season/${month}`,
+    path: `/chef-tools/fish-season/${regionSlug}/${month}`,
   });
 }
 
-// ─── Status dot ──────────────────────────────────────────────────────────────
-
+// ─── Status styles ───────────────────────────────────────────────────────
 const DOT: Record<string, string> = {
   peak:    'bg-primary shadow-sm shadow-primary/40',
   good:    'bg-lime-500/70',
@@ -74,24 +80,29 @@ const BADGE_LABEL: Record<string, string> = {
   peak: '🔴 Peak', good: '🟢 Good', limited: '🟡 Limited',
 };
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
-
-export default async function FishInMonthPage({
+// ─── Page ────────────────────────────────────────────────────────────────
+export default async function FishInRegionMonthPage({
   params,
 }: {
-  params: Promise<{ locale: string; month: string }>;
+  params: Promise<{ locale: string; region: string; month: string }>;
 }) {
-  const { locale, month } = await params;
+  const { locale, region: regionParam, month } = await params;
   setRequestLocale(locale);
+
+  const regionSlug = regionParam.toLowerCase() as RegionSlug;
+  if (!VALID_REGIONS.includes(regionSlug)) notFound();
+
   const monthNum = MONTH_NUMBERS[month];
   if (!monthNum) notFound();
 
+  const apiRegion = SLUG_TO_API[regionSlug];
+  const regionName = REGION_NAMES[regionSlug];
   const t = await getTranslations({ locale, namespace: 'chefTools' });
-  const tableData = await fetchFishSeasonTable(locale, 'PL');
+  const tableData = await fetchFishSeasonTable(locale, apiRegion);
 
   const monthName = month.charAt(0).toUpperCase() + month.slice(1);
 
-  // Filter fish available (not 'off') this month
+  // Filter fish available this month
   const available = (tableData?.fish ?? []).filter((fish) => {
     const s = fish.season.find((m) => m.month === monthNum);
     return s?.available === true;
@@ -101,11 +112,9 @@ export default async function FishInMonthPage({
   const good    = available.filter((f) => f.status === 'good');
   const limited = available.filter((f) => f.status === 'limited');
 
-  // Prev / next month navigation
   const prevMonthSlug = MONTH_SLUGS[(monthNum - 2 + 12) % 12];
   const nextMonthSlug = MONTH_SLUGS[monthNum % 12];
 
-  // All month names from API or static
   const apiMonthName = tableData?.fish[0]?.season.find((s) => s.month === monthNum)?.month_name ?? monthName;
 
   return (
@@ -114,13 +123,13 @@ export default async function FishInMonthPage({
         data={{
           '@context': 'https://schema.org',
           '@type': 'Article',
-          headline: `Best fish in ${monthName}`,
-          description: `Peak season fish and seafood for ${monthName} — Poland region.`,
-          url: `https://dima-fomin.pl/${locale}/chef-tools/fish-season/${month}`,
+          headline: `Best fish in ${monthName} — ${regionName}`,
+          description: `Peak season fish and seafood for ${monthName} — ${regionName} region.`,
+          url: `https://dima-fomin.pl/${locale}/chef-tools/fish-season/${regionSlug}/${month}`,
         }}
       />
 
-      {/* Breadcrumb */}
+      {/* Breadcrumb: Chef Tools / Fish Season / Region / Month */}
       <nav className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-muted-foreground mb-8">
         <Link href="/chef-tools" className="hover:text-primary transition-colors">
           {t('back')}
@@ -128,6 +137,10 @@ export default async function FishInMonthPage({
         <span>/</span>
         <Link href="/chef-tools/fish-season" className="hover:text-primary transition-colors">
           {t('tools.fishSeason.title')}
+        </Link>
+        <span>/</span>
+        <Link href={`/chef-tools/fish-season/${regionSlug}`} className="hover:text-primary transition-colors">
+          {regionName}
         </Link>
         <span>/</span>
         <span className="text-foreground">{apiMonthName}</span>
@@ -139,26 +152,25 @@ export default async function FishInMonthPage({
           Fish in {apiMonthName}<span className="text-primary">.</span>
         </h1>
         <p className="text-sm md:text-base text-muted-foreground font-medium max-w-xl">
-          Best fish and seafood available in {apiMonthName} · Poland region · {available.length} species
+          Best fish and seafood available in {apiMonthName} · {regionName} · {available.length} species
         </p>
       </div>
 
-      {/* Month nav */}
+      {/* Month nav — all links are /fish-season/{region}/{month} */}
       <div className="flex items-center justify-between mb-10 p-4 rounded-2xl border border-border/40 bg-muted/20">
         <Link
-          href={`/chef-tools/fish-season/${prevMonthSlug}`}
+          href={`/chef-tools/fish-season/${regionSlug}/${prevMonthSlug}`}
           className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors"
         >
           <ChevronLeft className="h-3.5 w-3.5" />
-          {MONTH_SLUGS[(monthNum - 2 + 12) % 12].charAt(0).toUpperCase() + MONTH_SLUGS[(monthNum - 2 + 12) % 12].slice(1)}
+          {prevMonthSlug.charAt(0).toUpperCase() + prevMonthSlug.slice(1)}
         </Link>
 
-        {/* Month strip */}
         <div className="hidden sm:flex gap-1">
           {MONTH_SLUGS.map((s, i) => (
             <Link
               key={s}
-              href={`/chef-tools/fish-season/${s}`}
+              href={`/chef-tools/fish-season/${regionSlug}/${s}`}
               className={`w-7 h-7 rounded-lg flex items-center justify-center text-[9px] font-black uppercase transition-colors ${
                 i + 1 === monthNum
                   ? 'bg-primary text-primary-foreground'
@@ -171,26 +183,42 @@ export default async function FishInMonthPage({
         </div>
 
         <Link
-          href={`/chef-tools/fish-season/${nextMonthSlug}`}
+          href={`/chef-tools/fish-season/${regionSlug}/${nextMonthSlug}`}
           className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors"
         >
-          {MONTH_SLUGS[monthNum % 12].charAt(0).toUpperCase() + MONTH_SLUGS[monthNum % 12].slice(1)}
+          {nextMonthSlug.charAt(0).toUpperCase() + nextMonthSlug.slice(1)}
           <ChevronRight className="h-3.5 w-3.5" />
         </Link>
+      </div>
+
+      {/* Region switcher for same month */}
+      <div className="flex items-center gap-1.5 mb-6">
+        <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mr-1">🌍</span>
+        {VALID_REGIONS.map((r) => (
+          <Link
+            key={r}
+            href={`/chef-tools/fish-season/${r}/${month}`}
+            className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider border transition-colors ${
+              regionSlug === r
+                ? 'bg-primary text-primary-foreground border-primary'
+                : 'bg-background border-border/50 text-muted-foreground hover:border-primary/40 hover:text-foreground'
+            }`}
+          >
+            {REGION_NAMES[r]}
+          </Link>
+        ))}
       </div>
 
       {available.length === 0 ? (
         <div className="text-center py-20">
           <p className="text-4xl mb-4">🚫</p>
-          <p className="text-muted-foreground font-medium">No fish available data for {apiMonthName}</p>
-          <Link href="/chef-tools/fish-season" className="mt-4 inline-block text-sm font-black text-primary hover:underline">
+          <p className="text-muted-foreground font-medium">No fish available data for {apiMonthName} in {regionName}</p>
+          <Link href={`/chef-tools/fish-season/${regionSlug}`} className="mt-4 inline-block text-sm font-black text-primary hover:underline">
             View full calendar →
           </Link>
         </div>
       ) : (
         <div className="space-y-10">
-
-          {/* Peak section */}
           {peak.length > 0 && (
             <section>
               <h2 className="text-xl font-black uppercase tracking-tighter text-foreground mb-4 flex items-center gap-2">
@@ -199,14 +227,11 @@ export default async function FishInMonthPage({
                 <span className="text-sm font-bold text-muted-foreground normal-case tracking-normal">({peak.length})</span>
               </h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                {peak.map((fish) => (
-                  <FishCard key={fish.slug} fish={fish} status="peak" />
-                ))}
+                {peak.map((fish) => <FishCard key={fish.slug} fish={fish} status="peak" />)}
               </div>
             </section>
           )}
 
-          {/* Good section */}
           {good.length > 0 && (
             <section>
               <h2 className="text-xl font-black uppercase tracking-tighter text-foreground mb-4 flex items-center gap-2">
@@ -215,14 +240,11 @@ export default async function FishInMonthPage({
                 <span className="text-sm font-bold text-muted-foreground normal-case tracking-normal">({good.length})</span>
               </h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                {good.map((fish) => (
-                  <FishCard key={fish.slug} fish={fish} status="good" />
-                ))}
+                {good.map((fish) => <FishCard key={fish.slug} fish={fish} status="good" />)}
               </div>
             </section>
           )}
 
-          {/* Limited section */}
           {limited.length > 0 && (
             <section>
               <h2 className="text-xl font-black uppercase tracking-tighter text-foreground mb-4 flex items-center gap-2">
@@ -231,27 +253,25 @@ export default async function FishInMonthPage({
                 <span className="text-sm font-bold text-muted-foreground normal-case tracking-normal">({limited.length})</span>
               </h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                {limited.map((fish) => (
-                  <FishCard key={fish.slug} fish={fish} status="limited" />
-                ))}
+                {limited.map((fish) => <FishCard key={fish.slug} fish={fish} status="limited" />)}
               </div>
             </section>
           )}
 
-          {/* CTA back to full calendar */}
+          {/* CTA back */}
           <div className="pt-6 border-t border-border/40 flex items-center justify-between flex-wrap gap-4">
             <Link
-              href="/chef-tools/fish-season"
+              href={`/chef-tools/fish-season/${regionSlug}`}
               className="inline-flex items-center gap-2 text-sm font-black uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors"
             >
               <ChevronLeft className="h-4 w-4" />
-              Full year calendar
+              {regionName} — full year
             </Link>
             <div className="flex gap-2">
               {MONTH_SLUGS.filter((_, i) => i + 1 !== monthNum).slice(0, 4).map((s) => (
                 <Link
                   key={s}
-                  href={`/chef-tools/fish-season/${s}`}
+                  href={`/chef-tools/fish-season/${regionSlug}/${s}`}
                   className="text-xs font-bold text-muted-foreground hover:text-primary transition-colors capitalize"
                 >
                   {s.charAt(0).toUpperCase() + s.slice(1, 3)}
@@ -265,8 +285,7 @@ export default async function FishInMonthPage({
   );
 }
 
-// ─── Fish card component ──────────────────────────────────────────────────────
-
+// ─── Fish card ───────────────────────────────────────────────────────────
 function FishCard({
   fish,
   status,
@@ -278,22 +297,13 @@ function FishCard({
     <div className="rounded-xl border border-border/50 bg-background p-3 hover:border-primary/30 hover:shadow-sm transition-all flex flex-col items-center text-center gap-2">
       <div className="w-16 h-16 rounded-xl overflow-hidden bg-muted border border-border/40 flex items-center justify-center">
         {fish.image_url ? (
-          <Image
-            src={fish.image_url}
-            alt={fish.name}
-            width={64}
-            height={64}
-            className="w-full h-full object-cover"
-            unoptimized
-          />
+          <Image src={fish.image_url} alt={fish.name} width={64} height={64} className="w-full h-full object-cover" unoptimized />
         ) : (
           <span className="text-3xl">🐟</span>
         )}
       </div>
       <div>
-        <p className="font-black text-foreground uppercase tracking-tight text-xs leading-tight">
-          {fish.name}
-        </p>
+        <p className="font-black text-foreground uppercase tracking-tight text-xs leading-tight">{fish.name}</p>
         <div className="flex items-center justify-center gap-1 mt-0.5 flex-wrap">
           <span className={`text-[8px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded border ${BADGE[status]}`}>
             {BADGE_LABEL[status]}

@@ -419,9 +419,9 @@ export default async function CategoryPage({
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                   {[
                     { href: '/chef-tools/converter', label: locale === 'ru' ? 'Калькулятор продуктов' : 'Ingredient Calculator' },
-                    { href: '/chef-tools/converter?from=cup&to=g', label: locale === 'ru' ? 'Стакан → Граммы' : 'Cup → Grams' },
-                    { href: '/chef-tools/converter?from=tbsp&to=g', label: 'Tablespoon → Grams' },
-                    { href: '/chef-tools/converter?from=oz&to=g', label: 'Oz → Grams' },
+                    { href: '/chef-tools/converter/cup-to-grams', label: locale === 'ru' ? 'Стакан → Граммы' : 'Cup → Grams' },
+                    { href: '/chef-tools/converter/tablespoon-to-grams', label: 'Tablespoon → Grams' },
+                    { href: '/chef-tools/converter/oz-to-grams', label: 'Oz → Grams' },
                   ].map((link) => (
                     <Link
                       key={link.href}

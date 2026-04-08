@@ -1,54 +1,59 @@
 import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
 import { generateMetadata as genMeta } from '@/lib/metadata';
+import { notFound } from 'next/navigation';
 import { Sparkles, Fish } from 'lucide-react';
 import { fetchFishSeasonTable, fetchBestRightNow } from '@/lib/api';
-import { FishSeasonClient, type FishRow, type I18n, type Availability, type RegionRows } from './FishSeasonClient';
-import { ChefToolsNav } from '../ChefToolsNav';
+import { FishSeasonClient, type FishRow, type I18n, type Availability, type RegionRows } from '../FishSeasonClient';
+import { ChefToolsNav } from '../../ChefToolsNav';
+import type { Metadata } from 'next';
 
 /**
- * /chef-tools/fish-season — default page (PL region).
+ * /chef-tools/fish-season/[region]
  *
- * Region-specific pages live at /chef-tools/fish-season/[region]
- * (e.g. /fish-season/pl, /fish-season/eu, /fish-season/ua).
- * Old ?region= URLs are 301-redirected by middleware.
+ * Hierarchical SEO: /fish-season/pl, /fish-season/eu, /fish-season/ua
+ * Each region gets its own canonical URL, metadata, and full season calendar.
  */
 
 export const revalidate = 0;
 
-// ─── Regions ──────────────────────────────────────────────────────────────
-const VALID_REGIONS = ['global', 'pl', 'eu', 'es', 'ua'] as const;
-type RegionSlug = (typeof VALID_REGIONS)[number];
+// ─── Region config (shared) ──────────────────────────────────────────────
+export const VALID_REGIONS = ['global', 'pl', 'eu', 'es', 'ua'] as const;
+export type RegionSlug = (typeof VALID_REGIONS)[number];
 
-const SLUG_TO_API: Record<RegionSlug, string> = {
+export const SLUG_TO_API: Record<RegionSlug, string> = {
   global: 'GLOBAL', pl: 'PL', eu: 'EU', es: 'ES', ua: 'UA',
 };
 
-const REGION_NAMES: Record<RegionSlug, string> = {
+export const REGION_NAMES: Record<RegionSlug, string> = {
   global: 'Global', pl: 'Poland', eu: 'EU', es: 'Spain', ua: 'Ukraine',
 };
 
-const DEFAULT_REGION: RegionSlug = 'pl';
+// ─── Static params ───────────────────────────────────────────────────────
+export function generateStaticParams() {
+  return VALID_REGIONS.map((region) => ({ region }));
+}
 
-// ─── Metadata ─────────────────────────────────────────────────────────────
+// ─── Metadata ────────────────────────────────────────────────────────────
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ locale: string }>;
-}) {
-  const { locale } = await params;
+  params: Promise<{ locale: string; region: string }>;
+}): Promise<Metadata> {
+  const { locale, region } = await params;
+  const slug = region.toLowerCase() as RegionSlug;
+  if (!VALID_REGIONS.includes(slug)) return {};
+
   const t = await getTranslations({ locale, namespace: 'chefTools' });
-  // Canonical points to /fish-season/pl to avoid duplicate with /fish-season/pl page.
-  // This page shows PL content by default, so Google must see ONE canonical for it.
   return genMeta({
-    title: t('tools.fishSeason.title'),
+    title: `${t('tools.fishSeason.title')} — ${REGION_NAMES[slug]}`,
     description: t('tools.fishSeason.description'),
     locale: locale as 'pl' | 'en' | 'uk' | 'ru',
-    path: '/chef-tools/fish-season/pl',
+    path: `/chef-tools/fish-season/${slug}`,
   });
 }
 
-// ─── Helpers ──────────────────────────────────────────────────────────────
+// ─── Helpers ─────────────────────────────────────────────────────────────
 function buildMonths(
   season: { month: number; available: boolean; status?: string }[],
 ): Availability[] {
@@ -70,16 +75,17 @@ function peakRangeLabel(season: { month: number; available: boolean }[]): string
   return first === last ? first : `${first}–${last}`;
 }
 
-// ─── Page ─────────────────────────────────────────────────────────────────
-export default async function FishSeasonPage({
+// ─── Page ────────────────────────────────────────────────────────────────
+export default async function FishSeasonRegionPage({
   params,
 }: {
-  params: Promise<{ locale: string }>;
+  params: Promise<{ locale: string; region: string }>;
 }) {
-  const { locale } = await params;
-  const region = DEFAULT_REGION;
-  const apiRegion = SLUG_TO_API[region];
+  const { locale, region: regionParam } = await params;
+  const slug = regionParam.toLowerCase() as RegionSlug;
+  if (!VALID_REGIONS.includes(slug)) notFound();
 
+  const apiRegion = SLUG_TO_API[slug];
   const t = await getTranslations({ locale, namespace: 'chefTools' });
 
   const nav = (
@@ -87,11 +93,7 @@ export default async function FishSeasonPage({
       locale={locale}
       translations={{
         back: t('back'),
-        tabs: {
-          tools: t('tabs.tools'),
-          tables: t('tabs.tables'),
-          products: t('tabs.products'),
-        },
+        tabs: { tools: t('tabs.tools'), tables: t('tabs.tables'), products: t('tabs.products') },
         tools: {
           converter: { title: t('tools.converter.title') },
           fishSeason: { title: t('tools.fishSeason.title') },
@@ -106,12 +108,12 @@ export default async function FishSeasonPage({
     />
   );
 
-  // Fetch PL region + all other regions + bestRightNow in parallel
-  const allRegionSlugs = VALID_REGIONS.filter((r) => r !== region);
+  // Fetch this region + all others + bestRightNow
+  const otherSlugs = VALID_REGIONS.filter((r) => r !== slug);
   const [tableData, bestRightNow, ...otherTables] = await Promise.all([
     fetchFishSeasonTable(locale, apiRegion),
     fetchBestRightNow('seafood', locale, apiRegion),
-    ...allRegionSlugs.map((r) => fetchFishSeasonTable('en', SLUG_TO_API[r])),
+    ...otherSlugs.map((r) => fetchFishSeasonTable('en', SLUG_TO_API[r])),
   ]);
 
   const isLive = tableData !== null;
@@ -134,21 +136,17 @@ export default async function FishSeasonPage({
     wildFarmed: fish.wild_farmed ?? null,
   }));
 
-  // Build regionRows: slug → region → { status, peakRange }
+  // regionRows: fishSlug → regionCode → { status, peakRange }
   const allTables: [string, typeof tableData][] = [
     [apiRegion, tableData],
-    ...allRegionSlugs.map((r, i) => [SLUG_TO_API[r], otherTables[i]] as [string, typeof tableData]),
+    ...otherSlugs.map((r, i) => [SLUG_TO_API[r], otherTables[i]] as [string, typeof tableData]),
   ];
-
   const regionRows: RegionRows = {};
   for (const [r, table] of allTables) {
     if (!table) continue;
     for (const fish of table.fish) {
       if (!regionRows[fish.slug]) regionRows[fish.slug] = {};
-      regionRows[fish.slug][r] = {
-        status: fish.status,
-        peakRange: peakRangeLabel(fish.season),
-      };
+      regionRows[fish.slug][r] = { status: fish.status, peakRange: peakRangeLabel(fish.season) };
     }
   }
 
@@ -206,20 +204,17 @@ export default async function FishSeasonPage({
         </div>
       </div>
 
-      {/* Legend + Region selector row */}
+      {/* Legend + Region selector */}
       <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
-        {/* Legend */}
         <div className="flex flex-wrap gap-4">
           {(['peak', 'good', 'limited', 'off'] as Availability[]).map((a) => (
             <div key={a} className="flex items-center gap-2">
-              <div
-                className={`w-3.5 h-3.5 rounded-full shrink-0 ${
-                  a === 'peak' ? 'bg-primary shadow-sm shadow-primary/50' :
-                  a === 'good' ? 'bg-lime-500/70' :
-                  a === 'limited' ? 'bg-amber-400/70' :
-                  'bg-transparent border border-border/40'
-                }`}
-              />
+              <div className={`w-3.5 h-3.5 rounded-full shrink-0 ${
+                a === 'peak' ? 'bg-primary shadow-sm shadow-primary/50' :
+                a === 'good' ? 'bg-lime-500/70' :
+                a === 'limited' ? 'bg-amber-400/70' :
+                'bg-transparent border border-border/40'
+              }`} />
               <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                 {i18n.season[a]}
               </span>
@@ -227,17 +222,15 @@ export default async function FishSeasonPage({
           ))}
         </div>
 
-        {/* Region picker — clean slug-based links, NO query params */}
+        {/* Region picker — hierarchical slug links */}
         <div className="flex items-center gap-1.5 flex-wrap">
-          <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mr-1">
-            🌍
-          </span>
+          <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mr-1">🌍</span>
           {VALID_REGIONS.map((r) => (
             <Link
               key={r}
               href={`/chef-tools/fish-season/${r}`}
               className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider border transition-colors ${
-                region === r
+                slug === r
                   ? 'bg-primary text-primary-foreground border-primary'
                   : 'bg-background border-border/50 text-muted-foreground hover:border-primary/40 hover:text-foreground'
               }`}
@@ -248,14 +241,14 @@ export default async function FishSeasonPage({
         </div>
       </div>
 
-      {/* Month quick-links → /fish-season/pl/{month} */}
+      {/* Month quick-links → /fish-season/{region}/{month} */}
       <div className="flex flex-wrap gap-1.5 mb-6">
         {['january','february','march','april','may','june','july','august','september','october','november','december'].map((m, i) => {
           const isCurrent = i === new Date().getMonth();
           return (
             <Link
               key={m}
-              href={`/chef-tools/fish-season/${region}/${m}`}
+              href={`/chef-tools/fish-season/${slug}/${m}`}
               className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider border transition-colors ${
                 isCurrent
                   ? 'bg-primary text-primary-foreground border-primary'
@@ -287,10 +280,7 @@ export default async function FishSeasonPage({
           </p>
           <div className="flex flex-wrap gap-2">
             {tableData.all_year.map((item) => (
-              <span
-                key={item.slug}
-                className="text-xs font-medium text-muted-foreground bg-background border border-border/40 rounded-lg px-2.5 py-1"
-              >
+              <span key={item.slug} className="text-xs font-medium text-muted-foreground bg-background border border-border/40 rounded-lg px-2.5 py-1">
                 {item.name}
               </span>
             ))}
@@ -301,11 +291,8 @@ export default async function FishSeasonPage({
         </div>
       )}
 
-      {/* Footer */}
       <p className="text-[10px] text-muted-foreground mt-4 text-right font-medium uppercase tracking-wider">
-        {isLive
-          ? `${rows.length} fish · ${REGION_NAMES[region]} · Updated live`
-          : 'api.dima-fomin.pl'}
+        {isLive ? `${rows.length} fish · ${REGION_NAMES[slug]} · Updated live` : 'api.dima-fomin.pl'}
       </p>
     </div>
   );

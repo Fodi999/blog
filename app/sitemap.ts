@@ -94,7 +94,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       { path: '/chef-tools', priority: 0.8, changeFrequency: 'monthly' },
       { path: '/chef-tools/ingredients', priority: 0.9, changeFrequency: 'daily' },
       { path: '/chef-tools/ingredient-analyzer', priority: 0.8, changeFrequency: 'weekly' },
-      { path: '/chef-tools/fish-season', priority: 0.8, changeFrequency: 'weekly' },
+      // ❌ /chef-tools/fish-season removed — same content as /fish-season/pl (canonical conflict).
+      // The page.tsx canonical already points to /fish-season/pl.
       { path: '/chef-tools/converter', priority: 0.75, changeFrequency: 'monthly' },
       { path: '/chef-tools/lab', priority: 0.85, changeFrequency: 'weekly' },
       { path: '/chef-tools/recipe-analyzer', priority: 0.8, changeFrequency: 'weekly' },
@@ -102,12 +103,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       { path: '/chef-tools/nutrition', priority: 0.85, changeFrequency: 'daily' },
       // /chef-tools/diet and /chef-tools/ranking have NO index page
       // — only /chef-tools/diet/[flag] and /chef-tools/ranking/[metric] exist
-      // Fish season — 12 monthly pages (slug = month name, matches [month] route)
-      ...['january','february','march','april','may','june','july','august','september','october','november','december'].map((month) => ({
-        path: `/chef-tools/fish-season/${month}`,
-        priority: 0.7 as number,
-        changeFrequency: 'monthly' as const,
+
+      // Fish season — hierarchical: /fish-season/{region} + /fish-season/{region}/{month}
+      // Priority: pl (main market) > eu > others
+      ...(['global', 'pl', 'eu', 'es', 'ua'] as const).map((region) => ({
+        path: `/chef-tools/fish-season/${region}`,
+        priority: (region === 'pl' ? 0.9 : region === 'eu' ? 0.85 : 0.8) as number,
+        changeFrequency: 'weekly' as const,
       })),
+      ...(['global', 'pl', 'eu', 'es', 'ua'] as const).flatMap((region) =>
+        ['january','february','march','april','may','june','july','august','september','october','november','december'].map((month) => ({
+          path: `/chef-tools/fish-season/${region}/${month}`,
+          priority: (region === 'pl' ? 0.8 : region === 'eu' ? 0.75 : 0.7) as number,
+          changeFrequency: 'monthly' as const,
+        })),
+      ),
       // Legal / GDPR pages
       { path: '/privacy', priority: 0.3, changeFrequency: 'yearly' },
       { path: '/terms', priority: 0.3, changeFrequency: 'yearly' },
@@ -245,7 +255,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const howManyUrls: MetadataRoute.Sitemap = ingredientList
     ? ingredientList
         .filter((ing) => ing.slug)
-        .slice(0, 50) // cap at 50 ingredients to avoid sitemap bloat (50×14×4=2800 URLs)
+        // Cap at 50 ingredients to avoid sitemap bloat (50×14×4 = 2800 URLs).
+        // measures.grams_per_cup is NOT available in the list endpoint,
+        // so we rely on backend sort order (most popular first).
+        // TODO: add popularity field to /public/ingredients-full and filter by it.
+        .slice(0, 50)
         .flatMap((ing) =>
           HOW_MANY_COMBOS.flatMap(({ unit, measure }) =>
             multiLocaleEntry(
