@@ -133,7 +133,7 @@ export function ChefOSChat() {
 
         {/* Message list */}
         {messages.map(msg => (
-          <MessageBubble key={msg.id} msg={msg} />
+          <MessageBubble key={msg.id} msg={msg} onSuggestion={send} />
         ))}
 
         {/* Typing indicator */}
@@ -215,7 +215,7 @@ export function ChefOSChat() {
 
 // ── MessageBubble ─────────────────────────────────────────────────────────────
 
-function MessageBubble({ msg }: { msg: Message }) {
+function MessageBubble({ msg, onSuggestion }: { msg: Message; onSuggestion?: (q: string) => void }) {
   if (msg.role === 'user') {
     return (
       <div className="flex justify-end px-1">
@@ -228,6 +228,7 @@ function MessageBubble({ msg }: { msg: Message }) {
 
   const res = msg.response;
   const cards = res?.cards ?? [];
+  const suggestions = res?.suggestions ?? [];
 
   return (
     <div className="flex gap-2 items-start px-1">
@@ -246,6 +247,29 @@ function MessageBubble({ msg }: { msg: Message }) {
 
         {/* Cards */}
         {cards.length > 0 && <ChatCardsGrid cards={cards} />}
+
+        {/* Chef tip callout */}
+        {res?.chef_tip && (
+          <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 dark:bg-amber-500/10 px-4 py-2.5 text-sm text-amber-900 dark:text-amber-200/90 font-medium leading-relaxed">
+            {res.chef_tip}
+          </div>
+        )}
+
+        {/* Suggestion buttons */}
+        {suggestions.length > 0 && onSuggestion && (
+          <div className="flex flex-wrap gap-1.5">
+            {suggestions.map((s, i) => (
+              <button
+                key={i}
+                onClick={() => onSuggestion(s.query)}
+                className="flex items-center gap-1 px-3 py-1.5 rounded-xl border border-primary/20 bg-primary/5 text-xs font-semibold text-primary hover:bg-primary/10 hover:border-primary/40 transition-all hover:scale-[1.03] active:scale-95"
+              >
+                {s.emoji && <span>{s.emoji}</span>}
+                {s.label}
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Reason tag */}
         {res?.reason && (

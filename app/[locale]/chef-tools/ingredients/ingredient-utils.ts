@@ -93,7 +93,6 @@ const API_CATEGORY_NAME_MAP: Record<string, string> = {
   'Sweets & Sugars': 'sweets',
   'Sweets & Baking': 'sweets',
   'Mushrooms': 'other',
-  'Frozen': 'other',
 };
 
 /**
