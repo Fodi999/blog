@@ -56,6 +56,7 @@ export interface ChatResponse {
   cards?: Card[];
   suggestions?: Suggestion[];
   chef_tip?: string;
+  coach_message?: string;
   intent?: string;
   intents?: string[];
   reason?: string;
@@ -72,6 +73,7 @@ export interface SessionContext {
   last_modifier?: string;
   last_goal?: string;
   last_cards?: string[];
+  shown_slugs?: string[];
   turn_count?: number;
 }
 
