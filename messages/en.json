@@ -30,7 +30,7 @@
   "nav": {
     "home": "Home",
     "blog": "Blog",
-    "chefTools": "Culinary Helper",
+    "chefTools": "AI Chef",
     "about": "About",
     "contact": "Contact",
     "restaurants": "For Restaurants",
@@ -48,8 +48,8 @@
       "title": "Culinary Helper — Tools for Cooks",
       "description": "Practical kitchen tools for home cooks and professionals: unit converter, fish season calendar, ingredient nutrition guide. Cook correctly, cook confidently."
     },
-    "badge": "Culinary Helper",
-    "title": "Culinary Helper",
+    "badge": "AI Sous-Chef",
+    "title": "AI Sous-Chef",
     "description": "You cook. I think.\nPaste your ingredients — get a breakdown, flavor balance, and dish improvements in a second.",
     "open": "Open tool",
     "back": "Back to Culinary Helper",

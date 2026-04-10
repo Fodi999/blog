@@ -1,63 +1,15 @@
 'use client';
 
-import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import {
   Scale, Fish, FlaskConical, Calculator, Utensils, Sparkles,
-  Search, BarChart3, Salad, MessageCircle, ArrowRight, ChefHat,
+  Search, BarChart3, Salad, ArrowRight, ChefHat,
   Microscope, Database, Wrench, Brain,
   Trophy,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { AISousChef } from './dashboard/AISousChef';
-
-/* ══════════════════════════════════════════════════════════════
-   Quick Actions — "Что вы хотите сделать?"
-   ══════════════════════════════════════════════════════════════ */
-
-const QUICK_ACTIONS = [
-  {
-    key: 'analyzeRecipe' as const,
-    href: '/chef-tools/recipe-analyzer',
-    icon: Calculator,
-    color: 'from-rose-500 to-orange-500',
-    glow: 'shadow-rose-500/20',
-    border: 'hover:border-rose-500/40',
-    bg: 'bg-rose-500/10',
-    text: 'text-rose-500',
-  },
-  {
-    key: 'checkIngredient' as const,
-    href: '/chef-tools/ingredient-analyzer',
-    icon: Microscope,
-    color: 'from-violet-500 to-purple-500',
-    glow: 'shadow-violet-500/20',
-    border: 'hover:border-violet-500/40',
-    bg: 'bg-violet-500/10',
-    text: 'text-violet-500',
-  },
-  {
-    key: 'convertUnits' as const,
-    href: '/chef-tools/converter',
-    icon: Scale,
-    color: 'from-sky-500 to-cyan-500',
-    glow: 'shadow-sky-500/20',
-    border: 'hover:border-sky-500/40',
-    bg: 'bg-sky-500/10',
-    text: 'text-sky-500',
-  },
-  {
-    key: 'createRecipe' as const,
-    href: '/chef-tools/lab',
-    icon: FlaskConical,
-    color: 'from-emerald-500 to-teal-500',
-    glow: 'shadow-emerald-500/20',
-    border: 'hover:border-emerald-500/40',
-    bg: 'bg-emerald-500/10',
-    text: 'text-emerald-500',
-  },
-] as const;
 
 /* ══════════════════════════════════════════════════════════════
    3 Sections: Database → Tools → AI Core
@@ -68,6 +20,13 @@ type ToolItem = {
   icon: typeof Search;
   key: string;
 };
+
+const QUICK_ACTIONS: ToolItem[] = [
+  { href: '/chef-tools/recipe-analyzer',      icon: Calculator,    key: 'analyzeRecipe'    },
+  { href: '/chef-tools/ingredients',          icon: Search,        key: 'checkIngredient'  },
+  { href: '/chef-tools/converter',            icon: Scale,         key: 'convertUnits'     },
+  { href: '/chef-tools/lab',                  icon: FlaskConical,  key: 'createRecipe'     },
+];
 
 const DATABASE_TOOLS: ToolItem[] = [
   { href: '/chef-tools/ingredients',          icon: Search,      key: 'ingredients'         },
@@ -86,6 +45,7 @@ const AI_TOOLS: ToolItem[] = [
   { href: '/chef-tools/recipe-analyzer',      icon: Calculator,    key: 'recipeAnalyzer'    },
   { href: '/chef-tools/lab',                  icon: FlaskConical,  key: 'lab'               },
   { href: '/chef-tools/flavor-pairing',       icon: Utensils,      key: 'flavorPairing'     },
+  { href: '/chef-tools/chat',                icon: Sparkles,      key: 'aiChat'            },
 ];
 
 /* ══════════════════════════════════════════════════════════════
@@ -100,7 +60,6 @@ const SECTIONS = [
     accent: 'text-violet-500',
     accentBg: 'bg-violet-500/10',
     accentBorder: 'border-violet-500/20',
-    dotColor: 'bg-violet-500',
   },
   {
     key: 'tools' as const,
@@ -109,7 +68,6 @@ const SECTIONS = [
     accent: 'text-sky-500',
     accentBg: 'bg-sky-500/10',
     accentBorder: 'border-sky-500/20',
-    dotColor: 'bg-sky-500',
   },
   {
     key: 'ai' as const,
@@ -118,213 +76,219 @@ const SECTIONS = [
     accent: 'text-rose-500',
     accentBg: 'bg-rose-500/10',
     accentBorder: 'border-rose-500/20',
-    dotColor: 'bg-rose-500',
   },
 ] as const;
 
 /* ══════════════════════════════════════════════════════════════
-   Component
+   Component — Kitchen OS Layout
    ══════════════════════════════════════════════════════════════ */
 
 export function ChefToolsLandingClient({ locale }: { locale: string }) {
   const t = useTranslations('chefTools');
-  const [activeTab, setActiveTab] = useState<'tools' | 'ai'>('tools');
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-20">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-20">
 
-      {/* ── Premium Tab Switcher ── */}
-      <div className="flex justify-center mb-12 sm:mb-16">
-        <div className="inline-flex p-1.5 rounded-[2.5rem] bg-card/40 backdrop-blur-3xl border-2 border-border/10 shadow-2xl shadow-black/5 relative group/tabs">
-          <button
-            onClick={() => setActiveTab('tools')}
-            className={cn(
-              "relative z-10 px-8 py-3.5 rounded-full text-[11px] font-black uppercase tracking-[0.2em] transition-all duration-500 italic flex items-center gap-2",
-              activeTab === 'tools' ? "text-white" : "text-muted-foreground/40 hover:text-foreground"
-            )}
-          >
-            <div className={cn("w-1.5 h-1.5 rounded-full", activeTab === 'tools' ? "bg-white animate-pulse" : "bg-transparent")} />
-            {t('tabs.tools')}
-          </button>
-          <button
-            onClick={() => setActiveTab('ai')}
-            className={cn(
-              "relative z-10 px-8 py-3.5 rounded-full text-[11px] font-black uppercase tracking-[0.2em] transition-all duration-500 italic flex items-center gap-2",
-              activeTab === 'ai' ? "text-white" : "text-muted-foreground/40 hover:text-foreground"
-            )}
-          >
-            <Sparkles className={cn("w-3.5 h-3.5", activeTab === 'ai' ? "text-white fill-white animate-pulse" : "text-transparent")} />
-            {t('tabs.sousChef')}
-          </button>
-          <div
-            className={cn(
-              "absolute top-1.5 bottom-1.5 transition-all duration-500 ease-out bg-primary rounded-full shadow-2xl shadow-primary/40",
-              activeTab === 'tools' ? "left-1.5 w-[calc(50%-6px)]" : "left-[calc(50%+1.5px)] w-[calc(50%-4.5px)]"
-            )}
-          />
+      {/* ═══════════════════════════════════════════════════════════
+          SECTION 0: ACTION PICKER — "Co chcesz zrobić?"
+          ═══════════════════════════════════════════════════════════ */}
+      <section className="mb-20 sm:mb-28">
+        <div className="text-center space-y-4 max-w-2xl mx-auto mb-12 animate-in fade-in slide-in-from-top-4 duration-1000">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-[10px] font-black uppercase tracking-[0.2em] text-primary">
+            <Sparkles className="h-3 w-3" />
+            {t('landing.heroTitle')}
+          </div>
+          <h1 className="text-3xl sm:text-5xl md:text-6xl font-black italic tracking-tighter uppercase leading-none text-balance">
+            {t('landing.heroSubtitle')}
+          </h1>
         </div>
-      </div>
 
-      {/* ── Tab Content ── */}
-      <div className="relative min-h-[60vh]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {QUICK_ACTIONS.map(({ href, icon: Icon, key: toolKey }, idx) => (
+            <Link 
+              key={href} 
+              href={href} 
+              locale={locale}
+              className="group relative"
+            >
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/30 to-blue-500/30 rounded-[2.5rem] blur opacity-0 group-hover:opacity-100 transition duration-1000 group-hover:duration-200" />
+              <div className={cn(
+                "relative flex flex-col items-center text-center p-8 rounded-[2.5rem] h-full transition-all duration-500",
+                "bg-card/40 backdrop-blur-3xl border border-white/10",
+                "hover:border-primary/40 hover:bg-card/60 hover:-translate-y-2 hover:shadow-2xl"
+              )}>
+                <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
+                  <Icon className="h-8 w-8 text-primary shadow-glow-primary" />
+                </div>
+                <h3 className="text-lg font-black uppercase italic tracking-tight mb-2 text-foreground group-hover:text-primary transition-colors">
+                  {t(`landing.actions.${toolKey}`)}
+                </h3>
+                <p className="text-[11px] font-bold text-muted-foreground/60 uppercase tracking-widest leading-relaxed mb-4">
+                  {t(`landing.actions.${toolKey}Desc`)}
+                </p>
 
-        {/* ═══════════════════════════════════════════════════════
-            Tab 1: Structured Landing
-            ═══════════════════════════════════════════════════════ */}
-        <div className={cn(
-          "transition-all duration-700 space-y-16 sm:space-y-24",
-          activeTab === 'tools' ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12 pointer-events-none absolute inset-0"
-        )}>
-
-          {/* ── HERO: "Что вы хотите сделать?" ── */}
-          <section className="animate-in fade-in slide-in-from-top-4 duration-700">
-            <div className="text-center max-w-3xl mx-auto mb-12">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-black uppercase tracking-[0.15em] mb-6 border border-primary/20">
-                <ChefHat className="h-3 w-3" />
-                {t('badge')}
+                {/* Flow hint for specific actions */}
+                {toolKey === 'checkIngredient' && (
+                  <div className="flex items-center gap-1.5 text-[9px] font-black text-emerald-500/60 uppercase tracking-widest mb-4 italic">
+                    {t('landing.flowHint')}
+                  </div>
+                )}
+                {toolKey === 'analyzeRecipe' && (
+                  <div className="flex items-center gap-1.5 text-[9px] font-black text-amber-500/60 uppercase tracking-widest mb-4 italic">
+                    {t('landing.flowImprove')}
+                  </div>
+                )}
+                
+                <div className="mt-auto pt-4 flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-primary/40 group-hover:text-primary transition-all">
+                  {t('open')}
+                  <ArrowRight className="h-3 w-3 translate-x-0 group-hover:translate-x-1 transition-transform" />
+                </div>
               </div>
-              <h1 className="text-4xl md:text-6xl font-black tracking-tighter uppercase italic mb-4 leading-none">
-                {t('landing.heroTitle')}
-              </h1>
-              <p className="text-lg text-muted-foreground font-medium">
-                {t('landing.heroSubtitle')}
-              </p>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════
+          SECTION 1: AI SOUS-CHEF — The AI Core
+          ═══════════════════════════════════════════════════════════ */}
+      <section className="mb-20 sm:mb-28">
+        <div className="flex items-center gap-6 mb-12 sm:mb-16">
+          <div className="w-14 h-14 rounded-2xl bg-rose-500/10 flex items-center justify-center border border-rose-500/20">
+            <Brain className="h-6 w-6 text-rose-500" />
+          </div>
+          <div className="flex-1">
+            <h2 className="text-2xl sm:text-4xl font-black italic uppercase tracking-tighter">
+              {t('landing.sections.ai')}
+            </h2>
+            <p className="text-[11px] font-black uppercase tracking-[0.4em] text-muted-foreground/30">
+              {t('landing.sections.aiDesc')}
+            </p>
+          </div>
+          <div className="hidden sm:block h-px flex-1 bg-rose-500/10" />
+        </div>
+
+        {/* AI Sous-Chef — full-width hero block with enhanced ambient glow */}
+        <div className="relative rounded-[3rem] border border-primary/20 bg-primary/[0.01] dark:bg-primary/[0.03] overflow-hidden shadow-2xl shadow-primary/5">
+          {/* Ambient decorative elements */}
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute top-[10%] left-[5%] w-[30%] h-[40%] bg-primary/5 blur-[120px] rounded-full animate-pulse-slow" />
+            <div className="absolute bottom-[10%] right-[5%] w-[40%] h-[30%] bg-primary/10 blur-[140px] rounded-full opacity-50" />
+          </div>
+
+          <div className="relative z-10 p-6 sm:p-12 md:p-16">
+            <AISousChef />
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════
+          SECTION 2: TOOLS — secondary layer: Database & Kitchen Tools
+          ═══════════════════════════════════════════════════════════ */}
+      <section className="space-y-24 sm:space-y-32">
+
+        {/* ── 2 TOOL SECTIONS ── */}
+        {SECTIONS.filter(s => s.key !== 'ai').map(({ key, icon: SectionIcon, tools, accent, accentBg, accentBorder }, sectionIdx) => (
+          <div
+            key={key}
+            className="animate-in fade-in slide-in-from-bottom-8 duration-1000 fill-mode-both"
+            style={{ animationDelay: `${sectionIdx * 150}ms` }}
+          >
+            {/* Section heading with decorative line */}
+            <div className="flex items-center gap-6 mb-10 group/header">
+              <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-500 group-hover/header:rotate-12", accentBg, "border border-current/10 shadow-lg shadow-current/5")}>
+                <SectionIcon className={cn("h-6 w-6", accent)} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="text-xl sm:text-3xl font-black uppercase tracking-tight italic leading-none mb-1">
+                  {t(`landing.sections.${key}`)}
+                </h3>
+                <p className="text-xs sm:text-sm text-muted-foreground/40 font-bold uppercase tracking-widest">
+                  {t(`landing.sections.${key}Desc`)}
+                </p>
+              </div>
+              <div className={cn("hidden lg:block h-px flex-[2] opacity-20", accentBorder, "border-t")} />
             </div>
 
-            {/* Quick Action Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto">
-              {QUICK_ACTIONS.map(({ key, href, icon: Icon, border, bg, text }) => (
-                <Link key={key} href={href} locale={locale}>
+            {/* Bento Grid — First item is larger as "Feature" */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {tools.map(({ href, icon: Icon, key: toolKey }, idx) => (
+                <Link 
+                    key={href} 
+                    href={href} 
+                    locale={locale}
+                    className={cn(
+                        "group relative",
+                        idx === 0 && "sm:col-span-2 sm:row-span-1"
+                    )}
+                >
                   <div className={cn(
-                    "group relative border-2 border-border/30 rounded-2xl p-6 transition-all duration-500 bg-card/30 backdrop-blur-xl cursor-pointer hover-lift",
-                    border
+                    "relative overflow-hidden h-full rounded-[2.5rem] p-8 transition-all duration-500",
+                    "border border-border/30 bg-card/20 backdrop-blur-2xl backdrop-saturate-150",
+                    "hover:border-current/40 hover:bg-card/40 hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.15)] hover:-translate-y-2",
+                    accent // Applies text color which we use for current color borders
                   )}>
-                    <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center mb-4 transition-transform duration-500 group-hover:scale-110", bg)}>
-                      <Icon className={cn("h-6 w-6", text)} />
+                    {/* Hover Glow — subtle and matched to section accent */}
+                    <div className={cn(
+                        "absolute -inset-1 opacity-0 group-hover:opacity-10 transition-opacity duration-500 blur-3xl rounded-[3rem]",
+                        accentBg
+                    )} />
+
+                    <div className="relative z-10 flex flex-col h-full">
+                      {/* Top row: Icon + Intent Badge */}
+                      <div className="flex items-center justify-between mb-8">
+                        <div className={cn(
+                          "w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-500",
+                          accentBg,
+                          "group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-current/10 border border-current/5",
+                        )}>
+                          <Icon className={cn("h-6 w-6", accent)} />
+                        </div>
+                        
+                        {/* Status/Intent badge — visible on hover or feature card */}
+                        <div className={cn(
+                            "opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0 transition-all duration-500",
+                            "px-4 py-1.5 rounded-full border border-current/20 bg-current/5 text-[10px] font-black uppercase tracking-widest",
+                            idx === 0 && "opacity-100 translate-x-0"
+                        )}>
+                            {idx === 0 ? "Featured" : t('open')}
+                        </div>
+                      </div>
+
+                      {/* Content Section */}
+                      <div className="flex-1">
+                        <h4 className={cn(
+                            "font-black uppercase tracking-tight italic transition-colors duration-300",
+                            idx === 0 ? "text-xl sm:text-3xl mb-3" : "text-base mb-2",
+                            "group-hover:text-foreground"
+                        )}>
+                          {t(`toolGrid.${toolKey}`)}
+                        </h4>
+                        <p className={cn(
+                            "text-muted-foreground/50 font-medium leading-relaxed group-hover:text-muted-foreground/80 transition-colors duration-300",
+                            idx === 0 ? "text-sm sm:text-base max-w-md" : "text-[12px] line-clamp-2"
+                        )}>
+                          {t(`toolGrid.${toolKey}Desc`)}
+                        </p>
+                      </div>
+
+                      {/* Action Line */}
+                      <div className="mt-12 flex items-center gap-3 text-primary overflow-hidden">
+                        <div className="h-px w-0 group-hover:w-12 bg-primary transition-all duration-500" />
+                        <span className="text-[11px] font-black uppercase tracking-[0.3em] translate-y-12 group-hover:translate-y-0 transition-transform duration-500 italic">
+                           {t('open')}
+                        </span>
+                        <ArrowRight className="h-4 w-4 translate-x-[-30px] group-hover:translate-x-0 transition-transform duration-500" />
+                      </div>
                     </div>
-                    <h3 className="text-base font-black uppercase tracking-tight mb-1.5 group-hover:text-foreground transition-colors italic">
-                      {t(`landing.actions.${key}`)}
-                    </h3>
-                    <p className="text-xs text-muted-foreground/60 leading-relaxed font-medium">
-                      {t(`landing.actions.${key}Desc`)}
-                    </p>
-                    <ArrowRight className="absolute top-6 right-6 h-4 w-4 text-muted-foreground/15 group-hover:text-foreground/40 group-hover:translate-x-0.5 transition-all" />
                   </div>
                 </Link>
               ))}
             </div>
-          </section>
-
-          {/* ── CONNECTION FLOW HINT ── */}
-          <section className="animate-in fade-in duration-1000 delay-300">
-            <div className="max-w-4xl mx-auto">
-              <div className="flex items-center justify-center gap-3 text-xs text-muted-foreground/40 font-medium uppercase tracking-widest">
-                <div className="h-px flex-1 bg-gradient-to-r from-transparent to-border/40" />
-                <span className="flex items-center gap-2 shrink-0">
-                  <Scale className="h-3 w-3" />
-                  {t('landing.flowHint')}
-                  <Calculator className="h-3 w-3" />
-                  {t('landing.flowImprove')}
-                  <FlaskConical className="h-3 w-3" />
-                </span>
-                <div className="h-px flex-1 bg-gradient-to-l from-transparent to-border/40" />
-              </div>
-            </div>
-          </section>
-
-          {/* ── 3 STRUCTURED SECTIONS ── */}
-          {SECTIONS.map(({ key, icon: SectionIcon, tools, accent, accentBg, accentBorder }, sectionIdx) => (
-            <section
-              key={key}
-              className="animate-in fade-in slide-in-from-bottom-6 duration-700"
-              style={{ animationDelay: `${(sectionIdx + 1) * 150}ms` }}
-            >
-              {/* Section header */}
-              <div className="flex items-center gap-4 mb-8">
-                <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center", accentBg)}>
-                  <SectionIcon className={cn("h-5 w-5", accent)} />
-                </div>
-                <div>
-                  <h2 className="text-xl font-black uppercase tracking-tight italic">
-                    {t(`landing.sections.${key}`)}
-                  </h2>
-                  <p className="text-sm text-muted-foreground/50 font-medium">
-                    {t(`landing.sections.${key}Desc`)}
-                  </p>
-                </div>
-                <div className={cn("h-px flex-1", accentBorder, "border-t")} />
-              </div>
-
-              {/* Tool cards */}
-              <div className={cn(
-                "grid gap-4",
-                tools.length <= 3 ? "grid-cols-1 sm:grid-cols-3" : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
-              )}>
-                {tools.map(({ href, icon: Icon, key: toolKey }) => (
-                  <Link key={href} href={href} locale={locale}>
-                    <div className={cn(
-                      "group relative border border-border/30 rounded-2xl p-6 hover:border-border/60 transition-all duration-400 bg-card/20 backdrop-blur-xl h-full hover-lift",
-                    )}>
-                      <div className="flex items-start gap-4">
-                        <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center shrink-0", accentBg)}>
-                          <Icon className={cn("h-5 w-5", accent)} />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h3 className="text-sm font-black uppercase tracking-tight mb-1 group-hover:text-foreground transition-colors italic">
-                            {t(`toolGrid.${toolKey}`)}
-                          </h3>
-                          <p className="text-xs text-muted-foreground/50 leading-relaxed font-medium">
-                            {t(`toolGrid.${toolKey}Desc`)}
-                          </p>
-                        </div>
-                        <ArrowRight className="h-3.5 w-3.5 text-muted-foreground/15 group-hover:text-foreground/40 group-hover:translate-x-0.5 transition-all mt-1 shrink-0" />
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </section>
-          ))}
-
-          {/* ── AI SOUS-CHEF CTA ── */}
-          <section className="animate-in fade-in slide-in-from-bottom-8 duration-700 delay-500">
-            <div
-              onClick={() => setActiveTab('ai')}
-              className="border-2 border-primary/30 rounded-[2rem] p-8 sm:p-10 bg-primary/5 hover:bg-primary/10 transition-all duration-500 cursor-pointer group hover:border-primary/50 relative overflow-hidden shadow-2xl shadow-primary/5"
-            >
-              <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-8 relative z-10">
-                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-[1.5rem] bg-primary/20 flex items-center justify-center group-hover:scale-110 transition-all duration-700 shadow-xl shadow-primary/10">
-                  <MessageCircle className="h-8 w-8 sm:h-10 sm:w-10 text-primary" />
-                </div>
-                <div className="text-center sm:text-left flex-1">
-                  <h3 className="text-xl sm:text-2xl font-black uppercase tracking-tight text-foreground italic mb-1.5">
-                    {t('toolGrid.aiChat')}
-                  </h3>
-                  <p className="text-sm text-muted-foreground/60 font-medium">
-                    {t('toolGrid.aiChatDesc')}
-                  </p>
-                </div>
-                <div className="px-6 py-3 rounded-full bg-primary text-primary-foreground font-black uppercase text-[10px] tracking-[0.2em] italic group-hover:shadow-[0_0_30px_rgba(239,68,68,0.4)] transition-all shrink-0">
-                  {t('open')}
-                </div>
-              </div>
-              <div className="absolute top-1/2 left-0 w-1/2 h-full bg-primary/10 blur-[120px] rounded-full -translate-y-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
-            </div>
-          </section>
-
-        </div>
-
-        {/* ═══════════════════════════════════════════════════════
-            Tab 2: AI Assistant
-            ═══════════════════════════════════════════════════════ */}
-        <div className={cn(
-          "transition-all duration-700",
-          activeTab === 'ai' ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12 pointer-events-none absolute inset-0"
-        )}>
-          <AISousChef />
-        </div>
-
-      </div>
+          </div>
+        ))}
+      </section>
     </div>
   );
 }
+

@@ -33,7 +33,8 @@ export default async function ChefToolsPage({
   const t = await getTranslations({ locale, namespace: 'chefTools' });
 
   return (
-    <>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Schema.org */}
       <JsonLd
         data={{
           '@context': 'https://schema.org',
@@ -49,9 +50,20 @@ export default async function ChefToolsPage({
         }}
       />
 
+      {/* Header */}
+      <div className="mb-0 border-t border-primary/20 pt-8 sm:pt-12">
+        <h1 className="text-4xl sm:text-6xl md:text-8xl font-black mb-4 sm:mb-6 text-foreground tracking-tighter uppercase italic text-balance break-words">
+          {t('title')}<span className="text-primary">.</span>
+        </h1>
+        <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground max-w-2xl font-medium tracking-tight text-balance break-words">
+          {t('description')}
+        </p>
+      </div>
+
+      {/* Dashboard - Grid version */}
       <ChefToolsLandingClient locale={locale} />
-    </>
+
+      <div className="h-16 md:h-24" />
+    </div>
   );
 }
-
-

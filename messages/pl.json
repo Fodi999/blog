@@ -30,7 +30,7 @@
   "nav": {
     "home": "Strona główna",
     "blog": "Blog",
-    "chefTools": "Pomocnik Kulinarny",
+    "chefTools": "AI Chef",
     "about": "O mnie",
     "contact": "Kontakt",
     "restaurants": "Dla restauracji",
@@ -48,8 +48,8 @@
       "title": "Pomocnik Kulinarny — Narzędzia dla Kucharzy",
       "description": "Praktyczne narzędzia kuchenne dla domowych i profesjonalnych kucharzy: przelicznik jednostek, kalendarz sezonowości ryb, tabela wartości odżywczych. Gotuj właściwie, gotuj pewnie."
     },
-    "badge": "Pomocnik Kulinarny",
-    "title": "Pomocnik Kulinarny",
+    "badge": "AI Sous-Chef",
+    "title": "AI Sous-Chef",
     "description": "Ty gotujesz. Ja myślę.\nWklej składniki — otrzymaj analizę, balans smaku i ulepszenia dania w sekundę.",
     "open": "Otwórz narzędzie",
     "back": "Powrót do pomocnika",

@@ -30,27 +30,28 @@ const TAG_LABELS: Record<string, string> = {
 
 function ProductCardView({ card }: { card: ProductCard }) {
   return (
-    <div className="rounded-2xl border border-border/50 bg-card/60 backdrop-blur-sm overflow-hidden">
+    <div className="rounded-[1.5rem] border border-border/30 bg-card/40 backdrop-blur-md overflow-hidden transition-all hover:shadow-xl hover:shadow-primary/5 hover:border-primary/20 hover:-translate-y-0.5 group">
       {/* Image strip */}
       {card.image_url && (
-        <div className="relative h-36 w-full bg-muted/20">
+        <div className="relative h-40 w-full bg-muted/20 overflow-hidden">
           <Image
             src={card.image_url}
             alt={card.name}
             fill
-            className="object-cover"
+            className="object-cover transition-transform duration-700 group-hover:scale-105"
             sizes="(max-width: 640px) 100vw, 400px"
           />
+          <div className="absolute inset-0 bg-gradient-to-t from-card/60 to-transparent" />
         </div>
       )}
 
-      <div className="p-4 space-y-3">
+      <div className="p-5 space-y-4">
         {/* Header row */}
-        <div className="flex items-start justify-between gap-2">
-          <p className="font-semibold text-sm text-foreground leading-snug">{card.name}</p>
+        <div className="flex items-start justify-between gap-3">
+          <p className="font-extrabold text-sm sm:text-base text-foreground leading-tight">{card.name}</p>
           {card.reason_tag && (
             <span className={cn(
-              'shrink-0 text-[10px] font-semibold px-2 py-0.5 rounded-full border',
+              'shrink-0 text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-lg border',
               TAG_STYLES[card.reason_tag],
             )}>
               {TAG_LABELS[card.reason_tag]}
@@ -60,16 +61,16 @@ function ProductCardView({ card }: { card: ProductCard }) {
 
         {/* Highlight */}
         {card.highlight && (
-          <p className="text-xs text-muted-foreground">{card.highlight}</p>
+          <p className="text-xs text-muted-foreground/80 font-medium leading-relaxed">{card.highlight}</p>
         )}
 
         {/* Macros grid */}
         {(card.calories_per_100g != null || card.protein_per_100g != null) && (
-          <div className="grid grid-cols-4 gap-1.5 pt-1">
-            <MacroChip icon={<Flame className="w-3 h-3" />} label="kcal" value={card.calories_per_100g} color="text-orange-500" />
-            <MacroChip icon={<Dumbbell className="w-3 h-3" />} label="prot" value={card.protein_per_100g} color="text-blue-500" />
-            <MacroChip icon={<Droplets className="w-3 h-3" />} label="fat" value={card.fat_per_100g} color="text-yellow-500" />
-            <MacroChip icon={<Wheat className="w-3 h-3" />} label="carbs" value={card.carbs_per_100g} color="text-green-500" />
+          <div className="grid grid-cols-4 gap-2 pt-1">
+            <MacroChip icon={<Flame className="w-3.5 h-3.5" />} label="kcal" value={card.calories_per_100g} color="text-orange-500" />
+            <MacroChip icon={<Dumbbell className="w-3.5 h-3.5" />} label="prot" value={card.protein_per_100g} color="text-blue-500" />
+            <MacroChip icon={<Droplets className="w-3.5 h-3.5" />} label="fat" value={card.fat_per_100g} color="text-yellow-500" />
+            <MacroChip icon={<Wheat className="w-3.5 h-3.5" />} label="carbs" value={card.carbs_per_100g} color="text-green-500" />
           </div>
         )}
       </div>
@@ -87,12 +88,12 @@ function MacroChip({
 }) {
   if (value == null) return null;
   return (
-    <div className="flex flex-col items-center gap-0.5 rounded-xl bg-muted/30 p-1.5">
-      <span className={cn('flex items-center gap-0.5', color)}>
+    <div className="flex flex-col items-center gap-1 rounded-2xl bg-muted/20 p-2 border border-border/10">
+      <span className={cn('flex items-center gap-1', color)}>
         {icon}
-        <span className="text-[11px] font-bold">{Math.round(value)}</span>
+        <span className="text-xs font-black">{Math.round(value)}</span>
       </span>
-      <span className="text-[9px] text-muted-foreground uppercase tracking-wide">{label}</span>
+      <span className="text-[8px] font-bold text-muted-foreground/60 uppercase tracking-widest">{label}</span>
     </div>
   );
 }
@@ -101,18 +102,20 @@ function MacroChip({
 
 function ConversionCardView({ card }: { card: ConversionCard }) {
   return (
-    <div className="rounded-2xl border border-border/50 bg-card/60 backdrop-blur-sm p-4">
-      <div className="flex items-center gap-3 flex-wrap">
-        <span className="text-2xl font-black tabular-nums">
-          {card.value} <span className="text-sm font-semibold text-muted-foreground">{card.from}</span>
+    <div className="rounded-[1.5rem] border border-border/30 bg-card/40 backdrop-blur-md p-6 shadow-sm">
+      <div className="flex items-center gap-4 flex-wrap">
+        <span className="text-3xl font-black tabular-nums tracking-tighter">
+          {card.value} <span className="text-xs font-bold text-muted-foreground uppercase ml-1">{card.from}</span>
         </span>
-        <ArrowRight className="w-4 h-4 text-muted-foreground shrink-0" />
+        <div className="h-8 w-8 rounded-full bg-primary/5 flex items-center justify-center">
+            <ArrowRight className="w-4 h-4 text-primary shrink-0" />
+        </div>
         {card.supported ? (
-          <span className="text-2xl font-black tabular-nums text-emerald-500">
-            {card.result} <span className="text-sm font-semibold text-muted-foreground">{card.to}</span>
+          <span className="text-3xl font-black tabular-nums text-emerald-500 tracking-tighter">
+            {card.result} <span className="text-xs font-bold text-muted-foreground uppercase ml-1">{card.to}</span>
           </span>
         ) : (
-          <span className="text-sm text-muted-foreground">unsupported conversion</span>
+          <span className="text-sm font-bold text-muted-foreground uppercase tracking-widest italic">unsupported</span>
         )}
       </div>
     </div>
@@ -123,24 +126,26 @@ function ConversionCardView({ card }: { card: ConversionCard }) {
 
 function NutritionCardView({ card }: { card: NutritionCard }) {
   return (
-    <div className="rounded-2xl border border-border/50 bg-card/60 backdrop-blur-sm overflow-hidden">
+    <div className="rounded-[1.5rem] border border-border/30 bg-card/40 backdrop-blur-md overflow-hidden shadow-sm group">
       {card.image_url && (
-        <div className="relative h-32 w-full bg-muted/20">
-          <Image src={card.image_url} alt={card.name} fill className="object-cover" sizes="400px" />
+        <div className="relative h-40 w-full bg-muted/20 overflow-hidden">
+          <Image src={card.image_url} alt={card.name} fill className="object-cover transition-transform duration-700 group-hover:scale-105" sizes="400px" />
+          <div className="absolute inset-0 bg-gradient-to-t from-card/60 to-transparent" />
         </div>
       )}
-      <div className="p-4 space-y-3">
-        <p className="font-semibold text-sm">{card.name}</p>
-        <div className="grid grid-cols-4 gap-1.5">
-          <MacroChip icon={<Flame className="w-3 h-3" />} label="kcal" value={card.calories_per_100g} color="text-orange-500" />
-          <MacroChip icon={<Dumbbell className="w-3 h-3" />} label="prot" value={card.protein_per_100g} color="text-blue-500" />
-          <MacroChip icon={<Droplets className="w-3 h-3" />} label="fat" value={card.fat_per_100g} color="text-yellow-500" />
-          <MacroChip icon={<Wheat className="w-3 h-3" />} label="carbs" value={card.carbs_per_100g} color="text-green-500" />
+      <div className="p-5 space-y-4">
+        <p className="font-extrabold text-sm sm:text-base">{card.name}</p>
+        <div className="grid grid-cols-4 gap-2">
+          <MacroChip icon={<Flame className="w-3.5 h-3.5" />} label="kcal" value={card.calories_per_100g} color="text-orange-500" />
+          <MacroChip icon={<Dumbbell className="w-3.5 h-3.5" />} label="prot" value={card.protein_per_100g} color="text-blue-500" />
+          <MacroChip icon={<Droplets className="w-3.5 h-3.5" />} label="fat" value={card.fat_per_100g} color="text-yellow-500" />
+          <MacroChip icon={<Wheat className="w-3.5 h-3.5" />} label="carbs" value={card.carbs_per_100g} color="text-green-500" />
         </div>
       </div>
     </div>
   );
 }
+
 
 // ── Public export — renders any Card by type ──────────────────────────────────
 
