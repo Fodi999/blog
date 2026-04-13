@@ -43,7 +43,46 @@ export interface NutritionCard {
   image_url?: string | null;
 }
 
-export type Card = ProductCard | ConversionCard | NutritionCard;
+export interface RecipeIngredient {
+  slug: string;
+  name: string;
+  role: string;
+  state: string;
+  gross_g: number;
+  net_g: number;
+  kcal: number;
+  protein_g: number;
+  fat_g: number;
+  carbs_g: number;
+}
+
+export interface RecipeStep {
+  step: number;
+  text: string;
+  time_min?: number | null;
+}
+
+export interface RecipeCard {
+  type: 'recipe';
+  dish_name: string;
+  dish_name_local?: string;
+  display_name?: string;
+  dish_type: string;
+  servings: number;
+  ingredients: RecipeIngredient[];
+  steps: RecipeStep[];
+  total_output_g: number;
+  total_kcal: number;
+  total_protein: number;
+  total_fat: number;
+  total_carbs: number;
+  per_serving_kcal: number;
+  per_serving_protein: number;
+  per_serving_fat: number;
+  per_serving_carbs: number;
+}
+
+export type Card = ProductCard | ConversionCard | NutritionCard | RecipeCard;
 
 export interface Suggestion {
   label: string;
