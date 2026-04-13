@@ -40,6 +40,15 @@ const STARTERS: Record<string, string[]> = {
   uk: ['що корисного з\'їсти', 'калорії лосося', 'ідея на вечерю', '200 грамів в ложках'],
 };
 
+// ── Auto-greeting — bot says hello first, like ChatGPT ───────────────────────
+
+const GREETING: Record<string, string> = {
+  ru: 'Привет 👋 Я ChefOS — твой кулинарный помощник! Спроси меня:\n• «что полезного поесть»\n• «сколько калорий в шпинате»\n• «200 грамм в ложках»\n• «что приготовить на ужин»',
+  en: 'Hello 👋 I\'m ChefOS — your culinary assistant! Ask me:\n• "healthy product ideas"\n• "calories in spinach"\n• "convert 200g to tablespoons"\n• "dinner idea"',
+  pl: 'Cześć 👋 Jestem ChefOS — Twoim kulinarnym asystentem! Zapytaj mnie:\n• «zdrowy produkt»\n• «kalorie szpinaku»\n• «200 gramów na łyżki»\n• «co ugotować na obiad»',
+  uk: 'Привіт 👋 Я ChefOS — твій кулінарний помічник! Запитай мене:\n• «що корисного з\'їсти»\n• «калорії шпинату»\n• «200 грамів в ложках»\n• «що приготувати на вечерю»',
+};
+
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export function ChefOSChat() {
@@ -49,15 +58,41 @@ export function ChefOSChat() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const [context, setContext] = useState<SessionContext>({});
+  const [context, setContext] = useState<SessionContext>({ turn_count: 1 });
+  const [greeted, setGreeted] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const idRef = useRef(0);
 
-  // Scroll to bottom on new message
+  // ── Auto-greeting: bot says hello on mount ──
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+    if (!greeted) {
+      setGreeted(true);
+      const greetingMsg: Message = {
+        id: ++idRef.current,
+        role: 'bot',
+        response: {
+          text: GREETING[locale] ?? GREETING.en,
+          context: {},
+        },
+        animated: false,
+      };
+      setMessages([greetingMsg]);
+    }
+  }, [greeted, locale]);
+
+  // ── Smooth scroll to bottom on new message ──
+  const scrollToBottom = useCallback((smooth = true) => {
+    const el = scrollRef.current;
+    if (el) {
+      el.scrollTo({ top: el.scrollHeight, behavior: smooth ? 'smooth' : 'auto' });
+    }
+  }, []);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, scrollToBottom]);
 
   const send = useCallback(async (text: string) => {
     const trimmed = text.trim();
@@ -101,8 +136,17 @@ export function ChefOSChat() {
   };
 
   const reset = () => {
-    setMessages([]);
-    setContext({});
+    const greetingMsg: Message = {
+      id: ++idRef.current,
+      role: 'bot',
+      response: {
+        text: GREETING[locale] ?? GREETING.en,
+        context: {},
+      },
+      animated: false,
+    };
+    setMessages([greetingMsg]);
+    setContext({ turn_count: 1 });
     setInput('');
     setTimeout(() => inputRef.current?.focus(), 100);
   };
@@ -111,39 +155,17 @@ export function ChefOSChat() {
     <div className="flex flex-col h-full min-h-[500px] max-h-[700px]">
 
       {/* ── Messages ── */}
-      <div className="flex-1 overflow-y-auto px-2 py-4 space-y-4 scroll-smooth">
-        {/* Empty state — starter chips */}
-        {messages.length === 0 && (
-          <div className="flex flex-col items-center gap-6 pt-8 text-center animate-in fade-in duration-500">
-            <div className="flex items-center justify-center w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20">
-              <Bot className="w-7 h-7 text-primary" />
-            </div>
-            <div>
-              <p className="text-base font-semibold text-foreground">ChefOS</p>
-              <p className="text-xs text-muted-foreground mt-1">
-                {locale === 'ru' ? 'Твой кулинарный ИИ-помощник' :
-                 locale === 'pl' ? 'Twój kulinarny asystent AI' :
-                 locale === 'uk' ? 'Твій кулінарний ШІ-помічник' :
-                 'Your AI culinary assistant'}
-              </p>
-            </div>
-            <div className="flex flex-wrap justify-center gap-2">
-              {starters.map(s => (
-                <button
-                  key={s}
-                  onClick={() => send(s)}
-                  className="text-xs px-3 py-1.5 rounded-full border border-border/60 bg-muted/30 hover:bg-muted/60 text-muted-foreground hover:text-foreground transition-all hover:scale-105 active:scale-95"
-                >
-                  {s}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
+      <div ref={scrollRef} className="flex-1 overflow-y-auto px-2 py-4 space-y-4 scroll-smooth">
 
         {/* Message list */}
-        {messages.map(msg => (
-          <MessageBubble key={msg.id} msg={msg} onSuggestion={send} />
+        {messages.map((msg, idx) => (
+          <MessageBubble
+            key={msg.id}
+            msg={msg}
+            onSuggestion={send}
+            starters={idx === 0 && msg.role === 'bot' ? starters : undefined}
+            onScrollRequest={scrollToBottom}
+          />
         ))}
 
         {/* Typing indicator */}
@@ -225,7 +247,12 @@ export function ChefOSChat() {
 
 // ── MessageBubble ─────────────────────────────────────────────────────────────
 
-function MessageBubble({ msg, onSuggestion }: { msg: Message; onSuggestion?: (q: string) => void }) {
+function MessageBubble({ msg, onSuggestion, starters, onScrollRequest }: {
+  msg: Message;
+  onSuggestion?: (q: string) => void;
+  starters?: string[];
+  onScrollRequest?: (smooth?: boolean) => void;
+}) {
   if (msg.role === 'user') {
     return (
       <div className="flex justify-end px-1 animate-in slide-in-from-right-4 fade-in duration-300">
@@ -236,12 +263,17 @@ function MessageBubble({ msg, onSuggestion }: { msg: Message; onSuggestion?: (q:
     );
   }
 
-  return <BotBubble msg={msg} onSuggestion={onSuggestion} />;
+  return <BotBubble msg={msg} onSuggestion={onSuggestion} starters={starters} onScrollRequest={onScrollRequest} />;
 }
 
 // ── BotBubble — with typewriter + cascade ─────────────────────────────────────
 
-function BotBubble({ msg, onSuggestion }: { msg: Message; onSuggestion?: (q: string) => void }) {
+function BotBubble({ msg, onSuggestion, starters, onScrollRequest }: {
+  msg: Message;
+  onSuggestion?: (q: string) => void;
+  starters?: string[];
+  onScrollRequest?: (smooth?: boolean) => void;
+}) {
   const res = msg.response;
   const cards = res?.cards ?? [];
   const suggestions = res?.suggestions ?? [];
@@ -268,16 +300,34 @@ function BotBubble({ msg, onSuggestion }: { msg: Message; onSuggestion?: (q: str
     }
   }, [isTyping, shouldAnimate, cards.length]);
 
-  // Auto-scroll while typing
-  const bubbleRef = useRef<HTMLDivElement>(null);
+  // Auto-scroll while typing — calls parent scrollToBottom for reliable container scroll
+  // Instant during typing (no lag), staggered smooth scrolls for cards/extras
+  const rafRef = useRef<number>(0);
+  const extrasTimers = useRef<ReturnType<typeof setTimeout>[]>([]);
+
   useEffect(() => {
     if (isTyping) {
-      bubbleRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = requestAnimationFrame(() => {
+        onScrollRequest?.(false); // instant — keeps up with typewriter
+      });
     }
-  }, [displayed, isTyping]);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, [displayed, isTyping, onScrollRequest]);
+
+  // Staggered scroll when cards/extras appear — they have CSS animation delays
+  useEffect(() => {
+    if (!isTyping && (showCards || showExtras)) {
+      extrasTimers.current.forEach(clearTimeout);
+      extrasTimers.current = [50, 250, 500, 800].map(ms =>
+        setTimeout(() => onScrollRequest?.(true), ms)
+      );
+    }
+    return () => extrasTimers.current.forEach(clearTimeout);
+  }, [showCards, showExtras, isTyping, onScrollRequest]);
 
   return (
-    <div ref={bubbleRef} className="flex gap-2 items-start px-1 animate-in fade-in slide-in-from-left-4 duration-300">
+    <div className="flex gap-2 items-start px-1 animate-in fade-in slide-in-from-left-4 duration-300">
       {/* Avatar */}
       <div className="shrink-0 flex items-center justify-center w-7 h-7 rounded-full bg-primary/10 mt-0.5">
         <Bot className="w-4 h-4 text-primary" />
@@ -346,6 +396,21 @@ function BotBubble({ msg, onSuggestion }: { msg: Message; onSuggestion?: (q: str
           <div className="flex items-center gap-2 text-[10px] text-muted-foreground/50 pl-1 animate-in fade-in duration-500">
             {res?.reason && <span>↳ {res.reason}</span>}
             {res?.timing_ms != null && <span>• {res.timing_ms}ms</span>}
+          </div>
+        )}
+
+        {/* Starter quick-action chips — only on greeting bubble */}
+        {showExtras && starters && starters.length > 0 && onSuggestion && (
+          <div className="flex flex-wrap gap-1.5 pt-1 animate-in fade-in slide-in-from-bottom-2 duration-500">
+            {starters.map(s => (
+              <button
+                key={s}
+                onClick={() => onSuggestion(s)}
+                className="text-xs px-3 py-1.5 rounded-full border border-border/60 bg-muted/30 hover:bg-muted/60 text-muted-foreground hover:text-foreground transition-all hover:scale-105 active:scale-95"
+              >
+                {s}
+              </button>
+            ))}
           </div>
         )}
       </div>

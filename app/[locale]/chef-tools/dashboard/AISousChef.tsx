@@ -19,6 +19,9 @@ import {
   BookOpen, ClipboardList, RefreshCcw, Search, Database, Wrench,
   Scale, Fish, FlaskConical, Calculator, Utensils, BarChart3,
   Salad, Microscope, Trophy, ArrowRight, ChefHat,
+  Lightbulb, Timer, CookingPot, Leaf, Heart, Hand,
+  Flame, Dumbbell, Droplets, Wheat, Clock, UtensilsCrossed,
+  Beef, Egg, Carrot, Apple,
 } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import { cn } from '@/lib/utils';
@@ -156,7 +159,10 @@ export function AISousChef() {
   const [context, setContext] = useState<SessionContext>({});
   const idRef = useRef(0);
   const inputRef = useRef<HTMLTextAreaElement>(null);
-  const bottomRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const bottomMarkerRef = useRef<HTMLDivElement>(null);
+  const inputContainerRef = useRef<HTMLDivElement>(null);
+  const [inputBarHeight, setInputBarHeight] = useState(180);
 
   // Auto-resize textarea
   useEffect(() => {
@@ -171,18 +177,95 @@ export function AISousChef() {
     setTimeout(() => inputRef.current?.focus(), 300);
   }, []);
 
-  // Scroll to bottom on new turn
+  // Measure input bar height dynamically to prevent overlap
+  useEffect(() => {
+    const el = inputContainerRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setInputBarHeight(entry.contentRect.height + 32); // add some safety margin
+      }
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  // ── ChatGPT-style auto-scroll ──────────────────────────────────────
+  // Strategy: always scroll to bottom UNLESS the user explicitly scrolls
+  // up (detected via wheel / touchmove events — not via scroll position,
+  // which creates false positives when content grows).
+  const stickyRef = useRef(true);          // "should we auto-scroll?"
+  const rafId = useRef(0);
+
+  const scrollToBottom = useCallback(() => {
+    cancelAnimationFrame(rafId.current);
+    rafId.current = requestAnimationFrame(() => {
+      bottomMarkerRef.current?.scrollIntoView({ behavior: 'auto', block: 'end' });
+    });
+  }, []);
+
+  // Detect user scrolling UP → pause auto-scroll
+  // Detect user scrolling DOWN to bottom → resume auto-scroll
+  useEffect(() => {
+    const onWheel = (e: WheelEvent) => {
+      if (e.deltaY < -5) {
+        // scrolling UP → user wants to read history
+        stickyRef.current = false;
+      } else if (e.deltaY > 5) {
+        // scrolling DOWN → check if they reached the bottom
+        const gap = document.documentElement.scrollHeight - (window.scrollY + window.innerHeight);
+        if (gap < 80) stickyRef.current = true;
+      }
+    };
+    let touchY = 0;
+    const onTouchStart = (e: TouchEvent) => { touchY = e.touches[0].clientY; };
+    const onTouchMove = (e: TouchEvent) => {
+      const dy = touchY - e.touches[0].clientY; // positive = scroll down
+      touchY = e.touches[0].clientY;
+      if (dy < -10) {
+        stickyRef.current = false;
+      } else if (dy > 10) {
+        const gap = document.documentElement.scrollHeight - (window.scrollY + window.innerHeight);
+        if (gap < 80) stickyRef.current = true;
+      }
+    };
+    window.addEventListener('wheel', onWheel, { passive: true });
+    window.addEventListener('touchstart', onTouchStart, { passive: true });
+    window.addEventListener('touchmove', onTouchMove, { passive: true });
+    return () => {
+      window.removeEventListener('wheel', onWheel);
+      window.removeEventListener('touchstart', onTouchStart);
+      window.removeEventListener('touchmove', onTouchMove);
+    };
+  }, []);
+
+  // Auto-scroll whenever the chat content area changes size
+  // (typewriter text, cards loading, etc.)
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => {
+      if (stickyRef.current) scrollToBottom();
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [scrollToBottom]);
+
+  // When a new turn appears, force-stick and scroll
   useEffect(() => {
     if (turns.length > 0) {
-      setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' }), 100);
+      stickyRef.current = true;
+      scrollToBottom();
+      setTimeout(scrollToBottom, 120);
     }
-  }, [turns.length]);
+  }, [turns.length, scrollToBottom]);
 
   const submit = useCallback(async (text: string) => {
     const q = text.trim();
     if (!q || loading) return;
 
     const id = ++idRef.current;
+    stickyRef.current = true; // Always force auto-scroll on new message
     setTurns(prev => [...prev, { id, query: q }]);
     setQuery('');
     setLoading(true);
@@ -218,7 +301,7 @@ export function AISousChef() {
   const canSend = !loading && query.trim().length >= 2;
 
   return (
-    <div className="flex flex-col min-h-[60vh] max-w-5xl mx-auto relative px-4 pb-48 sm:pb-52">
+    <div className="flex flex-col max-w-5xl mx-auto relative px-4">
 
       {/* ── Background: subtle dot grid (kitchen steel feel) ── */}
       <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
@@ -277,14 +360,14 @@ export function AISousChef() {
       </div>
 
       {/* ═══════════════════════════════════════════════════════
-          CONTENT AREA — scrolls naturally, input is fixed below
+          CONTENT AREA — page scrolls, fixed input island below
           ═══════════════════════════════════════════════════════ */}
-      <div className="flex-1">
+      <div ref={scrollRef} className="flex-1">
         {activeTab === 'chat' ? (
           <>
             {/* STATE 1: IDLE — kitchen command center */}
             {isIdle && (
-              <div className="flex-1 flex flex-col items-center justify-center py-8 sm:py-16 animate-in fade-in zoom-in-95 duration-1000">
+              <div className="flex-1 flex flex-col items-center justify-center min-h-[50vh] py-8 sm:py-12 animate-in fade-in zoom-in-95 duration-1000">
                 {/* Headline */}
                 <div className="text-center space-y-3 mb-10 sm:mb-14">
                   <h2 className="text-2xl sm:text-5xl lg:text-6xl font-black tracking-tight text-foreground leading-[1.1] text-balance px-4">
@@ -326,9 +409,9 @@ export function AISousChef() {
               </div>
             )}
 
-            {/* STATE 2: ACTIVE — chat thread */}
+            {/* STATE 2: ACTIVE — chat thread inside scroll box */}
             {!isIdle && (
-              <div className="flex-1 pb-6 space-y-8 pt-0 px-1 sm:px-0">
+              <div className="flex-1 pb-4 space-y-8 pt-0 px-1 sm:px-0">
                 {/* Reset / New Chat button */}
                 <div className="flex justify-center">
                   <button
@@ -361,9 +444,15 @@ export function AISousChef() {
                     </div>
                   </div>
                 )}
-                <div ref={bottomRef} />
               </div>
             )}
+
+            {/* Marker for auto-scroll and terminal spacing — height matches terminal */}
+            <div
+              ref={bottomMarkerRef}
+              style={{ height: `${inputBarHeight}px` }}
+              className="pointer-events-none w-full shrink-0"
+            />
           </>
         ) : (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both">
@@ -378,10 +467,10 @@ export function AISousChef() {
       </div>
 
       {/* ═══════════════════════════════════════════════════════
-          INPUT BAR — fixed island at bottom of viewport
+          INPUT BAR — fixed island at the bottom of viewport
           ═══════════════════════════════════════════════════════ */}
       {activeTab === 'chat' && (
-        <div className="fixed bottom-0 left-0 right-0 z-50 pointer-events-none">
+        <div ref={inputContainerRef} className="fixed bottom-0 left-0 right-0 z-50 pointer-events-none">
           <div className={cn(
             "pointer-events-auto max-w-5xl mx-auto px-4 pt-3 sm:pt-4 pb-4 sm:pb-6",
             "bg-gradient-to-t from-background via-background/98 to-background/80 backdrop-blur-xl",
@@ -526,7 +615,11 @@ function ToolGrid({ tools, locale, t, accent }: { tools: ToolItem[]; locale: str
 
 // ── TurnView ──────────────────────────────────────────────────────────────────
 
-function TurnView({ turn, onSuggestion, locale }: { turn: Turn; onSuggestion: (q: string) => void; locale: string }) {
+function TurnView({ turn, onSuggestion, locale }: {
+  turn: Turn;
+  onSuggestion: (q: string) => void;
+  locale: string;
+}) {
   const res = turn.response;
   const cards = res?.cards ?? [];
   const suggestions = res?.suggestions ?? [];
@@ -534,6 +627,9 @@ function TurnView({ turn, onSuggestion, locale }: { turn: Turn; onSuggestion: (q
 
   // Typewriter for latest bot text
   const { displayed: typedText, isTyping } = useTypewriter(res?.text ?? '', 18, isLatest);
+
+  // Scroll is now handled by ResizeObserver in parent —
+  // no need for manual scroll calls here.
 
   return (
     <div className="space-y-6 sm:space-y-8 animate-in fade-in slide-in-from-bottom-5 duration-700 ease-out fill-mode-both">
@@ -584,11 +680,16 @@ function TurnView({ turn, onSuggestion, locale }: { turn: Turn; onSuggestion: (q
             {/* ── Coach Message ── */}
             {res?.coach_message && !isTyping && (
               <div className="animate-in fade-in slide-in-from-left-3 duration-500 delay-200 fill-mode-both">
-                <div className="inline-flex items-start gap-3 px-5 py-3 rounded-2xl border border-violet-500/20 bg-violet-500/5 backdrop-blur-sm">
-                  <span className="text-lg mt-0.5">👨‍🍳</span>
-                  <p className="text-sm text-violet-300/90 dark:text-violet-300/80 font-medium leading-relaxed italic">
-                    {res.coach_message}
-                  </p>
+                <div className="inline-flex items-start gap-3 px-5 py-4 rounded-2xl border border-violet-500/20 bg-gradient-to-br from-violet-500/5 to-purple-500/5 backdrop-blur-sm">
+                  <div className="w-8 h-8 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center shrink-0 mt-0.5">
+                    <ChefHat className="w-4 h-4 text-violet-400" />
+                  </div>
+                  <div>
+                    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-violet-400/60 block mb-1">Chef Coach</span>
+                    <p className="text-sm text-violet-300/90 dark:text-violet-300/80 font-medium leading-relaxed italic">
+                      <FormattedText text={res.coach_message} />
+                    </p>
+                  </div>
                 </div>
               </div>
             )}
@@ -603,40 +704,42 @@ function TurnView({ turn, onSuggestion, locale }: { turn: Turn; onSuggestion: (q
             {/* ── Chef tip ── */}
             {res?.chef_tip && !isTyping && (
               <div className="animate-in fade-in slide-in-from-top-2 duration-500 delay-300 fill-mode-both">
-                <div className="group relative rounded-2xl border border-amber-500/20 bg-amber-50/50 dark:bg-amber-950/20 px-6 py-4 overflow-hidden">
-                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-amber-500/40" />
-                  <p className="text-sm text-amber-900/80 dark:text-amber-200/90 font-semibold leading-relaxed">
-                    <span className="mr-2">💡</span>
-                    {res.chef_tip}
-                  </p>
+                <div className="group relative rounded-2xl border border-amber-500/20 bg-gradient-to-br from-amber-50/50 to-orange-50/30 dark:from-amber-950/20 dark:to-orange-950/10 px-6 py-4 overflow-hidden">
+                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-amber-400 to-orange-500" />
+                  <div className="flex items-start gap-3">
+                    <div className="w-7 h-7 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0 mt-0.5">
+                      <Lightbulb className="w-3.5 h-3.5 text-amber-500" />
+                    </div>
+                    <p className="text-sm text-amber-900/80 dark:text-amber-200/90 font-semibold leading-relaxed">
+                      <FormattedText text={res.chef_tip} />
+                    </p>
+                  </div>
                 </div>
               </div>
             )}
 
             {/* ── Suggestions ── */}
             {suggestions.length > 0 && !isTyping && (
-              <div className="flex flex-wrap gap-2 pt-2 animate-in fade-in duration-500 delay-500 fill-mode-both">
-                {suggestions.map((s, i) => (
-                  <button
-                    key={i}
-                    onClick={() => onSuggestion(s.query)}
-                    className={cn(
-                      "flex items-center gap-2 px-4 py-2.5 rounded-2xl border transition-all",
-                      "border-primary/10 bg-primary/5 text-xs font-bold text-primary",
-                      "hover:bg-primary/10 hover:border-primary/30 hover:scale-[1.03] active:scale-95"
-                    )}
-                  >
-                    {s.emoji && (
-                      <div className="shrink-0">
-                        {s.emoji === '📖' && <BookOpen className="h-3.5 w-3.5" />}
-                        {s.emoji === '📋' && <ClipboardList className="h-3.5 w-3.5" />}
-                        {s.emoji === '🔄' && <RefreshCcw className="h-3.5 w-3.5" />}
-                        {!['📖', '📋', '🔄'].includes(s.emoji) && <span className="text-sm">{s.emoji}</span>}
-                      </div>
-                    )}
-                    <span className="uppercase tracking-wide">{s.label}</span>
-                  </button>
-                ))}
+              <div className="flex flex-wrap gap-2 pt-3 animate-in fade-in duration-500 delay-500 fill-mode-both">
+                {suggestions.map((s, i) => {
+                  // Strip known emoji from label text to avoid duplication
+                  const cleanLabel = s.label.replace(EMOJI_RE, '').replace(/\s{2,}/g, ' ').trim();
+                  return (
+                    <button
+                      key={i}
+                      onClick={() => onSuggestion(s.query)}
+                      className={cn(
+                        "flex items-center gap-2 px-4 py-2.5 rounded-xl border transition-all duration-200",
+                        "border-border/30 bg-card/40 backdrop-blur-sm text-xs font-bold text-foreground/80",
+                        "hover:bg-primary/10 hover:border-primary/30 hover:text-primary hover:scale-[1.03] active:scale-95",
+                        "shadow-sm"
+                      )}
+                    >
+                      <SuggestionIcon emoji={s.emoji} />
+                      <span className="uppercase tracking-wide">{cleanLabel}</span>
+                    </button>
+                  );
+                })}
               </div>
             )}
 
@@ -653,23 +756,124 @@ function TurnView({ turn, onSuggestion, locale }: { turn: Turn; onSuggestion: (q
   );
 }
 
+// ── Emoji → Icon map ──────────────────────────────────────────────────────────
+
+const EMOJI_ICON_MAP: Record<string, { icon: any; color: string }> = {
+  '🍽': { icon: UtensilsCrossed, color: 'text-orange-400' },
+  '🍽️': { icon: UtensilsCrossed, color: 'text-orange-400' },
+  '⚖️': { icon: Scale, color: 'text-blue-400' },
+  '⚖': { icon: Scale, color: 'text-blue-400' },
+  '👨‍🍳': { icon: ChefHat, color: 'text-violet-400' },
+  '👨🍳': { icon: ChefHat, color: 'text-violet-400' },
+  '🧑‍🍳': { icon: ChefHat, color: 'text-violet-400' },
+  '👩‍🍳': { icon: ChefHat, color: 'text-violet-400' },
+  '🎩': { icon: ChefHat, color: 'text-violet-400' },
+  '⏱': { icon: Clock, color: 'text-sky-400' },
+  '⏱️': { icon: Clock, color: 'text-sky-400' },
+  '⏰': { icon: Clock, color: 'text-sky-400' },
+  '🕐': { icon: Clock, color: 'text-sky-400' },
+  '📊': { icon: BarChart3, color: 'text-emerald-400' },
+  '💡': { icon: Lightbulb, color: 'text-amber-400' },
+  '🍳': { icon: CookingPot, color: 'text-orange-400' },
+  '🔄': { icon: RefreshCcw, color: 'text-blue-400' },
+  '📖': { icon: BookOpen, color: 'text-indigo-400' },
+  '📋': { icon: ClipboardList, color: 'text-teal-400' },
+  '🥩': { icon: Beef, color: 'text-red-400' },
+  '🥦': { icon: Leaf, color: 'text-green-400' },
+  '🍚': { icon: Wheat, color: 'text-amber-400' },
+  '🥚': { icon: Egg, color: 'text-yellow-400' },
+  '🥕': { icon: Carrot, color: 'text-orange-400' },
+  '🍎': { icon: Apple, color: 'text-red-400' },
+  '🌿': { icon: Leaf, color: 'text-emerald-400' },
+  '🥗': { icon: Salad, color: 'text-green-400' },
+  '🥬': { icon: Leaf, color: 'text-green-400' },
+  '🍗': { icon: Beef, color: 'text-amber-400' },
+  '🍖': { icon: Beef, color: 'text-red-400' },
+  '🐟': { icon: Fish, color: 'text-blue-400' },
+  '🐠': { icon: Fish, color: 'text-cyan-400' },
+  '🍲': { icon: CookingPot, color: 'text-orange-400' },
+  '🍱': { icon: UtensilsCrossed, color: 'text-amber-400' },
+  '💪': { icon: Dumbbell, color: 'text-blue-400' },
+  '🔥': { icon: Flame, color: 'text-orange-500' },
+  '❤️': { icon: Heart, color: 'text-rose-400' },
+  '❤': { icon: Heart, color: 'text-rose-400' },
+  '🌟': { icon: Sparkles, color: 'text-yellow-400' },
+  '⭐': { icon: Sparkles, color: 'text-yellow-400' },
+  '✨': { icon: Sparkles, color: 'text-purple-400' },
+  '👋': { icon: Hand, color: 'text-amber-400' },
+  '✅': { icon: Sparkles, color: 'text-emerald-400' },
+  '🏆': { icon: Trophy, color: 'text-yellow-400' },
+  '📌': { icon: Zap, color: 'text-red-400' },
+  '🎂': { icon: UtensilsCrossed, color: 'text-pink-400' },
+  '🍰': { icon: UtensilsCrossed, color: 'text-pink-400' },
+  '🥤': { icon: Droplets, color: 'text-blue-400' },
+  '🫒': { icon: Leaf, color: 'text-green-400' },
+  '🧈': { icon: Droplets, color: 'text-yellow-400' },
+  '🧅': { icon: Salad, color: 'text-amber-400' },
+  '🧄': { icon: Salad, color: 'text-amber-400' },
+  '🌶': { icon: Flame, color: 'text-red-400' },
+  '🌶️': { icon: Flame, color: 'text-red-400' },
+  '🫑': { icon: Leaf, color: 'text-green-400' },
+  '🍋': { icon: Apple, color: 'text-yellow-400' },
+  '🍅': { icon: Apple, color: 'text-red-400' },
+  '🌽': { icon: Wheat, color: 'text-yellow-400' },
+};
+
+// Build a regex that matches any emoji key
+const EMOJI_RE = new RegExp(
+  '(' + Object.keys(EMOJI_ICON_MAP).map(e => e.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')',
+  'g',
+);
+
+function InlineIcon({ emoji }: { emoji: string }) {
+  const entry = EMOJI_ICON_MAP[emoji];
+  if (!entry) return <span>{emoji}</span>;
+  const Icon = entry.icon;
+  return <Icon className={cn('inline-block w-4 h-4 align-text-bottom mx-0.5', entry.color)} />;
+}
+
+// ── SuggestionIcon ────────────────────────────────────────────────────────────
+
+function SuggestionIcon({ emoji }: { emoji?: string }) {
+  if (!emoji) return null;
+  const entry = EMOJI_ICON_MAP[emoji];
+  if (entry) {
+    const Icon = entry.icon;
+    return <Icon className={cn('h-3.5 w-3.5 shrink-0', entry.color)} />;
+  }
+  return <span className="text-sm shrink-0">{emoji}</span>;
+}
+
 // ── FormattedText ─────────────────────────────────────────────────────────────
 
 function FormattedText({ text }: { text: string }) {
+  // Split by bold markers and emoji, render icons inline
   const parts = text.split(/(\*\*[^*]+\*\*)/g);
   return (
     <>
       {parts.map((part, i) => {
         if (part.startsWith('**') && part.endsWith('**')) {
-          return <strong key={i}>{part.slice(2, -2)}</strong>;
+          return <strong key={i} className="font-extrabold text-foreground">{part.slice(2, -2)}</strong>;
         }
+        // Split by newlines, then replace emoji within each line
         return part.split('\n').map((line, j) => (
           <span key={`${i}-${j}`}>
             {j > 0 && <br />}
-            {line}
+            {replaceEmoji(line)}
           </span>
         ));
       })}
     </>
   );
+}
+
+/** Replace emoji in a line with inline Lucide icons */
+function replaceEmoji(line: string): React.ReactNode[] {
+  const segments = line.split(EMOJI_RE);
+  return segments.map((seg, i) => {
+    if (EMOJI_ICON_MAP[seg]) {
+      return <InlineIcon key={i} emoji={seg} />;
+    }
+    return <span key={i}>{seg}</span>;
+  });
 }
