@@ -17,9 +17,16 @@ import { JsonLd } from '@/components/JsonLd';
 
 export const revalidate = 86400; // ISR: 1 day, on-demand via revalidateTag
 
-/* ─── SEO-indexable states (high search volume) ────────────────────── */
+/* ─── SEO-indexable states ──────────────────────────────────────────── */
+// All valid states are indexable — the sitemap already only emits states
+// that actually exist in the DB. Restricting to raw/boiled/fried caused
+// 1.6K+ "noindex" warnings in Google Search Console for pages that were
+// in the sitemap but had a noindex tag.
 
-const INDEXABLE_STATES: ReadonlySet<string> = new Set(['raw', 'boiled', 'fried']);
+const INDEXABLE_STATES: ReadonlySet<string> = new Set([
+  'raw', 'boiled', 'steamed', 'baked', 'grilled',
+  'fried', 'smoked', 'frozen', 'dried', 'pickled',
+]);
 
 /* ─── valid states ─────────────────────────────────────────────────────── */
 
