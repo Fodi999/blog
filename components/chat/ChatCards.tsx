@@ -452,7 +452,7 @@ function RecipeCardView({ card, lang }: { card: RecipeCard; lang?: string }) {
           <div className="flex items-center gap-2 min-w-0">
             <span className="text-xl shrink-0">{dishIcon}</span>
             <div className="min-w-0">
-              <h3 className="font-black text-sm sm:text-base text-foreground truncate leading-tight uppercase italic">{title}</h3>
+              <h3 className="font-black text-sm sm:text-base text-foreground truncate leading-tight">{title}</h3>
               <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px] text-muted-foreground font-black uppercase tracking-tighter">
                 <span>{servings} {t.portion}</span>
                 <span className="opacity-20">/</span>
@@ -545,7 +545,9 @@ function RecipeCardView({ card, lang }: { card: RecipeCard; lang?: string }) {
                     <div key={i} className={cn("grid grid-cols-[1fr_50px_45px_45px] gap-1 px-2 py-1.5 rounded-lg items-center border-l-2 bg-muted/10 hover:bg-muted/20 transition-all", rc.border)}>
                       <div className="flex items-center gap-2 min-w-0">
                         <span className="text-xs font-bold text-foreground truncate">{ing.name}</span>
-                        {ing.state && <span className="text-[10px] text-muted-foreground/40 whitespace-nowrap">{STATE_EMOJI[ing.state] ?? ''} {ing.state}</span>}
+                        {ing.state && ing.state !== 'raw' && ing.state !== 'surowy' && ing.state !== 'сырой' && ing.state !== 'сирий' && (
+                          <span className="text-[10px] text-muted-foreground/40 whitespace-nowrap">{STATE_EMOJI[ing.state] ?? ''} {ing.state}</span>
+                        )}
                       </div>
                       <span className="text-[10px] font-bold text-right text-muted-foreground/60 tabular-nums">{gross}g</span>
                       <span className={cn("text-[10px] font-bold text-right tabular-nums", loss > 0 ? "text-rose-500/50" : "text-muted-foreground/20")}>{loss > 0 ? `-${loss}g` : '—'}</span>
