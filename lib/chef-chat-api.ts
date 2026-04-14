@@ -72,6 +72,10 @@ export interface RecipeCard {
   ingredients: RecipeIngredient[];
   steps: RecipeStep[];
   total_output_g: number;
+  total_gross_g: number;
+  total_loss_g: number;
+  loss_percent: number;
+  kcal_per_100g: number;
   total_kcal: number;
   total_protein: number;
   total_fat: number;
