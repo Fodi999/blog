@@ -348,7 +348,7 @@ function BotBubble({ msg, onSuggestion, starters, onScrollRequest }: {
         {/* Cards — cascade in */}
         {showCards && cards.length > 0 && (
           <div className="animate-in fade-in slide-in-from-bottom-3 duration-500">
-            <ChatCardsGrid cards={cards} />
+            <ChatCardsGrid cards={cards} lang={res?.lang} />
           </div>
         )}
 

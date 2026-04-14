@@ -60,6 +60,8 @@ export interface RecipeStep {
   step: number;
   text: string;
   time_min?: number | null;
+  temp_c?: number | null;
+  tip?: string | null;
 }
 
 export interface RecipeCard {
@@ -84,6 +86,11 @@ export interface RecipeCard {
   per_serving_protein: number;
   per_serving_fat: number;
   per_serving_carbs: number;
+  // ── Dish context (v2) ──
+  complexity?: string;          // "easy" | "medium" | "hard"
+  goal?: string;                // "balanced" | "high_protein" | "low_calorie"
+  allergens?: string[];         // ["gluten", "lactose", "nuts", "eggs", "fish", "shellfish", "soy"]
+  tags?: string[];              // ["vegan", "vegetarian", "pescatarian"]
 }
 
 export type Card = ProductCard | ConversionCard | NutritionCard | RecipeCard;
