@@ -697,7 +697,7 @@ function TurnView({ turn, onSuggestion, locale }: {
             {/* ── Cards ── */}
             {cards.length > 0 && !isTyping && (
               <div className="animate-in fade-in slide-in-from-left-4 duration-500 delay-150 fill-mode-both">
-                <ChatCardsGrid cards={cards} />
+                <ChatCardsGrid cards={cards} lang={res?.lang} />
               </div>
             )}
 
