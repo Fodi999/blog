@@ -11,11 +11,11 @@ const API_URL = 'https://ministerial-yetta-fodi999-c58d8823.koyeb.app';
 const canonicalLocale = 'pl';
 
 /**
- * Revalidate sitemap every 5 minutes so Google sees new/updated ingredients
- * without requiring a redeploy. On-demand revalidation via /api/revalidate
- * provides instant updates when products are published/unpublished.
+ * Revalidate sitemap every hour. Google crawls at most once per day,
+ * so 1h is more than enough while cutting ISR writes by 12×.
+ * On-demand revalidation via /api/revalidate provides instant updates.
  */
-export const revalidate = 300;
+export const revalidate = 3600;
 
 /**
  * Static content date — used ONLY for truly static pages (legal, about, etc.)
@@ -68,7 +68,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // ─── Gallery images from API (for sitemap image entries) ─────────────
   let galleryItems: Array<{ image_url: string; title_en?: string; alt_en?: string }> = [];
   try {
-    const res = await fetch(`${API_URL}/public/gallery`, { next: { revalidate: 300 } });
+    const res = await fetch(`${API_URL}/public/gallery`, { next: { revalidate: 3600 } });
     if (res.ok) galleryItems = await res.json();
   } catch { /* non-blocking */ }
 

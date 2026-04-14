@@ -16,7 +16,7 @@ import type { Metadata } from 'next';
  * Two-dimensional: geography × time
  */
 
-export const revalidate = 300;
+export const revalidate = 86400; // ISR: 24h (was 300s — fish season data is monthly)
 
 // ─── Month config ────────────────────────────────────────────────────────
 const MONTH_SLUGS = [

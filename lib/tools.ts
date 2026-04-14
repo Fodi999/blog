@@ -92,7 +92,7 @@ export async function runTool<T = unknown>(
     for (const [k, v] of Object.entries(params)) {
       if (v !== undefined && v !== null) url.searchParams.set(k, String(v));
     }
-    const res = await fetch(url.toString(), { next: { revalidate: tool.cache_ttl || 300 } });
+    const res = await fetch(url.toString(), { next: { revalidate: tool.cache_ttl || 3600 } });
     if (!res.ok) return null;
     return res.json();
   } catch {
@@ -206,7 +206,7 @@ async function get<T>(path: string, params: Record<string, string | number> = {}
     url.searchParams.set(k, String(v));
   }
   try {
-    const res = await fetch(url.toString(), { next: { revalidate: 300 } });
+    const res = await fetch(url.toString(), { next: { revalidate: 3600 } });
     if (!res.ok) return null;
     return res.json();
   } catch {

@@ -3,7 +3,7 @@ import { generateMetadata as genMeta } from '@/lib/metadata';
 import { JsonLd } from '@/components/JsonLd';
 import { ChefToolsLandingClient } from './ChefToolsLandingClient';
 
-export const revalidate = 300; // ISR: 5 min
+export const revalidate = 86400; // ISR: 24h (was 300s — tool list is static)
 
 export async function generateMetadata({
   params,

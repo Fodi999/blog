@@ -11,7 +11,7 @@ import { JsonLd } from '@/components/JsonLd';
 import { generateMetadata as sharedGenerateMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
 
-export const revalidate = 60;
+export const revalidate = 3600; // ISR: 1h (was 60s — caused 438K ISR writes/month)
 
 export function generateStaticParams() {
   return [{ locale: 'pl' }, { locale: 'en' }, { locale: 'ru' }, { locale: 'uk' }];
@@ -69,13 +69,13 @@ export default async function HomePage({
   
   const [latestPosts, galleryFromApi, aboutFromApi, ingredientsFromApi] = await Promise.all([
     getLatestPosts(locale, 6),
-    fetch(`${API}/public/gallery`, { next: { revalidate: 60 } })
+    fetch(`${API}/public/gallery`, { next: { revalidate: 3600 } })
       .then(r => r.ok ? r.json() as Promise<GalleryItem[]> : [])
       .catch(() => [] as GalleryItem[]),
-    fetch(`${API}/public/about`, { next: { revalidate: 60 } })
+    fetch(`${API}/public/about`, { next: { revalidate: 3600 } })
       .then(r => r.ok ? r.json() as Promise<AboutData> : null)
       .catch(() => null),
-    fetch(`${API}/public/ingredients-full`, { next: { revalidate: 300 } })
+    fetch(`${API}/public/ingredients-full`, { next: { revalidate: 3600 } })
       .then(r => r.ok ? r.json() as Promise<{ items: Array<{ slug: string; name_en: string; name_ru?: string; name_pl?: string; name_uk?: string; image_url?: string | null; calories_per_100g: number | null; protein_per_100g: number | null }>; total: number }> : null)
       .catch(() => null),
   ]);

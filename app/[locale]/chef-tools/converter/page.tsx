@@ -11,7 +11,7 @@ import { JsonLd } from '@/components/JsonLd';
 import { fetchIngredients } from '@/lib/api';
 import { ChefToolsNav } from '../ChefToolsNav';
 
-export const revalidate = 300;
+export const revalidate = 86400; // ISR: 24h (was 300s — converter is static)
 
 export function generateStaticParams() {
   return [{ locale: 'pl' }, { locale: 'en' }, { locale: 'ru' }, { locale: 'uk' }];

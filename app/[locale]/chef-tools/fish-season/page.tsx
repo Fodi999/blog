@@ -14,7 +14,7 @@ import { ChefToolsNav } from '../ChefToolsNav';
  * Old ?region= URLs are 301-redirected by middleware.
  */
 
-export const revalidate = 0;
+export const revalidate = 86400; // ISR: 24h (was 0 — forced SSR on every request)
 
 // ─── Regions ──────────────────────────────────────────────────────────────
 const VALID_REGIONS = ['global', 'pl', 'eu', 'es', 'ua'] as const;

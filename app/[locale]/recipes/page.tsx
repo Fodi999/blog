@@ -8,7 +8,7 @@ import { ScrollReveal } from '@/components/ScrollReveal';
 import { Button } from '@/components/ui/button';
 import type { Metadata } from 'next';
 
-export const revalidate = 300; // ISR: 5 min
+export const revalidate = 3600; // ISR: 1h (was 300s — recipes don't change that often)
 
 export function generateStaticParams() {
   return [{ locale: 'pl' }, { locale: 'en' }, { locale: 'ru' }, { locale: 'uk' }];

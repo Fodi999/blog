@@ -74,7 +74,7 @@ interface GalleryCategoryItem {
 }
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const revalidate = 0;
+export const revalidate = 86400; // ISR: 24h (was 0 — forced SSR on every request)
 
 export async function generateMetadata({
   params,
@@ -116,8 +116,8 @@ export default async function AboutPage({
   ]);
 
   // ── Hero image & lead text from API ──────────────────────────────────────
-  const heroImage = aboutData!.image_url!;
-  const heroLead = pick(aboutData as unknown as Record<string, unknown>, 'content', locale);
+  const heroImage = aboutData?.image_url ?? '/placeholder-about.jpg';
+  const heroLead = aboutData ? pick(aboutData as unknown as Record<string, unknown>, 'content', locale) : '';
 
   // ── Category labels from API ─────────────────────────────────────────────
   const categoryLabels: Record<string, string> = { all: pick({ all_en: 'All', all_pl: 'Wszystkie', all_ru: 'Все', all_uk: 'Всі' }, 'all', locale) };

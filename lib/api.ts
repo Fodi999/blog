@@ -239,12 +239,12 @@ async function apiFetch<T>(path: string, opts: FetchOpts | number = 86400): Prom
   }
 }
 
-/** Fetch without Next.js cache — used for bulk parallel calls where the
- *  page-level ISR (export const revalidate) controls caching instead. */
+/** Fetch with ISR-friendly caching — uses tags for on-demand revalidation
+ *  and falls back to 1h TTL. Previous `no-store` caused excessive ISR writes. */
 async function apiFetchFresh<T>(path: string, tags?: string[]): Promise<T | null> {
   try {
     const res = await fetch(`${BASE}${path}`, {
-      ...(tags ? { next: { tags } } : { cache: 'no-store' as const }),
+      next: { revalidate: 3600, ...(tags ? { tags } : {}) },
     });
     if (!res.ok) return null;
     return res.json() as Promise<T>;
@@ -329,7 +329,7 @@ export type SitemapIngredient = {
 export async function fetchIngredientsSitemapData(): Promise<SitemapIngredient[]> {
   try {
     const res = await fetch(`${BASE}/public/ingredients-sitemap-data`, {
-      next: { revalidate: 300 },
+      next: { revalidate: 3600 },
     });
     if (!res.ok) return [];
     return (await res.json()) as SitemapIngredient[];

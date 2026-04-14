@@ -15,7 +15,7 @@ import type { Metadata } from 'next';
  * Each region gets its own canonical URL, metadata, and full season calendar.
  */
 
-export const revalidate = 0;
+export const revalidate = 86400; // ISR: 24h (was 0 — forced SSR on every request)
 
 // ─── Region config (shared) ──────────────────────────────────────────────
 export const VALID_REGIONS = ['global', 'pl', 'eu', 'es', 'ua'] as const;
