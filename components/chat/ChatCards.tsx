@@ -269,6 +269,7 @@ const ROLE_COLORS: Record<string, { bg: string; border: string; dot: string }> =
   spice:     { bg: 'bg-purple-500/12 text-purple-600 dark:text-purple-400', border: 'border-l-purple-500', dot: 'bg-purple-500' },
   condiment: { bg: 'bg-pink-500/12 text-pink-600 dark:text-pink-400',   border: 'border-l-pink-500',   dot: 'bg-pink-500' },
   liquid:    { bg: 'bg-blue-500/12 text-blue-600 dark:text-blue-400',   border: 'border-l-blue-500',   dot: 'bg-blue-500' },
+  other:     { bg: 'bg-slate-500/12 text-slate-600 dark:text-slate-400', border: 'border-l-slate-400',  dot: 'bg-slate-500' },
 };
 
 const DISH_TYPE_ICON: Record<string, string> = {
@@ -284,7 +285,7 @@ const i18n: Record<string, { dishType: L; complexity: L; goal: L; tag: L; allerg
     goal: { high_protein: 'Высокий белок', low_calorie: 'Низкокалорийное', balanced: 'Сбалансировано' },
     tag: { vegan: 'Веган', vegetarian: 'Вегетарианское', pescatarian: 'Пескатарианское' },
     allergen: { gluten: 'Глютен', lactose: 'Лактоза', nuts: 'Орехи', eggs: 'Яйца', fish: 'Рыба', shellfish: 'Моллюски', soy: 'Соя' },
-    role: { protein: 'белок', side: 'овощ', aromatic: 'аромат', spice: 'специя', oil: 'масло', condiment: 'заправка', liquid: 'жидк.', base: 'база' },
+    role: { protein: 'белок', side: 'овощ', aromatic: 'аромат', spice: 'специя', oil: 'масло', condiment: 'заправка', liquid: 'жидк.', base: 'база', other: 'прочее' },
     balance: ['Высокий', 'Средний', 'Низкий'],
     portion: 'порц.', copy: 'Рецепт скопирован', perServing: 'На порцию', total: 'Итого', steps: 'Приготовление', context: 'Контекст блюда', unresolved: 'Нет в базе',
     noAllergens: 'Без основных аллергенов', protein: 'белок', fat: 'жиры', carbs: 'углеводы', scale: 'Масштаб', original: 'оригинал', brutto: 'брутто', netto: 'нетто',
@@ -298,7 +299,7 @@ const i18n: Record<string, { dishType: L; complexity: L; goal: L; tag: L; allerg
     goal: { high_protein: 'High protein', low_calorie: 'Low calorie', balanced: 'Balanced' },
     tag: { vegan: 'Vegan', vegetarian: 'Vegetarian', pescatarian: 'Pescatarian' },
     allergen: { gluten: 'Gluten', lactose: 'Lactose', nuts: 'Nuts', eggs: 'Eggs', fish: 'Fish', shellfish: 'Shellfish', soy: 'Soy' },
-    role: { protein: 'protein', side: 'veg', aromatic: 'arom.', spice: 'spice', oil: 'oil', condiment: 'dressing', liquid: 'liquid', base: 'base' },
+    role: { protein: 'protein', side: 'veg', aromatic: 'arom.', spice: 'spice', oil: 'oil', condiment: 'dressing', liquid: 'liquid', base: 'base', other: 'other' },
     balance: ['High', 'Medium', 'Low'],
     portion: 'serv.', copy: 'Recipe copied', perServing: 'Per serving', total: 'Total', steps: 'Steps', context: 'Dish context', unresolved: 'Not in DB',
     noAllergens: 'No major allergens', protein: 'protein', fat: 'fat', carbs: 'carbs', scale: 'Scale', original: 'original', brutto: 'gross', netto: 'net',
@@ -312,7 +313,7 @@ const i18n: Record<string, { dishType: L; complexity: L; goal: L; tag: L; allerg
     goal: { high_protein: 'Dużo białka', low_calorie: 'Niskokaloryczne', balanced: 'Zbalansowane' },
     tag: { vegan: 'Wegańskie', vegetarian: 'Wegetariańskie', pescatarian: 'Peskatariańskie' },
     allergen: { gluten: 'Gluten', lactose: 'Laktoza', nuts: 'Orzechy', eggs: 'Jajka', fish: 'Ryby', shellfish: 'Skorupiaki', soy: 'Soja' },
-    role: { protein: 'białko', side: 'warzywo', aromatic: 'aromat', spice: 'przyprawa', oil: 'olej', condiment: 'sos', liquid: 'płyn', base: 'baza' },
+    role: { protein: 'białko', side: 'warzywo', aromatic: 'aromat', spice: 'przyprawa', oil: 'olej', condiment: 'sos', liquid: 'płyn', base: 'baza', other: 'inne' },
     balance: ['Wysoki', 'Średni', 'Niski'],
     portion: 'porcji', copy: 'Przepis skopiowany', perServing: 'Na porcję', total: 'Razem', steps: 'Przygotowanie', context: 'Kontekst dania', unresolved: 'Brak w bazie',
     noAllergens: 'Bez głównych alergenów', protein: 'białko', fat: 'tłuszcze', carbs: 'węglowodany', scale: 'Skala', original: 'oryginał', brutto: 'brutto', netto: 'netto',
@@ -326,7 +327,7 @@ const i18n: Record<string, { dishType: L; complexity: L; goal: L; tag: L; allerg
     goal: { high_protein: 'Високий білок', low_calorie: 'Низькокалорійне', balanced: 'Збалансовано' },
     tag: { vegan: 'Веган', vegetarian: 'Вегетаріанське', pescatarian: 'Пескатаріанське' },
     allergen: { gluten: 'Глютен', lactose: 'Лактоза', nuts: 'Горіхи', eggs: 'Яйця', fish: 'Риба', shellfish: 'Молюски', soy: 'Соя' },
-    role: { protein: 'білок', side: 'овоч', aromatic: 'аромат', spice: 'спеція', oil: 'олія', condiment: 'заправка', liquid: 'рідина', base: 'база' },
+    role: { protein: 'білок', side: 'овоч', aromatic: 'аромат', spice: 'спеція', oil: 'олія', condiment: 'заправка', liquid: 'рідина', base: 'база', other: 'інше' },
     balance: ['Високий', 'Середній', 'Низький'],
     portion: 'порц.', copy: 'Рецепт скопійовано', perServing: 'На порцію', total: 'Разом', steps: 'Приготування', context: 'Контекст страви', unresolved: 'Немає в базі',
     noAllergens: 'Без основних алергенів', protein: 'білок', fat: 'жири', carbs: 'вуглеводи', scale: 'Масштаб', original: 'оригінал', brutto: 'брутто', netto: 'нетто',
@@ -395,10 +396,13 @@ function RecipeCardView({ card, lang }: { card: RecipeCard; lang?: string }) {
   };
 
   // All ingredients sorted by kitchen importance: protein → base → side → aromatic → oil → spice → condiment → liquid
-  const roleOrder = ['protein', 'base', 'side', 'aromatic', 'oil', 'spice', 'condiment', 'liquid'];
-  const sortedIngredients = [...card.ingredients].sort(
-    (a, b) => (roleOrder.indexOf(a.role) === -1 ? 99 : roleOrder.indexOf(a.role)) - (roleOrder.indexOf(b.role) === -1 ? 99 : roleOrder.indexOf(b.role))
-  );
+  // Filter out unresolved (slug=null, gross_g=0) — LLM noise with no useful data
+  const roleOrder = ['protein', 'base', 'side', 'aromatic', 'oil', 'spice', 'condiment', 'liquid', 'other'];
+  const sortedIngredients = [...card.ingredients]
+    .filter(i => i.gross_g > 0 || i.net_g > 0)
+    .sort(
+      (a, b) => (roleOrder.indexOf(a.role) === -1 ? 99 : roleOrder.indexOf(a.role)) - (roleOrder.indexOf(b.role) === -1 ? 99 : roleOrder.indexOf(b.role))
+    );
 
   // Totals (scaled)
   const sumGrossBase = card.total_gross_g ?? card.ingredients.reduce((s, i) => s + i.gross_g, 0);
