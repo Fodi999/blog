@@ -91,6 +91,7 @@ export interface RecipeCard {
   goal?: string;                // "balanced" | "high_protein" | "low_calorie"
   allergens?: string[];         // ["gluten", "lactose", "nuts", "eggs", "fish", "shellfish", "soy"]
   tags?: string[];              // ["vegan", "vegetarian", "pescatarian"]
+  removed_ingredients?: { slug: string; reason: string }[];  // ingredients removed by food pairing
 }
 
 export type Card = ProductCard | ConversionCard | NutritionCard | RecipeCard;

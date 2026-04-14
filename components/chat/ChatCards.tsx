@@ -278,7 +278,7 @@ const DISH_TYPE_ICON: Record<string, string> = {
 };
 
 type L = Record<string, string>;
-const i18n: Record<string, { dishType: L; complexity: L; goal: L; tag: L; allergen: L; role: L; balance: [string, string, string]; portion: string; copy: string; perServing: string; total: string; steps: string; context: string; unresolved: string; noAllergens: string; protein: string; fat: string; carbs: string; scale: string; original: string; brutto: string; netto: string; ingredients: string; min: string; hr: string; product: string; loss: string; kcal: string; g: string; protShort: string; fatShort: string; carbsShort: string; carbsLabel: string; per100g: string; perOneServing: string; servingsLabel: string; copyTitle: string }> = {
+const i18n: Record<string, { dishType: L; complexity: L; goal: L; tag: L; allergen: L; role: L; balance: [string, string, string]; portion: string; copy: string; perServing: string; total: string; steps: string; context: string; unresolved: string; noAllergens: string; protein: string; fat: string; carbs: string; scale: string; original: string; brutto: string; netto: string; ingredients: string; min: string; hr: string; product: string; loss: string; kcal: string; g: string; protShort: string; fatShort: string; carbsShort: string; carbsLabel: string; per100g: string; perOneServing: string; servingsLabel: string; copyTitle: string; removedNote: string }> = {
   ru: {
     dishType: { soup: 'Суп', stew: 'Тушение', salad: 'Салат', stirfry: 'Вок', stir_fry: 'Вок', grill: 'Гриль', bake: 'Выпечка', pasta: 'Паста', raw: 'Сырое', default: 'Блюдо' },
     complexity: { easy: 'Легко', medium: 'Средне', hard: 'Сложно' },
@@ -292,6 +292,7 @@ const i18n: Record<string, { dishType: L; complexity: L; goal: L; tag: L; allerg
     ingredients: 'Ингредиенты', min: 'мин', hr: 'ч',
     product: 'продукт', loss: 'потери', kcal: 'ккал', g: 'г', protShort: 'Б', fatShort: 'Ж', carbsShort: 'У', carbsLabel: 'углев', per100g: '/100г', perOneServing: 'На 1 порцию',
     servingsLabel: 'Порции:', copyTitle: 'Скопировать рецепт',
+    removedNote: 'Убрано как неподходящее',
   },
   en: {
     dishType: { soup: 'Soup', stew: 'Stew', salad: 'Salad', stirfry: 'Stir-fry', stir_fry: 'Stir-fry', grill: 'Grill', bake: 'Bake', pasta: 'Pasta', raw: 'Raw', default: 'Dish' },
@@ -306,6 +307,7 @@ const i18n: Record<string, { dishType: L; complexity: L; goal: L; tag: L; allerg
     ingredients: 'Ingredients', min: 'min', hr: 'h',
     product: 'product', loss: 'loss', kcal: 'kcal', g: 'g', protShort: 'P', fatShort: 'F', carbsShort: 'C', carbsLabel: 'carbs', per100g: '/100g', perOneServing: 'Per serving',
     servingsLabel: 'Servings:', copyTitle: 'Copy recipe',
+    removedNote: 'Removed as unsuitable',
   },
   pl: {
     dishType: { soup: 'Zupa', stew: 'Duszenie', salad: 'Sałatka', stirfry: 'Wok', stir_fry: 'Wok', grill: 'Grill', bake: 'Pieczenie', pasta: 'Makaron', raw: 'Surowe', default: 'Danie' },
@@ -317,9 +319,10 @@ const i18n: Record<string, { dishType: L; complexity: L; goal: L; tag: L; allerg
     balance: ['Wysoki', 'Średni', 'Niski'],
     portion: 'porcji', copy: 'Przepis skopiowany', perServing: 'Na porcję', total: 'Razem', steps: 'Przygotowanie', context: 'Analiza dania', unresolved: 'Brak w bazie',
     noAllergens: 'Bez alergenów', protein: 'białko', fat: 'tłuszcze', carbs: 'węglowodany', scale: 'Skala', original: 'oryginał', brutto: 'brutto', netto: 'netto',
-    ingredients: 'Składniki', min: 'min', hr: 'godz',
+    ingredients: 'Składniki', min: 'min', hr: 'godz.',
     product: 'produkt', loss: 'straty', kcal: 'kcal', g: 'g', protShort: 'B', fatShort: 'T', carbsShort: 'W', carbsLabel: 'węgl', per100g: '/100g', perOneServing: 'Na 1 porcję',
     servingsLabel: 'Porcje:', copyTitle: 'Skopiuj przepis',
+    removedNote: 'Pominięto niepasujące składniki',
   },
   uk: {
     dishType: { soup: 'Суп', stew: 'Тушкування', salad: 'Салат', stirfry: 'Вок', stir_fry: 'Вок', grill: 'Гриль', bake: 'Випічка', pasta: 'Паста', raw: 'Сире', default: 'Страва' },
@@ -334,6 +337,7 @@ const i18n: Record<string, { dishType: L; complexity: L; goal: L; tag: L; allerg
     ingredients: 'Інгредієнти', min: 'хв', hr: 'год',
     product: 'Продукт', loss: 'Втрати', kcal: 'ккал', g: 'г', protShort: 'б', fatShort: 'ж', carbsShort: 'в', carbsLabel: 'вугл', per100g: '/100г', perOneServing: 'На 1 порцію',
     servingsLabel: 'Порції:', copyTitle: 'Скопіювати рецепт',
+    removedNote: 'Вилучено як невідповідне',
   },
 };
 
@@ -518,14 +522,14 @@ function RecipeCardView({ card, lang }: { card: RecipeCard; lang?: string }) {
           >
             <div className="flex items-center gap-2">
               <ClipboardList className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 group-hover:text-foreground transition-colors">{t.ingredients} ({sortedIngredients.length})</span>
+              <span className="text-[10px] font-black tracking-[0.15em] text-muted-foreground/60 group-hover:text-foreground transition-colors">{t.ingredients} ({sortedIngredients.length})</span>
             </div>
             {expandedSections.has('ing') || displayMode === 'ANALYSIS' ? <Minus className="w-3 h-3 text-muted-foreground" /> : <Plus className="w-3 h-3 text-muted-foreground" />}
           </button>
 
           {(expandedSections.has('ing') || displayMode === 'ANALYSIS') && (
             <div className="px-1 pb-2 border-t border-border/5 animate-in fade-in slide-in-from-top-1 duration-300">
-              <div className="grid grid-cols-[1fr_50px_45px_45px] gap-1 px-2 py-1 text-[8px] font-black uppercase tracking-widest text-muted-foreground/30">
+              <div className="grid grid-cols-[1fr_50px_45px_45px] gap-1 px-2 py-1 text-[8px] font-black tracking-widest text-muted-foreground/30">
                 <span>{t.product}</span>
                 <span className="text-right">{t.brutto}</span>
                 <span className="text-right">{t.loss}</span>
@@ -551,7 +555,7 @@ function RecipeCardView({ card, lang }: { card: RecipeCard; lang?: string }) {
                 })}
               </div>
               <div className="mt-2 px-2 py-1.5 rounded-lg bg-primary/5 border border-primary/10 flex items-center justify-between text-[11px] font-black">
-                 <span className="text-primary/40 uppercase tracking-widest">{t.total}</span>
+                 <span className="text-primary/40 tracking-widest">{t.total}</span>
                  <div className="flex gap-3">
                    <span className="text-muted-foreground">{Math.round(sumNet)}g</span>
                    <span className="text-orange-500">{sumKcal} {t.kcal}</span>
@@ -569,7 +573,7 @@ function RecipeCardView({ card, lang }: { card: RecipeCard; lang?: string }) {
           >
             <div className="flex items-center gap-2">
               <CookingPot className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 group-hover:text-foreground transition-colors">{t.steps} ({card.steps.length})</span>
+              <span className="text-[10px] font-black tracking-[0.15em] text-muted-foreground/60 group-hover:text-foreground transition-colors">{t.steps} ({card.steps.length})</span>
             </div>
             {expandedSections.has('steps') || displayMode === 'COOK' ? <Minus className="w-3 h-3 text-muted-foreground" /> : <Plus className="w-3 h-3 text-muted-foreground" />}
           </button>
@@ -626,7 +630,7 @@ function RecipeCardView({ card, lang }: { card: RecipeCard; lang?: string }) {
           >
             <div className="flex items-center gap-2">
               <BarChart3 className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 group-hover:text-foreground transition-colors">{t.context}</span>
+              <span className="text-[10px] font-black tracking-[0.15em] text-muted-foreground/60 group-hover:text-foreground transition-colors">{t.context}</span>
             </div>
             {expandedSections.has('meta') || displayMode === 'ANALYSIS' ? <Minus className="w-3 h-3 text-muted-foreground" /> : <Plus className="w-3 h-3 text-muted-foreground" />}
           </button>
@@ -680,10 +684,27 @@ function RecipeCardView({ card, lang }: { card: RecipeCard; lang?: string }) {
               </div>
 
               <div className="pt-2 text-center">
-                 <span className="text-[9px] font-bold text-rose-500/60 uppercase tracking-widest">
-                   {t.loss} −{Math.round(sumLoss)}g ({lossPct}%)
+                 <span className="text-[9px] font-bold text-rose-500/60 tracking-widest">
+                   {t.loss} −{Math.round(sumLoss)}{t.g} ({lossPct}%)
                  </span>
               </div>
+
+              {/* Removed ingredients notice */}
+              {card.removed_ingredients && card.removed_ingredients.length > 0 && (
+                <div className="flex items-start gap-2 p-2 rounded bg-amber-500/5 border border-amber-500/10 mt-2">
+                  <AlertTriangle className="w-3 h-3 text-amber-500 shrink-0 mt-0.5" />
+                  <div>
+                    <span className="text-[9px] font-black text-amber-600/80 dark:text-amber-400/80 block mb-0.5">{t.removedNote}:</span>
+                    <div className="flex flex-wrap gap-1">
+                      {card.removed_ingredients.map((r, i) => (
+                        <span key={i} className="text-[8px] font-bold text-amber-500/60 bg-amber-500/10 px-1.5 py-0.5 rounded">
+                          {r.slug} <span className="opacity-50">({r.reason})</span>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
