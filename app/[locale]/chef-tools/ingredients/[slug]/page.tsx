@@ -6,7 +6,7 @@ import type { ApiIngredient } from '@/lib/api';
 import { ChefToolsNav } from '../../ChefToolsNav';
 import { Link } from '@/i18n/routing';
 import Image from 'next/image';
-import { ChevronRight, Package, Leaf, Flame, Droplets, FlaskConical, Apple, Scale, Heart, CalendarDays, ShieldAlert, ArrowRight, ExternalLink, BookOpen } from 'lucide-react';
+import { ChevronRight, Package, Leaf, Flame, Droplets, FlaskConical, Apple, Scale, Heart, CalendarDays, ShieldAlert, ArrowRight, ExternalLink, BookOpen, Activity, Candy, CookingPot } from 'lucide-react';
 import type { Metadata } from 'next';
 import CategoryPage, { CATEGORY_MAP } from './category-page';
 import IngredientStateClient from './IngredientStateClient';
@@ -256,6 +256,9 @@ export default async function IngredientSlugPage({
   const foodProps = item.food_properties;
   const pairings = item.pairings;
   const measures = item.measures;
+  const healthProfile = item.health_profile;
+  const sugarProfile = item.sugar_profile;
+  const processingEffects = item.processing_effects;
 
   /* Enrich pairings with real images from ingredient meta */
   if (pairings && pairings.length > 0) {
@@ -553,6 +556,156 @@ export default async function IngredientSlugPage({
             </div>
           </Section>
         )}
+
+        {/* ── Health Profile ── */}
+        {healthProfile && (() => {
+          const bioactives = (locale === 'ru' ? healthProfile.bioactive_compounds_ru : locale === 'pl' ? healthProfile.bioactive_compounds_pl : locale === 'uk' ? healthProfile.bioactive_compounds_uk : healthProfile.bioactive_compounds_en) ?? [];
+          const effects = (locale === 'ru' ? healthProfile.health_effects_ru : locale === 'pl' ? healthProfile.health_effects_pl : locale === 'uk' ? healthProfile.health_effects_uk : healthProfile.health_effects_en) ?? [];
+          const contras = (locale === 'ru' ? healthProfile.contraindications_ru : locale === 'pl' ? healthProfile.contraindications_pl : locale === 'uk' ? healthProfile.contraindications_uk : healthProfile.contraindications_en) ?? [];
+          const absNotes = (locale === 'ru' ? healthProfile.absorption_notes_ru : locale === 'pl' ? healthProfile.absorption_notes_pl : locale === 'uk' ? healthProfile.absorption_notes_uk : healthProfile.absorption_notes_en) ?? null;
+          const hasData = bioactives.length > 0 || effects.length > 0 || contras.length > 0 || healthProfile.food_role || healthProfile.orac_score != null || absNotes;
+          if (!hasData) return null;
+          return (
+            <Section
+              title={t4(locale, 'Health Profile', 'Профиль здоровья', 'Profil zdrowotny', 'Профіль здоров\'я')}
+              icon={<Activity className="h-4 w-4 text-primary" />}
+            >
+              <div className="p-3 sm:p-5 space-y-4">
+                {/* Food role & ORAC */}
+                {(healthProfile.food_role || healthProfile.orac_score != null) && (
+                  <div className="flex flex-wrap gap-2">
+                    {healthProfile.food_role && (
+                      <span className="px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-wider bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                        {healthProfile.food_role}
+                      </span>
+                    )}
+                    {healthProfile.orac_score != null && (
+                      <span className="px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-bold bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
+                        ORAC: {fmt(healthProfile.orac_score)}
+                      </span>
+                    )}
+                  </div>
+                )}
+                {/* Bioactive compounds */}
+                {bioactives.length > 0 && (
+                  <div>
+                    <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-muted-foreground mb-1.5">
+                      {t4(locale, 'Bioactive compounds', 'Биоактивные соединения', 'Związki bioaktywne', 'Біоактивні сполуки')}
+                    </p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {bioactives.map((c) => (
+                        <span key={c} className="px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
+                          {c}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {/* Health effects */}
+                {effects.length > 0 && (
+                  <div>
+                    <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-muted-foreground mb-1.5">
+                      {t4(locale, 'Health effects', 'Влияние на здоровье', 'Efekty zdrowotne', 'Вплив на здоров\'я')}
+                    </p>
+                    <ul className="space-y-1">
+                      {effects.map((e) => (
+                        <li key={e} className="flex items-start gap-1.5 text-xs sm:text-sm text-foreground">
+                          <span className="text-green-500 mt-0.5 shrink-0">✓</span>
+                          <span>{e}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {/* Contraindications */}
+                {contras.length > 0 && (
+                  <div>
+                    <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-red-500/80 mb-1.5">
+                      {t4(locale, 'Contraindications', 'Противопоказания', 'Przeciwwskazania', 'Протипоказання')}
+                    </p>
+                    <ul className="space-y-1">
+                      {contras.map((c) => (
+                        <li key={c} className="flex items-start gap-1.5 text-xs sm:text-sm text-foreground">
+                          <span className="text-red-500 mt-0.5 shrink-0">⚠</span>
+                          <span>{c}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {/* Absorption notes */}
+                {absNotes && (
+                  <div className="border-l-2 border-amber-500/30 pl-3 sm:pl-4">
+                    <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-muted-foreground mb-1">
+                      {t4(locale, 'Absorption notes', 'Заметки об усвоении', 'Uwagi o wchłanianiu', 'Примітки про засвоєння')}
+                    </p>
+                    <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">{absNotes}</p>
+                  </div>
+                )}
+              </div>
+            </Section>
+          );
+        })()}
+
+        {/* ── Sugar Profile ── */}
+        {sugarProfile && Object.values(sugarProfile).some((v) => v != null) && (
+          <Section
+            title={t4(locale, 'Sugar Profile', 'Сахарный профиль', 'Profil cukrowy', 'Цукровий профіль')}
+            icon={<Candy className="h-4 w-4 text-primary" />}
+          >
+            <div className="divide-y divide-border/30">
+              <MiniRow label={t4(locale, 'Glucose', 'Глюкоза', 'Glukoza', 'Глюкоза')} value={sugarProfile.glucose} unit="g" />
+              <MiniRow label={t4(locale, 'Fructose', 'Фруктоза', 'Fruktoza', 'Фруктоза')} value={sugarProfile.fructose} unit="g" />
+              <MiniRow label={t4(locale, 'Sucrose', 'Сахароза', 'Sacharoza', 'Сахароза')} value={sugarProfile.sucrose} unit="g" />
+              <MiniRow label={t4(locale, 'Lactose', 'Лактоза', 'Laktoza', 'Лактоза')} value={sugarProfile.lactose} unit="g" />
+              <MiniRow label={t4(locale, 'Maltose', 'Мальтоза', 'Maltoza', 'Мальтоза')} value={sugarProfile.maltose} unit="g" />
+              <MiniRow label={t4(locale, 'Total sugars', 'Общий сахар', 'Cukry ogółem', 'Загальний цукор')} value={sugarProfile.total_sugars} unit="g" />
+              <MiniRow label={t4(locale, 'Added sugars', 'Добавленный сахар', 'Cukry dodane', 'Доданий цукор')} value={sugarProfile.added_sugars} unit="g" />
+              <MiniRow label={t4(locale, 'Sweetness perception', 'Восприятие сладости', 'Odczucie słodyczy', 'Сприйняття солодкості')} value={sugarProfile.sweetness_perception} unit="/10" />
+              <MiniRow label={t4(locale, 'Sugar alcohols', 'Сахарные спирты', 'Alkohole cukrowe', 'Цукрові спирти')} value={sugarProfile.sugar_alcohols} unit="g" />
+            </div>
+          </Section>
+        )}
+
+        {/* ── Processing Effects ── */}
+        {processingEffects && (() => {
+          const cookMethod = (locale === 'ru' ? processingEffects.best_cooking_method_ru : locale === 'pl' ? processingEffects.best_cooking_method_pl : locale === 'uk' ? processingEffects.best_cooking_method_uk : processingEffects.best_cooking_method_en) ?? null;
+          const procNotes = (locale === 'ru' ? processingEffects.processing_notes_ru : locale === 'pl' ? processingEffects.processing_notes_pl : locale === 'uk' ? processingEffects.processing_notes_uk : processingEffects.processing_notes_en) ?? null;
+          const hasData = processingEffects.vitamin_retention_pct != null || processingEffects.protein_denature_temp != null || processingEffects.mineral_leaching_risk || cookMethod || processingEffects.maillard_temp != null || procNotes;
+          if (!hasData) return null;
+          return (
+            <Section
+              title={t4(locale, 'Processing Effects', 'Влияние обработки', 'Efekty przetwarzania', 'Вплив обробки')}
+              icon={<CookingPot className="h-4 w-4 text-primary" />}
+            >
+              <div className="divide-y divide-border/30">
+                <MiniRow label={t4(locale, 'Vitamin retention', 'Сохранение витаминов', 'Retencja witamin', 'Збереження вітамінів')} value={processingEffects.vitamin_retention_pct} unit="%" />
+                <MiniRow label={t4(locale, 'Protein denaturation temp', 'Темп. денатурации белка', 'Temp. denaturacji białka', 'Темп. денатурації білка')} value={processingEffects.protein_denature_temp} unit="°C" />
+                {processingEffects.mineral_leaching_risk && (
+                  <div className="flex items-center justify-between py-2 px-3 sm:px-4 even:bg-muted/20">
+                    <span className="text-[11px] sm:text-xs font-bold text-muted-foreground">{t4(locale, 'Mineral leaching risk', 'Риск вымывания минералов', 'Ryzyko wypłukiwania minerałów', 'Ризик вимивання мінералів')}</span>
+                    <span className="text-xs sm:text-sm font-black text-foreground capitalize">{processingEffects.mineral_leaching_risk}</span>
+                  </div>
+                )}
+                <MiniRow label={t4(locale, 'Maillard reaction temp', 'Темп. реакции Майяра', 'Temp. reakcji Maillarda', 'Темп. реакції Маяра')} value={processingEffects.maillard_temp} unit="°C" />
+                {cookMethod && (
+                  <div className="flex items-center justify-between py-2 px-3 sm:px-4 even:bg-muted/20">
+                    <span className="text-[11px] sm:text-xs font-bold text-muted-foreground">{t4(locale, 'Best cooking method', 'Лучший метод готовки', 'Najlepsza metoda gotowania', 'Найкращий метод приготування')}</span>
+                    <span className="text-xs sm:text-sm font-black text-foreground">{cookMethod}</span>
+                  </div>
+                )}
+              </div>
+              {procNotes && (
+                <div className="border-t border-border/30 p-3 sm:p-5">
+                  <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-muted-foreground mb-1">
+                    {t4(locale, 'Processing notes', 'Заметки об обработке', 'Uwagi o przetwarzaniu', 'Примітки про обробку')}
+                  </p>
+                  <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">{procNotes}</p>
+                </div>
+              )}
+            </Section>
+          );
+        })()}
 
         {/* ── Kitchen measures & density (with converter deep-links) ── */}
         {(measures || item.density_g_per_ml != null) && (

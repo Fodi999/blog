@@ -48,6 +48,54 @@ export type ApiIngredientCulinary = {
   umami?: number | null; aroma?: number | null; texture?: string | null;
 };
 
+export type ApiIngredientHealthProfile = {
+  bioactive_compounds_en?: string[] | null;
+  bioactive_compounds_ru?: string[] | null;
+  bioactive_compounds_pl?: string[] | null;
+  bioactive_compounds_uk?: string[] | null;
+  health_effects_en?: string[] | null;
+  health_effects_ru?: string[] | null;
+  health_effects_pl?: string[] | null;
+  health_effects_uk?: string[] | null;
+  contraindications_en?: string[] | null;
+  contraindications_ru?: string[] | null;
+  contraindications_pl?: string[] | null;
+  contraindications_uk?: string[] | null;
+  food_role?: string | null;
+  orac_score?: number | null;
+  absorption_notes_en?: string | null;
+  absorption_notes_ru?: string | null;
+  absorption_notes_pl?: string | null;
+  absorption_notes_uk?: string | null;
+};
+
+export type ApiIngredientSugarProfile = {
+  glucose?: number | null;
+  fructose?: number | null;
+  sucrose?: number | null;
+  lactose?: number | null;
+  maltose?: number | null;
+  total_sugars?: number | null;
+  added_sugars?: number | null;
+  sweetness_perception?: number | null;
+  sugar_alcohols?: number | null;
+};
+
+export type ApiIngredientProcessingEffects = {
+  vitamin_retention_pct?: number | null;
+  protein_denature_temp?: number | null;
+  mineral_leaching_risk?: string | null;
+  best_cooking_method_en?: string | null;
+  best_cooking_method_ru?: string | null;
+  best_cooking_method_pl?: string | null;
+  best_cooking_method_uk?: string | null;
+  maillard_temp?: number | null;
+  processing_notes_en?: string | null;
+  processing_notes_ru?: string | null;
+  processing_notes_pl?: string | null;
+  processing_notes_uk?: string | null;
+};
+
 export type ApiIngredient = {
   slug?: string;
   name: string;
@@ -86,6 +134,10 @@ export type ApiIngredient = {
   culinary?: ApiIngredientCulinary | null;
   pairings?: ApiIngredientPairing[];
   availability_months?: boolean[] | null;
+  // Health data (from /public/nutrition/:slug)
+  health_profile?: ApiIngredientHealthProfile | null;
+  sugar_profile?: ApiIngredientSugarProfile | null;
+  processing_effects?: ApiIngredientProcessingEffects | null;
   // SEO fields
   seo_title?: string | null;
   seo_description?: string | null;
@@ -433,6 +485,9 @@ export async function fetchIngredient(slug: string): Promise<ApiIngredient | nul
     culinary?: ApiIngredientCulinary | null;
     pairings?: ApiIngredientPairing[];
     availability_months?: boolean[] | null;
+    health_profile?: ApiIngredientHealthProfile | null;
+    sugar_profile?: ApiIngredientSugarProfile | null;
+    processing_effects?: ApiIngredientProcessingEffects | null;
   };
 
   const [raw, nutr] = await Promise.all([
@@ -471,6 +526,10 @@ export async function fetchIngredient(slug: string): Promise<ApiIngredient | nul
     culinary: nutr?.culinary ?? null,
     pairings: nutr?.pairings ?? [],
     availability_months: nutr?.availability_months ?? null,
+    // Health data
+    health_profile: nutr?.health_profile ?? null,
+    sugar_profile: nutr?.sugar_profile ?? null,
+    processing_effects: nutr?.processing_effects ?? null,
     // SEO
     seo_title: raw.seo_title ?? null,
     seo_description: raw.seo_description ?? null,
