@@ -96,11 +96,21 @@ export type ApiIngredientProcessingEffects = {
   processing_notes_uk?: string | null;
 };
 
+export type ApiCookingBehavior = {
+  key: string;
+  type: string;
+  effect?: string | null;
+  trigger?: string | null;
+  intensity?: number | null;
+  temp_threshold?: number | null;
+  targets?: string[];
+  polarity?: string | null;
+  domain?: string | null;
+  pairing_score?: number | null;
+};
+
 export type ApiIngredientCulinaryBehavior = {
-  behaviors_en?: string[] | null;
-  behaviors_ru?: string[] | null;
-  behaviors_pl?: string[] | null;
-  behaviors_uk?: string[] | null;
+  behaviors?: ApiCookingBehavior[] | null;
 };
 
 export type ApiIngredient = {

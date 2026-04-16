@@ -87,6 +87,63 @@ function localSeason(season: string, locale: string): string {
   return labels.en;
 }
 
+/* ── Culinary-behavior i18n helpers ── */
+const BEHAVIOR_KEY_LABELS: Record<string, { en: string; ru: string; pl: string; uk: string }> = {
+  softens_quickly:   { en: 'Softens quickly',   ru: 'Быстро размягчается',  pl: 'Szybko mięknie',        uk: 'Швидко розм\'якшується' },
+  caramelizes:       { en: 'Caramelizes',        ru: 'Карамелизуется',       pl: 'Karmelizuje się',       uk: 'Карамелізується' },
+  releases_juice:    { en: 'Releases juice',     ru: 'Выделяет сок',         pl: 'Wydziela sok',          uk: 'Виділяє сік' },
+  adds_sweetness:    { en: 'Adds sweetness',     ru: 'Добавляет сладость',   pl: 'Dodaje słodycz',        uk: 'Додає солодкість' },
+  adds_acidity:      { en: 'Adds acidity',       ru: 'Добавляет кислотность',pl: 'Dodaje kwasowość',      uk: 'Додає кислотність' },
+  sweet_sour_balance:{ en: 'Sweet-sour balance', ru: 'Кисло-сладкий баланс', pl: 'Równowaga słodko-kwaśna',uk: 'Кисло-солодкий баланс' },
+  pairs_with_nuts:   { en: 'Pairs with nuts',    ru: 'Сочетается с орехами', pl: 'Pasuje do orzechów',    uk: 'Поєднується з горіхами' },
+  pairs_with_dairy:  { en: 'Pairs with dairy',   ru: 'Сочетается с молочным',pl: 'Pasuje do nabiału',     uk: 'Поєднується з молочним' },
+  good_for_sauces:   { en: 'Good for sauces',    ru: 'Подходит для соусов',  pl: 'Dobry do sosów',        uk: 'Підходить для соусів' },
+  good_for_baking:   { en: 'Good for baking',    ru: 'Подходит для выпечки', pl: 'Dobry do pieczenia',    uk: 'Підходить для випічки' },
+  good_for_raw:      { en: 'Good raw',           ru: 'Хорош сырым',         pl: 'Dobry na surowo',       uk: 'Добрий сирим' },
+  absorbs_flavors:   { en: 'Absorbs flavors',    ru: 'Впитывает вкусы',     pl: 'Wchłania smaki',        uk: 'Вбирає смаки' },
+  forms_crust:       { en: 'Forms crust',        ru: 'Образует корочку',    pl: 'Tworzy skórkę',         uk: 'Утворює скоринку' },
+  emulsifies:        { en: 'Emulsifies',         ru: 'Эмульгируется',      pl: 'Emulguje',              uk: 'Емульгується' },
+  thickens:          { en: 'Thickens',           ru: 'Загущает',            pl: 'Zagęszcza',             uk: 'Загущує' },
+  gelates:           { en: 'Gelates',            ru: 'Желируется',          pl: 'Żeluje',                uk: 'Желюється' },
+  ferments_well:     { en: 'Ferments well',      ru: 'Хорошо ферментируется',pl:'Dobrze fermentuje',     uk: 'Добре ферментується' },
+};
+
+const BEHAVIOR_TYPE_LABELS: Record<string, { en: string; ru: string; pl: string; uk: string }> = {
+  texture:   { en: 'Texture',   ru: 'Текстура',   pl: 'Tekstura',   uk: 'Текстура' },
+  flavor:    { en: 'Flavor',    ru: 'Вкус',        pl: 'Smak',       uk: 'Смак' },
+  chemistry: { en: 'Chemistry', ru: 'Химия',       pl: 'Chemia',     uk: 'Хімія' },
+  pairing:   { en: 'Pairing',   ru: 'Сочетание',   pl: 'Łączenie',   uk: 'Поєднання' },
+  usage:     { en: 'Usage',     ru: 'Применение',  pl: 'Zastosowanie',uk: 'Застосування' },
+};
+
+const TRIGGER_LABELS: Record<string, { en: string; ru: string; pl: string; uk: string }> = {
+  heat: { en: 'Heat', ru: 'Нагрев', pl: 'Ciepło', uk: 'Нагрів' },
+  raw:  { en: 'Raw',  ru: 'Сырой',  pl: 'Surowy', uk: 'Сирий' },
+  acid: { en: 'Acid', ru: 'Кислота',pl: 'Kwas',   uk: 'Кислота' },
+  fat:  { en: 'Fat',  ru: 'Жир',    pl: 'Tłuszcz',uk: 'Жир' },
+  time: { en: 'Time', ru: 'Время',  pl: 'Czas',   uk: 'Час' },
+  cold: { en: 'Cold', ru: 'Холод',  pl: 'Zimno',  uk: 'Холод' },
+  mixing:  { en: 'Mixing',  ru: 'Смешивание', pl: 'Mieszanie',  uk: 'Змішування' },
+  cooling: { en: 'Cooling', ru: 'Охлаждение', pl: 'Chłodzenie', uk: 'Охолодження' },
+  none:    { en: 'None',    ru: 'Нет',        pl: 'Brak',       uk: 'Немає' },
+};
+
+function localizeBehaviorKey(key: string, locale: string): string {
+  const l = BEHAVIOR_KEY_LABELS[key];
+  if (!l) return key.replace(/_/g, ' ');
+  return (l as Record<string, string>)[locale] ?? l.en;
+}
+function localizeType(t: string, locale: string): string {
+  const l = BEHAVIOR_TYPE_LABELS[t];
+  if (!l) return t;
+  return (l as Record<string, string>)[locale] ?? l.en;
+}
+function localizeTrigger(t: string, locale: string): string {
+  const l = TRIGGER_LABELS[t];
+  if (!l) return t;
+  return (l as Record<string, string>)[locale] ?? l.en;
+}
+
 /** Static map: category → related ingredient slugs for cross-linking */
 const CATEGORY_RELATED: Record<string, { slug: string; nameEn: string; names: Record<string, string> }[]> = {
   vegetables: [
@@ -771,18 +828,29 @@ export default async function IngredientSlugPage({
 
         {/* ── Culinary Behavior ── */}
         {culinaryBehavior && (() => {
-          const behaviors = (locale === 'ru' ? culinaryBehavior.behaviors_ru : locale === 'pl' ? culinaryBehavior.behaviors_pl : locale === 'uk' ? culinaryBehavior.behaviors_uk : culinaryBehavior.behaviors_en) ?? [];
+          const behaviors = culinaryBehavior.behaviors ?? [];
           if (behaviors.length === 0) return null;
           return (
             <Section
               title={t4(locale, 'Culinary Behavior', 'Поведение в кулинарии', 'Zachowanie kulinarne', 'Кулінарна поведінка')}
               icon={<CookingPot className="h-4 w-4 text-primary" />}
             >
-              <div className="p-3 sm:p-5 space-y-2">
+              <div className="p-3 sm:p-5 space-y-3">
                 {behaviors.map((b, i) => (
                   <div key={i} className="flex items-start gap-2 text-xs sm:text-sm text-foreground">
                     <span className="text-amber-500 mt-0.5 shrink-0">🍳</span>
-                    <span>{b}</span>
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      {b.polarity && <span className={`text-[10px] font-black ${b.polarity === '+' ? 'text-green-600' : 'text-red-500'}`}>{b.polarity}</span>}
+                      <span className="font-bold">{localizeBehaviorKey(b.key, locale)}</span>
+                      <span className="text-[9px] font-bold text-muted-foreground bg-muted px-1.5 py-0.5 rounded-full">{localizeType(b.type, locale)}</span>
+                      {b.domain && <span className="text-[9px] font-bold text-indigo-600 bg-indigo-50 dark:bg-indigo-950/30 px-1.5 py-0.5 rounded-full">{b.domain}</span>}
+                      {b.trigger && b.trigger !== 'none' && <span className="text-[9px] font-bold text-amber-600 bg-amber-50 dark:bg-amber-950/30 px-1.5 py-0.5 rounded-full">{localizeTrigger(b.trigger, locale)}</span>}
+                      {b.effect && <span className="text-muted-foreground">— {b.effect.replace(/_/g, ' ')}</span>}
+                      {b.intensity != null && <span className="text-[9px] text-muted-foreground">{Math.round(b.intensity * 100)}%</span>}
+                      {b.temp_threshold != null && <span className="text-[9px] text-muted-foreground">{b.temp_threshold}°C</span>}
+                      {b.pairing_score != null && <span className="text-[9px] font-bold text-emerald-600">♥ {Math.round(b.pairing_score * 100)}%</span>}
+                      {b.targets && b.targets.length > 0 && <span className="text-[9px] text-muted-foreground italic">→ {b.targets.join(', ')}</span>}
+                    </div>
                   </div>
                 ))}
               </div>
