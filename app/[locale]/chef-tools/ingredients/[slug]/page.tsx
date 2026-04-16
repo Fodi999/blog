@@ -28,6 +28,65 @@ function t4(locale: string, en: string, ru: string, pl: string, uk: string): str
   return en;
 }
 
+/** Translate food_role enum key to localized label */
+const FOOD_ROLE_LABELS: Record<string, { en: string; ru: string; pl: string; uk: string }> = {
+  protein_source: { en: 'Protein source', ru: 'Источник белка', pl: 'Źródło białka', uk: 'Джерело білка' },
+  carb_source:    { en: 'Carb source', ru: 'Источник углеводов', pl: 'Źródło węglowodanów', uk: 'Джерело вуглеводів' },
+  fat_source:     { en: 'Fat source', ru: 'Источник жиров', pl: 'Źródło tłuszczu', uk: 'Джерело жирів' },
+  flavor_base:    { en: 'Flavor base', ru: 'Основа вкуса', pl: 'Baza smakowa', uk: 'Основа смаку' },
+  aromatic:       { en: 'Aromatic', ru: 'Ароматический', pl: 'Aromatyczny', uk: 'Ароматичний' },
+  garnish:        { en: 'Garnish', ru: 'Гарнир', pl: 'Przybranie', uk: 'Гарнір' },
+  binder:         { en: 'Binder', ru: 'Связующий', pl: 'Wiążący', uk: 'Зв\'язуючий' },
+  acid:           { en: 'Acid', ru: 'Кислота', pl: 'Kwas', uk: 'Кислота' },
+  sweetener:      { en: 'Sweetener', ru: 'Подсластитель', pl: 'Słodzik', uk: 'Підсолоджувач' },
+  thickener:      { en: 'Thickener', ru: 'Загуститель', pl: 'Zagęstnik', uk: 'Загущувач' },
+  liquid_base:    { en: 'Liquid base', ru: 'Основа жидкости', pl: 'Baza płynna', uk: 'Рідка основа' },
+  topping:        { en: 'Topping', ru: 'Топинг', pl: 'Topping', uk: 'Топінг' },
+  fermented:      { en: 'Fermented', ru: 'Ферментированный', pl: 'Fermentowany', uk: 'Ферментований' },
+};
+
+function localFoodRole(role: string, locale: string): string {
+  const labels = FOOD_ROLE_LABELS[role];
+  if (!labels) return role;
+  if (locale === 'ru') return labels.ru;
+  if (locale === 'pl') return labels.pl;
+  if (locale === 'uk') return labels.uk;
+  return labels.en;
+}
+
+/** Translate mineral_leaching_risk */
+function localLeachingRisk(risk: string, locale: string): string {
+  const map: Record<string, { en: string; ru: string; pl: string; uk: string }> = {
+    low:    { en: 'Low', ru: 'Низкий', pl: 'Niski', uk: 'Низький' },
+    medium: { en: 'Medium', ru: 'Средний', pl: 'Średni', uk: 'Середній' },
+    high:   { en: 'High', ru: 'Высокий', pl: 'Wysoki', uk: 'Високий' },
+  };
+  const labels = map[risk.toLowerCase()];
+  if (!labels) return risk;
+  if (locale === 'ru') return labels.ru;
+  if (locale === 'pl') return labels.pl;
+  if (locale === 'uk') return labels.uk;
+  return labels.en;
+}
+
+/** Translate season names */
+function localSeason(season: string, locale: string): string {
+  const map: Record<string, { en: string; ru: string; pl: string; uk: string }> = {
+    spring:  { en: 'Spring', ru: 'Весна', pl: 'Wiosna', uk: 'Весна' },
+    summer:  { en: 'Summer', ru: 'Лето', pl: 'Lato', uk: 'Літо' },
+    autumn:  { en: 'Autumn', ru: 'Осень', pl: 'Jesień', uk: 'Осінь' },
+    fall:    { en: 'Autumn', ru: 'Осень', pl: 'Jesień', uk: 'Осінь' },
+    winter:  { en: 'Winter', ru: 'Зима', pl: 'Zima', uk: 'Зима' },
+    allyear: { en: 'All year', ru: 'Весь год', pl: 'Cały rok', uk: 'Весь рік' },
+  };
+  const labels = map[season.toLowerCase()];
+  if (!labels) return season;
+  if (locale === 'ru') return labels.ru;
+  if (locale === 'pl') return labels.pl;
+  if (locale === 'uk') return labels.uk;
+  return labels.en;
+}
+
 /** Static map: category → related ingredient slugs for cross-linking */
 const CATEGORY_RELATED: Record<string, { slug: string; nameEn: string; names: Record<string, string> }[]> = {
   vegetables: [
@@ -259,6 +318,7 @@ export default async function IngredientSlugPage({
   const healthProfile = item.health_profile;
   const sugarProfile = item.sugar_profile;
   const processingEffects = item.processing_effects;
+  const culinaryBehavior = item.culinary_behavior;
 
   /* Enrich pairings with real images from ingredient meta */
   if (pairings && pairings.length > 0) {
@@ -439,7 +499,8 @@ export default async function IngredientSlugPage({
           />
         )}
 
-        {/* ── Macros ── */}
+        {/* ── Macros (only if no state switcher — states already show nutrition) ── */}
+        {statesList.length === 0 && (
         <Section
           title={t4(locale, 'Nutrition per 100g', 'Пищевая ценность на 100г', 'Wartości odżywcze na 100g', 'Харчова цінність на 100г')}
           icon={<Flame className="h-4 w-4 text-primary" />}
@@ -459,6 +520,7 @@ export default async function IngredientSlugPage({
             </div>
           )}
         </Section>
+        )}
 
         {/* ── Minerals ── */}
         {minerals && Object.values(minerals).some((v) => v != null) && (
@@ -576,7 +638,7 @@ export default async function IngredientSlugPage({
                   <div className="flex flex-wrap gap-2">
                     {healthProfile.food_role && (
                       <span className="px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-wider bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                        {healthProfile.food_role}
+                        {localFoodRole(healthProfile.food_role, locale)}
                       </span>
                     )}
                     {healthProfile.orac_score != null && (
@@ -684,7 +746,7 @@ export default async function IngredientSlugPage({
                 {processingEffects.mineral_leaching_risk && (
                   <div className="flex items-center justify-between py-2 px-3 sm:px-4 even:bg-muted/20">
                     <span className="text-[11px] sm:text-xs font-bold text-muted-foreground">{t4(locale, 'Mineral leaching risk', 'Риск вымывания минералов', 'Ryzyko wypłukiwania minerałów', 'Ризик вимивання мінералів')}</span>
-                    <span className="text-xs sm:text-sm font-black text-foreground capitalize">{processingEffects.mineral_leaching_risk}</span>
+                    <span className="text-xs sm:text-sm font-black text-foreground capitalize">{localLeachingRisk(processingEffects.mineral_leaching_risk, locale)}</span>
                   </div>
                 )}
                 <MiniRow label={t4(locale, 'Maillard reaction temp', 'Темп. реакции Майяра', 'Temp. reakcji Maillarda', 'Темп. реакції Маяра')} value={processingEffects.maillard_temp} unit="°C" />
@@ -703,6 +765,27 @@ export default async function IngredientSlugPage({
                   <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">{procNotes}</p>
                 </div>
               )}
+            </Section>
+          );
+        })()}
+
+        {/* ── Culinary Behavior ── */}
+        {culinaryBehavior && (() => {
+          const behaviors = (locale === 'ru' ? culinaryBehavior.behaviors_ru : locale === 'pl' ? culinaryBehavior.behaviors_pl : locale === 'uk' ? culinaryBehavior.behaviors_uk : culinaryBehavior.behaviors_en) ?? [];
+          if (behaviors.length === 0) return null;
+          return (
+            <Section
+              title={t4(locale, 'Culinary Behavior', 'Поведение в кулинарии', 'Zachowanie kulinarne', 'Кулінарна поведінка')}
+              icon={<CookingPot className="h-4 w-4 text-primary" />}
+            >
+              <div className="p-3 sm:p-5 space-y-2">
+                {behaviors.map((b, i) => (
+                  <div key={i} className="flex items-start gap-2 text-xs sm:text-sm text-foreground">
+                    <span className="text-amber-500 mt-0.5 shrink-0">🍳</span>
+                    <span>{b}</span>
+                  </div>
+                ))}
+              </div>
             </Section>
           );
         })()}
@@ -812,7 +895,7 @@ export default async function IngredientSlugPage({
                 <div className="flex flex-wrap gap-1.5 sm:gap-2">
                   {item.seasons.map((s) => (
                     <span key={s} className="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full text-[9px] sm:text-[10px] font-bold uppercase bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 capitalize">
-                      {s}
+                      {localSeason(s, locale)}
                     </span>
                   ))}
                 </div>

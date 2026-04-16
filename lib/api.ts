@@ -96,6 +96,13 @@ export type ApiIngredientProcessingEffects = {
   processing_notes_uk?: string | null;
 };
 
+export type ApiIngredientCulinaryBehavior = {
+  behaviors_en?: string[] | null;
+  behaviors_ru?: string[] | null;
+  behaviors_pl?: string[] | null;
+  behaviors_uk?: string[] | null;
+};
+
 export type ApiIngredient = {
   slug?: string;
   name: string;
@@ -138,6 +145,7 @@ export type ApiIngredient = {
   health_profile?: ApiIngredientHealthProfile | null;
   sugar_profile?: ApiIngredientSugarProfile | null;
   processing_effects?: ApiIngredientProcessingEffects | null;
+  culinary_behavior?: ApiIngredientCulinaryBehavior | null;
   // SEO fields
   seo_title?: string | null;
   seo_description?: string | null;
@@ -488,6 +496,7 @@ export async function fetchIngredient(slug: string): Promise<ApiIngredient | nul
     health_profile?: ApiIngredientHealthProfile | null;
     sugar_profile?: ApiIngredientSugarProfile | null;
     processing_effects?: ApiIngredientProcessingEffects | null;
+    culinary_behavior?: ApiIngredientCulinaryBehavior | null;
   };
 
   const [raw, nutr] = await Promise.all([
@@ -530,6 +539,7 @@ export async function fetchIngredient(slug: string): Promise<ApiIngredient | nul
     health_profile: nutr?.health_profile ?? null,
     sugar_profile: nutr?.sugar_profile ?? null,
     processing_effects: nutr?.processing_effects ?? null,
+    culinary_behavior: nutr?.culinary_behavior ?? null,
     // SEO
     seo_title: raw.seo_title ?? null,
     seo_description: raw.seo_description ?? null,
