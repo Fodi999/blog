@@ -286,12 +286,6 @@ export default async function AboutPage({
                     {t('hero.cta.contact')}
                     <ChevronRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
                   </Link>
-                  <Link
-                    href="/restaurants"
-                    className="rounded-2xl border-2 border-border/60 bg-background/50 backdrop-blur-sm px-8 py-4 text-sm font-black uppercase tracking-widest text-foreground transition-all hover:bg-muted/30 hover:border-primary/40 text-center hover-lift"
-                  >
-                    {t('hero.cta.restaurants')}
-                  </Link>
                 </div>
               </ScrollReveal>
 

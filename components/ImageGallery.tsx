@@ -99,20 +99,33 @@ export function ImageGallery({ images, categoryLabels = {} }: ImageGalleryProps)
       {/* ── Category filter tabs ── */}
       {categories.length > 1 && (
         <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-8 sm:mb-10">
-          {categories.map(cat => (
-            <button
-              key={cat}
-              type="button"
-              onClick={() => setActiveCategory(cat)}
-              className={`px-3 sm:px-5 py-1.5 sm:py-2 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] sm:tracking-[0.3em] border transition-all duration-300 ${
-                activeCategory === cat
-                  ? 'bg-primary text-white border-primary shadow-lg shadow-primary/20 scale-105'
-                  : 'bg-card text-foreground/60 border-border/40 hover:border-primary/30 hover:text-foreground'
-              }`}
-            >
-              {label(cat)}
-            </button>
-          ))}
+          {categories.map(cat => {
+            const count = cat === 'all' ? images.length : images.filter(i => i.category === cat).length;
+            const active = activeCategory === cat;
+            return (
+              <button
+                key={cat}
+                type="button"
+                onClick={() => setActiveCategory(cat)}
+                className={`group/tab inline-flex items-center gap-2 px-3 sm:px-5 py-1.5 sm:py-2 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] sm:tracking-[0.3em] border transition-all duration-300 ${
+                  active
+                    ? 'bg-primary text-white border-primary shadow-lg shadow-primary/20 scale-105'
+                    : 'bg-card text-foreground/60 border-border/40 hover:border-primary/30 hover:text-foreground'
+                }`}
+              >
+                <span>{label(cat)}</span>
+                <span
+                  className={`tabular-nums text-[8px] sm:text-[9px] font-black px-1.5 py-0.5 rounded-full transition-colors ${
+                    active
+                      ? 'bg-white/20 text-white'
+                      : 'bg-foreground/5 text-foreground/40 group-hover/tab:bg-primary/10 group-hover/tab:text-primary'
+                  }`}
+                >
+                  {count}
+                </span>
+              </button>
+            );
+          })}
         </div>
       )}
 
@@ -307,74 +320,106 @@ export function ImageGallery({ images, categoryLabels = {} }: ImageGalleryProps)
         </Dialog>
       )}
 
-      {/* ── Pinterest masonry grid ── */}
-      <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 [column-fill:_balance]">
-        {filtered.map((img, index) => (
-          <article
-            key={img.src || index}
-            className="break-inside-avoid mb-4 group relative rounded-2xl overflow-hidden bg-card border border-border/40 transition-all duration-500 hover:border-primary/30 hover:shadow-xl hover:-translate-y-0.5"
-          >
-            {/* ── Photo with click-to-open ── */}
-            {mounted ? (
-              <figure
-                className="relative cursor-pointer focus:outline-none m-0 group/photo"
-                role="button"
-                tabIndex={0}
-                aria-label={img.alt}
-                onClick={() => openDialog(index)}
-                onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && openDialog(index)}
-              >
-                <img
-                  src={img.src}
-                  alt={img.alt}
-                  className="w-full h-auto block transition-transform duration-1000 group-hover/photo:scale-105"
-                  loading={index < 3 ? 'eager' : 'lazy'}
-                />
+      {/* ── Fluid responsive grid ── */}
+      {/*
+        Simple auto-fill grid — cards naturally fill width regardless of count.
+        No fixed heights, no row-spans that leave empty slots when filtered.
+        Each card has its own aspect ratio; grid just flows left-to-right.
+      */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6">
+        {filtered.map((img, index) => {
+          // Rotating aspect ratios create visual rhythm without breaking flow
+          const r = index % 6;
+          const aspect = r === 0 || r === 3
+            ? 'aspect-[4/5]'       // portrait
+            : r === 1 || r === 4
+              ? 'aspect-[4/3]'     // landscape
+              : 'aspect-square';   // square
 
-                {/* Pinterest-style dynamic overlay */}
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/photo:opacity-100 transition-all duration-500 flex flex-col justify-end p-6 backdrop-blur-[2px]">
-                  <div className="translate-y-4 group-hover/photo:translate-y-0 transition-transform duration-500 space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Expand className="h-4 w-4 text-primary" />
-                      <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/90 drop-shadow-md">
-                        Details
+          // First card in each row of 3 gets slight emphasis on large screens
+          const isFeatured = index % 6 === 0;
+
+          // Staggered entry delay — cap at 800ms
+          const animDelay = `${Math.min(index * 60, 800)}ms`;
+
+          const sizes = '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw';
+
+          return (
+            <article
+              key={img.src || index}
+              className={`gallery-item ${aspect} group relative rounded-2xl sm:rounded-3xl overflow-hidden transition-transform duration-500 hover:-translate-y-1`}
+              style={{ animationDelay: animDelay }}
+            >
+              {mounted ? (
+                <figure
+                  className="relative w-full h-full cursor-pointer focus:outline-none m-0 group/photo"
+                  role="button"
+                  tabIndex={0}
+                  aria-label={img.alt}
+                  onClick={() => openDialog(index)}
+                  onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && openDialog(index)}
+                >
+                  <Image
+                    src={img.src}
+                    alt={img.alt}
+                    fill
+                    sizes={sizes}
+                    className="object-cover transition-transform duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover/photo:scale-[1.08]"
+                    priority={index < 4}
+                    loading={index < 4 ? 'eager' : 'lazy'}
+                  />
+
+                  {/* Persistent soft gradient at bottom — readable title always */}
+                  <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/70 via-black/20 to-transparent pointer-events-none" />
+
+                  {/* Category chip — top-left */}
+                  {img.category && categoryLabels[img.category] && (
+                    <div className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3">
+                      <span className="inline-flex items-center px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full bg-black/55 backdrop-blur-md text-[8px] sm:text-[9px] font-black uppercase tracking-[0.25em] text-white border border-white/15">
+                        {categoryLabels[img.category]}
                       </span>
                     </div>
-                    <h3 className="text-lg font-black text-white uppercase italic tracking-tighter leading-tight drop-shadow-lg">
+                  )}
+
+                  {/* Expand icon — top-right, appears on hover */}
+                  <div className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-black/55 backdrop-blur-md border border-white/15 text-white flex items-center justify-center opacity-0 group-hover/photo:opacity-100 translate-y-[-4px] group-hover/photo:translate-y-0 transition-all duration-500">
+                    <Expand className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  </div>
+
+                  {/* Title — bottom, always visible but fades up on hover */}
+                  <figcaption className="absolute inset-x-0 bottom-0 p-3 sm:p-4 md:p-5">
+                    <h3 className={`font-black text-white uppercase italic tracking-tighter leading-[1.05] drop-shadow-lg transition-all duration-500 line-clamp-2 ${
+                      isFeatured ? 'text-lg sm:text-xl md:text-2xl' : 'text-base sm:text-lg'
+                    }`}>
                       {img.title || img.alt}
                     </h3>
-                  </div>
-                </div>
-              </figure>
-            ) : (
-              /* SSR fallback */
-              <figure className="relative overflow-hidden bg-muted/20 shrink-0 m-0">
-                <Image
-                  src={img.src}
-                  alt={img.alt}
-                  width={600}
-                  height={400}
-                  className="w-full h-auto object-cover"
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                  priority={index === 0}
-                  loading={index === 0 ? 'eager' : 'lazy'}
-                />
-              </figure>
-            )}
-
-            {/* ── SEO title (visually hidden, shown on hover on mobile via footer) ── */}
-            <div className="px-3 py-2 flex items-center justify-between gap-2 border-t border-border/30">
-              <h3 className="text-[10px] font-black uppercase tracking-tight text-foreground/70 group-hover:text-primary transition-colors leading-tight truncate">
-                {img.title || img.alt}
-              </h3>
-              {img.category && categoryLabels[img.category] && (
-                <span className="shrink-0 text-[8px] font-black uppercase tracking-widest text-primary/60 border border-primary/20 rounded-full px-2 py-0.5 whitespace-nowrap">
-                  {categoryLabels[img.category]}
-                </span>
+                  </figcaption>
+                </figure>
+              ) : (
+                /* SSR fallback — same layout, no interaction */
+                <figure className="relative w-full h-full overflow-hidden bg-muted/20 m-0">
+                  <Image
+                    src={img.src}
+                    alt={img.alt}
+                    fill
+                    sizes={sizes}
+                    className="object-cover"
+                    priority={index === 0}
+                    loading={index === 0 ? 'eager' : 'lazy'}
+                  />
+                  <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/70 via-black/20 to-transparent pointer-events-none" />
+                  <figcaption className="absolute inset-x-0 bottom-0 p-3 sm:p-4 md:p-5">
+                    <h3 className={`font-black text-white uppercase italic tracking-tighter leading-[1.05] drop-shadow-lg line-clamp-2 ${
+                      isFeatured ? 'text-lg sm:text-xl md:text-2xl' : 'text-base sm:text-lg'
+                    }`}>
+                      {img.title || img.alt}
+                    </h3>
+                  </figcaption>
+                </figure>
               )}
-            </div>
-          </article>
-        ))}
+            </article>
+          );
+        })}
       </div>
     </div>
   );

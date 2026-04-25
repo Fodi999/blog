@@ -1,4 +1,5 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { cookies } from 'next/headers';
 import { Link } from '@/i18n/routing';
 import { PostCard } from '@/components/PostCard';
 import { ImageGallery } from '@/components/ImageGallery';
@@ -66,6 +67,12 @@ export default async function HomePage({
   setRequestLocale(locale);
   const loc = locale as Locale;
   const t = await getTranslations({ locale, namespace: 'home' });
+
+  // Fast UX gate: same cookie set by lib/auth-client.ts on login.
+  // Hard auth still happens server-side in /[locale]/app/layout.tsx.
+  const isAuthed = (await cookies()).get('chefos_session')?.value === '1';
+  const platformHref = isAuthed ? '/app/dashboard' : '/login';
+  const platformLabel = isAuthed ? t('hero.openPlatformAuthed') : t('hero.openPlatform');
   
   const [latestPosts, galleryFromApi, aboutFromApi, ingredientsFromApi] = await Promise.all([
     getLatestPosts(locale, 6),
@@ -165,16 +172,17 @@ export default async function HomePage({
           
           <ScrollReveal direction="up" delay={800} duration={700}>
             <div className="flex flex-wrap gap-4">
-              <Button asChild size="lg" className="h-14 px-8 rounded-2xl text-base font-black uppercase tracking-wider group hover-lift">
+              <Button asChild size="lg" className="h-14 px-8 rounded-2xl text-base font-black uppercase tracking-wider group hover-lift bg-primary text-white shadow-xl shadow-primary/20 hover:shadow-primary/30">
+                <Link href={platformHref}>
+                  <Sparkles className="mr-2 h-5 w-5" />
+                  {platformLabel}
+                  <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                </Link>
+              </Button>
+              <Button asChild size="lg" variant="outline" className="h-14 px-8 rounded-2xl text-base font-black uppercase tracking-wider group border-2 hover-lift">
                 <Link href="/blog">
                   <BookOpen className="mr-2 h-5 w-5" />
                   {t('hero.readBlog')}
-                </Link>
-              </Button>
-              <Button asChild size="lg" variant="outline" className="h-14 px-8 rounded-2xl text-base font-black uppercase tracking-wider group border-2 hover:bg-primary hover:text-white hover:border-primary transition-all hover-lift">
-                <Link href="/restaurants">
-                  {t('hero.cta')}
-                  <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                 </Link>
               </Button>
             </div>

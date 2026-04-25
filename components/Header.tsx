@@ -1,13 +1,19 @@
 import { Link } from '@/i18n/routing';
 import { getTranslations } from 'next-intl/server';
+import { cookies } from 'next/headers';
 import { ThemeToggle } from './ThemeToggle';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { MobileMenuWrapper } from './MobileMenuWrapper';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
+import { Sparkles } from 'lucide-react';
 
 export async function Header({ locale }: { locale: string }) {
   const t = await getTranslations({ locale, namespace: 'nav' });
+  const tHero = await getTranslations({ locale, namespace: 'home.hero' });
+  const isAuthed = (await cookies()).get('chefos_session')?.value === '1';
+  const platformHref = isAuthed ? '/app/dashboard' : '/login';
+  const platformLabel = isAuthed ? tHero('openPlatformAuthed') : tHero('openPlatform');
 
   return (
     <header className="glass-nav">
@@ -41,6 +47,12 @@ export async function Header({ locale }: { locale: string }) {
           ))}
 
           <div className="flex items-center gap-3 ml-6 border-l border-border/60 pl-6 h-8">
+            <Button asChild size="sm" className="h-8 px-3 rounded-xl text-xs font-black uppercase tracking-wider bg-primary text-white hover:bg-primary/90 shadow-md shadow-primary/20">
+              <Link href={platformHref} locale={locale}>
+                <Sparkles className="mr-1.5 h-3.5 w-3.5" />
+                {platformLabel}
+              </Link>
+            </Button>
             <ThemeToggle />
             <LanguageSwitcher />
           </div>
