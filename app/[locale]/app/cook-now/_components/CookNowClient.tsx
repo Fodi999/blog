@@ -31,6 +31,7 @@ import {
   Loader2,
   Pencil,
   RefreshCw,
+  Scale,
   Sparkles,
   Timer,
   Users,
@@ -126,12 +127,55 @@ function clearCache(): void {
 
 const moneyFmt = new Intl.NumberFormat(undefined, {
   style: 'currency',
-  currency: 'USD',
+  currency: 'PLN',
   minimumFractionDigits: 2,
 });
 
 function formatCents(cents: number): string {
   return moneyFmt.format(cents / 100);
+}
+
+/** Pick the honest "what's on the plate" weight in grams. Prefers the
+ *  backend-computed `yield_summary.cooked_total_g` (gross → net → cooked
+ *  with trim & cooking losses applied). Falls back to summing `cooked_g`
+ *  per ingredient, then to gross_g if neither is present. */
+function totalYieldG(dish: SuggestedDish): number {
+  const ys = dish.yield_summary;
+  if (ys && Number.isFinite(ys.cooked_total_g) && ys.cooked_total_g > 0) {
+    return ys.cooked_total_g;
+  }
+  const cooked = dish.ingredients.reduce(
+    (acc, i) => acc + (Number.isFinite(i.cooked_g) && (i.cooked_g ?? 0) > 0 ? (i.cooked_g as number) : 0),
+    0,
+  );
+  if (cooked > 0) return cooked;
+  return dish.ingredients.reduce(
+    (acc, i) => acc + (Number.isFinite(i.gross_g) && i.gross_g > 0 ? i.gross_g : 0),
+    0,
+  );
+}
+
+/** Gross (raw) weight — what was pulled from inventory. Used for the
+ *  "from 343 g gross" subline so the user sees both numbers. */
+function totalGrossG(dish: SuggestedDish): number {
+  const ys = dish.yield_summary;
+  if (ys && Number.isFinite(ys.gross_total_g) && ys.gross_total_g > 0) {
+    return ys.gross_total_g;
+  }
+  return dish.ingredients.reduce(
+    (acc, i) => acc + (Number.isFinite(i.gross_g) && i.gross_g > 0 ? i.gross_g : 0),
+    0,
+  );
+}
+
+/** Pretty-print grams as "850 g" for <1 kg, "1.2 kg" otherwise. */
+function formatYield(grams: number): string {
+  if (!Number.isFinite(grams) || grams <= 0) return '—';
+  if (grams >= 1000) {
+    const kg = grams / 1000;
+    return `${kg.toFixed(kg >= 10 ? 1 : 2).replace(/\.?0+$/, '')} kg`;
+  }
+  return `${Math.round(grams)} g`;
 }
 
 export function CookNowClient({ locale: _locale }: { locale: string }) {
@@ -647,7 +691,7 @@ function DishRow({
           </div>
 
           {/* Hero meta strip — recipe-style at-a-glance row */}
-          <div className="grid grid-cols-2 gap-3 rounded-xl border border-border/60 bg-background p-4 sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 rounded-xl border border-border/60 bg-background p-4 sm:grid-cols-3 lg:grid-cols-5">
             <HeroMeta
               icon={Users}
               label={t('hero.servings')}
@@ -657,6 +701,19 @@ function DishRow({
               icon={Timer}
               label={t('hero.totalTime')}
               value={totalTimeMin > 0 ? `${totalTimeMin} ${t('hero.min')}` : '—'}
+            />
+            <HeroMeta
+              icon={Scale}
+              label={t('hero.totalYield')}
+              value={formatYield(totalYieldG(editedDish))}
+              hint={(() => {
+                const cooked = totalYieldG(editedDish);
+                const gross = totalGrossG(editedDish);
+                if (gross > 0 && Math.abs(gross - cooked) > 1) {
+                  return t('hero.fromGross', { gross: formatYield(gross) });
+                }
+                return t('hero.allIngredients');
+              })()}
             />
             <HeroMeta
               icon={Flame}

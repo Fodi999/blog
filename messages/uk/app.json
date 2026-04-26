@@ -520,7 +520,10 @@
         "min": "хв",
         "kcal": "Ккал",
         "perServing": "на порцію",
-        "foodCost": "Собівартість"
+        "foodCost": "Собівартість",
+        "totalYield": "Загальний вихід",
+        "allIngredients": "усі інгредієнти",
+        "fromGross": "з {gross} брутто"
       },
       "noIngredients": "Немає доступних інгредієнтів для цієї страви.",
       "ghostsHidden": "{count, plural, one {# незіставлений інгредієнт сховано} few {# незіставлених інгредієнти сховано} other {# незіставлених інгредієнтів сховано}}",
@@ -600,7 +603,19 @@
         "statusOptional": "Опціонально",
         "addConfirm": "Додати до рецепту",
         "cancel": "Скасувати",
-        "save": "Зберегти чернетку"
+        "save": "Зберегти чернетку",
+        "fieldDishName": "Назва страви",
+        "fieldDishNamePlaceholder": "Напр., «Боул з куркою»",
+        "stepsTitle": "Кроки приготування",
+        "stepText": "Що робимо",
+        "stepTextPlaceholder": "Опишіть крок…",
+        "stepTime": "Час (хв)",
+        "stepTemp": "Темп. (°C)",
+        "stepTip": "Підказка",
+        "stepTipPlaceholder": "Порада шефа (необов'язково)",
+        "addStep": "Додати крок",
+        "removeStep": "Видалити крок",
+        "noSteps": "Кроків немає. Додайте перший."
       }
     }
   }

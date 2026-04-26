@@ -520,7 +520,10 @@
         "min": "min",
         "kcal": "Kcal",
         "perServing": "na porcję",
-        "foodCost": "Koszt produktów"
+        "foodCost": "Koszt produktów",
+        "totalYield": "Łączna waga",
+        "allIngredients": "wszystkie składniki",
+        "fromGross": "z {gross} brutto"
       },
       "noIngredients": "Brak dostępnych składników dla tego dania.",
       "ghostsHidden": "{count, plural, one {Ukryto # niedopasowany składnik} few {Ukryto # niedopasowane składniki} other {Ukryto # niedopasowanych składników}}",
@@ -600,7 +603,19 @@
         "statusOptional": "Opcjonalnie",
         "addConfirm": "Dodaj do przepisu",
         "cancel": "Anuluj",
-        "save": "Zapisz szkic"
+        "save": "Zapisz szkic",
+        "fieldDishName": "Nazwa dania",
+        "fieldDishNamePlaceholder": "np. „Miska z kurczakiem\"",
+        "stepsTitle": "Kroki przygotowania",
+        "stepText": "Instrukcja",
+        "stepTextPlaceholder": "Opisz krok…",
+        "stepTime": "Czas (min)",
+        "stepTemp": "Temp. (°C)",
+        "stepTip": "Wskazówka",
+        "stepTipPlaceholder": "Wskazówka szefa (opcjonalnie)",
+        "addStep": "Dodaj krok",
+        "removeStep": "Usuń krok",
+        "noSteps": "Brak kroków. Dodaj pierwszy."
       }
     }
   }

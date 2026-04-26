@@ -520,7 +520,10 @@
         "min": "min",
         "kcal": "Kcal",
         "perServing": "per serving",
-        "foodCost": "Food cost"
+        "foodCost": "Food cost",
+        "totalYield": "Total yield",
+        "allIngredients": "all ingredients",
+        "fromGross": "from {gross} gross"
       },
       "noIngredients": "No ingredients available for this dish.",
       "ghostsHidden": "{count, plural, one {# unmatched ingredient hidden} other {# unmatched ingredients hidden}}",
@@ -600,7 +603,19 @@
         "statusOptional": "Optional",
         "addConfirm": "Add to recipe",
         "cancel": "Cancel",
-        "save": "Save draft"
+        "save": "Save draft",
+        "fieldDishName": "Dish name",
+        "fieldDishNamePlaceholder": "e.g. \"Chicken bowl\"",
+        "stepsTitle": "Cooking steps",
+        "stepText": "Instruction",
+        "stepTextPlaceholder": "Describe the step…",
+        "stepTime": "Time (min)",
+        "stepTemp": "Temp. (°C)",
+        "stepTip": "Tip",
+        "stepTipPlaceholder": "Chef's tip (optional)",
+        "addStep": "Add step",
+        "removeStep": "Remove step",
+        "noSteps": "No steps yet. Add the first one."
       }
     }
   }

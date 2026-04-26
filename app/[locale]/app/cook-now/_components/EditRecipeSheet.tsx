@@ -48,23 +48,23 @@ import { type SuggestedDish, type SuggestedIngredient, dishTitle } from '@/lib/c
 
 // ── Unit conversion to gross_g ───────────────────────────────────────────────
 
-type Unit = 'g' | 'ml' | 'pcs' | 'tbsp' | 'tsp';
-const UNIT_OPTIONS: Unit[] = ['g', 'ml', 'pcs', 'tbsp', 'tsp'];
+type Unit = 'g' | 'kg' | 'ml' | 'l' | 'pcs' | 'tbsp' | 'tsp';
+const UNIT_OPTIONS: Unit[] = ['g', 'kg', 'ml', 'l', 'pcs', 'tbsp', 'tsp'];
 
 /**
  * Map the backend's canonical `default_unit` strings (`liter`, `kilogram`,
- * `milliliter`, `gram`, `piece`, …) to the small UI-friendly enum we use
- * inside this form.  Unknown values fall back to `g` so the form is always
- * usable.
+ * `milliliter`, `gram`, `piece`, …) to the UI-friendly enum used by the
+ * form.  We keep `l` and `kg` distinct from `ml`/`g` so a value of `0.3`
+ * for milk really means 300 ml, not 0.3 ml.
  */
 function mapBackendUnit(s: string | null | undefined): Unit {
   if (!s) return 'g';
   const k = s.trim().toLowerCase();
   const m: Record<string, Unit> = {
     g: 'g', gr: 'g', gram: 'g', grams: 'g',
-    kg: 'g', kilogram: 'g', kilograms: 'g',
+    kg: 'kg', kilogram: 'kg', kilograms: 'kg',
     ml: 'ml', milliliter: 'ml', milliliters: 'ml', millilitre: 'ml',
-    l: 'ml', liter: 'ml', liters: 'ml', litre: 'ml',
+    l: 'l', liter: 'l', liters: 'l', litre: 'l',
     pcs: 'pcs', pc: 'pcs', piece: 'pcs', pieces: 'pcs', шт: 'pcs', sztuka: 'pcs',
     tbsp: 'tbsp', tablespoon: 'tbsp',
     tsp: 'tsp', teaspoon: 'tsp',
@@ -74,13 +74,15 @@ function mapBackendUnit(s: string | null | undefined): Unit {
 
 /**
  * Density-aware mass conversion.
- *   • `g`  → grams pass-through.
- *   • `ml` → multiply by density (water 1.00, milk 1.03, oil 0.91, honey 1.42 …).
- *   • `pcs` → multiply by `typical_portion_g` (egg 60 g, apple 180 g …); 100 g default.
- *   • `tbsp`/`tsp` → 15 ml / 5 ml × density.
+ *   • `g`   → grams pass-through.
+ *   • `kg`  → qty × 1000.
+ *   • `ml`  → qty × density (water 1.00, milk 1.03, oil 0.91, honey 1.42 …).
+ *   • `l`   → qty × 1000 × density  (so 0.3 l of milk ≈ 309 g).
+ *   • `pcs` → qty × `typical_portion_g` (egg 60 g, apple 180 g …); 100 g default.
+ *   • `tbsp`/`tsp` → qty × 15 ml / 5 ml × density.
  *
- * When the catalog item has no density attached we gracefully fall back to
- * 1.0 g/ml — same behaviour as before, just no longer hard-coded.
+ * When the catalog item has no density attached we gracefully fall back
+ * to 1.0 g/ml — same behaviour as before, just no longer hard-coded.
  */
 function toGrams(
   qty: number,
@@ -92,11 +94,51 @@ function toGrams(
   const p = pieceG && pieceG > 0 ? pieceG : 100;
   switch (unit) {
     case 'g':    return qty;
+    case 'kg':   return qty * 1000;
     case 'ml':   return qty * d;
+    case 'l':    return qty * 1000 * d;
     case 'pcs':  return qty * p;
     case 'tbsp': return qty * 15 * d;
     case 'tsp':  return qty * 5  * d;
   }
+}
+
+/**
+ * Pretty-print the gross mass back into a user-friendly unit so the list
+ * row can show "0.3 l (309 g)" or "2 pcs (120 g)" instead of cryptic grams.
+ *
+ * Heuristic:
+ *   • If `typical_portion_g` is set AND grams is a near-multiple of it,
+ *     show pcs.
+ *   • Else if `density_g_per_ml` is set, show ml/l (litres if ≥ 500 g).
+ *   • Else show g/kg (kg if ≥ 1000 g).
+ */
+function prettyMass(
+  grams: number,
+  density?: number | null,
+  pieceG?: number | null,
+): string {
+  if (!Number.isFinite(grams) || grams <= 0) return '0 g';
+
+  // pcs branch — only if pieceG is known and grams ≈ k × pieceG (±5 %)
+  if (pieceG && pieceG > 0) {
+    const pcs = grams / pieceG;
+    const rounded = Math.round(pcs);
+    if (rounded >= 1 && Math.abs(pcs - rounded) / pcs < 0.05) {
+      return rounded === 1 ? `1 pcs (${Math.round(grams)} g)` : `${rounded} pcs (${Math.round(grams)} g)`;
+    }
+  }
+
+  // liquid branch
+  if (density && density > 0) {
+    const ml = grams / density;
+    if (ml >= 1000) return `${(ml / 1000).toFixed(2).replace(/\.?0+$/, '')} l (${Math.round(grams)} g)`;
+    if (ml >= 50)   return `${Math.round(ml)} ml (${Math.round(grams)} g)`;
+  }
+
+  // dry branch
+  if (grams >= 1000) return `${(grams / 1000).toFixed(2).replace(/\.?0+$/, '')} kg`;
+  return `${Math.round(grams)} g`;
 }
 
 // ── Status type ──────────────────────────────────────────────────────────────
@@ -168,9 +210,17 @@ export function EditRecipeSheet({ dish, open, onClose, onSave }: Props) {
   const [ingredients, setIngredients] =
     useState<SuggestedIngredient[]>(dish.ingredients);
 
+  // ── Editable name + cooking steps ─────────────────────────────────────
+  const [name, setName] = useState<string>(dishTitle(dish));
+  const [steps, setSteps] = useState(dish.steps.map((s) => ({ ...s })));
+
   // Re-sync when a new dish is passed (e.g. regenerated)
   useEffect(() => {
-    if (open) setIngredients(dish.ingredients);
+    if (open) {
+      setIngredients(dish.ingredients);
+      setName(dishTitle(dish));
+      setSteps(dish.steps.map((s) => ({ ...s })));
+    }
   }, [dish, open]);
 
   // ── Add-panel visibility ───────────────────────────────────────────────
@@ -253,6 +303,10 @@ export function EditRecipeSheet({ dish, open, onClose, onSave }: Props) {
       expiring_soon,
       image_url: form.imageUrl ?? undefined,
       category: form.category ?? undefined,
+      density_g_per_ml: form.density ?? undefined,
+      typical_portion_g: form.pieceG ?? undefined,
+      display_qty: qty,
+      display_unit: form.unit,
     };
 
     setIngredients((list) => [...list, ing]);
@@ -268,13 +322,41 @@ export function EditRecipeSheet({ dish, open, onClose, onSave }: Props) {
     setIngredients((list) => list.filter((_, i) => i !== idx));
   }
 
+  // ── Steps editing ──────────────────────────────────────────────────────
+  function updateStep(i: number, patch: Partial<{ text: string; time_min: number | null; temp_c: number | null; tip: string | null }>) {
+    setSteps((list) => list.map((s, idx) => (idx === i ? { ...s, ...patch } : s)));
+  }
+  function removeStep(i: number) {
+    setSteps((list) => list.filter((_, idx) => idx !== i));
+  }
+  function addStep() {
+    setSteps((list) => [
+      ...list,
+      { step: list.length + 1, text: '', time_min: null, temp_c: null, tip: null },
+    ]);
+  }
+
   // ── Save draft ─────────────────────────────────────────────────────────
   const handleSave = useCallback(() => {
-    const updated: SuggestedDish = { ...dish, ingredients };
+    // Renumber steps in case the user reordered / removed any.
+    const renumbered = steps
+      .map((s) => ({ ...s, text: (s.text ?? '').trim() }))
+      .filter((s) => s.text.length > 0)
+      .map((s, i) => ({ ...s, step: i + 1 }));
+
+    const trimmed = name.trim();
+    const updated: SuggestedDish = {
+      ...dish,
+      ingredients,
+      steps: renumbered,
+      // Write the user-edited title into `display_name` — `dishTitle()`
+      // gives it priority over the original AI-generated names.
+      display_name: trimmed || dish.display_name,
+    };
     onSave(updated);
     toast.success(t('toast.draftSaved'), { description: t('toast.draftSavedHint') });
     onClose();
-  }, [dish, ingredients, onSave, onClose, t]);
+  }, [dish, ingredients, name, steps, onSave, onClose, t]);
 
   // ── Derived ingredient groups (for the current list display) ──────────
   const inStock = ingredients.filter(
@@ -299,6 +381,17 @@ export function EditRecipeSheet({ dish, open, onClose, onSave }: Props) {
         {/* ── Scrollable body ─────────────────────────────────────────── */}
         <div className="flex-1 overflow-y-auto px-5 py-4">
           <div className="space-y-5">
+
+            {/* ── Dish name ───────────────────────────────────────────── */}
+            <section className="space-y-1.5">
+              <Label className="text-xs font-semibold">{te('fieldDishName')}</Label>
+              <Input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder={te('fieldDishNamePlaceholder')}
+                className="text-base font-medium"
+              />
+            </section>
 
             {/* ── Current ingredients ─────────────────────────────────── */}
             <section>
@@ -564,6 +657,117 @@ export function EditRecipeSheet({ dish, open, onClose, onSave }: Props) {
                 )}
               </div>
             )}
+
+            {/* ── Cooking steps ────────────────────────────────────────── */}
+            <section>
+              <div className="mb-2 flex items-center justify-between">
+                <h3 className="text-sm font-semibold">{te('stepsTitle')}</h3>
+                <Badge variant="secondary" className="tabular-nums">{steps.length}</Badge>
+              </div>
+
+              {steps.length === 0 ? (
+                <p className="rounded-lg border border-dashed border-border/60 p-4 text-center text-xs text-muted-foreground">
+                  {te('noSteps')}
+                </p>
+              ) : (
+                <ol className="space-y-2.5">
+                  {steps.map((s, i) => (
+                    <li
+                      key={i}
+                      className="space-y-2 rounded-lg border border-border/60 bg-background p-3"
+                    >
+                      <div className="flex items-start gap-2">
+                        <Badge variant="outline" className="mt-1 shrink-0 tabular-nums">
+                          {i + 1}
+                        </Badge>
+                        <textarea
+                          value={s.text}
+                          onChange={(e) => updateStep(i, { text: e.target.value })}
+                          placeholder={te('stepTextPlaceholder')}
+                          rows={2}
+                          className={cn(
+                            'flex min-h-[60px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs',
+                            'placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring',
+                            'resize-y',
+                          )}
+                        />
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => removeStep(i)}
+                          aria-label={te('removeStep')}
+                          className="shrink-0 text-muted-foreground hover:text-destructive"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-2 pl-9">
+                        <div className="space-y-1">
+                          <Label className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                            {te('stepTime')}
+                          </Label>
+                          <Input
+                            type="number"
+                            inputMode="numeric"
+                            min={0}
+                            value={s.time_min ?? ''}
+                            onChange={(e) =>
+                              updateStep(i, {
+                                time_min: e.target.value === '' ? null : Math.max(0, parseInt(e.target.value, 10) || 0),
+                              })
+                            }
+                            placeholder="—"
+                            className="h-8 text-sm"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <Label className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                            {te('stepTemp')}
+                          </Label>
+                          <Input
+                            type="number"
+                            inputMode="numeric"
+                            value={s.temp_c ?? ''}
+                            onChange={(e) =>
+                              updateStep(i, {
+                                temp_c: e.target.value === '' ? null : parseInt(e.target.value, 10) || 0,
+                              })
+                            }
+                            placeholder="—"
+                            className="h-8 text-sm"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <Label className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                            {te('stepTip')}
+                          </Label>
+                          <Input
+                            value={s.tip ?? ''}
+                            onChange={(e) =>
+                              updateStep(i, { tip: e.target.value || null })
+                            }
+                            placeholder={te('stepTipPlaceholder')}
+                            className="h-8 text-sm"
+                          />
+                        </div>
+                      </div>
+                    </li>
+                  ))}
+                </ol>
+              )}
+
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={addStep}
+                className="mt-2 w-full"
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                {te('addStep')}
+              </Button>
+            </section>
           </div>
         </div>
 
@@ -595,6 +799,24 @@ function IngRow({
       : ing.available ? '✅'
       : '⚠️';
 
+  /**
+   * Display priority:
+   *   1. If the user picked the unit explicitly while editing → show
+   *      the original number + unit (e.g. "0.3 l (309 g)").
+   *   2. Else fall back to a smart pretty-print from grams using density
+   *      and typical_portion_g (eggs become "2 pcs", milk becomes ml).
+   *   3. Last resort — plain grams.
+   */
+  let label: string;
+  if (ing.display_qty != null && ing.display_unit) {
+    const grams = Math.round(ing.gross_g);
+    label = grams > 0
+      ? `${ing.display_qty} ${ing.display_unit} (${grams} g)`
+      : `${ing.display_qty} ${ing.display_unit}`;
+  } else {
+    label = prettyMass(ing.gross_g, ing.density_g_per_ml, ing.typical_portion_g);
+  }
+
   return (
     <li className="group flex items-center gap-3 px-3 py-2.5 text-sm">
       {ing.image_url ? (
@@ -610,7 +832,7 @@ function IngRow({
         </span>
       )}
       <span className="min-w-0 flex-1 truncate font-medium capitalize">{ing.name}</span>
-      <span className="tabular-nums text-xs text-muted-foreground">{Math.round(ing.gross_g)} g</span>
+      <span className="tabular-nums text-xs text-muted-foreground">{label}</span>
       <span className="text-base" title={String(ing.available)}>{status}</span>
       <button
         type="button"

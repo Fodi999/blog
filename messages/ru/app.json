@@ -520,7 +520,10 @@
         "min": "мин",
         "kcal": "Ккал",
         "perServing": "на порцию",
-        "foodCost": "Себестоимость"
+        "foodCost": "Себестоимость",
+        "totalYield": "Общий выход",
+        "allIngredients": "все ингредиенты",
+        "fromGross": "из {gross} брутто"
       },
       "noIngredients": "Нет доступных ингредиентов для этого блюда.",
       "ghostsHidden": "{count, plural, one {# несопоставленный ингредиент скрыт} few {# несопоставленных ингредиента скрыто} other {# несопоставленных ингредиентов скрыто}}",
@@ -600,7 +603,19 @@
         "statusOptional": "Опционально",
         "addConfirm": "Добавить в рецепт",
         "cancel": "Отмена",
-        "save": "Сохранить черновик"
+        "save": "Сохранить черновик",
+        "fieldDishName": "Название блюда",
+        "fieldDishNamePlaceholder": "Например, «Боул с курицей»",
+        "stepsTitle": "Шаги приготовления",
+        "stepText": "Что делаем",
+        "stepTextPlaceholder": "Опишите шаг…",
+        "stepTime": "Время (мин)",
+        "stepTemp": "Темп. (°C)",
+        "stepTip": "Подсказка",
+        "stepTipPlaceholder": "Совет шефа (необязательно)",
+        "addStep": "Добавить шаг",
+        "removeStep": "Удалить шаг",
+        "noSteps": "Шаги не заданы. Добавьте первый."
       }
     }
   }

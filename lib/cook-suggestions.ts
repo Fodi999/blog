@@ -31,7 +31,18 @@ export interface RecipeStep {
 export interface SuggestedIngredient {
   name: string;
   slug: string;
+  /** Raw amount taken from inventory (used for cost & shopping list). */
   gross_g: number;
+  /** Edible weight after trimming (peel, bone, core). */
+  net_g?: number;
+  /** Final weight after cooking — what actually ends up on the plate. */
+  cooked_g?: number;
+  /** % lost during preparation (peeling, deboning…). 0 if unknown. */
+  trim_loss_percent?: number;
+  /** % weight change during cooking (negative = loss). 0 if raw / unknown. */
+  cooking_loss_percent?: number;
+  /** Processing state: "raw" | "boiled" | "fried" | "baked" | … */
+  state?: string;
   role: string;
   available: boolean;
   expiring_soon: boolean;
@@ -39,6 +50,21 @@ export interface SuggestedIngredient {
   image_url?: string | null;
   /** Catalog `product_type`: meat, vegetable, fruit, dairy, spice, … */
   category?: string | null;
+  /** Density g/ml — used to render the row in ml/l rather than grams. */
+  density_g_per_ml?: number | null;
+  /** Typical mass of one piece — used to render the row in pcs (eggs, fruit). */
+  typical_portion_g?: number | null;
+  /** What the user originally typed, e.g. `0.3` + `l`. Kept for display only. */
+  display_qty?: number | null;
+  display_unit?: string | null;
+}
+
+/** Honest yield breakdown — gross → net → cooked. */
+export interface YieldSummary {
+  gross_total_g: number;
+  net_total_g: number;
+  cooked_total_g: number;
+  total_loss_percent: number;
 }
 
 export interface DishEconomics {
@@ -90,6 +116,8 @@ export interface SuggestedDish {
   per_serving_fat_g: number;
   per_serving_carbs_g: number;
   servings: number;
+  /** Honest yield breakdown — backend default; old payloads may lack it. */
+  yield_summary?: YieldSummary;
   steps: RecipeStep[];
   insight: DishInsight;
   flavor: FlavorInfo | null;
