@@ -10,7 +10,8 @@
       "profile": "Profil",
       "settings": "Ustawienia",
       "topUp": "Doładuj",
-      "logout": "Wyloguj"
+      "logout": "Wyloguj",
+      "cookNow": "Co ugotować"
     },
     "dashboard": {
       "title": "Pulpit",
@@ -348,6 +349,258 @@
         "shopping": {
           "title": "Dodano do listy zakupów"
         }
+      }
+    },
+    "wallet": {
+      "title": "Portfel AI",
+      "availableBadge": "Dostępne · {count}",
+      "actionsAvailable": "dostępnych akcji",
+      "realPurchased": "Realne zakupy",
+      "bonus": "Bonusy",
+      "grantedTotal": "Łącznie przyznane",
+      "used": "Wydane",
+      "topUp": "Doładuj",
+      "history": "Historia"
+    },
+    "walletHistory": {
+      "title": "Historia portfela",
+      "subtitle": "Wszystkie wpłaty i wypłaty z Portfela AI, od najnowszych.",
+      "back": "Powrót do panelu",
+      "refresh": "Odśwież",
+      "retry": "Spróbuj ponownie",
+      "errorTitle": "Nie udało się załadować historii",
+      "errorBody": "Spróbuj ponownie za chwilę.",
+      "emptyTitle": "Brak transakcji",
+      "emptyBody": "Aktywność portfela pojawi się tu po pierwszym bonusie lub zakupie.",
+      "freeBadge": "bezpłatne",
+      "sources": {
+        "iap": "Zakup Stripe",
+        "welcome_bonus": "Bonus powitalny",
+        "weekly_bonus": "Bonus tygodniowy",
+        "promo": "Bonus promocyjny",
+        "generate_plan": "Wygenerowano plan posiłków",
+        "create_recipe": "Utworzono przepis",
+        "scan_receipt": "Zeskanowano paragon",
+        "optimize_day": "Zoptymalizowano dzień",
+        "ai_chat": "Wiadomość czatu AI"
+      }
+    },
+    "cookNow": {
+      "title": "Co ugotować",
+      "subtitle": "Pomysły na dania z Twojego stanu magazynu wygenerowane przez AI. Najpierw walka z marnotrawstwem, realne ceny, bez zmyślonych liczb.",
+      "idleTitle": "Gotowi do startu?",
+      "idleBody": "Kliknij Generuj — ChefOS przeanalizuje Twój magazyn, preferencje i terminy ważności i zaproponuje, co ugotować teraz.",
+      "generate": "Generuj propozycje",
+      "regenerate": "Odśwież",
+      "costHint": "Zużywa 1 akcję AI po wyczerpaniu darmowego dziennego limitu.",
+      "loadingTitle": "Tworzymy pomysły…",
+      "loadingBody": "Czytamy magazyn, pytamy model, składamy receptury i wyliczamy koszt z Twoich cen.",
+      "errorTitle": "Nie udało się załadować",
+      "errorBody": "Spróbuj ponownie za chwilę.",
+      "errorQuotaTitle": "Koniec akcji AI",
+      "errorQuotaBody": "Twój darmowy dzienny limit i portfel są puste. Doładuj, aby kontynuować, lub poczekaj do jutra.",
+      "retry": "Spróbuj ponownie",
+      "topUp": "Doładuj portfel",
+      "emptyResultsTitle": "Brak pasujących dań",
+      "emptyResultsBody": "Nie znaleźliśmy odpowiednich receptur z aktualnego magazynu. Dodaj kilka podstawowych produktów.",
+      "canCookTitle": "Możesz gotować teraz",
+      "canCookSubtitle": "{count, plural, one {# danie} few {# dania} many {# dań} other {# dań}} w pełni pokryte magazynem",
+      "almostTitle": "Prawie gotowe",
+      "almostSubtitle": "{count, plural, one {# danie} few {# dania} many {# dań} other {# dań}} — brakuje 1–2 składników",
+      "strategicTitle": "Wybór strategiczny",
+      "strategicSubtitle": "{count, plural, one {# danie} few {# dania} many {# dań} other {# dań}} warte krótkich zakupów",
+      "missing": "{count, plural, one {Brakuje # składnika} few {Brakuje # składników} many {Brakuje # składników} other {Brakuje # składników}}",
+      "showRecipe": "Pokaż przepis",
+      "hideRecipe": "Ukryj przepis",
+      "ingredients": "Składniki",
+      "steps": "Kroki",
+      "insight": {
+        "totalIngredients": "W magazynie",
+        "daysLeft": "Wystarczy dni",
+        "atRisk": "Kończą się",
+        "atRiskList": "Wygasają w ciągu 3 dni",
+        "wasteRisk": "Ryzyko marnotrawstwa"
+      },
+      "personalization": {
+        "title": "Dobrane dla Ciebie",
+        "goal": "Cel: {goal}",
+        "diet": "Dieta: {diet}",
+        "kcal": "{kcal} kcal/dzień",
+        "allergens": "Bez: {list}"
+      },
+      "unlock": {
+        "title": "Odblokuj więcej receptur"
+      },
+      "badges": {
+        "usesExpiring": "Anty-marnotrawstwo",
+        "highProtein": "Dużo białka",
+        "budget": "Ekonomicznie",
+        "confidenceStrong": "Mocne dopasowanie",
+        "missing": "brak"
+      },
+      "stats": {
+        "kcal": "kcal",
+        "servings": "porcji",
+        "time": "czas"
+      },
+      "econ": {
+        "cost": "Koszt produktów",
+        "suggested": "Cena w menu",
+        "margin": "Marża",
+        "wasteSaved": "Uratowane od strat",
+        "title": "Ekonomia",
+        "coverage": "{percent}% składników z realnymi cenami"
+      },
+      "nutrition": {
+        "kcal": "kcal",
+        "protein": "białko",
+        "fat": "tłuszcz",
+        "carbs": "węgle"
+      },
+      "clear": "Wyczyść",
+      "whyTitle": "Dlaczego to danie",
+      "nutritionTitle": "Wartości na porcję",
+      "actions": {
+        "edit": "Edytuj przepis"
+      },
+      "toast": {
+        "draftSaved": "Zapisano jako szkic",
+        "draftSavedHint": "Znajdziesz go później w lokalnych szkicach."
+      },
+      "dishType": {
+        "sticks": "Pałeczki",
+        "cutlets": "Kotlety",
+        "pancakes": "Naleśniki",
+        "soup": "Zupa",
+        "salad": "Sałatka",
+        "bowl": "Bowl",
+        "pasta": "Makaron",
+        "casserole": "Zapiekanka",
+        "stirfry": "Stir-fry",
+        "baked": "Pieczone",
+        "wrap": "Wrap",
+        "omelette": "Omlet",
+        "porridge": "Owsianka",
+        "smoothie": "Smoothie",
+        "generic": "Danie",
+        "main": "Główne",
+        "appetizer": "Przystawka",
+        "starter": "Przystawka",
+        "side": "Dodatek",
+        "dessert": "Deser",
+        "breakfast": "Śniadanie"
+      },
+      "complexity": {
+        "easy": "Łatwe",
+        "medium": "Średnie",
+        "hard": "Trudne"
+      },
+      "role": {
+        "main": "baza",
+        "protein": "białko",
+        "side": "dodatek",
+        "base": "baza",
+        "sauce": "sos",
+        "spice": "przyprawa",
+        "garnish": "ozdoba",
+        "vegetable": "warzywo",
+        "fruit": "owoc",
+        "dairy": "nabiał",
+        "grain": "zboże",
+        "other": "inne",
+        "topping": "topping",
+        "binder": "spoiwo",
+        "liquid": "płyn",
+        "fat": "tłuszcz",
+        "acid": "kwas"
+      },
+      "hero": {
+        "servings": "Porcje",
+        "totalTime": "Łączny czas",
+        "min": "min",
+        "kcal": "Kcal",
+        "perServing": "na porcję",
+        "foodCost": "Koszt produktów"
+      },
+      "noIngredients": "Brak dostępnych składników dla tego dania.",
+      "ghostsHidden": "{count, plural, one {Ukryto # niedopasowany składnik} few {Ukryto # niedopasowane składniki} other {Ukryto # niedopasowanych składników}}",
+      "reason": {
+        "uses_expiring_ingredients": "Wykorzystuje produkty z krótką datą",
+        "high_protein": "Wysokobiałkowe",
+        "all_ingredients_available": "Wszystkie składniki dostępne",
+        "budget_friendly": "Budżetowe",
+        "low_carb": "Niskowęglowodanowe",
+        "quick_to_make": "Szybkie w przygotowaniu",
+        "matches_diet": "Pasuje do Twojej diety",
+        "uses_inventory": "Wykorzystuje Twój zapas"
+      },
+      "tag": {
+        "vegan": "Wegańskie",
+        "vegetarian": "Wegetariańskie",
+        "gluten_free": "Bez glutenu",
+        "dairy_free": "Bez nabiału",
+        "low_carb": "Niskowęglowodanowe",
+        "keto": "Keto",
+        "paleo": "Paleo",
+        "high_protein": "Wysokobiałkowe",
+        "low_fat": "Niskotłuszczowe",
+        "halal": "Halal",
+        "kosher": "Koszerne",
+        "spicy": "Pikantne",
+        "quick": "Szybkie",
+        "comfort": "Sycące",
+        "healthy": "Zdrowe"
+      },
+      "allergen": {
+        "nuts": "Orzechy",
+        "peanuts": "Orzeszki ziemne",
+        "tree_nuts": "Orzechy drzew",
+        "dairy": "Nabiał",
+        "milk": "Mleko",
+        "gluten": "Gluten",
+        "wheat": "Pszenica",
+        "eggs": "Jajka",
+        "fish": "Ryby",
+        "shellfish": "Skorupiaki",
+        "soy": "Soja",
+        "sesame": "Sezam",
+        "mustard": "Gorczyca",
+        "celery": "Seler",
+        "sulphites": "Siarczyny"
+      },
+      "groups": {
+        "inStock": "W magazynie",
+        "toBuy": "Trzeba dokupić",
+        "optional": "Opcjonalne / dla smaku"
+      },
+      "status": {
+        "inStock": "W magazynie",
+        "missing": "Brak w magazynie",
+        "expiring": "Wkrótce się zepsuje"
+      },
+      "edit": {
+        "title": "Edytuj przepis",
+        "ingredientsTitle": "Składniki",
+        "noIngredients": "Brak składników.",
+        "summaryInStock": "w magazynie",
+        "summaryToBuy": "do kupienia",
+        "addBtn": "+ Dodaj składnik",
+        "searchTitle": "Szukaj w katalogu",
+        "manualTitle": "Dodaj ręcznie",
+        "searchPlaceholder": "Szukaj składników…",
+        "notFound": "Nie znaleziono? Dodaj ręcznie",
+        "fieldName": "Nazwa",
+        "fieldNamePlaceholder": "np. Sos sojowy",
+        "fieldQty": "Ilość",
+        "fieldUnit": "Jednostka",
+        "fieldRole": "Rola",
+        "fieldStatus": "Status",
+        "statusInStock": "W magazynie",
+        "statusToBuy": "Trzeba kupić",
+        "statusOptional": "Opcjonalnie",
+        "addConfirm": "Dodaj do przepisu",
+        "cancel": "Anuluj",
+        "save": "Zapisz szkic"
       }
     }
   }

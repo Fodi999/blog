@@ -38,7 +38,9 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { CookDialog } from '@/components/app/CookDialog';
+import { AiWalletCard } from '@/components/app/AiWalletCard';
 import { api, ApiError } from '@/lib/chefos-api';
+import { buildWalletView, getUsageToday, type WalletView } from '@/lib/usage';
 import {
   AT_RISK_HEADLINE,
   AT_RISK_SEVERITIES,
@@ -158,6 +160,16 @@ export function DashboardClient({ locale }: { locale: string }) {
   const t = useTranslations('app.dashboard');
   const [state, setState] = useState<LoadState>({ kind: 'loading' });
   const [refreshing, setRefreshing] = useState(false);
+  const [walletView, setWalletView] = useState<WalletView | null>(null);
+
+  const loadWallet = useCallback(async () => {
+    try {
+      const today = await getUsageToday();
+      setWalletView(buildWalletView(today));
+    } catch {
+      // Wallet is non-critical for the dashboard — silently keep skeleton.
+    }
+  }, []);
 
   const load = useCallback(
     async (silent = false) => {
@@ -173,6 +185,8 @@ export function DashboardClient({ locale }: { locale: string }) {
             .catch(() => [] as RecipeV2[]),
         ]);
         setState({ kind: 'ready', dashboard, inventory, dishes, recipes });
+        // Wallet fetched in parallel — don't block dashboard render.
+        void loadWallet();
       } catch (e) {
         const message =
           e instanceof ApiError ? e.message : e instanceof Error ? e.message : t('errorBody');
@@ -181,7 +195,7 @@ export function DashboardClient({ locale }: { locale: string }) {
         setRefreshing(false);
       }
     },
-    [t],
+    [t, loadWallet],
   );
 
   useEffect(() => {
@@ -443,6 +457,9 @@ export function DashboardClient({ locale }: { locale: string }) {
           </div>
         </CardContent>
       </Card>
+
+      {/* AI Wallet — purchased actions balance */}
+      <AiWalletCard view={walletView} locale={locale} />
 
       {/* KPI grid — 6 tiles */}
       <section className="grid grid-cols-2 gap-3 lg:grid-cols-3">

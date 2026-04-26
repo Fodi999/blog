@@ -208,6 +208,10 @@ export type CatalogIngredient = {
   calories_per_100g: number | null;
   seasons: string[];
   image_url: string | null;
+  /** Density in g/ml — used to convert ml ↔ g for liquids (milk ≈ 1.03, oil ≈ 0.91…). */
+  density_g_per_ml?: number | null;
+  /** Typical mass of one piece (egg, apple, onion…) in grams. */
+  typical_portion_g?: number | null;
 };
 
 export type AddInventoryRequest = {

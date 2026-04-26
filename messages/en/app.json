@@ -10,7 +10,8 @@
       "profile": "Profile",
       "settings": "Settings",
       "topUp": "Top up",
-      "logout": "Log out"
+      "logout": "Log out",
+      "cookNow": "Cook now"
     },
     "dashboard": {
       "title": "Dashboard",
@@ -348,6 +349,258 @@
         "shopping": {
           "title": "Added to shopping list"
         }
+      }
+    },
+    "wallet": {
+      "title": "AI Wallet",
+      "availableBadge": "Available · {count}",
+      "actionsAvailable": "actions available",
+      "realPurchased": "Real purchases",
+      "bonus": "Bonuses",
+      "grantedTotal": "Total credited",
+      "used": "Spent",
+      "topUp": "Top up",
+      "history": "History"
+    },
+    "walletHistory": {
+      "title": "Wallet history",
+      "subtitle": "All credits and debits on your AI Wallet, newest first.",
+      "back": "Back to dashboard",
+      "refresh": "Refresh",
+      "retry": "Retry",
+      "errorTitle": "Couldn't load history",
+      "errorBody": "Please try again in a moment.",
+      "emptyTitle": "No transactions yet",
+      "emptyBody": "Your wallet activity will appear here once you receive a bonus or make a purchase.",
+      "freeBadge": "free",
+      "sources": {
+        "iap": "Stripe purchase",
+        "welcome_bonus": "Welcome bonus",
+        "weekly_bonus": "Weekly bonus",
+        "promo": "Promo credit",
+        "generate_plan": "Meal plan generated",
+        "create_recipe": "Recipe created",
+        "scan_receipt": "Receipt scanned",
+        "optimize_day": "Day optimized",
+        "ai_chat": "AI chat message"
+      }
+    },
+    "cookNow": {
+      "title": "Cook now",
+      "subtitle": "AI-generated dish ideas built from your current inventory. Anti-waste first, real prices, no fabricated numbers.",
+      "idleTitle": "Ready when you are",
+      "idleBody": "Tap Generate and ChefOS will analyze your stock, your preferences and your expiring items to suggest dishes you can cook right now.",
+      "generate": "Generate suggestions",
+      "regenerate": "Regenerate",
+      "costHint": "Uses 1 AI action when your free daily quota is spent.",
+      "loadingTitle": "Cooking up ideas…",
+      "loadingBody": "Reading inventory, asking the model, resolving recipes and pricing each dish from your real stock.",
+      "errorTitle": "Couldn't load suggestions",
+      "errorBody": "Please try again in a moment.",
+      "errorQuotaTitle": "Out of AI actions",
+      "errorQuotaBody": "Your daily free quota and wallet are empty. Top up to continue or wait for tomorrow's reset.",
+      "retry": "Try again",
+      "topUp": "Top up wallet",
+      "emptyResultsTitle": "No matching dishes",
+      "emptyResultsBody": "We couldn't find suitable recipes from your current stock. Try adding a few staple ingredients.",
+      "canCookTitle": "Cook right now",
+      "canCookSubtitle": "{count, plural, one {# dish} other {# dishes}} fully covered by your stock",
+      "almostTitle": "Almost ready",
+      "almostSubtitle": "{count, plural, one {# dish} other {# dishes}} missing 1–2 ingredients",
+      "strategicTitle": "Strategic picks",
+      "strategicSubtitle": "{count, plural, one {# dish} other {# dishes}} worth a small shop run",
+      "missing": "{count, plural, one {Missing # ingredient} other {Missing # ingredients}}",
+      "showRecipe": "Show recipe",
+      "hideRecipe": "Hide recipe",
+      "ingredients": "Ingredients",
+      "steps": "Steps",
+      "insight": {
+        "totalIngredients": "In stock",
+        "daysLeft": "Days left",
+        "atRisk": "Expiring",
+        "atRiskList": "Expiring within 3 days",
+        "wasteRisk": "Waste risk"
+      },
+      "personalization": {
+        "title": "Personalized for you",
+        "goal": "Goal: {goal}",
+        "diet": "Diet: {diet}",
+        "kcal": "{kcal} kcal/day",
+        "allergens": "No: {list}"
+      },
+      "unlock": {
+        "title": "Unlock more recipes"
+      },
+      "badges": {
+        "usesExpiring": "Anti-waste",
+        "highProtein": "High protein",
+        "budget": "Budget",
+        "confidenceStrong": "Strong fit",
+        "missing": "missing"
+      },
+      "stats": {
+        "kcal": "kcal",
+        "servings": "servings",
+        "time": "time"
+      },
+      "econ": {
+        "cost": "Food cost",
+        "suggested": "Suggested price",
+        "margin": "Margin",
+        "wasteSaved": "Waste saved",
+        "title": "Economics",
+        "coverage": "{percent}% of ingredients have real prices"
+      },
+      "nutrition": {
+        "kcal": "kcal",
+        "protein": "protein",
+        "fat": "fat",
+        "carbs": "carbs"
+      },
+      "clear": "Clear",
+      "whyTitle": "Why this dish",
+      "nutritionTitle": "Nutrition per serving",
+      "actions": {
+        "edit": "Edit recipe"
+      },
+      "toast": {
+        "draftSaved": "Saved as draft",
+        "draftSavedHint": "You can find it later in your local drafts."
+      },
+      "dishType": {
+        "sticks": "Sticks",
+        "cutlets": "Cutlets",
+        "pancakes": "Pancakes",
+        "soup": "Soup",
+        "salad": "Salad",
+        "bowl": "Bowl",
+        "pasta": "Pasta",
+        "casserole": "Casserole",
+        "stirfry": "Stir-fry",
+        "baked": "Baked dish",
+        "wrap": "Wrap",
+        "omelette": "Omelette",
+        "porridge": "Porridge",
+        "smoothie": "Smoothie",
+        "generic": "Dish",
+        "main": "Main",
+        "appetizer": "Appetizer",
+        "starter": "Starter",
+        "side": "Side",
+        "dessert": "Dessert",
+        "breakfast": "Breakfast"
+      },
+      "complexity": {
+        "easy": "Easy",
+        "medium": "Medium",
+        "hard": "Hard"
+      },
+      "role": {
+        "main": "main",
+        "protein": "protein",
+        "side": "side",
+        "base": "base",
+        "sauce": "sauce",
+        "spice": "spice",
+        "garnish": "garnish",
+        "vegetable": "vegetable",
+        "fruit": "fruit",
+        "dairy": "dairy",
+        "grain": "grain",
+        "other": "other",
+        "topping": "topping",
+        "binder": "binder",
+        "liquid": "liquid",
+        "fat": "fat",
+        "acid": "acid"
+      },
+      "hero": {
+        "servings": "Servings",
+        "totalTime": "Total time",
+        "min": "min",
+        "kcal": "Kcal",
+        "perServing": "per serving",
+        "foodCost": "Food cost"
+      },
+      "noIngredients": "No ingredients available for this dish.",
+      "ghostsHidden": "{count, plural, one {# unmatched ingredient hidden} other {# unmatched ingredients hidden}}",
+      "reason": {
+        "uses_expiring_ingredients": "Uses ingredients expiring soon",
+        "high_protein": "High in protein",
+        "all_ingredients_available": "All ingredients in stock",
+        "budget_friendly": "Budget-friendly",
+        "low_carb": "Low-carb",
+        "quick_to_make": "Quick to make",
+        "matches_diet": "Matches your diet",
+        "uses_inventory": "Uses your inventory"
+      },
+      "tag": {
+        "vegan": "Vegan",
+        "vegetarian": "Vegetarian",
+        "gluten_free": "Gluten-free",
+        "dairy_free": "Dairy-free",
+        "low_carb": "Low-carb",
+        "keto": "Keto",
+        "paleo": "Paleo",
+        "high_protein": "High-protein",
+        "low_fat": "Low-fat",
+        "halal": "Halal",
+        "kosher": "Kosher",
+        "spicy": "Spicy",
+        "quick": "Quick",
+        "comfort": "Comfort",
+        "healthy": "Healthy"
+      },
+      "allergen": {
+        "nuts": "Nuts",
+        "peanuts": "Peanuts",
+        "tree_nuts": "Tree nuts",
+        "dairy": "Dairy",
+        "milk": "Milk",
+        "gluten": "Gluten",
+        "wheat": "Wheat",
+        "eggs": "Eggs",
+        "fish": "Fish",
+        "shellfish": "Shellfish",
+        "soy": "Soy",
+        "sesame": "Sesame",
+        "mustard": "Mustard",
+        "celery": "Celery",
+        "sulphites": "Sulphites"
+      },
+      "groups": {
+        "inStock": "In stock",
+        "toBuy": "Need to buy",
+        "optional": "Optional / for taste"
+      },
+      "status": {
+        "inStock": "In stock",
+        "missing": "Not in inventory",
+        "expiring": "Expiring soon"
+      },
+      "edit": {
+        "title": "Edit recipe",
+        "ingredientsTitle": "Ingredients",
+        "noIngredients": "No ingredients yet.",
+        "summaryInStock": "in stock",
+        "summaryToBuy": "to buy",
+        "addBtn": "Add ingredient",
+        "searchTitle": "Search catalog",
+        "manualTitle": "Add manually",
+        "searchPlaceholder": "Search ingredients…",
+        "notFound": "Ingredient not found? Add manually",
+        "fieldName": "Name",
+        "fieldNamePlaceholder": "e.g. Soy sauce",
+        "fieldQty": "Amount",
+        "fieldUnit": "Unit",
+        "fieldRole": "Role",
+        "fieldStatus": "Status",
+        "statusInStock": "In stock",
+        "statusToBuy": "Need to buy",
+        "statusOptional": "Optional",
+        "addConfirm": "Add to recipe",
+        "cancel": "Cancel",
+        "save": "Save draft"
       }
     }
   }
