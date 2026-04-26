@@ -1,0 +1,43 @@
+{
+  "blog": {
+    "title": "Блог",
+    "home": "Главная",
+    "blog": "Блог",
+    "subtitle": "Профессиональные статьи о суши, японской кухне и кулинарных техниках",
+    "allPosts": "Все статьи",
+    "postsTotal": "статей",
+    "of": "из",
+    "readMore": "Читать далее",
+    "backToBlog": "Назад в блог",
+    "pdfGenerating": "Генерация...",
+    "pdfSuccess": "Готово!",
+    "pdfError": "Ошибка генерации",
+    "pdfContentNotFound": "Контент не найден",
+    "downloadPdfTitle": "Скачать техкарту",
+    "downloadPdfDesc": "Формат А4 • Профориентированный стандарт",
+    "desktopOnly": "Доступно только на ПК",
+    "downloadBtn": "PDF",
+    "authorRole": "Суши-шеф и кулинарный эксперт",
+    "moreFromCategory": "→ Больше по категории",
+    "allArticles": "Все статьи",
+    "searchPlaceholder": "Поиск по статьям, ингредиентам, техникам…",
+    "recentSearches": "Недавние поиски",
+    "activeFilters": "Активные фильтры",
+    "clearFilters": "Сбросить все",
+    "noResultsSearch": "Ничего не найдено по запросу \"{query}\"",
+    "noResultsCategory": "Нет статей в этой категории",
+    "categories": {
+      "all": "Все",
+      "sushimastery": "Sushi Mastery",
+      "kitchentech": "Kitchen Tech",
+      "chefmindset": "Опыт шефа",
+      "restaurants": "Для ресторанов",
+      "products": "Продукты",
+      "ai": "AI & Технологии"
+    },
+    "share": "Поделиться",
+    "shareTitle": "Поделиться статьей",
+    "shareSuccess": "Успешно!",
+    "linkCopied": "Ссылка скопирована"
+  }
+}

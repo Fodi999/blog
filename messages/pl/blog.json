@@ -1,0 +1,43 @@
+{
+  "blog": {
+    "title": "Blog",
+    "home": "Home",
+    "blog": "Blog",
+    "subtitle": "Profesjonalne artykuły o sushi, kuchni japońskiej i technikach kulinarnych",
+    "allPosts": "Wszystkie artykuły",
+    "postsTotal": "artykułów",
+    "of": "z",
+    "readMore": "Czytaj więcej",
+    "backToBlog": "Powrót do bloga",
+    "pdfGenerating": "Generowanie...",
+    "pdfSuccess": "Gotowe!",
+    "pdfError": "Błąd generowania",
+    "pdfContentNotFound": "Nie znaleziono zawartości",
+    "downloadPdfTitle": "Pobierz kartę tech.",
+    "downloadPdfDesc": "Format A4 • Standard Profesjonalny",
+    "desktopOnly": "Dostępne tylko na komputerach (PC)",
+    "downloadBtn": "Pobierz PDF",
+    "authorRole": "Sushi Chef i Ekspert Kulinarny",
+    "moreFromCategory": "→ Więcej z kategorii",
+    "allArticles": "Wszystkie artykuły",
+    "searchPlaceholder": "Szukaj artykułów, składników, technik…",
+    "recentSearches": "Ostatnie wyszukiwania",
+    "activeFilters": "Aktywne filtry",
+    "clearFilters": "Wyczyść wszystko",
+    "noResultsSearch": "Nie znaleziono wyników dla \"{query}\"",
+    "noResultsCategory": "Brak artykułów w tej kategorii",
+    "categories": {
+      "all": "Wszystkie",
+      "sushimastery": "Sushi Mastery",
+      "kitchentech": "Kitchen Tech",
+      "chefmindset": "Doświadczenie szefa",
+      "restaurants": "Dla restauracji",
+      "products": "Produkty",
+      "ai": "AI i Technologie"
+    },
+    "share": "Udostępnij",
+    "shareTitle": "Udostępnij artykuł",
+    "shareSuccess": "Sukces!",
+    "linkCopied": "Link skopiowany"
+  }
+}

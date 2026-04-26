@@ -1,0 +1,48 @@
+{
+  "pricing": {
+    "badge": "Doładuj akcje",
+    "title": "Kup akcje",
+    "subtitle": "Płać tylko za to, czego używasz. Bez subskrypcji. Akcje nigdy nie wygasają.",
+    "bestValue": "Najlepsza oferta",
+    "buy": "Kup teraz",
+    "signInToBuy": "Zaloguj się i kup",
+    "redirecting": "Przekierowanie do płatności…",
+    "perAction": "{price} za akcję",
+    "save": "Oszczędź {pct}%",
+    "paymentSecure": "Bezpieczna płatność przez Stripe.",
+    "backToApp": "← Powrót do aplikacji",
+    "feature": {
+      "actions": "{count} akcji AI",
+      "noExpiry": "Bez wygaśnięcia",
+      "allModes": "Czat, planowanie, generowanie przepisów"
+    },
+    "bundleTitle": "{count} akcji AI",
+    "paymentSecureTest": "Bezpieczna płatność przez Stripe. Tryb testowy — karta 4242 4242 4242 4242.",
+    "faq": {
+      "title": "Czym jest akcja AI?",
+      "item1": "1 akcja = jedno zapytanie do AI-szefa kuchni.",
+      "item2": "Plan tygodniowy = 5 akcji.",
+      "item3": "Generowanie przepisu = 2 akcje.",
+      "item4": "Katalog i podstawowe narzędzia są darmowe."
+    }
+  },
+  "billing": {
+    "success": {
+      "title": "Płatność zakończona!",
+      "subtitle": "Akcje są dodawane do Twojego konta.",
+      "note": "Stripe potwierdza płatność z naszym serwerem. Zwykle trwa to kilka sekund — nowe saldo pojawi się wkrótce w czacie.",
+      "cta": {
+        "chat": "Otwórz czat",
+        "dashboard": "Do dashboardu"
+      }
+    },
+    "cancel": {
+      "title": "Płatność anulowana",
+      "subtitle": "Nie pobrano żadnych środków. Możesz spróbować ponownie.",
+      "cta": {
+        "retry": "Wróć do cennika",
+        "dashboard": "Do dashboardu"
+      }
+    }
+  }
+}

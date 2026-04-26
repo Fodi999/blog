@@ -1,0 +1,25 @@
+{
+  "recipesPage": {
+    "meta": {
+      "title": "AI Recipes — Dima Fomin",
+      "description": "AI-generated recipes with precise nutritional values, cooking steps, and curated ingredients."
+    },
+    "title": "AI Recipes",
+    "subtitle": "Recipes with precise nutritional values, crafted by AI from the best ingredients.",
+    "allRecipes": "All Recipes",
+    "noRecipes": "No published recipes yet",
+    "kcal": "kcal",
+    "protein": "protein",
+    "steps": "steps",
+    "viewRecipe": "View recipe",
+    "filters": {
+      "all": "All",
+      "highProtein": "High Protein",
+      "lowCarb": "Low Carb",
+      "keto": "Keto",
+      "breakfast": "Breakfast",
+      "lunch": "Lunch",
+      "dinner": "Dinner"
+    }
+  }
+}

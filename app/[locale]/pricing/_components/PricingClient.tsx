@@ -73,25 +73,25 @@ export function PricingClient({ locale }: { locale: string }) {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-amber-50 via-white to-white py-16 px-4">
+    <main className="min-h-screen bg-gradient-to-b from-amber-50 via-background to-background py-16 px-4 dark:from-amber-950/20">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-semibold mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-semibold mb-4 dark:bg-amber-900/30 dark:text-amber-300">
             <Sparkles className="w-3.5 h-3.5" />
             {t('badge')}
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-3">
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-3">
             {t('title')}
           </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             {t('subtitle')}
           </p>
         </div>
 
         {/* Error banner */}
         {error && (
-          <div className="max-w-2xl mx-auto mb-6 p-4 rounded-lg bg-red-50 border border-red-200 text-red-800 text-sm">
+          <div className="max-w-2xl mx-auto mb-6 p-4 rounded-lg bg-destructive/10 border border-destructive/30 text-destructive text-sm">
             {error}
           </div>
         )}
@@ -118,12 +118,12 @@ export function PricingClient({ locale }: { locale: string }) {
               return (
                 <div
                   key={b.key}
-                  className={`relative rounded-2xl p-6 border-2 bg-white shadow-sm transition hover:shadow-lg ${
+                  className={`relative rounded-2xl p-6 border-2 bg-card text-card-foreground shadow-sm transition hover:shadow-lg ${
                     isBest
-                      ? 'border-amber-500 shadow-amber-100'
+                      ? 'border-amber-500 shadow-amber-100 dark:shadow-amber-900/20'
                       : isMid
-                      ? 'border-amber-200'
-                      : 'border-gray-200'
+                      ? 'border-amber-200 dark:border-amber-800/50'
+                      : 'border-border'
                   }`}
                 >
                   {isBest && (
@@ -132,33 +132,33 @@ export function PricingClient({ locale }: { locale: string }) {
                     </div>
                   )}
                   <div className="flex items-center gap-2 mb-2">
-                    <Coins className="w-5 h-5 text-amber-600" />
-                    <span className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+                    <Coins className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                    <span className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
                       {t('bundleTitle', { count: b.actions })}
                     </span>
                   </div>
                   <div className="mb-1">
-                    <span className="text-4xl font-bold text-gray-900">
+                    <span className="text-4xl font-bold text-foreground">
                       {formatPrice(b.price_eur_cents)}
                     </span>
                   </div>
-                  <div className="text-sm text-gray-500 mb-4">
+                  <div className="text-sm text-muted-foreground mb-4">
                     {t('perAction', {
                       price: `€${perAction.toFixed(3)}`,
                     })}
                     {savingsPct > 0 && (
-                      <span className="ml-2 inline-block px-2 py-0.5 rounded-full bg-green-100 text-green-700 text-xs font-semibold">
+                      <span className="ml-2 inline-block px-2 py-0.5 rounded-full bg-green-100 text-green-700 text-xs font-semibold dark:bg-green-900/30 dark:text-green-400">
                         {t('save', { pct: savingsPct })}
                       </span>
                     )}
                   </div>
-                  <ul className="space-y-2 mb-6 text-sm text-gray-700">
+                  <ul className="space-y-2 mb-6 text-sm text-foreground/80">
                     <li className="flex items-start gap-2">
-                      <Check className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
+                      <Check className="w-4 h-4 text-green-600 dark:text-green-400 mt-0.5 shrink-0" />
                       <span>{t('feature.noExpiry')}</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <Check className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
+                      <Check className="w-4 h-4 text-green-600 dark:text-green-400 mt-0.5 shrink-0" />
                       <span>{t('feature.allModes')}</span>
                     </li>
                   </ul>
@@ -168,7 +168,7 @@ export function PricingClient({ locale }: { locale: string }) {
                     className={`w-full py-3 px-4 rounded-lg font-semibold text-sm transition disabled:opacity-50 disabled:cursor-not-allowed ${
                       isBest
                         ? 'bg-amber-500 hover:bg-amber-600 text-white'
-                        : 'bg-gray-900 hover:bg-gray-800 text-white'
+                        : 'bg-foreground hover:bg-foreground/90 text-background'
                     }`}
                   >
                     {pendingKey === b.key ? (
@@ -190,26 +190,26 @@ export function PricingClient({ locale }: { locale: string }) {
 
         {/* What is an AI action? — explainer block */}
         {bundles && (
-          <div className="max-w-2xl mx-auto mb-12 rounded-2xl border border-amber-200 bg-amber-50/50 p-6">
-            <h2 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-amber-600" />
+          <div className="max-w-2xl mx-auto mb-12 rounded-2xl border border-amber-200 bg-amber-50/50 p-6 dark:border-amber-900/40 dark:bg-amber-950/20">
+            <h2 className="text-lg font-bold text-foreground mb-3 flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-amber-600 dark:text-amber-400" />
               {t('faq.title')}
             </h2>
-            <ul className="space-y-2 text-sm text-gray-700">
+            <ul className="space-y-2 text-sm text-foreground/80">
               <li className="flex gap-2">
-                <span className="text-amber-600 font-bold">•</span>
+                <span className="text-amber-600 dark:text-amber-400 font-bold">•</span>
                 <span>{t('faq.item1')}</span>
               </li>
               <li className="flex gap-2">
-                <span className="text-amber-600 font-bold">•</span>
+                <span className="text-amber-600 dark:text-amber-400 font-bold">•</span>
                 <span>{t('faq.item2')}</span>
               </li>
               <li className="flex gap-2">
-                <span className="text-amber-600 font-bold">•</span>
+                <span className="text-amber-600 dark:text-amber-400 font-bold">•</span>
                 <span>{t('faq.item3')}</span>
               </li>
               <li className="flex gap-2">
-                <span className="text-amber-600 font-bold">•</span>
+                <span className="text-amber-600 dark:text-amber-400 font-bold">•</span>
                 <span>{t('faq.item4')}</span>
               </li>
             </ul>
@@ -217,14 +217,14 @@ export function PricingClient({ locale }: { locale: string }) {
         )}
 
         {/* Footnote */}
-        <div className="max-w-2xl mx-auto text-center text-sm text-gray-500 space-y-2">
+        <div className="max-w-2xl mx-auto text-center text-sm text-muted-foreground space-y-2">
           <p>
             {process.env.NEXT_PUBLIC_STRIPE_TEST_MODE === 'true'
               ? t('paymentSecureTest')
               : t('paymentSecure')}
           </p>
           <p>
-            <Link href={`/${locale}/app/dashboard`} className="underline hover:text-amber-700">
+            <Link href={`/${locale}/app/dashboard`} className="underline hover:text-amber-600 dark:hover:text-amber-400">
               {t('backToApp')}
             </Link>
           </p>

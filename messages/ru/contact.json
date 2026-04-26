@@ -1,0 +1,16 @@
+{
+  "contact": {
+    "title": "Контакт",
+    "description": "Свяжитесь со мной",
+    "email": {
+      "title": "Email",
+      "primary": "fodi85999@gmail.com"
+    },
+    "social": {
+      "title": "Социальные сети",
+      "instagram": "Instagram: @fodifood",
+      "instagramUrl": "https://www.instagram.com/fodifood?igsh=aXZqbjZmNWhsNzNn"
+    },
+    "location": "Нахожусь в Гданьске, Польша. Работаю глобально."
+  }
+}

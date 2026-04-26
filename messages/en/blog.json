@@ -1,0 +1,43 @@
+{
+  "blog": {
+    "title": "Blog",
+    "home": "Home",
+    "blog": "Blog",
+    "subtitle": "Professional articles about sushi, Japanese cuisine, and culinary techniques",
+    "allPosts": "All Articles",
+    "postsTotal": "articles",
+    "of": "of",
+    "readMore": "Read more",
+    "backToBlog": "Back to blog",
+    "pdfGenerating": "Generating...",
+    "pdfSuccess": "Ready!",
+    "pdfError": "Generation error",
+    "pdfContentNotFound": "Content not found",
+    "downloadPdfTitle": "Download technical card",
+    "downloadPdfDesc": "A4 Format • Professional Standard",
+    "desktopOnly": "Available on desktop only",
+    "downloadBtn": "Download PDF",
+    "authorRole": "Sushi Chef & Culinary Expert",
+    "moreFromCategory": "→ More from category",
+    "allArticles": "All articles",
+    "searchPlaceholder": "Search articles, ingredients, techniques…",
+    "recentSearches": "Recent searches",
+    "activeFilters": "Active filters",
+    "clearFilters": "Clear all",
+    "noResultsSearch": "No results found for \"{query}\"",
+    "noResultsCategory": "No articles in this category",
+    "categories": {
+      "all": "All",
+      "sushimastery": "Sushi Mastery",
+      "kitchentech": "Kitchen Tech",
+      "chefmindset": "Chef Mindset",
+      "restaurants": "For Restaurants",
+      "products": "Products",
+      "ai": "AI & Technology"
+    },
+    "share": "Share",
+    "shareTitle": "Share article",
+    "shareSuccess": "Success!",
+    "linkCopied": "Link copied to clipboard"
+  }
+}

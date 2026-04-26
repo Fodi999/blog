@@ -58,6 +58,49 @@ export type I18n = {
   allYearLabel: string;
   season: { peak: string; good: string; limited: string; off: string };
   months: string[];
+
+  /** Sub-labels for legend dots (e.g. "Optimal Catch" under "Peak"). */
+  legendSub: { peak: string; good: string; limited: string; off: string };
+  /** One-line status hint shown next to each fish row. */
+  insight: {
+    peakSushi: string;
+    peakRegular: string;
+    good: string;
+    limited: string;
+    off: string;
+  };
+  /** "Best Right Now" hero block. */
+  bestChoiceNow: string;
+  sushiGrade: string;
+  peakQuality: string;
+  strongAlternatives: string;
+  seasonRiskAvoid: string;
+  lowQuality: string;
+  smartPairing: string;
+  /** Template with `{fish}` placeholder, e.g. "Peak {fish} is best with…". */
+  pairingTitle: string;
+  pairingFallback: string;
+  pairingBody: string;
+  analyzeInLab: string;
+  regionLabel: string;
+  globalMarket: string;
+  aiCurator: string;
+  /** AI Chef seasonal insights, by season. */
+  seasonInsight: {
+    spring: string;
+    summer: string;
+    autumn: string;
+    winter: string;
+  };
+  /** Tooltip labels per status. */
+  tooltip: { peak: string; good: string; limited: string; off: string };
+  harvestDynamics: string;
+  peakFocus: string;
+  noResults: string;
+  seaStock: string;
+  freshStock: string;
+  sushiBadge: string;
+  regionalDynamics: string;
 };
 
 export type RegionEntry = { status: Availability; peakRange: string; };
@@ -107,25 +150,31 @@ const statusTextClass: Record<Availability, string> = {
 };
 
 /** rule-based micro-insight per availability status */
-function statusInsight(avail: Availability, isSushi: boolean): { icon: React.ElementType; text: string; cls: string } {
+function statusInsight(
+  avail: Availability,
+  isSushi: boolean,
+  i18n?: I18n,
+): { icon: React.ElementType; text: string; cls: string } {
   if (avail === 'peak') return {
     icon: TrendingUp,
-    text: isSushi ? 'Perfect for sushi' : 'Best quality now',
+    text: isSushi
+      ? (i18n?.insight.peakSushi ?? 'Perfect for sushi')
+      : (i18n?.insight.peakRegular ?? 'Best quality now'),
     cls: 'text-emerald-600 dark:text-emerald-400',
   };
   if (avail === 'good') return {
     icon: Check,
-    text: 'Good choice',
+    text: i18n?.insight.good ?? 'Good choice',
     cls: 'text-amber-600 dark:text-amber-400',
   };
   if (avail === 'limited') return {
     icon: TrendingDown,
-    text: 'Higher price expected',
+    text: i18n?.insight.limited ?? 'Higher price expected',
     cls: 'text-orange-500',
   };
   return {
     icon: AlertTriangle,
-    text: 'Not in season — avoid',
+    text: i18n?.insight.off ?? 'Not in season — avoid',
     cls: 'text-muted-foreground/50',
   };
 }
@@ -189,8 +238,8 @@ function SeasonChart({ months, monthHeaders, currentMonth }: {
 
 // ─── Region Compare strip ─────────────────────────────────────────────────────
 
-function RegionCompare({ slug, regionRows, activeRegion }: {
-  slug: string; regionRows: RegionRows; activeRegion?: string;
+function RegionCompare({ slug, regionRows, activeRegion, i18n }: {
+  slug: string; regionRows: RegionRows; activeRegion?: string; i18n: I18n;
 }) {
   const entries = regionRows[slug];
   if (!entries) return null;
@@ -202,7 +251,7 @@ function RegionCompare({ slug, regionRows, activeRegion }: {
 
   return (
     <div className="mt-6 pt-6 border-t border-white/5 space-y-2">
-      <p className="text-[8px] font-black uppercase tracking-[0.3em] text-muted-foreground/30 mb-2">Regional Dynamics</p>
+      <p className="text-[8px] font-black uppercase tracking-[0.3em] text-muted-foreground/30 mb-2">{i18n.regionalDynamics}</p>
       {filled.map((r) => {
         const e = entries[r]!;
         const isActive = r === activeRegion;
@@ -370,7 +419,7 @@ function SmartModeCard({ fish, currentMonth, monthHeaders, i18n, locale, onShowC
 }) {
   const router = useRouter();
   const status = fish.months[currentMonth];
-  const insight = statusInsight(status, fish.isSushi);
+  const insight = statusInsight(status, fish.isSushi, i18n);
   const InsightIcon = insight.icon;
   const peakMonths = fish.months.map((a, i) => ({ a, i })).filter(x => x.a === 'peak').map(x => (monthHeaders[x.i] ?? MONTH_SHORT[x.i]).slice(0, 3));
 
@@ -483,17 +532,17 @@ function BestNowBlock({ bestRightNow, i18n, rows, currentMonth, locale, activeRe
                 </span>
               </div>
               <h2 className="text-2xl sm:text-3xl font-black text-foreground uppercase tracking-tighter italic">
-                {bestRightNow.headline || "AI Chef Curator"}
+                {bestRightNow.headline || i18n.aiCurator}
               </h2>
             </div>
           </div>
           
           <div className="flex items-center gap-3 w-full md:w-auto">
             <div className="flex-1 md:flex-none flex flex-col items-end">
-              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 mb-1">Region</p>
-              <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-xs font-bold text-foreground">
+              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 mb-1">{i18n.regionLabel}</p>
+              <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-muted/40 border border-border/40 text-xs font-bold text-foreground">
                 <MapPin className="h-3 w-3 text-primary" />
-                {bestRightNow.headline ? (activeRegion || "Global") : "Global Market"}
+                {bestRightNow.headline ? (activeRegion || i18n.globalMarket) : i18n.globalMarket}
               </div>
             </div>
           </div>
@@ -504,7 +553,7 @@ function BestNowBlock({ bestRightNow, i18n, rows, currentMonth, locale, activeRe
           <div className="lg:col-span-7 space-y-4">
             <div className="flex items-center justify-between mb-4">
               <p className="text-[11px] font-black uppercase tracking-[0.2em] text-primary flex items-center gap-2">
-                <Trophy className="h-4 w-4" /> Best Choice Now
+                <Trophy className="h-4 w-4" /> {i18n.bestChoiceNow}
               </p>
             </div>
             
@@ -538,10 +587,10 @@ function BestNowBlock({ bestRightNow, i18n, rows, currentMonth, locale, activeRe
                     </h4>
                     <div className="flex items-center gap-2 mt-1">
                       {fish.sushi_grade && (
-                        <span className="text-[9px] font-black uppercase tracking-widest text-primary border border-primary/20 px-1.5 py-0.5 rounded bg-primary/5">Sushi Grade</span>
+                        <span className="text-[9px] font-black uppercase tracking-widest text-primary border border-primary/20 px-1.5 py-0.5 rounded bg-primary/5">{i18n.sushiGrade}</span>
                       )}
                       <span className="text-[10px] text-muted-foreground font-medium flex items-center gap-1">
-                        <TrendingUp className="h-3 w-3 text-emerald-500" /> Peak Quality
+                        <TrendingUp className="h-3 w-3 text-emerald-500" /> {i18n.peakQuality}
                       </span>
                     </div>
                   </div>
@@ -560,9 +609,9 @@ function BestNowBlock({ bestRightNow, i18n, rows, currentMonth, locale, activeRe
           <div className="lg:col-span-5 space-y-6">
             {/* Also Good */}
             {bestRightNow.also_good.length > 0 && (
-              <div className="p-6 rounded-[2rem] bg-white/5 border border-white/10">
+              <div className="p-6 rounded-[2rem] bg-muted/40 border border-border/40">
                 <p className="text-[11px] font-black uppercase tracking-[0.2em] text-amber-500 mb-4 flex items-center gap-2">
-                  <Check className="h-4 w-4" /> Strong Alternatives
+                  <Check className="h-4 w-4" /> {i18n.strongAlternatives}
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {bestRightNow.also_good.map((fish) => (
@@ -582,13 +631,13 @@ function BestNowBlock({ bestRightNow, i18n, rows, currentMonth, locale, activeRe
             {avoidFish.length > 0 && (
               <div className="p-6 rounded-[2rem] bg-rose-500/5 border border-rose-500/20">
                 <p className="text-[11px] font-black uppercase tracking-[0.2em] text-rose-500 mb-4 flex items-center gap-2">
-                  <AlertTriangle className="h-4 w-4" /> Season Risk: Avoid
+                  <AlertTriangle className="h-4 w-4" /> {i18n.seasonRiskAvoid}
                 </p>
                 <div className="space-y-2">
                   {avoidFish.map((fish) => (
-                    <div key={fish.slug} className="flex items-center justify-between p-2 rounded-lg bg-black/20">
-                      <span className="text-xs font-bold text-rose-300 line-through decoration-rose-500/50">{fish.name}</span>
-                      <span className="text-[9px] font-black uppercase tracking-widest text-rose-500/60 italic">Low Quality</span>
+                    <div key={fish.slug} className="flex items-center justify-between p-2 rounded-lg bg-rose-500/5">
+                      <span className="text-xs font-bold text-rose-500 line-through decoration-rose-500/50">{fish.name}</span>
+                      <span className="text-[9px] font-black uppercase tracking-widest text-rose-500/60 italic">{i18n.lowQuality}</span>
                     </div>
                   ))}
                 </div>
@@ -599,16 +648,18 @@ function BestNowBlock({ bestRightNow, i18n, rows, currentMonth, locale, activeRe
             <div className="p-6 rounded-[2rem] bg-indigo-500/5 border border-indigo-500/20 relative overflow-hidden group/pairing cursor-pointer" onClick={() => router.push(`/${locale}/chef-tools/lab`)}>
               <div className="relative z-10">
                 <p className="text-[11px] font-black uppercase tracking-[0.2em] text-indigo-400 mb-3 flex items-center gap-2">
-                  <Utensils className="h-4 w-4" /> Smart Pairing hint
+                  <Utensils className="h-4 w-4" /> {i18n.smartPairing}
                 </p>
                 <h5 className="text-sm font-black text-foreground uppercase italic mb-2">
-                  {peakFish[0]?.name ? `Peak ${peakFish[0]?.name} is best with...` : "Cooking Seasonal Best"}
+                  {peakFish[0]?.name
+                    ? i18n.pairingTitle.replace('{fish}', peakFish[0].name)
+                    : i18n.pairingFallback}
                 </h5>
                 <p className="text-[11px] text-muted-foreground leading-relaxed mb-4">
-                  AI detected high umami levels in current catches. Use acid-rich pairings to lift the flavor profile.
+                  {i18n.pairingBody}
                 </p>
                 <div className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-indigo-400">
-                  Analyze in Culinary Lab <ArrowUpRight className="h-3 w-3" />
+                  {i18n.analyzeInLab} <ArrowUpRight className="h-3 w-3" />
                 </div>
               </div>
               <Wand2 className="absolute -bottom-4 -right-4 h-20 w-20 text-indigo-500/10 group-hover/pairing:scale-110 transition-transform duration-700" />
@@ -622,22 +673,22 @@ function BestNowBlock({ bestRightNow, i18n, rows, currentMonth, locale, activeRe
           <div className="flex-1 whitespace-nowrap overflow-hidden">
             <p className="text-[11px] font-bold text-foreground animate-marquee inline-block mr-12 uppercase italic tracking-tight">
               {currentMonth >= 2 && currentMonth <= 4
-                ? 'Spring Insight: sea fish at peak. Best for Sashimi. Freshwater fish spawning soon — texture might be soft.'
+                ? i18n.seasonInsight.spring
                 : currentMonth >= 5 && currentMonth <= 7
-                ? 'Summer Insight: Higher fat content in surface swimmers. Perfect for high-heat charcoal grilling.'
+                ? i18n.seasonInsight.summer
                 : currentMonth >= 8 && currentMonth <= 10
-                ? 'Autumn Insight: Atlantic stocks are fattening up for winter. Optimal time for traditional curing and smoking.'
-                : 'Winter Insight: Dense, fatty sea fish dominance. Cold waters produce concentrated umami profiles.'}
+                ? i18n.seasonInsight.autumn
+                : i18n.seasonInsight.winter}
             </p>
             {/* Repeat for continuous marquee */}
             <p className="text-[11px] font-bold text-foreground animate-marquee inline-block uppercase italic tracking-tight">
               {currentMonth >= 2 && currentMonth <= 4
-                ? 'Spring Insight: sea fish at peak. Best for Sashimi. Freshwater fish spawning soon — texture might be soft.'
+                ? i18n.seasonInsight.spring
                 : currentMonth >= 5 && currentMonth <= 7
-                ? 'Summer Insight: Higher fat content in surface swimmers. Perfect for high-heat charcoal grilling.'
+                ? i18n.seasonInsight.summer
                 : currentMonth >= 8 && currentMonth <= 10
-                ? 'Autumn Insight: Atlantic stocks are fattening up for winter. Optimal time for traditional curing and smoking.'
-                : 'Winter Insight: Dense, fatty sea fish dominance. Cold waters produce concentrated umami profiles.'}
+                ? i18n.seasonInsight.autumn
+                : i18n.seasonInsight.winter}
             </p>
           </div>
         </div>
@@ -650,10 +701,10 @@ function BestNowBlock({ bestRightNow, i18n, rows, currentMonth, locale, activeRe
 
 function ColourLegend({ i18n }: { i18n: I18n }) {
   const items = [
-    { cls: dotStyles.peak,    label: i18n.season.peak,    sub: 'Optimal Catch' },
-    { cls: dotStyles.good,    label: i18n.season.good,    sub: 'Stable Harvest' },
-    { cls: dotStyles.limited, label: i18n.season.limited, sub: 'Scarce Stock' },
-    { cls: dotStyles.off,     label: i18n.season.off,     sub: 'Closed Season' },
+    { cls: dotStyles.peak,    label: i18n.season.peak,    sub: i18n.legendSub.peak },
+    { cls: dotStyles.good,    label: i18n.season.good,    sub: i18n.legendSub.good },
+    { cls: dotStyles.limited, label: i18n.season.limited, sub: i18n.legendSub.limited },
+    { cls: dotStyles.off,     label: i18n.season.off,     sub: i18n.legendSub.off },
   ];
   return (
     <div className="flex flex-wrap gap-x-8 gap-y-4 px-8 py-5 rounded-[2rem] bg-white/[0.03] border border-white/10 backdrop-blur-2xl shadow-2xl">
@@ -929,7 +980,7 @@ export function FishSeasonClient({
                 <TableBody>
                   {displayed.map((fish, fi) => {
                     const curStatus = fish.months[currentMonth];
-                    const insight = statusInsight(curStatus, fish.isSushi);
+                    const insight = statusInsight(curStatus, fish.isSushi, i18n);
                     const InsightIcon = insight.icon;
                     return (
                       <TableRow 
@@ -986,10 +1037,10 @@ export function FishSeasonClient({
                                   </div>
                                   <div className="text-muted-foreground pb-2 border-b border-white/5">{monthHeaders[mi]} 2026</div>
                                   <div className="space-y-1">
-                                    {avail === 'peak' && <div className="text-emerald-500 flex items-center gap-2"><TrendingUp className="h-3 w-3" /> Peak availability</div>}
-                                    {avail === 'good' && <div className="text-amber-500 flex items-center gap-2"><Check className="h-3 w-3" /> Stable harvest</div>}
-                                    {avail === 'limited' && <div className="text-orange-500 flex items-center gap-2"><TrendingDown className="h-3 w-3" /> Scarce stocks</div>}
-                                    {avail === 'off' && <div className="text-muted-foreground/40 flex items-center gap-2"><AlertTriangle className="h-3 w-3" /> Season closed</div>}
+                                    {avail === 'peak' && <div className="text-emerald-500 flex items-center gap-2"><TrendingUp className="h-3 w-3" /> {i18n.tooltip.peak}</div>}
+                                    {avail === 'good' && <div className="text-amber-500 flex items-center gap-2"><Check className="h-3 w-3" /> {i18n.tooltip.good}</div>}
+                                    {avail === 'limited' && <div className="text-orange-500 flex items-center gap-2"><TrendingDown className="h-3 w-3" /> {i18n.tooltip.limited}</div>}
+                                    {avail === 'off' && <div className="text-muted-foreground/40 flex items-center gap-2"><AlertTriangle className="h-3 w-3" /> {i18n.tooltip.off}</div>}
                                   </div>
                                 </div>
                                 <div className="w-2.5 h-2.5 bg-popover border-r border-b border-white/10 rotate-45 mx-auto -mt-1.5" />
@@ -1011,7 +1062,7 @@ export function FishSeasonClient({
             {displayed.length === 0 && (
               <div className="py-24 text-center space-y-4">
                 <div className="text-4xl grayscale opacity-20 animate-bounce">🐟</div>
-                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/40">No oceanic results in current parameters</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/40">{i18n.noResults}</p>
               </div>
             )}
           </div>
@@ -1042,10 +1093,10 @@ export function FishSeasonClient({
                         </h3>
                         <div className="flex items-center gap-1.5 mt-2.5 flex-wrap">
                           {fish.isSushi && (
-                            <Badge variant="outline" className="text-[8px] h-5 px-1.5 font-black text-primary border-primary/20 uppercase tracking-widest bg-primary/5">sushi</Badge>
+                            <Badge variant="outline" className="text-[8px] h-5 px-1.5 font-black text-primary border-primary/20 uppercase tracking-widest bg-primary/5">{i18n.sushiBadge}</Badge>
                           )}
                           <div className={cn("text-[8px] font-black uppercase tracking-widest text-muted-foreground/40 flex items-center gap-1")}>
-                            {fish.waterType === 'sea' ? <><Waves className="h-3 w-3" /> sea stock</> : <><Mountain className="h-3 w-3" /> fresh stock</>}
+                            {fish.waterType === 'sea' ? <><Waves className="h-3 w-3" /> {i18n.seaStock}</> : <><Mountain className="h-3 w-3" /> {i18n.freshStock}</>}
                           </div>
                         </div>
                       </div>
@@ -1056,7 +1107,7 @@ export function FishSeasonClient({
 
                     <div className="space-y-4">
                         <div className="flex items-center justify-between">
-                            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground/30">Harvest Dynamics</span>
+                            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground/30">{i18n.harvestDynamics}</span>
                             <div className={cn("text-[10px] font-black uppercase tracking-widest flex items-center gap-2", statusTextClass[curStatus])}>
                                 <div className={cn("w-1.5 h-1.5 rounded-full shadow-[0_0_10px_currentColor]", statusDotClass[curStatus])} />
                                 {i18n.season[curStatus]}
@@ -1068,7 +1119,7 @@ export function FishSeasonClient({
                     {peakMonths.length > 0 && (
                       <div className="mt-8 pt-6 border-t border-white/5">
                         <p className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.2em] opacity-40 group-hover:opacity-100 transition-opacity">
-                          Peak Focus: {peakMonths.slice(0, 3).join(', ')}{peakMonths.length > 3 ? '...' : ''}
+                          {i18n.peakFocus}: {peakMonths.slice(0, 3).join(', ')}{peakMonths.length > 3 ? '...' : ''}
                         </p>
                       </div>
                     )}

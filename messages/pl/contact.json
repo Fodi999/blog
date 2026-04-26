@@ -1,0 +1,16 @@
+{
+  "contact": {
+    "title": "Kontakt",
+    "description": "Skontaktuj się ze mną",
+    "email": {
+      "title": "Email",
+      "primary": "fodi85999@gmail.com"
+    },
+    "social": {
+      "title": "Media społecznościowe",
+      "instagram": "Instagram: @fodifood",
+      "instagramUrl": "https://www.instagram.com/fodifood?igsh=aXZqbjZmNWhsNzNn"
+    },
+    "location": "Bazuję w Gdańsku, Polska. Pracuję globalnie."
+  }
+}

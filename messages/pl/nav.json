@@ -1,0 +1,16 @@
+{
+  "nav": {
+    "home": "Strona główna",
+    "blog": "Blog",
+    "chefTools": "AI Chef",
+    "about": "O mnie",
+    "contact": "Kontakt",
+    "homeDesc": "Profesjonalna kuchnia",
+    "blogDesc": "Artykuły i wiedza",
+    "chefToolsDesc": "Narzędzia dla kucharzy",
+    "aboutDesc": "20+ lat doświadczenia",
+    "contactDesc": "Skontaktuj się",
+    "recipes": "Przepisy",
+    "recipesDesc": "Przepisy AI od szefa kuchni"
+  }
+}

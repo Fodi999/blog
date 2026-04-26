@@ -27,18 +27,18 @@ export function SuccessClient({ locale }: { locale: string }) {
   }, []);
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gradient-to-b from-green-50 via-white to-white px-4 py-16">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-lg border border-green-100 p-8 text-center">
-        <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 flex items-center justify-center">
-          <CheckCircle2 className="w-9 h-9 text-green-600" />
+    <main className="min-h-screen flex items-center justify-center bg-gradient-to-b from-green-50 via-background to-background px-4 py-16 dark:from-green-950/20">
+      <div className="max-w-md w-full bg-card text-card-foreground rounded-2xl shadow-lg border border-green-200 dark:border-green-900/40 p-8 text-center">
+        <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+          <CheckCircle2 className="w-9 h-9 text-green-600 dark:text-green-400" />
         </div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">{t('title')}</h1>
-        <p className="text-gray-600 mb-6">{t('subtitle')}</p>
+        <h1 className="text-2xl font-bold text-foreground mb-2">{t('title')}</h1>
+        <p className="text-muted-foreground mb-6">{t('subtitle')}</p>
 
-        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6 text-left">
+        <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/40 rounded-lg p-4 mb-6 text-left">
           <div className="flex items-start gap-2">
-            <Sparkles className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
-            <p className="text-sm text-amber-900">{t('note')}</p>
+            <Sparkles className="w-4 h-4 text-amber-600 dark:text-amber-400 mt-0.5 shrink-0" />
+            <p className="text-sm text-amber-900 dark:text-amber-200">{t('note')}</p>
           </div>
         </div>
 
@@ -52,7 +52,7 @@ export function SuccessClient({ locale }: { locale: string }) {
           </Link>
           <Link
             href={`/${locale}/app/dashboard`}
-            className="block w-full text-center py-2 text-sm text-gray-600 hover:text-gray-900"
+            className="block w-full text-center py-2 text-sm text-muted-foreground hover:text-foreground"
           >
             {t('cta.dashboard')}
           </Link>
