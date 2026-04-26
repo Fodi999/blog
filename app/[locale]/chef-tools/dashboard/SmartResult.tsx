@@ -9,7 +9,6 @@ import {
   ChevronDown, ChevronUp,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
 import { PairingBlock } from './PairingBlock';
 import { MiniLab } from './MiniLab';
 import { CookingStateSelector } from './CookingStateSelector';
@@ -49,25 +48,23 @@ function MacroRing({ value, max, color, label, unit }: {
   const offset = circ - (pct / 100) * circ;
 
   return (
-    <div className="flex flex-col items-center gap-1.5 group/ring">
-      <div className="relative w-16 h-16 drop-shadow-sm transition-transform duration-500 group-hover/ring:scale-110">
+    <div className="flex flex-col items-center gap-1">
+      <div className="relative w-16 h-16">
         <svg className="w-16 h-16 -rotate-90" viewBox="0 0 64 64">
           <circle cx="32" cy="32" r={r} fill="none" stroke="currentColor"
-            className="text-muted/10" strokeWidth="6" />
+            className="text-muted/30" strokeWidth="5" />
           <circle cx="32" cy="32" r={r} fill="none" stroke={color}
-            strokeWidth="6" strokeLinecap="round" strokeDasharray={circ}
-            strokeDashoffset={offset} className="transition-all duration-1000 ease-out" />
+            strokeWidth="5" strokeLinecap="round" strokeDasharray={circ}
+            strokeDashoffset={offset} className="transition-all duration-700" />
         </svg>
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-xs font-black tabular-nums text-foreground">{value}</span>
+          <span className="text-xs font-black tabular-nums">{value}</span>
         </div>
       </div>
-      <div className="text-center">
-        <span className="block text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground/50 border-b border-border/20 mb-0.5 pb-0.5">
-          {label}
-        </span>
-        <span className="block text-[8px] font-black text-muted-foreground/30 uppercase tracking-[0.1em]">{unit}</span>
-      </div>
+      <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+        {label}
+      </span>
+      <span className="text-[10px] text-muted-foreground">{unit}</span>
     </div>
   );
 }
@@ -85,20 +82,18 @@ function CollapsibleSection({
 }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div className="rounded-[2rem] border border-border/40 bg-card/40 backdrop-blur-sm overflow-hidden transition-all duration-500 hover:border-primary/20">
+    <div className="rounded-2xl border border-border/60 bg-background overflow-hidden">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center justify-between w-full px-6 py-5 text-left hover:bg-primary/5 transition-colors group"
+        className="flex items-center justify-between w-full px-5 py-4 text-left hover:bg-muted/20 transition-colors"
       >
-        <div className="flex items-center gap-3">
-          <div className={cn("p-2 rounded-xl bg-muted/20 border border-border/10 transition-colors group-hover:bg-primary/10 group-hover:text-primary", iconColor)}>
-            <Icon className="h-4 w-4" />
-          </div>
-          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 group-hover:text-foreground transition-colors">{title}</span>
+        <div className="flex items-center gap-2">
+          <Icon className={`h-4 w-4 ${iconColor ?? 'text-primary'}`} />
+          <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{title}</span>
         </div>
-        {open ? <ChevronUp className="h-4 w-4 text-primary" /> : <ChevronDown className="h-4 w-4 text-primary" />}
+        {open ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
       </button>
-      {open && <div className="px-6 pb-6 animate-in fade-in slide-in-from-top-1 duration-500">{children}</div>}
+      {open && <div className="px-5 pb-5">{children}</div>}
     </div>
   );
 }
@@ -259,59 +254,57 @@ export function SmartResult({
       {/* ══════════════════════════════════════════════════════════
           BLOCK 0 — Product header (compact)
           ══════════════════════════════════════════════════════════ */}
-      <div className="rounded-[2.5rem] border border-border/40 bg-card/60 backdrop-blur-xl overflow-hidden hover-lift hover-glow shadow-2xl shadow-black/5">
-        <div className="flex items-center gap-6 p-6 sm:p-8">
+      <div className="rounded-2xl border border-border/60 bg-background overflow-hidden">
+        <div className="flex items-center gap-4 p-4">
           {nutrition.image_url ? (
-            <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-[1.5rem] overflow-hidden border-2 border-white/10 shadow-xl shrink-0">
-               <img src={nutrition.image_url} alt={nutrition.name} className="w-full h-full object-cover" />
-               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-            </div>
+            <img src={nutrition.image_url} alt={nutrition.name}
+              className="w-14 h-14 rounded-xl object-cover shrink-0 border border-border/40" />
           ) : (
-            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-[1.5rem] bg-muted/20 flex items-center justify-center shrink-0 border border-border/10">
+            <div className="w-14 h-14 rounded-xl bg-muted flex items-center justify-center shrink-0">
               {nutrition.water_type
-                ? <Fish className="h-8 w-8 text-primary/40" />
-                : <Leaf className="h-8 w-8 text-emerald-500/40" />}
+                ? <Fish className="h-6 w-6 text-muted-foreground" />
+                : <Leaf className="h-6 w-6 text-muted-foreground" />}
             </div>
           )}
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2">
-              <h2 className="text-2xl sm:text-4xl font-black italic uppercase tracking-tighter text-foreground leading-tight truncate pr-2 text-shimmer">
+              <h2 className="text-lg font-black uppercase tracking-tight text-foreground leading-tight truncate">
                 {nutrition.name}
               </h2>
-              <div className="flex items-center gap-1.5 shrink-0">
+              <div className="flex items-center gap-1 shrink-0">
                 <Link
                   href={`/chef-tools/nutrition/${slug}`}
-                  className="p-2 rounded-xl border border-border/40 text-muted-foreground hover:text-primary hover:border-primary/40 transition-all bg-card/50"
+                  className="p-1.5 rounded-lg border border-border/50 text-muted-foreground hover:text-primary hover:border-primary/40 transition-all"
                   title={t('fullProfile')}
                 >
-                  <ExternalLink className="h-4 w-4" />
+                  <ExternalLink className="h-3.5 w-3.5" />
                 </Link>
                 {onClose && (
                   <button
                     onClick={onClose}
-                    className="p-2 rounded-xl border border-border/40 text-muted-foreground hover:text-foreground hover:border-border transition-all bg-card/50"
+                    className="p-1.5 rounded-lg border border-border/50 text-muted-foreground hover:text-foreground hover:border-border transition-all"
                     aria-label="Close"
                   >
-                    <X className="h-4 w-4" />
+                    <X className="h-3.5 w-3.5" />
                   </button>
                 )}
               </div>
             </div>
-            <div className="flex flex-wrap items-center gap-2 mt-3">
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 bg-muted/20 px-2 py-0.5 rounded-lg">
+            <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
+              <span className="text-[11px] text-muted-foreground capitalize">
                 {(() => { try { return t(`categories.${nutrition.product_type}` as any); } catch { return nutrition.product_type; } })()}
               </span>
-              <span className="text-muted-foreground/20 italic">/</span>
-              <Badge variant="outline" className={cn("px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.1em] border-border/40", style.bg, style.text)}>
+              <span className="text-muted-foreground/30">·</span>
+              <Badge variant="outline" className={`${style.bg} ${style.text} text-[10px] font-bold uppercase border`}>
                 {t(`status.${style.label}`)}
               </Badge>
               {nutrition.sushi_grade && (
-                <Badge variant="outline" className="px-3 py-1 rounded-full text-[10px] font-black tracking-[0.1em] border-primary/20 text-primary bg-primary/10 animate-pulse">
+                <Badge variant="outline" className="text-[10px] font-bold border-primary/30 text-primary bg-primary/5">
                   🍣 Sushi
                 </Badge>
               )}
               {nutrition.nutrition_score > 0 && (
-                <Badge variant="outline" className="px-3 py-1 rounded-full text-[10px] font-black border-emerald-500/20 text-emerald-600 dark:text-emerald-400 bg-emerald-500/10">
+                <Badge variant="outline" className="text-[10px] font-bold border-emerald-500/30 text-emerald-700 dark:text-emerald-400 bg-emerald-500/5">
                   ★ {nutrition.nutrition_score}/10
                 </Badge>
               )}
@@ -385,11 +378,8 @@ export function SmartResult({
           BLOCK 1 — 🧠 AI Sous Chef (FIRST! Most important)
           Dish composition + recommendations + balance + diagnosis
           ══════════════════════════════════════════════════════════ */}
-      {/* 🧠 AI Sous Chef */}
-      <div className="rounded-[2.5rem] border-2 border-primary/20 bg-primary/5 shadow-xl shadow-primary/5 overflow-hidden transition-all duration-700 hover:border-primary/40 relative group/ai">
-        {/* Decorative corner glow */}
-        <div className="absolute -top-12 -left-12 w-32 h-32 bg-primary/20 blur-[60px] rounded-full pointer-events-none group-hover/ai:scale-150 transition-transform duration-1000" />
-        <div className="px-6 py-6 sm:px-8 sm:py-8">
+      <div className="rounded-2xl border-2 border-primary/30 bg-primary/[0.02] overflow-hidden">
+        <div className="px-5 py-4">
           <ChefBotPanel
             smart={smartData}
             loading={smartLoading}
@@ -407,15 +397,14 @@ export function SmartResult({
       {/* ══════════════════════════════════════════════════════════
           BLOCK 2 — 🥗 Pairings (always visible, clickable)
           ══════════════════════════════════════════════════════════ */}
-      {/* BLOCK 2 — 🥗 Pairings */}
-      <div className="rounded-[2rem] border border-border/40 bg-card/40 backdrop-blur-sm overflow-hidden hover-lift group/pairings transition-all duration-500">
-        <div className="px-6 pt-5 pb-1 flex items-center gap-2">
-          <Sparkles className="h-4 w-4 text-purple-500 animate-pulse" />
-          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 transition-colors group-hover/pairings:text-purple-500">
+      <div className="rounded-2xl border border-border/60 bg-background overflow-hidden">
+        <div className="px-5 pt-4 pb-1 flex items-center gap-2">
+          <Sparkles className="h-4 w-4 text-purple-500" />
+          <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
             {t('pairingsWith')}
           </span>
         </div>
-        <div className="p-6 pt-3">
+        <div className="p-5 pt-3">
           <PairingBlock
             slug={slug}
             cookingState={cookingState}
@@ -506,28 +495,26 @@ export function SmartResult({
           BLOCK 6 — 🧪 Lab (collapsible)
           ══════════════════════════════════════════════════════════ */}
       <CollapsibleSection title={t('openInLab')} icon={FlaskConical} iconColor="text-emerald-500">
-        <div className="flex justify-end mb-4">
+        <div className="flex justify-end mb-3">
           <Link
             href="/chef-tools/lab"
-            className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-all bg-card/50 px-3 py-1.5 rounded-full border border-border/40"
+            className="flex items-center gap-1 text-[10px] font-bold text-muted-foreground hover:text-primary transition-colors"
           >
             {t('fullLab')}
             <ExternalLink className="h-3 w-3" />
           </Link>
         </div>
-        <div className="rounded-2xl overflow-hidden border border-border/20">
-          <MiniLab slug={slug} name={nutrition.name} cookingState={cookingState} onSelectIngredient={onSelectIngredient} />
-        </div>
+        <MiniLab slug={slug} name={nutrition.name} cookingState={cookingState} onSelectIngredient={onSelectIngredient} />
       </CollapsibleSection>
 
       {/* ══════════════════════════════════════════════════════════
           BLOCK 7 — 🔁 Loop (Reset)
           ══════════════════════════════════════════════════════════ */}
       {onClose && (
-        <div className="pt-8 pb-12">
+        <div className="pt-6 pb-8">
           <button
             onClick={onClose}
-            className="w-full py-5 rounded-[2rem] border-2 border-primary/20 bg-primary/5 text-primary text-[14px] font-black uppercase tracking-[0.2em] hover:bg-primary/10 hover:border-primary/40 transition-all shadow-xl shadow-primary/5 active:scale-[0.98] italic"
+            className="w-full py-4 rounded-2xl border-2 border-primary/20 bg-primary/5 text-primary text-[13px] font-black uppercase tracking-wider hover:bg-primary/10 hover:border-primary/30 transition-all shadow-sm active:scale-[0.98]"
           >
             {locale === 'ru' ? 'Попробовать другой рецепт' : 'Try another recipe'}
           </button>

@@ -95,39 +95,45 @@ export async function generateMetadata({
 }: {
   params: Promise<{ locale: string; slug: string; state: string }>;
 }): Promise<Metadata> {
-  const { locale, slug, state } = await params;
-  setRequestLocale(locale);
+  try {
+    const { locale, slug, state } = await params;
+    setRequestLocale(locale);
 
-  if (!isValidState(state)) return {};
+    if (!isValidState(state)) return {};
 
-  const item = await apiFetchIngredient(slug);
-  if (!item) return {};
+    const item = await apiFetchIngredient(slug).catch(() => null);
+    if (!item) return {};
 
-  const name = localName(item, locale);
-  const sl = stateLabel(state, locale);
+    const name = localName(item, locale);
+    const sl = stateLabel(state, locale);
 
-  const title = t4(locale,
-    `${name} ${sl} — Nutrition, Calories, GI`,
-    `${name} ${sl} — Калории, БЖУ, ГИ`,
-    `${name} ${sl} — Kalorie, Wartości odżywcze, IG`,
-    `${name} ${sl} — Калорії, БЖУ, ГІ`,
-  );
+    const title = t4(locale,
+      `${name} ${sl} — Nutrition, Calories, GI`,
+      `${name} ${sl} — Калории, БЖУ, ГИ`,
+      `${name} ${sl} — Kalorie, Wartości odżywcze, IG`,
+      `${name} ${sl} — Калорії, БЖУ, ГІ`,
+    );
 
-  const description = t4(locale,
-    `${name} ${sl.toLowerCase()} nutrition facts per 100g: calories, protein, fat, carbs, glycemic index, cooking transformation, water loss, oil absorption.`,
-    `${name} ${sl.toLowerCase()}: калории, белки, жиры, углеводы на 100г, гликемический индекс, потеря воды и масла при готовке.`,
-    `${name} ${sl.toLowerCase()} wartości odżywcze na 100g: kalorie, białko, tłuszcz, węglowodany, indeks glikemiczny, transformacja gotowania.`,
-    `${name} ${sl.toLowerCase()}: калорії, білки, жири, вуглеводи на 100г, глікемічний індекс, втрата води та олії при готуванні.`,
-  );
+    const description = t4(locale,
+      `${name} ${sl.toLowerCase()} nutrition facts per 100g: calories, protein, fat, carbs, glycemic index, cooking transformation, water loss, oil absorption.`,
+      `${name} ${sl.toLowerCase()}: калории, белки, жиры, углеводы на 100г, гликемический индекс, потеря воды и масла при готовке.`,
+      `${name} ${sl.toLowerCase()} wartości odżywcze na 100g: kalorie, białko, tłuszcz, węglowodany, indeks glikemiczny, transformacja gotowania.`,
+      `${name} ${sl.toLowerCase()}: калорії, білки, жири, вуглеводи на 100г, глікемічний індекс, втрата води та олії при готуванні.`,
+    );
 
-  return genMeta({
-    title,
-    description,
-    locale: locale as 'pl' | 'en' | 'uk' | 'ru',
-    path: `/chef-tools/ingredients/${slug}/${state}`,
-    image: item.og_image ?? item.image_url ?? undefined,
-    noIndex: !INDEXABLE_STATES.has(state),
-  });
+    return genMeta({
+      title,
+      description,
+      locale: locale as 'pl' | 'en' | 'uk' | 'ru',
+      path: `/chef-tools/ingredients/${slug}/${state}`,
+      image: item.og_image ?? item.image_url ?? undefined,
+      noIndex: !INDEXABLE_STATES.has(state),
+    });
+  } catch (e) {
+    // Never let metadata generation crash the route — log and degrade.
+    console.error('[ingredient/state] generateMetadata failed', String(e));
+    return {};
+  }
 }
 
 /* ─── page ─────────────────────────────────────────────────────────────── */
@@ -142,20 +148,41 @@ export default async function IngredientStatePage({
 
   if (!isValidState(state)) notFound();
 
+  // Each fetcher swallows network errors and returns null already, but be
+  // doubly defensive in case one of them rejects unexpectedly (DNS issues
+  // on cold-starts have been seen in Vercel logs).
   const [item, statesResp, stateDetail] = await Promise.all([
-    apiFetchIngredient(slug),
+    apiFetchIngredient(slug).catch((e) => {
+      console.error('[ingredient/state] fetchIngredient failed', { slug, error: String(e) });
+      return null;
+    }),
     fetchIngredientStates(slug).catch(() => null),
-    fetchIngredientStateSingle(slug, state).catch(() => null),
+    fetchIngredientStateSingle(slug, state).catch((e) => {
+      console.error('[ingredient/state] fetchIngredientStateSingle failed', { slug, state, error: String(e) });
+      return null;
+    }),
   ]);
 
   if (!item) notFound();
 
-  // ✅ State doesn't exist in DB → 301 redirect to ingredient profile page.
+  // ✅ State doesn't exist in DB → 307 redirect to ingredient profile page.
   // This tells Google the state URL was valid but the content moved/doesn't exist,
   // and passes SEO juice to the ingredient page instead of returning 404.
   if (!stateDetail) {
     redirect(`/${locale}/chef-tools/ingredients/${slug}`);
   }
+
+  // Defensive sub-object normalization — backend may return `null` (or omit
+  // the field entirely) on cold rows. Treat any non-object as "absent".
+  const nutrition = (stateDetail.nutrition && typeof stateDetail.nutrition === 'object')
+    ? stateDetail.nutrition
+    : null;
+  const cooking = (stateDetail.cooking && typeof stateDetail.cooking === 'object')
+    ? stateDetail.cooking
+    : null;
+  const storage = (stateDetail.storage && typeof stateDetail.storage === 'object')
+    ? stateDetail.storage
+    : null;
 
   const t = await getTranslations({ locale, namespace: 'chefTools' });
   const name = localName(item, locale);
@@ -169,7 +196,7 @@ export default async function IngredientStatePage({
     ? item.image_url.startsWith('http') ? item.image_url : `${SITE}${item.image_url}`
     : undefined;
 
-  const n = stateDetail.nutrition;
+  const n = nutrition;
   const foodLd = {
     '@context': 'https://schema.org',
     '@type': 'WebPage',
@@ -362,10 +389,10 @@ export default async function IngredientStatePage({
         )}
 
         {/* ── Cooking Transformation (static SEO) ── */}
-        {state !== 'raw' && stateDetail.cooking && (
-          stateDetail.cooking.weight_change_percent != null ||
-          stateDetail.cooking.water_loss_percent != null ||
-          stateDetail.cooking.oil_absorption_g != null
+        {state !== 'raw' && cooking && (
+          cooking.weight_change_percent != null ||
+          cooking.water_loss_percent != null ||
+          cooking.oil_absorption_g != null
         ) && (
           <div className="rounded-xl sm:rounded-2xl border border-border/50 overflow-hidden mb-4 sm:mb-6">
             <div className="bg-muted/30 px-3 sm:px-5 py-2.5 sm:py-3 border-b border-border/50 flex items-center gap-2">
@@ -375,30 +402,30 @@ export default async function IngredientStatePage({
               </h2>
             </div>
             <div className="grid grid-cols-3 divide-x divide-border/50">
-              {stateDetail.cooking.weight_change_percent != null && (
+              {cooking.weight_change_percent != null && (
                 <div className="p-3 sm:p-5 text-center">
                   <p className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1">
                     {t4(locale, 'Weight Change', 'Изменение массы', 'Zmiana masy', 'Зміна маси')}
                   </p>
-                  <p className={`text-xl sm:text-2xl font-black ${stateDetail.cooking.weight_change_percent < 0 ? 'text-red-500' : 'text-green-600'}`}>
-                    {stateDetail.cooking.weight_change_percent > 0 ? '+' : ''}{stateDetail.cooking.weight_change_percent}%
+                  <p className={`text-xl sm:text-2xl font-black ${cooking.weight_change_percent < 0 ? 'text-red-500' : 'text-green-600'}`}>
+                    {cooking.weight_change_percent > 0 ? '+' : ''}{cooking.weight_change_percent}%
                   </p>
                 </div>
               )}
-              {stateDetail.cooking.water_loss_percent != null && stateDetail.cooking.water_loss_percent > 0 && (
+              {cooking.water_loss_percent != null && cooking.water_loss_percent > 0 && (
                 <div className="p-3 sm:p-5 text-center">
                   <p className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1">
                     {t4(locale, 'Water Loss', 'Потеря воды', 'Utrata wody', 'Втрата води')}
                   </p>
-                  <p className="text-xl sm:text-2xl font-black text-blue-500">-{stateDetail.cooking.water_loss_percent}%</p>
+                  <p className="text-xl sm:text-2xl font-black text-blue-500">-{cooking.water_loss_percent}%</p>
                 </div>
               )}
-              {stateDetail.cooking.oil_absorption_g != null && stateDetail.cooking.oil_absorption_g > 0 && (
+              {cooking.oil_absorption_g != null && cooking.oil_absorption_g > 0 && (
                 <div className="p-3 sm:p-5 text-center">
                   <p className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1">
                     {t4(locale, 'Oil Absorbed', 'Впитано масла', 'Wchłonięty olej', 'Вбрано олії')}
                   </p>
-                  <p className="text-xl sm:text-2xl font-black text-yellow-600">+{stateDetail.cooking.oil_absorption_g}g</p>
+                  <p className="text-xl sm:text-2xl font-black text-yellow-600">+{cooking.oil_absorption_g}g</p>
                 </div>
               )}
             </div>
@@ -406,34 +433,34 @@ export default async function IngredientStatePage({
         )}
 
         {/* ── Storage info ── */}
-        {stateDetail.storage && (stateDetail.storage.texture || stateDetail.storage.shelf_life_hours != null) && (
+        {storage && (storage.texture || storage.shelf_life_hours != null) && (
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6">
-            {stateDetail.storage.texture && (
+            {storage.texture && (
               <div className="rounded-xl sm:rounded-2xl border border-border/50 p-3 sm:p-5 text-center">
                 <p className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1">
                   {t4(locale, 'Texture', 'Текстура', 'Tekstura', 'Текстура')}
                 </p>
-                <p className="text-base sm:text-lg font-black text-foreground capitalize">{stateDetail.storage.texture}</p>
+                <p className="text-base sm:text-lg font-black text-foreground capitalize">{storage.texture}</p>
               </div>
             )}
-            {stateDetail.storage.shelf_life_hours != null && (
+            {storage.shelf_life_hours != null && (
               <div className="rounded-xl sm:rounded-2xl border border-border/50 p-3 sm:p-5 text-center">
                 <p className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1">
                   {t4(locale, 'Shelf Life', 'Срок хранения', 'Trwałość', 'Термін зберігання')}
                 </p>
                 <p className="text-base sm:text-lg font-black text-foreground">
-                  🕐 {stateDetail.storage.shelf_life_hours >= 24
-                    ? `${Math.round(stateDetail.storage.shelf_life_hours / 24)} ${t4(locale, 'days', 'дней', 'dni', 'днів')}`
-                    : `${stateDetail.storage.shelf_life_hours} ${t4(locale, 'hours', 'часов', 'godzin', 'годин')}`}
+                  🕐 {storage.shelf_life_hours >= 24
+                    ? `${Math.round(storage.shelf_life_hours / 24)} ${t4(locale, 'days', 'дней', 'dni', 'днів')}`
+                    : `${storage.shelf_life_hours} ${t4(locale, 'hours', 'часов', 'godzin', 'годин')}`}
                 </p>
               </div>
             )}
-            {stateDetail.storage.storage_temp_c != null && (
+            {storage.storage_temp_c != null && (
               <div className="rounded-xl sm:rounded-2xl border border-border/50 p-3 sm:p-5 text-center">
                 <p className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1">
                   {t4(locale, 'Storage Temp', 'Температура', 'Temperatura', 'Температура')}
                 </p>
-                <p className="text-base sm:text-lg font-black text-foreground">🌡️ {stateDetail.storage.storage_temp_c}°C</p>
+                <p className="text-base sm:text-lg font-black text-foreground">🌡️ {storage.storage_temp_c}°C</p>
               </div>
             )}
           </div>
