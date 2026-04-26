@@ -30,12 +30,14 @@ import {
   Package as PackageIcon,
   Flame,
   Trash2,
+  CookingPot,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { CookDialog } from '@/components/app/CookDialog';
 import { api, ApiError } from '@/lib/chefos-api';
 import {
   AT_RISK_HEADLINE,
@@ -44,8 +46,57 @@ import {
   type InventoryDashboardResponse,
   type InventoryItem,
   type InventoryListResponse,
+  type RecipeV2,
 } from '@/lib/chefos-types';
+import { useChefOSSync } from '@/lib/chefos-store';
 import { categoryEmoji, categoryLabel } from '@/lib/category';
+import { cn } from '@/lib/utils';
+
+// ── Avatar ──────────────────────────────────────────────────────────────────
+
+/**
+ * Shows the real product photo when available, falling back to a category
+ * emoji underneath. Emoji is rendered first so users still see something
+ * meaningful while the image loads (or if R2 returns a transparent image
+ * without firing onError).
+ */
+function ProductAvatar({
+  imageUrl,
+  category,
+  size = 'sm',
+}: {
+  imageUrl?: string | null;
+  category?: string | null;
+  size?: 'sm' | 'md' | 'lg';
+}) {
+  const [errored, setErrored] = useState(false);
+  const dim =
+    size === 'lg'
+      ? 'h-12 w-12 text-2xl'
+      : size === 'md'
+      ? 'h-10 w-10 text-xl'
+      : 'h-9 w-9 text-lg';
+  const showImage = !!imageUrl && !errored;
+  return (
+    <span
+      className={cn(
+        'relative flex flex-shrink-0 items-center justify-center overflow-hidden rounded-lg border border-border/60 bg-muted leading-none',
+        dim,
+      )}
+    >
+      <span aria-hidden>{categoryEmoji(category)}</span>
+      {showImage && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={imageUrl!}
+          alt=""
+          className="absolute inset-0 h-full w-full bg-background object-cover"
+          onError={() => setErrored(true)}
+        />
+      )}
+    </span>
+  );
+}
 
 type LoadState =
   | { kind: 'loading' }
@@ -55,6 +106,7 @@ type LoadState =
       dashboard: InventoryDashboardResponse;
       inventory: InventoryListResponse;
       dishes: DishListResponse;
+      recipes: RecipeV2[];
     };
 
 type StatCard = {
@@ -68,6 +120,7 @@ type StatCard = {
 type CategoryGroup = {
   category: string;
   emoji: string;
+  imageUrl: string | null;
   count: number;
   valuePLN: number;
 };
@@ -111,12 +164,15 @@ export function DashboardClient({ locale }: { locale: string }) {
       if (!silent) setState({ kind: 'loading' });
       setRefreshing(true);
       try {
-        const [dashboard, inventory, dishes] = await Promise.all([
+        const [dashboard, inventory, dishes, recipes] = await Promise.all([
           api.get<InventoryDashboardResponse>('/api/inventory/dashboard'),
           api.get<InventoryListResponse>('/api/inventory/products?per_page=200'),
           api.get<DishListResponse>('/api/dishes?per_page=500&active_only=true'),
+          api
+            .get<RecipeV2[]>('/api/recipes/v2')
+            .catch(() => [] as RecipeV2[]),
         ]);
-        setState({ kind: 'ready', dashboard, inventory, dishes });
+        setState({ kind: 'ready', dashboard, inventory, dishes, recipes });
       } catch (e) {
         const message =
           e instanceof ApiError ? e.message : e instanceof Error ? e.message : t('errorBody');
@@ -131,6 +187,16 @@ export function DashboardClient({ locale }: { locale: string }) {
   useEffect(() => {
     load();
   }, [load]);
+
+  // Cross-page sync: any inventory/dish mutation re-fetches; refetch on tab focus;
+  // 30 s polling while the tab is visible.
+  useChefOSSync(
+    ['inventory', 'inventory-dashboard', 'dishes', 'recipes'],
+    () => load(true),
+    30_000,
+  );
+
+  const [cookTarget, setCookTarget] = useState<RecipeV2 | null>(null);
 
   // ── derived state ────────────────────────────────────────────────────────
   const view = useMemo(() => {
@@ -162,11 +228,14 @@ export function DashboardClient({ locale }: { locale: string }) {
       const cur = byCat.get(cat) ?? {
         category: cat,
         emoji: categoryEmoji(cat),
+        imageUrl: null as string | null,
         count: 0,
         valuePLN: 0,
       };
       cur.count += 1;
       cur.valuePLN += (it.remaining_quantity * it.price_per_unit_cents) / 100;
+      // Use the first product photo we encounter for this category.
+      if (!cur.imageUrl && it.product.image_url) cur.imageUrl = it.product.image_url;
       byCat.set(cat, cur);
     }
     const categories = [...byCat.values()]
@@ -365,9 +434,9 @@ export function DashboardClient({ locale }: { locale: string }) {
               )}
             </div>
             <Button asChild size="lg" className="flex-shrink-0">
-              <Link href="/app/cook" locale={locale}>
+              <Link href="/app/inventory" locale={locale}>
                 <Sparkles className="mr-2 h-4 w-4" />
-                {t('whatToCook')}
+                {t('rescueProducts')}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
@@ -462,13 +531,21 @@ export function DashboardClient({ locale }: { locale: string }) {
                     key={c.category}
                     href="/app/inventory"
                     locale={locale}
-                    className="group flex min-w-[140px] flex-shrink-0 flex-col gap-1 rounded-xl border border-border/60 bg-background p-3 transition-colors hover:bg-muted sm:min-w-0"
+                    className="group flex min-w-[160px] flex-shrink-0 items-center gap-3 rounded-xl border border-border/60 bg-background p-3 transition-colors hover:bg-muted sm:min-w-0"
                   >
-                    <span className="text-2xl leading-none">{c.emoji}</span>
-                    <p className="truncate text-sm font-semibold">{categoryLabel(c.category)}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {c.count} · {formatCurrencyPLN(locale, c.valuePLN)}
-                    </p>
+                    <ProductAvatar
+                      imageUrl={c.imageUrl}
+                      category={c.category}
+                      size="lg"
+                    />
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-semibold">
+                        {categoryLabel(c.category)}
+                      </p>
+                      <p className="truncate text-xs text-muted-foreground">
+                        {c.count} · {formatCurrencyPLN(locale, c.valuePLN)}
+                      </p>
+                    </div>
                   </Link>
                 ))}
               </div>
@@ -529,9 +606,10 @@ export function DashboardClient({ locale }: { locale: string }) {
                           : 'bg-yellow-400'
                       }`}
                     />
-                    <span className="text-base leading-none">
-                      {categoryEmoji(item.product.category)}
-                    </span>
+                    <ProductAvatar
+                      imageUrl={item.product.image_url}
+                      category={item.product.category}
+                    />
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium">{item.product.name}</p>
                       <p className="text-xs text-muted-foreground">
@@ -560,6 +638,67 @@ export function DashboardClient({ locale }: { locale: string }) {
         </Card>
       )}
 
+      {/* Saved recipes — quick "cook today" shortcut for the top 4 latest. */}
+      {state.kind === 'ready' && state.recipes.length > 0 && (
+        <Card className="border-border/60">
+          <CardContent className="p-0">
+            <div className="flex items-center justify-between p-4 pb-2">
+              <h2 className="text-base font-bold">{t('savedRecipesTitle')}</h2>
+              <Link
+                href="/app/my-dishes"
+                locale={locale}
+                className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+              >
+                {t('seeAll')}
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 gap-3 p-4 pt-0 sm:grid-cols-2 lg:grid-cols-4">
+              {state.recipes.slice(0, 4).map((r) => (
+                <div
+                  key={r.id}
+                  className="flex flex-col gap-2 rounded-xl border border-border/60 bg-background p-3"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg bg-muted">
+                      {r.image_url ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={r.image_url}
+                          alt={r.name}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <Heart className="h-5 w-5 text-muted-foreground/50" />
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="line-clamp-2 text-sm font-semibold leading-tight">
+                        {r.name}
+                      </p>
+                      {r.cost_per_serving_cents !== null &&
+                        r.cost_per_serving_cents !== undefined && (
+                          <p className="mt-0.5 text-xs text-muted-foreground">
+                            {formatCurrencyPLN(locale, r.cost_per_serving_cents / 100)}
+                          </p>
+                        )}
+                    </div>
+                  </div>
+                  <Button
+                    size="sm"
+                    onClick={() => setCookTarget(r)}
+                    className="w-full"
+                  >
+                    <CookingPot className="mr-1.5 h-3.5 w-3.5" />
+                    {t('cook')}
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* No-dishes nudge */}
       {view.hasInventory && !view.hasDishes && (
         <Card className="border-border/60">
@@ -567,14 +706,16 @@ export function DashboardClient({ locale }: { locale: string }) {
             <h2 className="text-lg font-bold">{t('noDishesTitle')}</h2>
             <p className="mt-1 text-sm text-muted-foreground">{t('noDishesBody')}</p>
             <Button asChild className="mt-4" variant="outline">
-              <Link href="/app/cook" locale={locale}>
-                {t('openCook')}
+              <Link href="/app/my-dishes" locale={locale}>
+                {t('openMyDishes')}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
           </CardContent>
         </Card>
       )}
+
+      <CookDialog recipe={cookTarget} onClose={() => setCookTarget(null)} />
     </div>
   );
 }

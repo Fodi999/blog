@@ -1603,12 +1603,12 @@
       "workspace": "Twoja restauracja",
       "dashboard": "Pulpit",
       "inventory": "Magazyn",
-      "cook": "Co gotować",
       "myDishes": "Moje dania",
-      "menu": "Menu",
+      "plan": "Plan",
       "chat": "Asystent",
       "profile": "Profil",
       "settings": "Ustawienia",
+      "topUp": "Doładuj",
       "logout": "Wyloguj"
     },
     "dashboard": {
@@ -1646,8 +1646,12 @@
       "noDishesTitle": "Stwórz pierwsze danie",
       "noDishesBody": "ChefOS policzy food cost i marżę za Ciebie.",
       "openCook": "Co ugotować",
+      "openMyDishes": "Otwórz moje dania",
+      "rescueProducts": "Uratuj produkty",
       "openInventory": "Otwórz magazyn",
       "seeAll": "Zobacz wszystko",
+      "savedRecipesTitle": "Zapisane przepisy",
+      "cook": "Gotuj",
       "refresh": "Odśwież",
       "retry": "Spróbuj ponownie",
       "errorTitle": "Nie udało się załadować danych",
@@ -1703,7 +1707,11 @@
       "toastAdded": "Produkt dodany",
       "toastAddFailed": "Nie udało się dodać produktu",
       "toastDeleted": "Partia usunięta",
-      "toastDeleteFailed": "Nie udało się usunąć"
+      "toastDeleteFailed": "Nie udało się usunąć",
+      "toastUpdated": "Zapisano",
+      "toastUpdateFailed": "Nie udało się zapisać",
+      "edit": "Edytuj",
+      "editProduct": "Edytuj partię"
     },
     "profile": {
       "title": "Profil",
@@ -1810,6 +1818,173 @@
       "signOutTitle": "Wyloguj się",
       "signOutBody": "Zakończ sesję na tym urządzeniu.",
       "signOut": "Wyloguj"
+    },
+    "settings": {
+      "title": "Ustawienia",
+      "subtitle": "Preferencje aplikacji",
+      "languageTitle": "Język interfejsu",
+      "languageLabel": "Wybierz język",
+      "languageHint": "Zmiany są stosowane natychmiast w wersji web i mobilnej.",
+      "saved": "Zapisano",
+      "errorBody": "Nie udało się zapisać. Spróbuj ponownie."
+    },
+    "myDishes": {
+      "title": "Moje dania",
+      "subtitle": "Zapisane przepisy w Twoim języku",
+      "refresh": "Odśwież",
+      "searchPlaceholder": "Szukaj przepisu lub składnika…",
+      "emptyTitle": "Brak przepisów",
+      "emptyBody": "Zapisane przepisy pojawią się tutaj automatycznie.",
+      "comingSoon": "Tworzenie przepisów z poziomu sieci Web pojawi się wkrótce.",
+      "noMatches": "Nic nie pasuje do wyszukiwania.",
+      "errorTitle": "Nie udało się załadować przepisów",
+      "errorBody": "Sprawdź połączenie i spróbuj ponownie.",
+      "retry": "Ponów",
+      "delete": "Usuń",
+      "view": "Otwórz",
+      "public": "Publiczny",
+      "confirmDelete": "Usunąć ten przepis? Tej operacji nie można cofnąć.",
+      "toastDeleted": "Przepis usunięty",
+      "toastDeleteFailed": "Nie udało się usunąć przepisu",
+      "servings": "{count} porcji",
+      "ingredients": "{count} skł.",
+      "costPerServing": "{value} / porcja",
+      "totalCost": "Razem: {value}",
+      "cook": "Gotuj"
+    },
+    "cook": {
+      "title": "Dodaj do planu posiłków",
+      "subtitle": "Wybierz dzień i posiłek",
+      "day": "Dzień",
+      "slot": "Posiłek",
+      "today": "Dziś",
+      "tomorrow": "Jutro",
+      "cancel": "Anuluj",
+      "confirm": "Dodaj do planu",
+      "toastAdded": "Dodano do planu",
+      "toastFailed": "Nie udało się dodać do planu",
+      "slots": {
+        "breakfast": "Śniadanie",
+        "lunch": "Obiad",
+        "dinner": "Kolacja",
+        "snack": "Przekąska"
+      }
+    },
+    "plan": {
+      "title": "Plan posiłków",
+      "subtitle": "Co gotujesz w tym tygodniu",
+      "refresh": "Odśwież",
+      "retry": "Spróbuj ponownie",
+      "errorTitle": "Nie udało się załadować planu",
+      "errorBody": "Sprawdź połączenie i spróbuj ponownie.",
+      "today": "Dziś",
+      "day": "dzień",
+      "remove": "Usuń",
+      "addFromMyDishes": "Wybierz z moich dań",
+      "toastRemoved": "Usunięto z planu",
+      "emptyTitle": "Plan jest pusty",
+      "emptyBody": "Dodaj ulubione przepisy do dnia, aby zaplanować tydzień.",
+      "emptyCta": "Otwórz moje dania",
+      "prevMonth": "Poprzedni miesiąc",
+      "nextMonth": "Następny miesiąc",
+      "mode": {
+        "day": "Dzień",
+        "week": "Tydzień",
+        "month": "Miesiąc"
+      },
+      "summary": {
+        "meals": "Posiłki",
+        "kcal": "Kcal",
+        "protein": "Białko",
+        "completedDays": "Pełne dni",
+        "filledMeals": "Zaplanowane",
+        "kcalWeek": "Kcal (tydzień)",
+        "monthFilledDays": "Zaplanowane dni",
+        "budget": "Budżet"
+      },
+      "slots": {
+        "breakfast": "Śniadanie",
+        "lunch": "Obiad",
+        "dinner": "Kolacja",
+        "snack": "Przekąska"
+      }
+    },
+    "chat": {
+      "title": "Asystent",
+      "subtitle": "Twój kulinarny copilot — przepisy, kalorie, przeliczenia",
+      "placeholder": "Zapytaj o cokolwiek: przepis, kalorie, przeliczenia…",
+      "thinking": "Myślę…",
+      "welcome": "Cześć 👋 Jestem ChefOS — twój kulinarny asystent.",
+      "errorGeneric": "Coś poszło nie tak. Spróbuj ponownie.",
+      "quotaExceededTitle": "Limit czatów wyczerpany",
+      "quotaExceededBuy": "Wykorzystałeś darmowe czaty na dziś. Doładuj, aby kontynuować.",
+      "quotaExceededWithBalance": "Darmowe czaty się skończyły. Pozostało {count} kupionych akcji — kontynuuj!",
+      "greeting": {
+        "hello": "Cześć 👋 Witaj ponownie w ChefOS.",
+        "helloNamed": "Cześć {name} 👋 Witaj ponownie.",
+        "goal": "Dzisiejszy cel: {goal}",
+        "targets": "Cele: {kcal} kcal · {protein} g białka",
+        "allergies": "Unikamy: {list}"
+      },
+      "goal": {
+        "loseWeight": "Schudnąć",
+        "gainMuscle": "Budowa mięśni",
+        "gainWeight": "Przybrać na wadze",
+        "eatHealthier": "Zdrowsze odżywianie",
+        "balanced": "Zbilansowane"
+      },
+      "action": {
+        "addToPlan": "Dodaj do planu",
+        "cook": "Zacznij gotować",
+        "addToShopping": "Do listy zakupów",
+        "steps": "kroków",
+        "added": {
+          "title": "Dodano do planu"
+        },
+        "cooking": {
+          "title": "Gotujemy"
+        },
+        "shopping": {
+          "title": "Dodano do listy zakupów"
+        }
+      }
+    }
+  },
+  "pricing": {
+    "badge": "Doładuj akcje",
+    "title": "Kup akcje",
+    "subtitle": "Płać tylko za to, czego używasz. Bez subskrypcji. Akcje nigdy nie wygasają.",
+    "bestValue": "Najlepsza oferta",
+    "buy": "Kup teraz",
+    "signInToBuy": "Zaloguj się i kup",
+    "redirecting": "Przekierowanie do płatności…",
+    "perAction": "{price} za akcję",
+    "save": "Oszczędź {pct}%",
+    "paymentSecure": "Bezpieczna płatność przez Stripe. Tryb testowy — karta 4242 4242 4242 4242.",
+    "backToApp": "← Powrót do aplikacji",
+    "feature": {
+      "actions": "{count} akcji AI",
+      "noExpiry": "Bez wygaśnięcia",
+      "allModes": "Czat, planowanie, generowanie przepisów"
+    }
+  },
+  "billing": {
+    "success": {
+      "title": "Płatność zakończona!",
+      "subtitle": "Akcje są dodawane do Twojego konta.",
+      "note": "Stripe potwierdza płatność z naszym serwerem. Zwykle trwa to kilka sekund — nowe saldo pojawi się wkrótce w czacie.",
+      "cta": {
+        "chat": "Otwórz czat",
+        "dashboard": "Do dashboardu"
+      }
+    },
+    "cancel": {
+      "title": "Płatność anulowana",
+      "subtitle": "Nie pobrano żadnych środków. Możesz spróbować ponownie.",
+      "cta": {
+        "retry": "Wróć do cennika",
+        "dashboard": "Do dashboardu"
+      }
     }
   }
 }

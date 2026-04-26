@@ -218,6 +218,72 @@ export type AddInventoryRequest = {
   expires_at: string; // ISO
 };
 
+// ── Recipes (the user's saved dishes / "Мои блюда") ─────────────────────────
+// Mirrors `RecipeResponseDto` from `src/application/recipe_v2_service.rs`.
+
+export type RecipeV2Ingredient = {
+  id: string;
+  catalog_ingredient_id: string;
+  catalog_ingredient_name: string | null;
+  quantity: number;
+  unit: string;
+  cost_at_use_cents: number | null;
+};
+
+export type RecipeV2 = {
+  id: string;
+  name: string;
+  instructions: string;
+  language: string;
+  servings: number;
+  image_url: string | null;
+  total_cost_cents: number | null;
+  cost_per_serving_cents: number | null;
+  status: string;
+  is_public: boolean;
+  published_at: string | null;
+  created_at: string;
+  updated_at: string;
+  ingredients: RecipeV2Ingredient[];
+};
+
+// ── Meal Plan ───────────────────────────────────────────────────────────────
+// Mirrors iOS `APIClient.MealPlanDayDTO`. Backend endpoint
+// (`/api/meal-plan`) is being rolled out — clients gracefully fall back to
+// empty plans on 404/501.
+
+export type MealSlot = 'breakfast' | 'lunch' | 'dinner' | 'snack';
+
+export const MEAL_SLOTS: readonly MealSlot[] = [
+  'breakfast',
+  'lunch',
+  'dinner',
+  'snack',
+] as const;
+
+export type MealPlanRecipeRef = {
+  id: string;
+  title: string;
+  calories: number | null;
+  protein: number | null;
+  estimated_cost: number | null;
+  image_url: string | null;
+};
+
+export type MealPlanEntry = {
+  slot: MealSlot;
+  recipe: MealPlanRecipeRef | null;
+};
+
+export type MealPlanDay = {
+  date: string; // ISO yyyy-MM-dd
+  meals: MealPlanEntry[];
+};
+
+export type MealPlanRangeResponse = {
+  days: MealPlanDay[];
+};
+
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
 /** Items the user can rescue today by cooking them. */

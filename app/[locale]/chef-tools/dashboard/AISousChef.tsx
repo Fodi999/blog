@@ -22,10 +22,12 @@ import {
   Lightbulb, Timer, CookingPot, Leaf, Heart, Hand,
   Flame, Dumbbell, Droplets, Wheat, Clock, UtensilsCrossed,
   Beef, Egg, Carrot, Apple,
+  Lock, LogIn,
 } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import { cn } from '@/lib/utils';
-import { postChat, type ChatApiResponse, type SessionContext } from '@/lib/chef-chat-api';
+import { postChat, ChatQuotaExceededError, type ChatApiResponse, type SessionContext } from '@/lib/chef-chat-api';
+import { isAuthenticated } from '@/lib/auth-client';
 import { ChatCardsGrid } from '@/components/chat/ChatCards';
 import { useTypewriter } from '@/hooks/useTypewriter';
 
@@ -157,6 +159,15 @@ export function AISousChef() {
   const [turns, setTurns] = useState<Turn[]>([]);
   const [loading, setLoading] = useState(false);
   const [context, setContext] = useState<SessionContext>({});
+  // 🔒 Auth gate. Chat is now authenticated + billed (`/api/chat`), so
+  // anonymous visitors see a "Sign in to ask AI chef" CTA instead of the
+  // input bar. Hydrate after mount to avoid SSR/CSR mismatch.
+  const [authed, setAuthed] = useState(false);
+  const [authReady, setAuthReady] = useState(false);
+  useEffect(() => {
+    setAuthed(isAuthenticated());
+    setAuthReady(true);
+  }, []);
   const idRef = useRef(0);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -264,6 +275,20 @@ export function AISousChef() {
     const q = text.trim();
     if (!q || loading) return;
 
+    // 🔒 Block anonymous calls — server returns 401 anyway, but giving a
+    // nicer client-side hint keeps the demo polished.
+    if (authReady && !authed) {
+      const msg =
+        locale === 'ru' ? 'Войдите, чтобы спросить AI-повара' :
+        locale === 'pl' ? 'Zaloguj się, aby zapytać AI-szefa' :
+        locale === 'uk' ? 'Увійдіть, щоб запитати AI-шефа' :
+                          'Sign in to ask AI chef';
+      const id = ++idRef.current;
+      setTurns(prev => [...prev, { id, query: q, error: msg }]);
+      setQuery('');
+      return;
+    }
+
     const id = ++idRef.current;
     stickyRef.current = true; // Always force auto-scroll on new message
     setTurns(prev => [...prev, { id, query: q }]);
@@ -274,13 +299,22 @@ export function AISousChef() {
       const res = await postChat(q, context);
       setTurns(prev => prev.map(t => t.id === id ? { ...t, response: res } : t));
       setContext(res.context ?? {});
-    } catch {
-      setTurns(prev => prev.map(t => t.id === id ? { ...t, error: copy.errorFallback } : t));
+    } catch (e) {
+      // 🪙 402 → friendly paywall hint inline.
+      const errMsg =
+        e instanceof ChatQuotaExceededError
+          ? (e.message ||
+              (locale === 'ru' ? 'Лимит чатов исчерпан. Пополните баланс.' :
+               locale === 'pl' ? 'Limit czatów wyczerpany. Doładuj.' :
+               locale === 'uk' ? 'Ліміт чатів вичерпано. Поповніть баланс.' :
+                                 'Chat limit reached. Top up to continue.'))
+          : copy.errorFallback;
+      setTurns(prev => prev.map(t => t.id === id ? { ...t, error: errMsg } : t));
     } finally {
       setLoading(false);
       setTimeout(() => inputRef.current?.focus(), 100);
     }
-  }, [loading, context, copy.errorFallback]);
+  }, [loading, context, copy.errorFallback, authed, authReady, locale]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -468,8 +502,51 @@ export function AISousChef() {
 
       {/* ═══════════════════════════════════════════════════════
           INPUT BAR — fixed island at the bottom of viewport
+          (replaced by Sign-In CTA for anonymous visitors)
           ═══════════════════════════════════════════════════════ */}
-      {activeTab === 'chat' && (
+      {activeTab === 'chat' && authReady && !authed && (
+        <div className="fixed bottom-0 left-0 right-0 z-50 pointer-events-none">
+          <div className="pointer-events-auto max-w-5xl mx-auto px-4 pt-3 sm:pt-4 pb-4 sm:pb-6 bg-gradient-to-t from-background via-background/98 to-background/80 backdrop-blur-xl">
+            <div className="relative rounded-2xl sm:rounded-3xl border-2 border-border/50 bg-card/80 dark:bg-[#0a0a0a]/90 dark:border-white/[0.1] shadow-2xl backdrop-blur-xl overflow-hidden p-5 sm:p-7">
+              <div className="flex items-center justify-between gap-3 sm:gap-5 flex-wrap sm:flex-nowrap">
+                <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                  <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
+                    <Lock className="w-5 h-5 text-primary" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-sm sm:text-base font-bold text-foreground leading-tight truncate">
+                      {locale === 'ru' ? 'Войдите, чтобы спросить AI-повара' :
+                       locale === 'pl' ? 'Zaloguj się, aby zapytać AI-szefa' :
+                       locale === 'uk' ? 'Увійдіть, щоб запитати AI-шефа' :
+                                          'Sign in to ask AI chef'}
+                    </p>
+                    <p className="text-xs text-muted-foreground/60 mt-0.5 leading-snug">
+                      {locale === 'ru' ? 'Бесплатные чаты каждый день после регистрации' :
+                       locale === 'pl' ? 'Darmowe czaty codziennie po rejestracji' :
+                       locale === 'uk' ? 'Безкоштовні чати щодня після реєстрації' :
+                                          'Free daily chats after sign-up'}
+                    </p>
+                  </div>
+                </div>
+                <Link
+                  href={{ pathname: '/login', query: { returnTo: '/app/chat' } }}
+                  className="flex items-center gap-2.5 px-5 sm:px-7 py-2.5 sm:py-3 rounded-xl bg-foreground text-background font-bold text-xs sm:text-sm uppercase tracking-wider hover:scale-105 active:scale-95 shadow-lg shadow-foreground/10 transition-all duration-300 shrink-0"
+                >
+                  <LogIn className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  <span>
+                    {locale === 'ru' ? 'Войти' :
+                     locale === 'pl' ? 'Zaloguj' :
+                     locale === 'uk' ? 'Увійти' :
+                                        'Sign in'}
+                  </span>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'chat' && (!authReady || authed) && (
         <div ref={inputContainerRef} className="fixed bottom-0 left-0 right-0 z-50 pointer-events-none">
           <div className={cn(
             "pointer-events-auto max-w-5xl mx-auto px-4 pt-3 sm:pt-4 pb-4 sm:pb-6",

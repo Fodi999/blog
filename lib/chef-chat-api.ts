@@ -1,13 +1,12 @@
 /**
  * ChefOS Chat API client
  *
- * POST /public/chat
- *
- * Request:  { input: string, context?: SessionContext }
- * Response: ChatResponse & { context: SessionContext }
+ * POST /api/chat — authenticated + billed (1 AiChat action per turn).
+ * On 402 Payment Required → throw `ChatQuotaExceededError` so the UI
+ * can trigger a paywall flow.
  */
 
-import { API_URL } from './api';
+import { api, ApiError } from './chefos-api';
 
 // ── Types — mirror the Rust backend contract exactly ─────────────────────────
 
@@ -130,6 +129,31 @@ export interface SessionContext {
 
 export interface ChatApiResponse extends ChatResponse {
   context: SessionContext;
+  /** Remaining quota snapshot — surface in UI counters. */
+  usage?: UsageSnapshot;
+  /** Where this turn was paid from. */
+  billing_source?: 'free_tier' | 'purchased' | 'denied';
+}
+
+export interface UsageSnapshot {
+  plans_left: number;
+  recipes_left: number;
+  scans_left: number;
+  optimize_left: number;
+  chats_left: number;
+  purchased_actions: number;
+}
+
+/** Thrown when the backend returns 402 Payment Required for a chat turn. */
+export class ChatQuotaExceededError extends Error {
+  usage?: UsageSnapshot;
+  reason?: string;
+  constructor(message: string, usage?: UsageSnapshot, reason?: string) {
+    super(message);
+    this.name = 'ChatQuotaExceededError';
+    this.usage = usage;
+    this.reason = reason;
+  }
 }
 
 // ── API call ──────────────────────────────────────────────────────────────────
@@ -138,15 +162,21 @@ export async function postChat(
   input: string,
   context: SessionContext = {},
 ): Promise<ChatApiResponse> {
-  const res = await fetch(`${API_URL}/public/chat`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ input, context }),
-  });
-
-  if (!res.ok) {
-    throw new Error(`Chat API error ${res.status}`);
+  try {
+    return await api.post<ChatApiResponse>('/api/chat', { input, context });
+  } catch (e) {
+    if (e instanceof ApiError && e.status === 402) {
+      const body = (e.body ?? {}) as {
+        message?: string;
+        usage?: UsageSnapshot;
+        reason?: string;
+      };
+      throw new ChatQuotaExceededError(
+        body.message ?? 'Chat quota exceeded',
+        body.usage,
+        body.reason,
+      );
+    }
+    throw e;
   }
-
-  return res.json();
 }

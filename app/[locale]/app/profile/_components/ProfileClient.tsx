@@ -28,7 +28,6 @@ import {
   LogOut,
   Mail,
   Building2,
-  Languages,
   ImagePlus,
   Check,
   Save,
@@ -47,15 +46,10 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { api, ApiError } from '@/lib/chefos-api';
+import { updateAvatarUrl } from '@/lib/chefos-mutations';
+import { invalidate } from '@/lib/chefos-store';
 import { logout } from '@/lib/auth-client';
 import {
   DEFAULT_PREFERENCES,
@@ -114,7 +108,6 @@ export function ProfileClient({ locale }: { locale: string }) {
   const [avatarUrl, setAvatarUrl] = useState('');
   const [savingPrefs, setSavingPrefs] = useState(false);
   const [savingAvatar, setSavingAvatar] = useState(false);
-  const [savingLang, setSavingLang] = useState(false);
   const baselineRef = useRef<string>('');
 
   const load = useCallback(async () => {
@@ -174,6 +167,7 @@ export function ProfileClient({ locale }: { locale: string }) {
     try {
       await api.put('/api/preferences', { ...prefs, language });
       baselineRef.current = signature(prefs, language);
+      invalidate('preferences', 'me');
       toast.success(t('saved'));
     } catch (e) {
       const msg = e instanceof ApiError ? e.message : t('errorBody');
@@ -183,25 +177,10 @@ export function ProfileClient({ locale }: { locale: string }) {
     }
   }
 
-  async function onChangeLanguage(next: ChefOSLanguage) {
-    setLanguage(next);
-    setSavingLang(true);
-    try {
-      await api.put('/api/profile/language', { language: next });
-      toast.success(t('saved'));
-      if (next !== uiLocale) router.replace('/app/profile', { locale: next });
-    } catch (e) {
-      const msg = e instanceof ApiError ? e.message : t('errorBody');
-      toast.error(msg);
-    } finally {
-      setSavingLang(false);
-    }
-  }
-
   async function saveAvatar() {
     setSavingAvatar(true);
     try {
-      await api.put('/api/profile/avatar', { avatar_url: avatarUrl.trim() });
+      await updateAvatarUrl(avatarUrl.trim());
       toast.success(t('saved'));
       setState((s) =>
         s.kind === 'ready'
@@ -574,37 +553,6 @@ export function ProfileClient({ locale }: { locale: string }) {
             </Button>
           </div>
           <p className="text-xs text-muted-foreground">{t('avatarHint')}</p>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-base">
-            <Languages className="h-4 w-4" />
-            {t('languageTitle')}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <Label className="text-xs uppercase tracking-wide text-muted-foreground">
-            {t('languageLabel')}
-          </Label>
-          <Select
-            value={language}
-            onValueChange={(v) => onChangeLanguage(v as ChefOSLanguage)}
-            disabled={savingLang}
-          >
-            <SelectTrigger className="w-full sm:w-64">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {LANGS.map((l) => (
-                <SelectItem key={l} value={l}>
-                  {t(`lang.${l}`)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <p className="text-xs text-muted-foreground">{t('languageHint')}</p>
         </CardContent>
       </Card>
 

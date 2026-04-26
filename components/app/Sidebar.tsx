@@ -6,13 +6,13 @@ import { Link, usePathname, useRouter } from '@/i18n/routing';
 import {
   LayoutDashboard,
   Package,
-  ChefHat,
   Heart,
-  BookOpen,
   MessageCircle,
   Settings,
   LogOut,
   User as UserIcon,
+  Calendar,
+  Coins,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -24,15 +24,22 @@ import { cn } from '@/lib/utils';
 
 type NavItem = { href: string; labelKey: string; icon: LucideIcon };
 
+/**
+ * Top-level navigation. Kept in lock-step with iOS `MainTabView` and the
+ * mobile bottom bar (`MobileAppNav`) so users see the same sections on
+ * every device. iOS bundles cook/stock under "Recipes" and Settings
+ * inside Profile; on the web they get their own routes for screen
+ * real-estate, but the underlying data is the same.
+ */
 export const NAV_ITEMS: NavItem[] = [
   { href: '/app/dashboard', labelKey: 'dashboard', icon: LayoutDashboard },
   { href: '/app/inventory', labelKey: 'inventory', icon: Package },
-  { href: '/app/cook', labelKey: 'cook', icon: ChefHat },
   { href: '/app/my-dishes', labelKey: 'myDishes', icon: Heart },
-  { href: '/app/menu', labelKey: 'menu', icon: BookOpen },
+  { href: '/app/plan', labelKey: 'plan', icon: Calendar },
   { href: '/app/chat', labelKey: 'chat', icon: MessageCircle },
   { href: '/app/profile', labelKey: 'profile', icon: UserIcon },
   { href: '/app/settings', labelKey: 'settings', icon: Settings },
+  { href: '/pricing', labelKey: 'topUp', icon: Coins },
 ];
 
 export function Sidebar({ locale, className }: { locale: string; className?: string }) {
@@ -70,7 +77,9 @@ export function Sidebar({ locale, className }: { locale: string; className?: str
   return (
     <aside
       className={cn(
-        'sticky top-6 flex h-[calc(100vh-3rem)] w-60 flex-shrink-0 flex-col rounded-2xl border border-border/60 bg-background p-3 shadow-sm',
+        // Sticky just below the global site header (--site-header-height) plus
+        // a 1.5rem breathing gap, so it never slides under the nav on scroll.
+        'sticky top-[calc(var(--site-header-height,72px)+1.5rem)] flex h-[calc(100vh-var(--site-header-height,72px)-3rem)] w-60 flex-shrink-0 flex-col rounded-2xl border border-border/60 bg-background p-3 shadow-sm',
         className,
       )}
     >

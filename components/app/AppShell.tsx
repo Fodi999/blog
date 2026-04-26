@@ -14,8 +14,12 @@ import { MobileAppNav } from './MobileAppNav';
 
 export function AppShell({ children, locale }: { children: React.ReactNode; locale: string }) {
   return (
-    <div className="-my-12 lg:-my-20 min-h-[calc(100vh-4rem)] bg-muted/30">
-      <div className="mx-auto flex w-full max-w-[1400px] gap-6 px-4 py-6 lg:px-8">
+    // Bleed horizontally to the edges of the parent <main className="container px-4 py-8">,
+    // and cancel its vertical padding so the cabinet sits flush below the sticky site header
+    // (which has --site-header-height). We DON'T pull content above the header anymore — that
+    // was the bug behind buttons disappearing under the global nav.
+    <div className="-mx-4 -my-8 min-h-screen bg-muted/30 sm:-mx-6 lg:-mx-8">
+      <div className="mx-auto flex w-full max-w-[1400px] gap-6 px-4 pb-10 pt-6 lg:px-8">
         <Sidebar locale={locale} className="hidden lg:flex" />
         <main className="min-w-0 flex-1 pb-24 lg:pb-6">{children}</main>
       </div>
