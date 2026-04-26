@@ -134,7 +134,7 @@ export function PricingClient({ locale }: { locale: string }) {
                   <div className="flex items-center gap-2 mb-2">
                     <Coins className="w-5 h-5 text-amber-600" />
                     <span className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
-                      {b.label}
+                      {t('bundleTitle', { count: b.actions })}
                     </span>
                   </div>
                   <div className="mb-1">
@@ -153,12 +153,6 @@ export function PricingClient({ locale }: { locale: string }) {
                     )}
                   </div>
                   <ul className="space-y-2 mb-6 text-sm text-gray-700">
-                    <li className="flex items-start gap-2">
-                      <Check className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
-                      <span>
-                        {t('feature.actions', { count: b.actions })}
-                      </span>
-                    </li>
                     <li className="flex items-start gap-2">
                       <Check className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
                       <span>{t('feature.noExpiry')}</span>
@@ -194,9 +188,41 @@ export function PricingClient({ locale }: { locale: string }) {
           </div>
         )}
 
+        {/* What is an AI action? — explainer block */}
+        {bundles && (
+          <div className="max-w-2xl mx-auto mb-12 rounded-2xl border border-amber-200 bg-amber-50/50 p-6">
+            <h2 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-amber-600" />
+              {t('faq.title')}
+            </h2>
+            <ul className="space-y-2 text-sm text-gray-700">
+              <li className="flex gap-2">
+                <span className="text-amber-600 font-bold">•</span>
+                <span>{t('faq.item1')}</span>
+              </li>
+              <li className="flex gap-2">
+                <span className="text-amber-600 font-bold">•</span>
+                <span>{t('faq.item2')}</span>
+              </li>
+              <li className="flex gap-2">
+                <span className="text-amber-600 font-bold">•</span>
+                <span>{t('faq.item3')}</span>
+              </li>
+              <li className="flex gap-2">
+                <span className="text-amber-600 font-bold">•</span>
+                <span>{t('faq.item4')}</span>
+              </li>
+            </ul>
+          </div>
+        )}
+
         {/* Footnote */}
         <div className="max-w-2xl mx-auto text-center text-sm text-gray-500 space-y-2">
-          <p>{t('paymentSecure')}</p>
+          <p>
+            {process.env.NEXT_PUBLIC_STRIPE_TEST_MODE === 'true'
+              ? t('paymentSecureTest')
+              : t('paymentSecure')}
+          </p>
           <p>
             <Link href={`/${locale}/app/dashboard`} className="underline hover:text-amber-700">
               {t('backToApp')}

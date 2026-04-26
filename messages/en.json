@@ -1958,12 +1958,21 @@
     "redirecting": "Redirecting to checkout…",
     "perAction": "{price} per action",
     "save": "Save {pct}%",
-    "paymentSecure": "Secure payment via Stripe. Test mode — use card 4242 4242 4242 4242.",
+    "paymentSecure": "Secure payment via Stripe.",
     "backToApp": "← Back to app",
     "feature": {
       "actions": "{count} AI actions",
       "noExpiry": "Never expire",
       "allModes": "Chat, planning, recipe generation"
+    },
+    "bundleTitle": "{count} AI actions",
+    "paymentSecureTest": "Secure payment via Stripe. Test mode — use card 4242 4242 4242 4242.",
+    "faq": {
+      "title": "What is an AI action?",
+      "item1": "1 action = one request to your AI chef.",
+      "item2": "Weekly meal plan = 5 actions.",
+      "item3": "Recipe generation = 2 actions.",
+      "item4": "Catalog and basic tools are free."
     }
   },
   "billing": {
