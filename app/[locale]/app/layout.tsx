@@ -12,11 +12,16 @@ import { AppShell } from '@/components/app/AppShell';
  * this cookie is only a fast UX gate so unauthenticated visitors
  * never see the empty cabinet shell.
  */
+type AppLayoutProps = {
+  children: React.ReactNode;
+  params: Promise<{ locale: string }>;
+};
+
 export default async function AppLayout({
   children,
   params,
-}: LayoutProps<'/[locale]/app'>) {
-  const { locale } = (await params) as { locale: string };
+}: AppLayoutProps) {
+  const { locale } = await params;
   setRequestLocale(locale);
 
   const cookieStore = await cookies();

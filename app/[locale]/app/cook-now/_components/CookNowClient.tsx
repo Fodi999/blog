@@ -706,7 +706,7 @@ function DishRow({
         <CardContent className="flex flex-col gap-0 border-t border-border/60 bg-card p-0 dark:bg-[#101216]">
 
           {/* ① Hero: visual + title + badges + actions */}
-          <div className="grid gap-4 p-4 sm:p-5 lg:grid-cols-[160px_1fr_auto]">
+          <div className="grid gap-4 p-4 sm:p-5 lg:grid-cols-[220px_1fr_auto]">
             {/* Recipe visual / ingredient collage */}
             <RecipeVisual dish={editedDish} dishImageUrl={dishImageUrl} imageLoading={imageLoading} />
 
@@ -987,21 +987,44 @@ function HeroMeta({
 // ── Recipe visual / ingredient collage ──────────────────────────────────────
 
 function RecipeVisual({ dish, dishImageUrl, imageLoading }: { dish: SuggestedDish; dishImageUrl?: string | null; imageLoading?: boolean }) {
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+
+  const shell = 'group/visual relative w-full overflow-hidden rounded-[28px] border border-border/70 bg-muted/30 shadow-xl dark:border-white/10 dark:bg-[#1a1d22] sm:h-[200px] sm:w-[200px] lg:h-[220px] lg:w-[220px]';
+  const imgClass = 'h-full w-full object-cover transition-transform duration-500 group-hover/visual:scale-105';
+
+  const lightboxSrc = dishImageUrl ?? undefined;
+
   // 1. AI-generated photo (highest priority)
   if (dishImageUrl) {
     return (
-      <div className="h-36 w-36 flex-shrink-0 overflow-hidden rounded-xl bg-muted/40">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={dishImageUrl} alt={dish.dish_name} className="h-full w-full object-cover" />
-      </div>
+      <>
+        <button
+          type="button"
+          aria-label="View full image"
+          onClick={() => setLightboxOpen(true)}
+          className={cn(shell, 'h-48 flex-shrink-0 cursor-zoom-in')}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={dishImageUrl} alt={dish.dish_name} className={imgClass} />
+          {/* Zoom hint */}
+          <span className="absolute bottom-2 right-2 flex h-6 w-6 items-center justify-center rounded-full bg-black/40 text-white opacity-0 transition-opacity group-hover/visual:opacity-100 backdrop-blur-sm">
+            <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35M11 8v6M8 11h6"/></svg>
+          </span>
+        </button>
+        {lightboxOpen && (
+          <Lightbox src={dishImageUrl} alt={dish.dish_name} onClose={() => setLightboxOpen(false)} />
+        )}
+      </>
     );
   }
 
   // 2. Loading skeleton while AI generates
   if (imageLoading) {
     return (
-      <div className="flex h-36 w-36 flex-shrink-0 items-center justify-center rounded-xl bg-muted/40 animate-pulse">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground/40" />
+      <div className={cn(shell, 'h-48 flex-shrink-0 animate-pulse')}>
+        <div className="flex h-full w-full items-center justify-center">
+          <Loader2 className="h-9 w-9 animate-spin text-muted-foreground/30" />
+        </div>
       </div>
     );
   }
@@ -1014,20 +1037,33 @@ function RecipeVisual({ dish, dishImageUrl, imageLoading }: { dish: SuggestedDis
   // 3. Single hero ingredient image
   if (imgs.length === 1) {
     return (
-      <div className="h-36 w-36 flex-shrink-0 overflow-hidden rounded-xl bg-muted/40">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={imgs[0]} alt={dish.dish_name} className="h-full w-full object-cover" />
-      </div>
+      <>
+        <button
+          type="button"
+          aria-label="View full image"
+          onClick={() => setLightboxOpen(true)}
+          className={cn(shell, 'h-48 flex-shrink-0 cursor-zoom-in')}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={imgs[0]} alt={dish.dish_name} className={imgClass} />
+          <span className="absolute bottom-2 right-2 flex h-6 w-6 items-center justify-center rounded-full bg-black/40 text-white opacity-0 transition-opacity group-hover/visual:opacity-100 backdrop-blur-sm">
+            <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35M11 8v6M8 11h6"/></svg>
+          </span>
+        </button>
+        {lightboxOpen && (
+          <Lightbox src={imgs[0]} alt={dish.dish_name} onClose={() => setLightboxOpen(false)} />
+        )}
+      </>
     );
   }
 
   // 4. 2-4 ingredient collage
   if (imgs.length >= 2) {
     return (
-      <div className={cn('grid h-36 w-36 flex-shrink-0 gap-0.5 overflow-hidden rounded-xl', imgs.length >= 4 ? 'grid-cols-2 grid-rows-2' : 'grid-cols-2')}>
+      <div className={cn(shell, 'h-48 flex-shrink-0', imgs.length >= 4 ? 'grid grid-cols-2 grid-rows-2 gap-px' : 'grid grid-cols-2 gap-px')}>
         {imgs.map((src, i) => (
           // eslint-disable-next-line @next/next/no-img-element
-          <img key={i} src={src} alt="" className="h-full w-full object-cover" />
+          <img key={i} src={src} alt="" className={imgClass} />
         ))}
       </div>
     );
@@ -1036,8 +1072,41 @@ function RecipeVisual({ dish, dishImageUrl, imageLoading }: { dish: SuggestedDis
   // 5. Gradient placeholder with dish initial
   const initial = (dish.display_name || dish.dish_name || '?').trim().charAt(0).toUpperCase();
   return (
-    <div className="flex h-36 w-36 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary/20 to-primary/5">
-      <span className="text-5xl font-bold text-primary/30">{initial}</span>
+    <div className={cn(shell, 'h-48 flex-shrink-0 flex items-center justify-center bg-gradient-to-br from-primary/20 to-primary/5')}>
+      <span className="text-6xl font-bold text-primary/25">{initial}</span>
+    </div>
+  );
+}
+
+/** Full-screen lightbox overlay */
+function Lightbox({ src, alt, onClose }: { src: string; alt: string; onClose: () => void }) {
+  // Close on Escape
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) { if (e.key === 'Escape') onClose(); }
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onClose]);
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md"
+      onClick={onClose}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={src}
+        alt={alt}
+        onClick={(e) => e.stopPropagation()}
+        className="max-h-[90dvh] max-w-[90dvw] rounded-3xl object-contain shadow-2xl"
+      />
+      <button
+        type="button"
+        onClick={onClose}
+        aria-label="Close"
+        className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition-colors hover:bg-white/20"
+      >
+        <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
     </div>
   );
 }
@@ -1154,7 +1223,7 @@ function IngredientGroup({
         <div ref={trackRef} className="relative mt-2 h-1.5 w-full cursor-pointer rounded-full bg-border/40">
           <div
             ref={thumbRef}
-            className="absolute left-0 top-0 h-full cursor-grab rounded-full bg-primary/50 transition-colors hover:bg-primary/70 active:cursor-grabbing"
+            className="absolute left-0 top-0 h-full cursor-grab rounded-full bg-foreground/20 transition-colors hover:bg-foreground/35 active:cursor-grabbing"
             style={{ width: `${Math.max(40, (1 / items.length) * 100)}%` }}
             onPointerDown={onThumbPointerDown}
             onPointerMove={onThumbPointerMove}
@@ -1259,7 +1328,7 @@ function StepsScroll({
         <div ref={trackRef} className="relative mt-2 h-1.5 w-full cursor-pointer rounded-full bg-border/40">
           <div
             ref={thumbRef}
-            className="absolute left-0 top-0 h-full cursor-grab rounded-full bg-primary/50 transition-colors hover:bg-primary/70 active:cursor-grabbing"
+            className="absolute left-0 top-0 h-full cursor-grab rounded-full bg-foreground/20 transition-colors hover:bg-foreground/35 active:cursor-grabbing"
             style={{ width: `${Math.max(40, (1 / steps.length) * 100)}%` }}
             onPointerDown={onThumbPointerDown}
             onPointerMove={onThumbPointerMove}

@@ -11,7 +11,8 @@
       "settings": "Ustawienia",
       "topUp": "Doładuj",
       "logout": "Wyloguj",
-      "cookNow": "Co ugotować"
+      "cookNow": "Co ugotować",
+      "laboratory": "Laboratorium"
     },
     "dashboard": {
       "title": "Pulpit",
@@ -619,6 +620,97 @@
         "addStep": "Dodaj krok",
         "removeStep": "Usuń krok",
         "noSteps": "Brak kroków. Dodaj pierwszy."
+      }
+    },
+    "laboratory": {
+      "title": "Laboratorium",
+      "subtitle": "Twórz produkty z analizą food-tech",
+      "newProject": "Nowy projekt",
+      "projectName": "Nazwa projektu",
+      "productType": "Typ produktu (sos, napój…)",
+      "create": "Utwórz",
+      "cancel": "Anuluj",
+      "createFirst": "Utwórz pierwszy projekt",
+      "exampleName": "Sos morelowy",
+      "emptyTitle": "Otwórz laboratorium",
+      "emptyBody": "Połącz składniki i procesy — silnik powie, co dzieje się z produktem, jaki ma smak i ile się przechowuje.",
+      "loading": "Ładowanie…",
+      "analyze": "Analizuj",
+      "analyzing": "Analizuję…",
+      "confirmDelete": "Usunąć ten projekt?",
+      "comingSoon": "wkrótce",
+      "copilot": {
+        "title": "AI Technolog",
+        "placeholder": "Opisz pomysł na produkt: „Chcę sos truskawkowy bez cukru\"",
+        "hint": "Wpisz dowolny opis — asystent przygotuje listę składników i kroków.",
+        "suggest": "Zaproponuj",
+        "suggesting": "Myślę…",
+        "confidence": "Pewność",
+        "ingredients": "Składniki",
+        "steps": "Kroki",
+        "unmatched": "Nierozpoznane",
+        "notInCatalog": "Brak w katalogu — zostanie pominięte",
+        "apply": "Tylko dodaj",
+        "applying": "Stosuję…",
+        "discard": "Odrzuć",
+        "skipMissing": "Pominięte: {count} (brak w katalogu)",
+        "applyAndAnalyze": "Dodaj i analizuj"
+      },
+      "ingredients": {
+        "title": "Składniki",
+        "slug": "slug (np. apricot)",
+        "empty": "Brak składników",
+        "added": "Składnik dodany",
+        "merged": "Połączono z istniejącą pozycją",
+        "mergedDesc": "{slug}: {qty} {unit}",
+        "addFailed": "Nie udało się dodać"
+      },
+      "steps": {
+        "title": "Kroki procesu",
+        "min": "min",
+        "empty": "Brak kroków"
+      },
+      "step": {
+        "duplicate": {
+          "title": "Identyczny krok już istnieje",
+          "desc": "Zmień temperaturę lub czas, aby dodać nowy etap.",
+          "batchDesc": "Pominięto powtórzeń: {count}"
+        },
+        "addFailed": "Nie udało się dodać kroku"
+      },
+      "flavor": {
+        "sweet": "Słodki",
+        "acid": "Kwaśny",
+        "bitter": "Gorzki",
+        "umami": "Umami",
+        "aroma": "Aromat"
+      },
+      "analysis": {
+        "processTitle": "Co się dzieje",
+        "processEmpty": "Dodaj krok, aby zobaczyć efekty.",
+        "flavorTitle": "Smak",
+        "shelfTitle": "Termin przydatności",
+        "days": "dni",
+        "noStorage": "Brak szczególnych zaleceń.",
+        "pairingsTitle": "Co dodać"
+      },
+      "scene": {
+        "title": "Proces w działaniu",
+        "subtitle": "Zobacz, jak produkt zmienia się krok po kroku.",
+        "nextEffect": "Następny efekt",
+        "noData": "Proces jeszcze nie uruchomiony",
+        "noDataHint": "Dodaj składniki i kliknij Dodaj i analizuj.",
+        "of": "z"
+      },
+      "story": {
+        "title": "Wizualna historia",
+        "subtitle": "Od surowców do gotowego produktu, klatka po klatce.",
+        "prev": "Wstecz",
+        "next": "Dalej",
+        "play": "Odtwórz",
+        "pause": "Pauza",
+        "placeholder": "placeholder",
+        "empty": "Najpierw uruchom analizę — sceny pojawią się tutaj."
       }
     }
   }
