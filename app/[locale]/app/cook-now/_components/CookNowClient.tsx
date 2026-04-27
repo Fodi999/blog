@@ -16,7 +16,7 @@
  * The first generation is triggered manually by the user (button) so we
  * never burn an AI action on a passive page-load.
  */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import {
@@ -25,6 +25,7 @@ import {
   ChefHat,
   ChevronDown,
   ChevronUp,
+  CircleDashed,
   Clock,
   Flame,
   Leaf,
@@ -675,255 +676,222 @@ function DishRow({
         />
       </button>
 
-      {/* ── Expanded body — single vertical column, recipe-card style ─ */}
+      {/* ── Expanded body — premium full-width recipe detail ─────────── */}
       {expanded && (
-        <CardContent className="flex flex-col gap-6 border-t border-border/60 bg-muted/10 p-6">
-          {/* Action toolbar */}
-          <div className="flex flex-wrap items-center gap-2">
-            <Button size="sm" variant="default" onClick={() => setEditOpen(true)}>
-              <Pencil className="mr-2 h-4 w-4" />
-              {t('actions.edit')}
-            </Button>
-            <Button size="sm" variant="ghost" onClick={() => setExpanded(false)}>
-              <ChevronUp className="mr-2 h-4 w-4" />
-              {t('hideRecipe')}
-            </Button>
+        <CardContent className="flex flex-col gap-0 border-t border-border/60 bg-card p-0 dark:bg-[#101216]">
+
+          {/* ① Hero: visual + title + badges + actions */}
+          <div className="grid gap-4 p-4 sm:p-5 lg:grid-cols-[160px_1fr_auto]">
+            {/* Recipe visual / ingredient collage */}
+            <RecipeVisual dish={editedDish} />
+
+            {/* Title + badges */}
+            <div className="flex flex-col justify-center gap-3">
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+                  {translateEnum(t, 'dishType', editedDish.dish_type)} · {translateEnum(t, 'complexity', editedDish.complexity)}
+                </p>
+                <h3 className="mt-1 text-2xl font-bold leading-tight tracking-tight sm:text-3xl">
+                  {dishTitle(editedDish)}
+                </h3>
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {usesExpiring && (
+                  <Badge className="bg-amber-500/15 text-amber-700 hover:bg-amber-500/20 dark:text-amber-300">
+                    <Flame className="mr-1 h-3 w-3" />{t('badges.usesExpiring')}
+                  </Badge>
+                )}
+                {editedDish.insight.high_protein && (
+                  <Badge variant="secondary">{t('badges.highProtein')}</Badge>
+                )}
+                {editedDish.insight.budget_friendly && (
+                  <Badge variant="secondary">{t('badges.budget')}</Badge>
+                )}
+                {econ?.confidence === 'strong' && (
+                  <Badge className="bg-emerald-500/15 text-emerald-700 hover:bg-emerald-500/20 dark:text-emerald-300">
+                    {t('badges.confidenceStrong')}
+                  </Badge>
+                )}
+              </div>
+              {/* Why chips */}
+              {editedDish.insight.reasons.length > 0 && (
+                <div className="flex flex-wrap gap-1.5">
+                  {editedDish.insight.reasons.slice(0, 4).map((r, i) => (
+                    <span key={i} className="inline-flex items-center rounded-full bg-primary/8 px-2.5 py-0.5 text-[10px] font-semibold text-primary ring-1 ring-primary/20">
+                      {translateEnum(t, 'reason', r)}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Action buttons */}
+            <div className="flex flex-row items-start gap-2 lg:flex-col">
+              <Button size="sm" variant="default" className="rounded-full" onClick={() => setEditOpen(true)}>
+                <Pencil className="mr-1.5 h-4 w-4" />{t('actions.edit')}
+              </Button>
+              <Button size="sm" variant="ghost" className="rounded-full" onClick={() => setExpanded(false)}>
+                <ChevronUp className="mr-1.5 h-4 w-4" />{t('hideRecipe')}
+              </Button>
+            </div>
           </div>
 
-          {/* Hero meta strip — recipe-style at-a-glance row */}
-          <div className="grid grid-cols-2 gap-3 rounded-xl border border-border/60 bg-background p-4 sm:grid-cols-3 lg:grid-cols-5">
-            <HeroMeta
-              icon={Users}
-              label={t('hero.servings')}
-              value={String(editedDish.servings)}
-            />
-            <HeroMeta
-              icon={Timer}
-              label={t('hero.totalTime')}
-              value={totalTimeMin > 0 ? `${totalTimeMin} ${t('hero.min')}` : '—'}
-            />
-            <HeroMeta
-              icon={Scale}
-              label={t('hero.totalYield')}
+          {/* ② Metrics strip */}
+          <div className="grid grid-cols-2 divide-x divide-y divide-border/70 border-y border-border/70 sm:grid-cols-3 lg:grid-cols-5">
+            <HeroMeta icon={Users}   label={t('hero.servings')}  value={String(editedDish.servings)} />
+            <HeroMeta icon={Timer}   label={t('hero.totalTime')} value={totalTimeMin > 0 ? `${totalTimeMin} ${t('hero.min')}` : '—'} />
+            <HeroMeta icon={Scale}   label={t('hero.totalYield')}
               value={formatYield(totalYieldG(editedDish))}
               hint={(() => {
                 const cooked = totalYieldG(editedDish);
-                const gross = totalGrossG(editedDish);
-                if (gross > 0 && Math.abs(gross - cooked) > 1) {
-                  return t('hero.fromGross', { gross: formatYield(gross) });
-                }
-                return t('hero.allIngredients');
+                const gross  = totalGrossG(editedDish);
+                return gross > 0 && Math.abs(gross - cooked) > 1
+                  ? t('hero.fromGross', { gross: formatYield(gross) })
+                  : t('hero.allIngredients');
               })()}
             />
-            <HeroMeta
-              icon={Flame}
-              label={t('hero.kcal')}
-              value={`${editedDish.per_serving_kcal}`}
-              hint={t('hero.perServing')}
-            />
-            <HeroMeta
-              icon={Banknote}
-              label={t('hero.foodCost')}
-              value={econ ? formatCents(econ.cost_cents) : '—'}
-            />
+            <HeroMeta icon={Flame}   label={t('hero.kcal')}      value={`${editedDish.per_serving_kcal}`} hint={t('hero.perServing')} />
+            <HeroMeta icon={Banknote} label={t('hero.foodCost')} value={econ ? formatCents(econ.cost_cents) : '—'} />
           </div>
 
-          {/* Missing ingredients call-out */}
-          {editedDish.missing_count > 0 && (
-            <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-4">
-              <p className="text-xs font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-300">
-                {t('missing', { count: editedDish.missing_count })}
-              </p>
-              <div className="mt-2 flex flex-wrap gap-1.5">
-                {editedDish.missing_ingredients.map((m) => (
-                  <Badge key={m} variant="outline" className="border-amber-500/40 bg-background text-xs">
-                    + {m}
-                  </Badge>
-                ))}
+          <div className="flex flex-col gap-6 p-4 sm:p-5">
+            {/* ③ Missing ingredients */}
+            {editedDish.missing_count > 0 && (
+              <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-3">
+                <p className="text-xs font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-300">
+                  {t('missing', { count: editedDish.missing_count })}
+                </p>
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {editedDish.missing_ingredients.map((m) => (
+                    <Badge key={m} variant="outline" className="border-amber-500/40 bg-background text-xs">+ {m}</Badge>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* Reasons — why we suggested it (translated enum keys) */}
-          {editedDish.insight.reasons.length > 0 && (
-            <RecipeSection icon={Sparkles} title={t('whyTitle')}>
-              <ul className="space-y-1.5 text-sm text-muted-foreground">
-                {editedDish.insight.reasons.slice(0, 5).map((r, i) => (
-                  <li key={i} className="flex gap-2">
-                    <span className="text-primary">•</span>
-                    <span>{translateEnum(t, 'reason', r)}</span>
-                  </li>
-                ))}
-              </ul>
-            </RecipeSection>
-          )}
+            {/* ④⑤ Ingredients (left) + Steps (right) */}
+            {(() => {
+              const real = editedDish.ingredients.filter((ing) => ing.gross_g > 0);
+              const ghosts = editedDish.ingredients.length - real.length;
+              const OPTIONAL_ROLES = new Set(['spice', 'garnish', 'herb', 'sauce', 'acid']);
+              const isOptional = (i: SuggestedIngredient) => OPTIONAL_ROLES.has((i.role || '').toLowerCase());
+              const inStock  = real.filter((i) => i.available && !isOptional(i));
+              const toBuy    = real.filter((i) => !i.available && !isOptional(i));
+              const optional = real.filter(isOptional);
+              return (
+                <div className="flex flex-col gap-6">
+                  {/* Ingredients — full width */}
+                  <RecipeSection icon={Leaf} title={t('ingredients')}>
+                    <div className="space-y-4">
+                      {real.length === 0 && (
+                        <p className="rounded-lg border border-border/60 bg-background px-4 py-3 text-xs text-muted-foreground">{t('noIngredients')}</p>
+                      )}
+                      {inStock.length > 0 && <IngredientGroup label={t('groups.inStock')} count={inStock.length} tone="emerald" items={inStock} t={t} />}
+                      {toBuy.length > 0   && <IngredientGroup label={t('groups.toBuy')}   count={toBuy.length}   tone="amber"   items={toBuy}   t={t} />}
+                      {optional.length > 0 && (
+                        <div>
+                          <div className="mb-2 flex items-center gap-2">
+                            <span className="h-2 w-2 rounded-full bg-muted-foreground/40" />
+                            <h5 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-foreground/80">{t('groups.optional')}</h5>
+                            <span className="rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-muted-foreground">{optional.length}</span>
+                          </div>
+                          <div className="flex flex-wrap gap-2">
+                            {optional.map((ing) => (
+                              <span key={ing.slug + ing.name} className="inline-flex items-center gap-1 rounded-full border border-border/60 bg-background px-2.5 py-1 text-[11px] text-foreground/80">
+                                <span className="font-medium capitalize">{ing.name}</span>
+                                <span className="text-muted-foreground">· {formatGrams(ing.gross_g)}</span>
+                                {ing.role && <span className="text-muted-foreground/60">· {translateEnum(t, 'role', ing.role)}</span>}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    {ghosts > 0 && <p className="mt-2 text-[11px] text-muted-foreground">{t('ghostsHidden', { count: ghosts })}</p>}
+                  </RecipeSection>
 
-          {/* Ingredients — visual constructor with 3 grouped buckets */}
-          {(() => {
-            const real = editedDish.ingredients.filter((ing) => ing.gross_g > 0);
-            const ghosts = editedDish.ingredients.length - real.length;
-
-            // 2) Group by status — like a real shopping list:
-            //    • inStock     — already in your inventory
-            //    • toBuy       — missing, needs a shop run
-            //    • optional    — flavor-only roles (spice/garnish/sauce/herb)
-            const OPTIONAL_ROLES = new Set([
-              'spice', 'garnish', 'herb', 'sauce', 'acid',
-            ]);
-            const isOptional = (i: SuggestedIngredient) =>
-              OPTIONAL_ROLES.has((i.role || '').toLowerCase());
-
-            const inStock = real.filter((i) => i.available && !isOptional(i));
-            const toBuy = real.filter((i) => !i.available && !isOptional(i));
-            const optional = real.filter(isOptional);
-
-            return (
-              <RecipeSection icon={Leaf} title={t('ingredients')}>
-                <div className="space-y-5">
-                  {real.length === 0 && (
-                    <p className="rounded-lg border border-border/60 bg-background px-4 py-3 text-xs text-muted-foreground">
-                      {t('noIngredients')}
-                    </p>
-                  )}
-
-                  {inStock.length > 0 && (
-                    <IngredientGroup
-                      label={t('groups.inStock')}
-                      count={inStock.length}
-                      tone="emerald"
-                      items={inStock}
-                      t={t}
-                    />
-                  )}
-
-                  {toBuy.length > 0 && (
-                    <IngredientGroup
-                      label={t('groups.toBuy')}
-                      count={toBuy.length}
-                      tone="amber"
-                      items={toBuy}
-                      t={t}
-                    />
-                  )}
-
-                  {optional.length > 0 && (
-                    <IngredientGroup
-                      label={t('groups.optional')}
-                      count={optional.length}
-                      tone="muted"
-                      items={optional}
-                      t={t}
-                    />
+                  {/* Steps — horizontal scroll, same pattern as ingredient cards */}
+                  {editedDish.steps.length > 0 && (
+                    <RecipeSection icon={ChefHat} title={t('steps')}>
+                      <StepsScroll steps={editedDish.steps} t={t} />
+                    </RecipeSection>
                   )}
                 </div>
+              );
+            })()}
 
-                {ghosts > 0 && (
-                  <p className="mt-3 text-[11px] text-muted-foreground">
-                    {t('ghostsHidden', { count: ghosts })}
-                  </p>
-                )}
-              </RecipeSection>
-            );
-          })()}
-
-          {/* Steps */}
-          {editedDish.steps.length > 0 && (
-            <RecipeSection icon={ChefHat} title={t('steps')}>
-              <ol className="space-y-4">
-                {editedDish.steps.map((s) => (
-                  <li key={s.step} className="flex gap-3 rounded-lg border border-border/60 bg-background p-3">
-                    <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
-                      {s.step}
-                    </span>
-                    <div className="min-w-0 flex-1 space-y-1.5">
-                      <p className="text-sm leading-relaxed">{s.text}</p>
-                      <div className="flex flex-wrap gap-3 text-[11px] text-muted-foreground">
-                        {s.time_min ? (
-                          <span className="flex items-center gap-1">
-                            <Timer className="h-3 w-3" />
-                            {s.time_min} {t('hero.min')}
-                          </span>
-                        ) : null}
-                        {s.temp_c ? (
-                          <span className="flex items-center gap-1">
-                            <Flame className="h-3 w-3" />
-                            {s.temp_c}°C
-                          </span>
-                        ) : null}
-                        {s.tip ? <span className="italic">💡 {s.tip}</span> : null}
-                      </div>
+            {/* ⑥ Bottom analytics — 3 cards */}
+            <div className="grid items-stretch gap-3 sm:grid-cols-2 xl:grid-cols-3">
+              {econ && (
+                <div className="rounded-2xl border border-border/60 bg-muted/20 p-4">
+                  <RecipeSection icon={Banknote} title={t('econ.title')}>
+                    <div className="grid grid-cols-2 gap-2">
+                      <EconBlock label={t('econ.cost')}      value={formatCents(econ.cost_cents)} />
+                      <EconBlock label={t('econ.suggested')} value={formatCents(econ.suggested_price_cents)} />
+                      <EconBlock label={t('econ.margin')}    value={`${econ.margin_percent.toFixed(1)}%`}
+                        tone={econ.margin_percent >= 65 ? 'emerald' : econ.margin_percent >= 50 ? 'amber' : 'red'} />
+                      <EconBlock label={t('econ.wasteSaved')} value={formatCents(econ.waste_saved_cents)}
+                        tone={econ.waste_saved_cents > 0 ? 'emerald' : 'muted'} />
                     </div>
-                  </li>
-                ))}
-              </ol>
-            </RecipeSection>
-          )}
+                    <p className="mt-2 text-[11px] text-muted-foreground">{t('econ.coverage', { percent: econ.price_coverage_percent })}</p>
+                  </RecipeSection>
+                </div>
+              )}
 
-          {/* Economics */}
-          {econ && (
-            <RecipeSection icon={Banknote} title={t('econ.title')}>
-              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-                <EconBlock label={t('econ.cost')} value={formatCents(econ.cost_cents)} />
-                <EconBlock label={t('econ.suggested')} value={formatCents(econ.suggested_price_cents)} />
-                <EconBlock
-                  label={t('econ.margin')}
-                  value={`${econ.margin_percent.toFixed(1)}%`}
-                  tone={
-                    econ.margin_percent >= 65 ? 'emerald'
-                      : econ.margin_percent >= 50 ? 'amber'
-                      : 'red'
-                  }
-                />
-                <EconBlock
-                  label={t('econ.wasteSaved')}
-                  value={formatCents(econ.waste_saved_cents)}
-                  tone={econ.waste_saved_cents > 0 ? 'emerald' : 'muted'}
-                />
+              <div className="rounded-2xl border border-border/60 bg-muted/20 p-4">
+                <RecipeSection icon={Flame} title={t('nutritionTitle')}>
+                  <div className="grid grid-cols-2 gap-2">
+                    <NutBlock label={t('nutrition.kcal')}    value={String(editedDish.per_serving_kcal)} accent />
+                    <NutBlock label={t('nutrition.protein')} value={`${editedDish.per_serving_protein_g.toFixed(0)}g`} />
+                    <NutBlock label={t('nutrition.fat')}     value={`${editedDish.per_serving_fat_g.toFixed(0)}g`} />
+                    <NutBlock label={t('nutrition.carbs')}   value={`${editedDish.per_serving_carbs_g.toFixed(0)}g`} />
+                  </div>
+                </RecipeSection>
               </div>
-              <p className="mt-2 text-[11px] text-muted-foreground">
-                {t('econ.coverage', { percent: econ.price_coverage_percent })}
-              </p>
-            </RecipeSection>
-          )}
 
-          {/* Nutrition per serving */}
-          <RecipeSection icon={Flame} title={t('nutritionTitle')}>
-            <div className="grid grid-cols-4 gap-2">
-              <NutBlock label={t('nutrition.kcal')} value={String(editedDish.per_serving_kcal)} />
-              <NutBlock label={t('nutrition.protein')} value={`${editedDish.per_serving_protein_g.toFixed(0)}g`} />
-              <NutBlock label={t('nutrition.fat')} value={`${editedDish.per_serving_fat_g.toFixed(0)}g`} />
-              <NutBlock label={t('nutrition.carbs')} value={`${editedDish.per_serving_carbs_g.toFixed(0)}g`} />
+              {(editedDish.tags.length > 0 || editedDish.allergens.length > 0) && (
+                <div className="rounded-2xl border border-border/60 bg-muted/20 p-4">
+                  <RecipeSection icon={Leaf} title={t('tagsTitle') ?? 'Tags & Allergens'}>
+                    <div className="flex flex-wrap gap-1.5">
+                      {editedDish.tags.map((tag) => (
+                        <Badge key={`tag-${tag}`} variant="secondary" className="text-[11px] capitalize">
+                          {translateEnum(t, 'tag', tag)}
+                        </Badge>
+                      ))}
+                      {editedDish.allergens.map((a) => (
+                        <Badge key={`allergen-${a}`} variant="outline" className="border-amber-500/40 text-[11px] text-amber-700 dark:text-amber-300">
+                          ⚠ {translateEnum(t, 'allergen', a)}
+                        </Badge>
+                      ))}
+                    </div>
+                  </RecipeSection>
+                </div>
+              )}
             </div>
-          </RecipeSection>
 
-          {/* Tags / Allergens — translated */}
-          {(editedDish.tags.length > 0 || editedDish.allergens.length > 0) && (
-            <div className="flex flex-wrap gap-1.5">
-              {editedDish.tags.map((tag) => (
-                <Badge key={`tag-${tag}`} variant="secondary" className="text-[11px] capitalize">
-                  {translateEnum(t, 'tag', tag)}
-                </Badge>
-              ))}
-              {editedDish.allergens.map((a) => (
-                <Badge
-                  key={`allergen-${a}`}
-                  variant="outline"
-                  className="border-amber-500/40 text-[11px] text-amber-700 dark:text-amber-300"
-                >
-                  ⚠ {translateEnum(t, 'allergen', a)}
-                </Badge>
-              ))}
-            </div>
-          )}
+            {/* Warnings */}
+            {editedDish.warnings.length > 0 && (
+              <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-amber-800 dark:text-amber-200">
+                {editedDish.warnings.map((w, i) => <p key={i}>⚠ {w}</p>)}
+              </div>
+            )}
+          </div>
 
-          {/* Warnings */}
-          {editedDish.warnings.length > 0 && (
-            <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-amber-800 dark:text-amber-200">
-              {editedDish.warnings.map((w, i) => (
-                <p key={i}>⚠ {w}</p>
-              ))}
+          {/* Sticky footer action bar */}
+          <footer className="sticky bottom-0 flex flex-wrap items-center justify-between gap-3 border-t border-border/70 bg-card/95 px-6 py-4 backdrop-blur dark:bg-[#101216]/95">
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <CircleDashed className="h-3.5 w-3.5" />
+              {t('actions.generatedHint')}
             </div>
-          )}
+            <div className="flex items-center gap-2">
+              <Button size="sm" variant="ghost" className="rounded-full" onClick={() => setEditOpen(true)}>
+                <Pencil className="mr-1.5 h-4 w-4" />{t('actions.edit')}
+              </Button>
+              <Button size="sm" className="rounded-full bg-foreground text-background hover:bg-foreground/90">
+                <ChefHat className="mr-1.5 h-4 w-4" />{t('actions.startCooking')}
+              </Button>
+            </div>
+          </footer>
         </CardContent>
       )}
     </Card>
@@ -957,10 +925,12 @@ function RecipeSection({
 }) {
   return (
     <section>
-      <h4 className="mb-2.5 flex items-center gap-2 text-[13px] font-semibold uppercase tracking-wide text-foreground/80">
-        <Icon className="h-4 w-4 text-primary" />
-        {title}
-      </h4>
+      <div className="mb-3 flex items-center gap-2.5">
+        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/10 text-primary">
+          <Icon className="h-3.5 w-3.5" />
+        </span>
+        <h4 className="text-[11px] font-semibold uppercase tracking-[0.22em] text-foreground/80">{title}</h4>
+      </div>
       {children}
     </section>
   );
@@ -978,13 +948,52 @@ function HeroMeta({
   hint?: string;
 }) {
   return (
-    <div className="flex flex-col gap-1">
-      <span className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-        <Icon className="h-3 w-3" />
+    <div className="flex flex-col gap-0.5 px-3 py-2.5 sm:px-4">
+      <span className="flex items-center gap-1 text-[9px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+        <Icon className="h-2.5 w-2.5" />
         {label}
       </span>
-      <span className="text-base font-bold tabular-nums leading-none">{value}</span>
-      {hint && <span className="text-[10px] text-muted-foreground">{hint}</span>}
+      <span className="text-sm font-bold leading-none tabular-nums text-foreground">{value}</span>
+      {hint && <span className="text-[9px] text-muted-foreground">{hint}</span>}
+    </div>
+  );
+}
+
+// ── Recipe visual / ingredient collage ──────────────────────────────────────
+
+function RecipeVisual({ dish }: { dish: SuggestedDish }) {
+  const imgs = dish.ingredients
+    .filter((i) => i.image_url && i.gross_g > 0)
+    .slice(0, 4)
+    .map((i) => i.image_url as string);
+
+  // Single hero image
+  if (imgs.length === 1) {
+    return (
+      <div className="h-36 w-36 flex-shrink-0 overflow-hidden rounded-xl bg-muted/40">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={imgs[0]} alt={dish.dish_name} className="h-full w-full object-cover" />
+      </div>
+    );
+  }
+
+  // 2-2 collage
+  if (imgs.length >= 2) {
+    return (
+      <div className={cn('grid h-36 w-36 flex-shrink-0 gap-0.5 overflow-hidden rounded-xl', imgs.length >= 4 ? 'grid-cols-2 grid-rows-2' : 'grid-cols-2')}>
+        {imgs.map((src, i) => (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img key={i} src={src} alt="" className="h-full w-full object-cover" />
+        ))}
+      </div>
+    );
+  }
+
+  // Gradient placeholder with dish initial
+  const initial = (dish.display_name || dish.dish_name || '?').trim().charAt(0).toUpperCase();
+  return (
+    <div className="flex h-36 w-36 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary/20 to-primary/5">
+      <span className="text-5xl font-bold text-primary/30">{initial}</span>
     </div>
   );
 }
@@ -1017,6 +1026,13 @@ function IngredientGroup({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   t: any;
 }) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const thumbRef  = useRef<HTMLDivElement>(null);
+  const trackRef  = useRef<HTMLDivElement>(null);
+  const dragging  = useRef(false);
+  const dragStartX = useRef(0);
+  const scrollStartLeft = useRef(0);
+
   const bar =
     tone === 'emerald' ? 'bg-emerald-500'
       : tone === 'amber' ? 'bg-amber-500'
@@ -1026,9 +1042,47 @@ function IngredientGroup({
       : tone === 'amber' ? 'bg-amber-500/15 text-amber-700 dark:text-amber-300'
       : 'bg-muted text-muted-foreground';
 
+  function updateThumb() {
+    const el = scrollRef.current;
+    const thumb = thumbRef.current;
+    const track = trackRef.current;
+    if (!el || !thumb || !track) return;
+    const ratio = el.scrollLeft / (el.scrollWidth - el.clientWidth || 1);
+    const trackW = track.clientWidth;
+    const thumbW = Math.max(40, (el.clientWidth / el.scrollWidth) * trackW);
+    thumb.style.width = `${thumbW}px`;
+    thumb.style.transform = `translateX(${ratio * (trackW - thumbW)}px)`;
+  }
+
+  function onThumbPointerDown(e: React.PointerEvent<HTMLDivElement>) {
+    e.preventDefault();
+    dragging.current = true;
+    dragStartX.current = e.clientX;
+    scrollStartLeft.current = scrollRef.current?.scrollLeft ?? 0;
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+  }
+
+  function onThumbPointerMove(e: React.PointerEvent<HTMLDivElement>) {
+    if (!dragging.current) return;
+    const el = scrollRef.current;
+    const track = trackRef.current;
+    const thumb = thumbRef.current;
+    if (!el || !track || !thumb) return;
+    const trackW = track.clientWidth;
+    const thumbW = thumb.offsetWidth;
+    const dx = e.clientX - dragStartX.current;
+    const scrollRange = el.scrollWidth - el.clientWidth;
+    el.scrollLeft = scrollStartLeft.current + (dx / (trackW - thumbW)) * scrollRange;
+    updateThumb();
+  }
+
+  function onThumbPointerUp() {
+    dragging.current = false;
+  }
+
   return (
     <div>
-      <div className="mb-2 flex items-center gap-2">
+      <div className="mb-3 flex items-center gap-2">
         <span className={cn('h-3 w-1 rounded-full', bar)} />
         <h5 className="text-[12px] font-semibold uppercase tracking-wide text-foreground/80">
           {label}
@@ -1037,17 +1091,144 @@ function IngredientGroup({
           {count}
         </span>
       </div>
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
+      <div
+        ref={scrollRef}
+        className="no-scrollbar flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 pr-1"
+        onScroll={updateThumb}
+      >
         {items.map((ing) => (
-          <IngredientCard key={ing.slug + ing.name} ing={ing} t={t} />
+          <div
+            key={ing.slug + ing.name}
+            className="w-[220px] shrink-0 snap-start sm:w-[240px] lg:w-[250px]"
+          >
+            <IngredientCard ing={ing} t={t} />
+          </div>
         ))}
       </div>
+      {/* Draggable scroll track */}
+      {items.length > 2 && (
+        <div ref={trackRef} className="relative mt-2 h-1.5 w-full cursor-pointer rounded-full bg-border/40">
+          <div
+            ref={thumbRef}
+            className="absolute left-0 top-0 h-full cursor-grab rounded-full bg-primary/50 transition-colors hover:bg-primary/70 active:cursor-grabbing"
+            style={{ width: `${Math.max(40, (1 / items.length) * 100)}%` }}
+            onPointerDown={onThumbPointerDown}
+            onPointerMove={onThumbPointerMove}
+            onPointerUp={onThumbPointerUp}
+            onPointerCancel={onThumbPointerUp}
+          />
+        </div>
+      )}
     </div>
   );
 }
 
 /**
- * Single product card — photo + name + grams + status pill.
+ * Horizontal scrollable list of recipe steps — same drag pattern as IngredientGroup.
+ */
+function StepsScroll({
+  steps,
+  t,
+}: {
+  steps: import('@/lib/cook-suggestions').RecipeStep[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  t: any;
+}) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const thumbRef  = useRef<HTMLDivElement>(null);
+  const trackRef  = useRef<HTMLDivElement>(null);
+  const dragging  = useRef(false);
+  const dragStartX = useRef(0);
+  const scrollStartLeft = useRef(0);
+
+  function updateThumb() {
+    const el = scrollRef.current;
+    const thumb = thumbRef.current;
+    const track = trackRef.current;
+    if (!el || !thumb || !track) return;
+    const ratio = el.scrollLeft / (el.scrollWidth - el.clientWidth || 1);
+    const trackW = track.clientWidth;
+    const thumbW = Math.max(40, (el.clientWidth / el.scrollWidth) * trackW);
+    thumb.style.width = `${thumbW}px`;
+    thumb.style.transform = `translateX(${ratio * (trackW - thumbW)}px)`;
+  }
+
+  function onThumbPointerDown(e: React.PointerEvent<HTMLDivElement>) {
+    e.preventDefault();
+    dragging.current = true;
+    dragStartX.current = e.clientX;
+    scrollStartLeft.current = scrollRef.current?.scrollLeft ?? 0;
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+  }
+
+  function onThumbPointerMove(e: React.PointerEvent<HTMLDivElement>) {
+    if (!dragging.current) return;
+    const el = scrollRef.current;
+    const track = trackRef.current;
+    const thumb = thumbRef.current;
+    if (!el || !track || !thumb) return;
+    const trackW = track.clientWidth;
+    const thumbW = thumb.offsetWidth;
+    const dx = e.clientX - dragStartX.current;
+    const scrollRange = el.scrollWidth - el.clientWidth;
+    el.scrollLeft = scrollStartLeft.current + (dx / (trackW - thumbW)) * scrollRange;
+    updateThumb();
+  }
+
+  function onThumbPointerUp() {
+    dragging.current = false;
+  }
+
+  return (
+    <div>
+      <div
+        ref={scrollRef}
+        className="no-scrollbar flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 pr-1"
+        onScroll={updateThumb}
+      >
+        {steps.map((s) => (
+          <div
+            key={s.step}
+            className="w-[260px] shrink-0 snap-start sm:w-[280px]"
+          >
+            <div className="flex h-full flex-col gap-1.5 rounded-2xl border border-border/70 bg-background p-3 dark:border-white/10 dark:bg-[#181b20]">
+              <div className="flex items-center gap-2">
+                <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary text-[11px] font-bold text-primary-foreground">
+                  {s.step}
+                </span>
+                <div className="flex flex-wrap gap-2 text-[11px] text-muted-foreground">
+                  {s.time_min ? <span className="inline-flex items-center gap-1"><Clock className="h-3 w-3" />{s.time_min} {t('hero.min')}</span> : null}
+                  {s.temp_c  ? <span className="inline-flex items-center gap-1"><Flame className="h-3 w-3" />{s.temp_c}°C</span> : null}
+                </div>
+              </div>
+              <p className="text-[13px] leading-relaxed text-foreground/90">{s.text}</p>
+              {s.tip && (
+                <p className="mt-auto rounded-lg border border-amber-500/20 bg-amber-500/8 px-2.5 py-1.5 text-[11px] italic leading-snug text-foreground/80">
+                  <span className="font-semibold not-italic text-amber-600 dark:text-amber-400">Tip · </span>{s.tip}
+                </p>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+      {steps.length > 2 && (
+        <div ref={trackRef} className="relative mt-2 h-1.5 w-full cursor-pointer rounded-full bg-border/40">
+          <div
+            ref={thumbRef}
+            className="absolute left-0 top-0 h-full cursor-grab rounded-full bg-primary/50 transition-colors hover:bg-primary/70 active:cursor-grabbing"
+            style={{ width: `${Math.max(40, (1 / steps.length) * 100)}%` }}
+            onPointerDown={onThumbPointerDown}
+            onPointerMove={onThumbPointerMove}
+            onPointerUp={onThumbPointerUp}
+            onPointerCancel={onThumbPointerUp}
+          />
+        </div>
+      )}
+    </div>
+  );
+}
+
+/**
  *
  * Renders the catalog `image_url` when available; otherwise shows a soft
  * monogram fallback derived from the localized name.
@@ -1061,21 +1242,22 @@ function IngredientCard({
   t: any;
 }) {
   const initial = (ing.name || ing.slug || '?').trim().charAt(0).toUpperCase();
-  const status =
-    ing.expiring_soon ? 'expiring'
-      : !ing.available ? 'missing'
-      : 'inStock';
-  const statusClass =
-    status === 'expiring' ? 'bg-amber-500/20 text-amber-700 dark:text-amber-300'
-      : status === 'missing' ? 'bg-amber-500/15 text-amber-700 dark:text-amber-300'
-      : 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300';
-  const statusIcon = status === 'expiring' ? '🔥' : status === 'missing' ? '⚠️' : '✅';
-  const statusLabel = t(`status.${status}`);
+  const ringClass =
+    ing.expiring_soon
+      ? 'ring-amber-400/40'
+      : !ing.available
+      ? 'ring-amber-500/30'
+      : 'ring-border';
 
   return (
-    <div className="group relative flex flex-col overflow-hidden rounded-xl border border-border/60 bg-background transition-all hover:border-primary/40 hover:shadow-sm">
+    <div
+      className={cn(
+        'group/ing relative flex h-full flex-col overflow-hidden rounded-2xl border border-border/60 bg-background ring-1 transition-all hover:border-primary/40 hover:shadow-sm hover:-translate-y-0.5',
+        ringClass,
+      )}
+    >
       {/* Photo / fallback monogram */}
-      <div className="relative aspect-square w-full overflow-hidden bg-muted/40">
+      <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted/40">
         {ing.image_url ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -1083,8 +1265,8 @@ function IngredientCard({
             alt={ing.name}
             loading="lazy"
             className={cn(
-              'h-full w-full object-cover transition-transform duration-300 group-hover:scale-105',
-              !ing.available && 'opacity-60 grayscale',
+              'h-full w-full object-cover transition-transform duration-500 group-hover/ing:scale-110',
+              !ing.available && 'opacity-70',
             )}
           />
         ) : (
@@ -1098,30 +1280,31 @@ function IngredientCard({
           </div>
         )}
 
-        {/* Status pill — top right */}
-        <span
-          className={cn(
-            'absolute right-1.5 top-1.5 inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[10px] font-semibold backdrop-blur',
-            statusClass,
-          )}
-          title={statusLabel}
-        >
-          <span aria-hidden="true">{statusIcon}</span>
-        </span>
+        {/* Status pill — top left (text label) */}
+        {ing.expiring_soon && (
+          <span className="absolute left-1.5 top-1.5 inline-flex h-5 items-center rounded-full bg-amber-400 px-1.5 text-[10px] font-semibold text-foreground shadow-sm">
+            {t('status.expiring')}
+          </span>
+        )}
+        {!ing.available && !ing.expiring_soon && (
+          <span className="absolute left-1.5 top-1.5 inline-flex h-5 items-center rounded-full bg-foreground px-1.5 text-[10px] font-semibold text-background shadow-sm">
+            {t('groups.toBuy')}
+          </span>
+        )}
       </div>
 
       {/* Body */}
-      <div className="flex flex-1 flex-col gap-0.5 p-2">
+      <div className="flex flex-1 flex-col gap-0.5 p-2.5">
         <p
           className={cn(
-            'truncate text-xs font-semibold capitalize leading-tight',
+            'truncate text-[13px] font-semibold capitalize leading-tight',
             !ing.available && 'text-muted-foreground',
           )}
           title={ing.name}
         >
           {ing.name}
         </p>
-        <p className="text-[11px] font-bold tabular-nums text-foreground/80">
+        <p className="text-[11px] font-bold tabular-nums text-foreground/65">
           {formatGrams(ing.gross_g)}
         </p>
         {ing.role && (
@@ -1149,18 +1332,30 @@ function EconBlock({
       : tone === 'red' ? 'text-destructive'
       : 'text-foreground';
   return (
-    <div className="rounded-lg border border-border/60 p-2.5">
-      <p className="text-[11px] uppercase tracking-wide text-muted-foreground">{label}</p>
-      <p className={cn('mt-0.5 text-sm font-bold tabular-nums', toneClass)}>{value}</p>
+    <div className="rounded-xl border border-border/70 bg-background px-4 py-3.5">
+      <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">{label}</p>
+      <p className={cn('mt-1 text-2xl font-bold leading-none tabular-nums', toneClass)}>{value}</p>
     </div>
   );
 }
 
-function NutBlock({ label, value }: { label: string; value: string }) {
+function NutBlock({ label, value, accent = false }: { label: string; value: string; accent?: boolean }) {
   return (
-    <div className="rounded-md bg-muted/40 p-2 text-center">
-      <div className="text-sm font-bold tabular-nums">{value}</div>
-      <div className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</div>
+    <div
+      className={cn(
+        'flex flex-col items-center justify-center gap-0.5 rounded-xl border border-border/70 px-2 py-3.5',
+        accent ? 'bg-primary/5' : 'bg-background',
+      )}
+    >
+      <span
+        className={cn(
+          'text-2xl font-bold leading-none tabular-nums',
+          accent ? 'text-primary' : 'text-foreground',
+        )}
+      >
+        {value}
+      </span>
+      <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">{label}</span>
     </div>
   );
 }

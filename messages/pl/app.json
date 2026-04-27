@@ -460,8 +460,11 @@
       "clear": "Wyczyść",
       "whyTitle": "Dlaczego to danie",
       "nutritionTitle": "Wartości na porcję",
+      "tagsTitle": "Tagi i alergeny",
       "actions": {
-        "edit": "Edytuj przepis"
+        "edit": "Edytuj przepis",
+        "startCooking": "Zacznij gotować",
+        "generatedHint": "Wygenerowano dla twojej kuchni"
       },
       "toast": {
         "draftSaved": "Zapisano jako szkic",

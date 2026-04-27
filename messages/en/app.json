@@ -460,8 +460,11 @@
       "clear": "Clear",
       "whyTitle": "Why this dish",
       "nutritionTitle": "Nutrition per serving",
+      "tagsTitle": "Tags & Allergens",
       "actions": {
-        "edit": "Edit recipe"
+        "edit": "Edit recipe",
+        "startCooking": "Start cooking",
+        "generatedHint": "Generated for your kitchen"
       },
       "toast": {
         "draftSaved": "Saved as draft",
