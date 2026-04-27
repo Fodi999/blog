@@ -125,6 +125,8 @@ export interface SuggestedDish {
   warnings: string[];
   tags: string[];
   allergens: string[];
+  /** AI-generated dish photo — lazily fetched on card expand. */
+  dish_image_url?: string | null;
 }
 
 export interface InventoryInsight {
@@ -228,4 +230,20 @@ export function totalDishes(r: CookSuggestionsResponse): number {
  */
 export function getCookSuggestions(): Promise<CookSuggestionsResponse> {
   return api.post<CookSuggestionsResponse>('/api/cook/suggestions');
+}
+
+/**
+ * POST /api/cook/suggestions/dish-image — on-demand AI photo for a dish.
+ * Called lazily when the user expands a dish card.
+ * Returns `data:image/png;base64,...`.
+ */
+export async function getDishImage(
+  dishName: string,
+  ingredients: string[],
+): Promise<string> {
+  const res = await api.post<{ dish_image_url: string }>(
+    '/api/cook/suggestions/dish-image',
+    { dish_name: dishName, ingredients: ingredients.slice(0, 5) },
+  );
+  return res.dish_image_url;
 }

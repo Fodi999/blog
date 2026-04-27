@@ -49,6 +49,7 @@ import { ApiError } from '@/lib/chefos-api';
 import {
   dishTitle,
   getCookSuggestions,
+  getDishImage,
   totalDishes,
   type CookSuggestionsResponse,
   type DishBucket,
@@ -583,6 +584,9 @@ function DishRow({
   const [editOpen, setEditOpen] = useState(false);
   // Local mutable copy — edited ingredients appear in the grid immediately.
   const [editedDish, setEditedDish] = useState<SuggestedDish>(dish);
+  // AI-generated dish photo — fetched lazily on first expand.
+  const [dishImageUrl, setDishImageUrl] = useState<string | null>(dish.dish_image_url ?? null);
+  const [imageLoading, setImageLoading] = useState(false);
 
   const econ = editedDish.insight.economics;
   const usesExpiring = editedDish.insight.uses_expiring;
@@ -599,6 +603,27 @@ function DishRow({
     saveDraft(updated);
   }
 
+  async function handleExpand() {
+    const next = !expanded;
+    setExpanded(next);
+    // Fetch AI image on first expand if not already loaded
+    if (next && !dishImageUrl && !imageLoading) {
+      setImageLoading(true);
+      try {
+        const ingredientNames = editedDish.ingredients
+          .filter((i) => i.gross_g > 0)
+          .slice(0, 5)
+          .map((i) => i.name);
+        const url = await getDishImage(editedDish.dish_name, ingredientNames);
+        setDishImageUrl(url);
+      } catch {
+        // Non-fatal — collage fallback remains
+      } finally {
+        setImageLoading(false);
+      }
+    }
+  }
+
   return (
     <>
       <EditRecipeSheet
@@ -611,7 +636,7 @@ function DishRow({
       {/* ── Strip header (always visible) ───────────────────────────── */}
       <button
         type="button"
-        onClick={() => setExpanded((v) => !v)}
+        onClick={handleExpand}
         className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-muted/30"
         aria-expanded={expanded}
       >
@@ -683,7 +708,7 @@ function DishRow({
           {/* ① Hero: visual + title + badges + actions */}
           <div className="grid gap-4 p-4 sm:p-5 lg:grid-cols-[160px_1fr_auto]">
             {/* Recipe visual / ingredient collage */}
-            <RecipeVisual dish={editedDish} />
+            <RecipeVisual dish={editedDish} dishImageUrl={dishImageUrl} imageLoading={imageLoading} />
 
             {/* Title + badges */}
             <div className="flex flex-col justify-center gap-3">
@@ -961,13 +986,32 @@ function HeroMeta({
 
 // ── Recipe visual / ingredient collage ──────────────────────────────────────
 
-function RecipeVisual({ dish }: { dish: SuggestedDish }) {
+function RecipeVisual({ dish, dishImageUrl, imageLoading }: { dish: SuggestedDish; dishImageUrl?: string | null; imageLoading?: boolean }) {
+  // 1. AI-generated photo (highest priority)
+  if (dishImageUrl) {
+    return (
+      <div className="h-36 w-36 flex-shrink-0 overflow-hidden rounded-xl bg-muted/40">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={dishImageUrl} alt={dish.dish_name} className="h-full w-full object-cover" />
+      </div>
+    );
+  }
+
+  // 2. Loading skeleton while AI generates
+  if (imageLoading) {
+    return (
+      <div className="flex h-36 w-36 flex-shrink-0 items-center justify-center rounded-xl bg-muted/40 animate-pulse">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground/40" />
+      </div>
+    );
+  }
+
   const imgs = dish.ingredients
     .filter((i) => i.image_url && i.gross_g > 0)
     .slice(0, 4)
     .map((i) => i.image_url as string);
 
-  // Single hero image
+  // 3. Single hero ingredient image
   if (imgs.length === 1) {
     return (
       <div className="h-36 w-36 flex-shrink-0 overflow-hidden rounded-xl bg-muted/40">
@@ -977,7 +1021,7 @@ function RecipeVisual({ dish }: { dish: SuggestedDish }) {
     );
   }
 
-  // 2-2 collage
+  // 4. 2-4 ingredient collage
   if (imgs.length >= 2) {
     return (
       <div className={cn('grid h-36 w-36 flex-shrink-0 gap-0.5 overflow-hidden rounded-xl', imgs.length >= 4 ? 'grid-cols-2 grid-rows-2' : 'grid-cols-2')}>
@@ -989,7 +1033,7 @@ function RecipeVisual({ dish }: { dish: SuggestedDish }) {
     );
   }
 
-  // Gradient placeholder with dish initial
+  // 5. Gradient placeholder with dish initial
   const initial = (dish.display_name || dish.dish_name || '?').trim().charAt(0).toUpperCase();
   return (
     <div className="flex h-36 w-36 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary/20 to-primary/5">
