@@ -16,9 +16,11 @@ import { resolveAssetUrl, type Laboratory3DAsset } from '@/lib/laboratory-api';
 import type {
   CameraPresetKey,
   DisplayMode,
+  LightingPreset,
   ModelViewerApi,
   StudioEnvPreset,
 } from './ModelViewer';
+import { LIGHT_PRESETS } from './ModelViewer';
 
 const ModelViewer = dynamic(
   () => import('./ModelViewer').then((m) => m.ModelViewer),
@@ -60,12 +62,13 @@ export function LaboratoryStudioViewer({ asset, backHref }: Props) {
     [asset.model_url],
   );
 
-  const [autoRotate, setAutoRotate]     = useState(true);
-  const [envPreset, setEnvPreset]       = useState<StudioEnvPreset>('studio');
-  const [displayMode, setDisplayMode]   = useState<DisplayMode>('floor');
-  const [activePreset, setActivePreset] = useState<CameraPresetKey>('default');
-  const [zoom, setZoom]                 = useState(0.55); // 0 = closest, 1 = farthest
-  const [tab, setTab] = useState<'object' | 'camera' | 'environment' | 'display'>('object');
+  const [autoRotate, setAutoRotate]       = useState(true);
+  const [envPreset, setEnvPreset]         = useState<StudioEnvPreset>('studio');
+  const [displayMode, setDisplayMode]     = useState<DisplayMode>('floor');
+  const [lightingPreset, setLightingPreset] = useState<LightingPreset>('softFood');
+  const [activePreset, setActivePreset]   = useState<CameraPresetKey>('default');
+  const [zoom, setZoom]                   = useState(0.55);
+  const [tab, setTab] = useState<'object' | 'camera' | 'environment' | 'display' | 'light'>('object');
   const [api, setApi] = useState<ModelViewerApi | null>(null);
 
   const handleApiReady = useCallback((readyApi: ModelViewerApi) => {
@@ -239,6 +242,7 @@ export function LaboratoryStudioViewer({ asset, backHref }: Props) {
             autoRotate={autoRotate}
             environmentPreset={envPreset}
             displayMode={displayMode}
+            lightingPreset={lightingPreset}
             onReady={handleApiReady}
             className="h-full w-full"
           />
@@ -250,7 +254,7 @@ export function LaboratoryStudioViewer({ asset, backHref }: Props) {
         {/* Right Inspector */}
         <aside className="flex flex-col border-l border-zinc-800 bg-zinc-900/60">
           <div className="flex shrink-0 border-b border-zinc-800">
-            {(['object', 'camera', 'environment', 'display'] as const).map((t) => (
+            {(['object', 'camera', 'light', 'display'] as const).map((t) => (
               <button
                 key={t}
                 onClick={() => setTab(t)}
@@ -266,10 +270,17 @@ export function LaboratoryStudioViewer({ asset, backHref }: Props) {
           </div>
 
           <div className="min-h-0 flex-1 overflow-y-auto p-3 text-xs">
-            {tab === 'object'      && <ObjectTab asset={asset} />}
-            {tab === 'camera'      && <CameraTab activePreset={activePreset} onPreset={applyPreset} onReset={onReset} />}
-            {tab === 'environment' && <EnvironmentTab envPreset={envPreset} onEnvPreset={setEnvPreset} />}
-            {tab === 'display'     && (
+            {tab === 'object'  && <ObjectTab asset={asset} />}
+            {tab === 'camera'  && <CameraTab activePreset={activePreset} onPreset={applyPreset} onReset={onReset} />}
+            {tab === 'light'   && (
+              <LightingTab
+                lightingPreset={lightingPreset}
+                onLightingPreset={setLightingPreset}
+                envPreset={envPreset}
+                onEnvPreset={setEnvPreset}
+              />
+            )}
+            {tab === 'display' && (
               <DisplayTab
                 displayMode={displayMode}
                 onDisplayMode={setDisplayMode}
@@ -353,6 +364,76 @@ function CameraTab({
         <InspectorRow label="FOV"  value="35°" />
         <InspectorRow label="Near" value="0.01" />
         <InspectorRow label="Far"  value="50" />
+      </InspectorSection>
+    </div>
+  );
+}
+
+function LightingTab({
+  lightingPreset,
+  onLightingPreset,
+  envPreset,
+  onEnvPreset,
+}: {
+  lightingPreset: LightingPreset;
+  onLightingPreset: (v: LightingPreset) => void;
+  envPreset: StudioEnvPreset;
+  onEnvPreset: (v: StudioEnvPreset) => void;
+}) {
+  const LIGHTING_OPTIONS: { id: LightingPreset; label: string; desc: string }[] = [
+    { id: 'softFood',     label: '🍜 Soft Food',     desc: 'Bowls · sauce · plates' },
+    { id: 'cleanProduct', label: '🫙 Clean Product',  desc: 'Jars · bottles · cards' },
+    { id: 'darkPremium',  label: '🖤 Dark Premium',   desc: 'Dramatic presentation' },
+  ];
+  const lp = LIGHT_PRESETS[lightingPreset];
+
+  return (
+    <div className="space-y-3">
+      <InspectorSection title="Lighting Preset">
+        <div className="flex flex-col gap-1.5">
+          {LIGHTING_OPTIONS.map((o) => (
+            <button
+              key={o.id}
+              onClick={() => onLightingPreset(o.id)}
+              className={`flex flex-col items-start rounded border px-2 py-2 text-left transition-colors ${
+                lightingPreset === o.id
+                  ? 'border-amber-500/60 bg-amber-500/10 text-amber-400'
+                  : 'border-zinc-700 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200'
+              }`}
+            >
+              <span className="text-[11px] font-medium">{o.label}</span>
+              <span className="text-[9px] text-zinc-500">{o.desc}</span>
+            </button>
+          ))}
+        </div>
+      </InspectorSection>
+
+      <InspectorSection title="Current Values">
+        <InspectorRow label="Exposure"  value={String(lp.exposure)} />
+        <InspectorRow label="Ambient"   value={String(lp.ambient)} />
+        <InspectorRow label="HDRI"      value={lp.environment} />
+        <InspectorRow label="Env int."  value={String(lp.environmentIntensity)} />
+        <InspectorRow label="Key"       value={`${lp.key.intensity}`} />
+        <InspectorRow label="Fill"      value={`${lp.fill.intensity}`} />
+        <InspectorRow label="Rim"       value={`${lp.rim.intensity}`} />
+      </InspectorSection>
+
+      <InspectorSection title="HDRI Override">
+        <div className="grid grid-cols-2 gap-1.5">
+          {ENV_PRESETS.map((p) => (
+            <button
+              key={p.id}
+              onClick={() => onEnvPreset(p.id)}
+              className={`rounded border px-2 py-1.5 text-[11px] font-medium transition-colors ${
+                envPreset === p.id
+                  ? 'border-amber-500/60 bg-amber-500/10 text-amber-400'
+                  : 'border-zinc-700 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200'
+              }`}
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
       </InspectorSection>
     </div>
   );

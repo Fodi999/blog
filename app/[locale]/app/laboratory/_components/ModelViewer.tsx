@@ -219,6 +219,59 @@ function upgradeSauceMaterialsTSL(root: THREE.Object3D, factory: SauceFactory): 
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// PR #20 — Studio Lighting Presets
+// ─────────────────────────────────────────────────────────────────────────────
+
+export type LightingPreset = "softFood" | "cleanProduct" | "darkPremium";
+
+interface LightConfig {
+  exposure: number;
+  ambient: number;
+  environment: StudioEnvPreset;
+  environmentIntensity: number;
+  key:  { position: [number, number, number]; intensity: number };
+  fill: { position: [number, number, number]; intensity: number };
+  rim:  { position: [number, number, number]; intensity: number };
+  shadowOpacity: number;
+}
+
+export const LIGHT_PRESETS: Record<LightingPreset, LightConfig> = {
+  /** Default for food / sauce / bowls — soft wrap light, less blow-out */
+  softFood: {
+    exposure: 0.92,
+    ambient: 0.08,
+    environment: "studio",
+    environmentIntensity: 0.65,
+    key:  { position: [ 2.5,  3.2,  2.2], intensity: 0.95 },
+    fill: { position: [-3.0,  1.8,  2.0], intensity: 0.16 },
+    rim:  { position: [-2.0,  2.4, -3.0], intensity: 0.42 },
+    shadowOpacity: 0.45,
+  },
+  /** Jars / bottles / flat cards — crisp highlights, stronger rim */
+  cleanProduct: {
+    exposure: 0.90,
+    ambient: 0.06,
+    environment: "studio",
+    environmentIntensity: 0.85,
+    key:  { position: [ 2.8,  3.4,  2.0], intensity: 1.05 },
+    fill: { position: [-2.8,  2.0,  1.5], intensity: 0.12 },
+    rim:  { position: [-2.5,  2.6, -3.2], intensity: 0.58 },
+    shadowOpacity: 0.38,
+  },
+  /** Dramatic dark presentations */
+  darkPremium: {
+    exposure: 0.82,
+    ambient: 0.03,
+    environment: "city",
+    environmentIntensity: 0.55,
+    key:  { position: [ 2.4,  3.0,  1.8], intensity: 0.75 },
+    fill: { position: [-2.0,  1.5,  1.0], intensity: 0.08 },
+    rim:  { position: [-2.8,  2.8, -3.2], intensity: 0.75 },
+    shadowOpacity: 0.55,
+  },
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Format detection
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -615,6 +668,10 @@ interface ModelViewerProps {
   environmentPreset?: StudioEnvPreset;
   /** PR #19 — ground/grid display mode. Default `"floor"`. */
   displayMode?: DisplayMode;
+  /** PR #20 — studio lighting preset. Default `"softFood"`. */
+  lightingPreset?: LightingPreset;
+  /** PR #20 — override tone-mapping exposure (0.5–1.5). */
+  exposure?: number;
   onReady?: (api: ModelViewerApi) => void;
 }
 
@@ -623,8 +680,10 @@ export function ModelViewer({
   className = "",
   studioMode = false,
   autoRotate = true,
-  environmentPreset = "studio",
+  environmentPreset,
   displayMode = "floor",
+  lightingPreset = "softFood",
+  exposure,
   onReady,
 }: ModelViewerProps) {
   const ref = useRef<HTMLDivElement>(null);
@@ -632,6 +691,11 @@ export function ModelViewer({
   const controlsRef = useRef<React.ComponentRef<typeof OrbitControls> | null>(null);
   const cameraAnimTargetRef = useRef<THREE.Vector3 | null>(null);
   const useGlb = isGlb(modelUrl);
+
+  // PR #20 — resolve lighting config (preset values, with optional exposure override)
+  const lp = LIGHT_PRESETS[lightingPreset];
+  const resolvedEnv   = environmentPreset ?? lp.environment;
+  const resolvedExp   = exposure ?? lp.exposure;
 
   // Re-publish the imperative API whenever a dependency changes.
   useEffect(() => {
@@ -698,23 +762,27 @@ export function ModelViewer({
         // ceramic looks chalky.
         onCreated={({ gl }) => {
           gl.toneMapping = THREE.ACESFilmicToneMapping;
-          gl.toneMappingExposure = 1.0;
+          gl.toneMappingExposure = resolvedExp;
           gl.outputColorSpace = THREE.SRGBColorSpace;
-          // For studio screenshots we need preserveDrawingBuffer; toggling
-          // it post-hoc isn't supported, so we just live with the small
-          // perf hit in studio mode.
           glRef.current = gl;
         }}
         style={{ width: "100%", height: "100%" }}
       >
-        {/* Soft fill — HDRI does the heavy lifting; the directional adds a key. */}
-        <ambientLight intensity={0.25} />
+        {/* PR #20 — 3-point studio lighting from active preset */}
+        <ambientLight intensity={lp.ambient} />
         <directionalLight
-          position={[2.5, 4, 2]}
-          intensity={0.9}
+          position={lp.key.position}
+          intensity={lp.key.intensity}
           castShadow={false}
         />
-        <directionalLight position={[-3, -1, -2]} intensity={0.2} />
+        <directionalLight
+          position={lp.fill.position}
+          intensity={lp.fill.intensity}
+        />
+        <directionalLight
+          position={lp.rim.position}
+          intensity={lp.rim.intensity}
+        />
 
         {/*
           Studio HDRI — gives glass / metal something to reflect (PR #9).
@@ -724,9 +792,9 @@ export function ModelViewer({
         */}
         <Suspense fallback={null}>
           <Environment
-            preset={environmentPreset}
+            preset={resolvedEnv}
             background={false}
-            environmentIntensity={0.9}
+            environmentIntensity={lp.environmentIntensity}
           />
         </Suspense>
 
@@ -743,7 +811,7 @@ export function ModelViewer({
         {displayMode !== "clean" && (
           <ContactShadows
             position={[0, -0.78, 0]}
-            opacity={displayMode === "grid" ? 0.3 : studioMode ? 0.6 : 0.45}
+            opacity={displayMode === "grid" ? lp.shadowOpacity * 0.6 : lp.shadowOpacity}
             scale={studioMode ? 5 : 3}
             blur={studioMode ? 2.8 : 2.2}
             far={1.0}
