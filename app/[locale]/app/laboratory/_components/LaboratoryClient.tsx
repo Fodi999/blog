@@ -25,8 +25,8 @@ import {
 } from '@/lib/laboratory-api';
 
 // Dynamic import — three.js is large, no need to SSR it.
-const ObjViewer = dynamic(
-  () => import('./ObjViewer').then((m) => m.ObjViewer),
+const ModelViewer = dynamic(
+  () => import('./ModelViewer').then((m) => m.ModelViewer),
   { ssr: false, loading: () => <div className="h-72 rounded-xl bg-zinc-900 animate-pulse" /> }
 );
 
@@ -211,7 +211,7 @@ export function LaboratoryClient(_props: { locale: string }) {
 
           {/* OBJ viewer — shown when model is ready */}
           {asset.status === 'ready' && asset.model_url ? (
-            <ObjViewer modelUrl={resolveAssetUrl(asset.model_url)!} className="mb-4 h-72 w-full" />
+            <ModelViewer modelUrl={resolveAssetUrl(asset.model_url)!} className="mb-4 h-72 w-full" />
           ) : null}
 
           {/* Failed state placeholder */}
