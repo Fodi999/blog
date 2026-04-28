@@ -70,18 +70,21 @@ function readBaseColor(mat: AnyStdMat): THREE.Color {
 /**
  * Decide which physically-themed material a material name implies.
  * Returns `null` if no rule matches and the original material should be kept.
+ *
+ * Order matters — `bowl` / `ceramic` are checked **before** `glass` so the
+ * ceramic bowl in `sauce_in_bowl` never accidentally turns transmissive.
  */
 function classify(
   name: string,
-): "glass" | "metal" | "liquid" | null {
+): "ceramic" | "glass" | "metal" | "liquid" | null {
   const n = name.toLowerCase();
+  if (n.includes("bowl") || n.includes("ceramic")) return "ceramic";
   if (n.includes("glass")) return "glass";
   if (n.includes("metal") || n.includes("lid") || n.includes("cap")) return "metal";
   if (
     n.includes("liquid") ||
     n.includes("sauce") ||
-    n.includes("product") ||
-    n.includes("bowl") // bowl_material — ceramic, glossy enough
+    n.includes("product")
   ) {
     return "liquid";
   }
@@ -118,17 +121,30 @@ function makeMetalMaterial(base: THREE.Color, name: string): THREE.MeshStandardM
   });
 }
 
-/**
- * Glossy liquid / sauce / generic product surface. Slightly tweaks roughness
- * downward and bumps env-map intensity so the highlight reads.
- */
-function makeLiquidMaterial(base: THREE.Color, name: string, isBowl: boolean): THREE.MeshStandardMaterial {
+/** Matt-ish ceramic for bowls. Never transmissive — opaque dish. */
+function makeCeramicMaterial(base: THREE.Color, name: string): THREE.MeshStandardMaterial {
   return new THREE.MeshStandardMaterial({
     name,
     color: base,
+    roughness: 0.58,
     metalness: 0.0,
-    roughness: isBowl ? 0.55 : 0.22,
-    envMapIntensity: isBowl ? 0.6 : 1.3,
+    envMapIntensity: 0.5,
+    side: THREE.DoubleSide,
+  });
+}
+
+/**
+ * Glossy liquid / sauce / generic product surface. Tuned for the swirl
+ * relief on top of `sauce_in_bowl` and the meniscus on jars/bottles.
+ */
+function makeLiquidMaterial(base: THREE.Color, name: string): THREE.MeshStandardMaterial {
+  return new THREE.MeshStandardMaterial({
+    name,
+    color: base,
+    roughness: 0.18,
+    metalness: 0.0,
+    envMapIntensity: 1.2,
+    side: THREE.DoubleSide,
   });
 }
 
@@ -148,12 +164,14 @@ function upgradeMaterials(root: THREE.Object3D): void {
       if (!kind) return src;
       const base = readBaseColor(src);
       switch (kind) {
+        case "ceramic":
+          return makeCeramicMaterial(base, name);
         case "glass":
           return makeGlassMaterial(base, name);
         case "metal":
           return makeMetalMaterial(base, name);
         case "liquid":
-          return makeLiquidMaterial(base, name, name.toLowerCase().includes("bowl"));
+          return makeLiquidMaterial(base, name);
       }
     };
 
