@@ -5,7 +5,10 @@
  * analyze / scenes). The new contract is intentionally tiny:
  *
  *   • POST /api/laboratory/images                      (multipart "file" or JSON URL)
- *   • POST /api/laboratory/images/:id/generate-model   (sync, may 501 in PR #2)
+ *   • POST /api/laboratory/images/:id/generate-model   (sync; PR #3 returns
+ *                                                       Vision spec + status
+ *                                                       `generating_model`,
+ *                                                       OBJ/GLB lands in PR #4)
  *   • GET  /api/laboratory/assets/:id
  *
  * All endpoints are JWT-authenticated. Static files (uploaded images,
@@ -102,9 +105,11 @@ export async function uploadLaboratoryImage(file: File): Promise<LaboratoryImage
 /**
  * Trigger procedural 3D-model generation for a previously-uploaded image.
  *
- * MVP is synchronous: the backend runs Vision + geometry inline and returns
- * the final asset. May currently return HTTP 500 with `not_implemented` —
- * callers should treat that as a "coming soon" state, not a hard failure.
+ * MVP is synchronous. As of PR #3 the backend runs Gemini Vision inline and
+ * returns the asset with `object_type` + `object_spec` populated and
+ * `status = "generating_model"`. The OBJ/GLB itself (and `model_url`) lands
+ * in PR #4 — until then `model_url` will be `null` and the UI should treat
+ * `generating_model` as a successful intermediate state.
  */
 export async function generateLaboratoryModel(imageId: string): Promise<Laboratory3DAsset> {
   return api.post<Laboratory3DAsset>(

@@ -1,19 +1,19 @@
 'use client';
 
 /**
- * Laboratory v2 — Photo → 3D Model (uploader-only MVP).
+ * Laboratory v2 — Photo → 3D Model.
  *
  * Flow:
  *   1. user picks an image  →  preview locally
  *   2. clicks "Upload"      →  POST /api/laboratory/images (multipart)
  *   3. clicks "Generate 3D" →  POST /api/laboratory/images/:id/generate-model
- *      (currently 500 not_implemented — UI shows a graceful "coming soon")
+ *      PR #4 backend: Gemini Vision → geometry dispatch → OBJ → status = ready.
  *
- * The legacy Copilot / Constructor / Analysis / Visual-Story UI is gone.
- * Everything 3D-related (viewer, drei, asset polling) lands in PR #3.
+ * When asset.status === "ready" the ObjViewer replaces the placeholder card.
  */
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
+import dynamic from 'next/dynamic';
 
 import { ApiError } from '@/lib/chefos-api';
 import {
@@ -22,6 +22,12 @@ import {
   type Laboratory3DAsset,
   type LaboratoryImage,
 } from '@/lib/laboratory-api';
+
+// Dynamic import — three.js is large, no need to SSR it.
+const ObjViewer = dynamic(
+  () => import('./ObjViewer').then((m) => m.ObjViewer),
+  { ssr: false, loading: () => <div className="h-72 rounded-xl bg-zinc-900 animate-pulse" /> }
+);
 
 const ACCEPTED_MIME = 'image/png,image/jpeg,image/webp';
 const MAX_BYTES = 10 * 1024 * 1024;
@@ -75,11 +81,21 @@ export function LaboratoryClient(_props: { locale: string }) {
     try {
       const next = await generateLaboratoryModel(image.id);
       setAsset(next);
-      toast.success('3D model generated.');
+      if (next.status === 'ready' && next.model_url) {
+        toast.success('3D model generated.');
+      } else if (next.status === 'generating_model') {
+        toast.success(
+          `Vision analysis done${next.object_type ? ` · ${next.object_type}` : ''}.`,
+        );
+      } else if (next.status === 'failed') {
+        toast.error(next.error_message ?? 'Generation failed');
+      } else {
+        toast.info(`Asset status: ${next.status}`);
+      }
     } catch (err) {
-      // Backend currently returns 500 not_implemented — show as info, not error.
-      if (err instanceof ApiError && /not_implemented/i.test(String(err.message))) {
-        toast.info('3D generation is coming in the next release.');
+      // Backend may still return 500 if GEMINI_API_KEY is missing in the env.
+      if (err instanceof ApiError && /not_implemented|GEMINI_API_KEY/i.test(String(err.message))) {
+        toast.info('3D generation is temporarily unavailable.');
       } else {
         const msg = err instanceof Error ? err.message : 'Generation failed';
         toast.error(msg);
@@ -177,15 +193,33 @@ export function LaboratoryClient(_props: { locale: string }) {
         </section>
       ) : null}
 
-      {/* ── Asset card (placeholder until PR #3) ──────────────────────────── */}
+      {/* ── Asset card — Vision spec + 3D viewer ─────────────────────── */}
       {asset ? (
         <section className="rounded-lg border bg-card p-4 text-sm">
           <h2 className="mb-2 font-medium">3D asset</h2>
+
+          {/* OBJ viewer — shown when model is ready */}
+          {asset.status === 'ready' && asset.model_url ? (
+            <ObjViewer modelUrl={asset.model_url} className="mb-4 h-72 w-full" />
+          ) : null}
+
           <dl className="grid grid-cols-[max-content_1fr] gap-x-4 gap-y-1 text-muted-foreground">
             <dt>id</dt>
             <dd className="font-mono text-xs">{asset.id}</dd>
             <dt>status</dt>
             <dd>{asset.status}</dd>
+            {asset.object_type ? (
+              <>
+                <dt>object</dt>
+                <dd>{asset.object_type}</dd>
+              </>
+            ) : null}
+            {asset.error_message ? (
+              <>
+                <dt>error</dt>
+                <dd className="text-destructive">{asset.error_message}</dd>
+              </>
+            ) : null}
             {asset.model_url ? (
               <>
                 <dt>model</dt>
@@ -193,6 +227,24 @@ export function LaboratoryClient(_props: { locale: string }) {
               </>
             ) : null}
           </dl>
+
+          {asset.object_spec ? (
+            <details className="mt-3">
+              <summary className="cursor-pointer text-xs text-muted-foreground hover:text-foreground">
+                Show Vision spec JSON
+              </summary>
+              <pre className="mt-2 max-h-72 overflow-auto rounded-md bg-muted p-2 text-xs">
+                {JSON.stringify(asset.object_spec, null, 2)}
+              </pre>
+            </details>
+          ) : null}
+
+          {asset.status === 'generating_model' && !asset.model_url ? (
+            <p className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
+              <span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-current border-t-transparent" />
+              Generating 3D model…
+            </p>
+          ) : null}
         </section>
       ) : null}
     </div>
