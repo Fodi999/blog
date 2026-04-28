@@ -27,7 +27,7 @@
  * PR #8 keep rendering. New assets are always GLB.
  */
 
-import { Suspense, useRef } from "react";
+import { Suspense, useEffect, useRef } from "react";
 import { Canvas, useLoader } from "@react-three/fiber";
 import { ContactShadows, Environment, OrbitControls } from "@react-three/drei";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
@@ -86,6 +86,98 @@ async function createRenderer(props: {
   return new THREE.WebGLRenderer({
     canvas: props.canvas,
     antialias: true,
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PR #18 — TSL / node-based procedural sauce shader
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Async factory that builds a procedural sauce material using TSL nodes.
+ *
+ * Effects layered on top of a standard PBR material:
+ *
+ *   * **Micro-bubble roughness** — `mx_noise_float(positionLocal × 40)` is
+ *     added to the base roughness with small amplitude (~0.05). This breaks
+ *     up perfectly-uniform highlights so the sauce looks like a real
+ *     viscous liquid rather than chrome paint.
+ *   * **Wet clearcoat** — fixed clearcoat 0.3 / clearcoatRoughness 0.15
+ *     gives the glossy "just poured" sheen.
+ *
+ * Returns `null` on browsers without WebGPU (TSL relies on the node
+ * material system which only ships in `three/webgpu`). The viewer will
+ * keep using the standard `makeLiquidMaterial` in that case.
+ */
+type SauceFactory = (color: THREE.Color, name: string) => THREE.Material;
+let _sauceFactoryPromise: Promise<SauceFactory | null> | null = null;
+function ensureSauceFactory(): Promise<SauceFactory | null> {
+  if (_sauceFactoryPromise) return _sauceFactoryPromise;
+  if (!hasWebGPU()) {
+    _sauceFactoryPromise = Promise.resolve(null);
+    return _sauceFactoryPromise;
+  }
+  _sauceFactoryPromise = (async () => {
+    try {
+      const webgpu = await import("three/webgpu");
+      const tsl = await import("three/tsl");
+      const { MeshPhysicalNodeMaterial } = webgpu;
+      const { positionLocal, mx_noise_float, float } = tsl;
+
+      const factory: SauceFactory = (color, name) => {
+        const mat = new MeshPhysicalNodeMaterial({ name });
+        mat.color = color.clone();
+        mat.metalness = 0.0;
+
+        // Micro-bubble noise on roughness. Amplitude is small so it doesn't
+        // flicker; frequency 40 keeps bubbles below ~5 mm at our model
+        // scale (model fits in a 1.5 m bounding box after `fitToView`).
+        const noise = mx_noise_float(positionLocal.mul(float(40.0))).abs();
+        mat.roughnessNode = float(0.18).add(noise.mul(float(0.05)));
+
+        // Wet clearcoat — glossy thin film over the diffuse pigment.
+        mat.clearcoatNode = float(0.3);
+        mat.clearcoatRoughnessNode = float(0.15);
+
+        mat.envMapIntensity = 1.2;
+        mat.side = THREE.DoubleSide;
+        return mat as unknown as THREE.Material;
+      };
+      // eslint-disable-next-line no-console
+      console.info("[ModelViewer] TSL sauce shader ready");
+      return factory;
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.warn("[ModelViewer] TSL sauce shader unavailable", e);
+      return null;
+    }
+  })();
+  return _sauceFactoryPromise;
+}
+
+/**
+ * Walk `root` and replace any material classified as `liquid` with the
+ * TSL node version produced by `ensureSauceFactory`. Idempotent via the
+ * `__tslUpgraded` tag.
+ */
+function upgradeSauceMaterialsTSL(root: THREE.Object3D, factory: SauceFactory): void {
+  root.traverse((child) => {
+    const mesh = child as THREE.Mesh;
+    if (!mesh.isMesh) return;
+    if (mesh.userData.__tslUpgraded) return;
+
+    const swap = (mat: THREE.Material): THREE.Material => {
+      if (classify(mat.name ?? "") !== "liquid") return mat;
+      const base = readBaseColor(mat as AnyStdMat);
+      return factory(base, mat.name ?? "liquid_material");
+    };
+
+    if (Array.isArray(mesh.material)) {
+      mesh.material = mesh.material.map(swap);
+    } else {
+      mesh.material = swap(mesh.material);
+    }
+    mesh.userData.__tslUpgraded = true;
   });
 }
 
@@ -310,6 +402,20 @@ function GltfModel({ url }: { url: string }) {
 
   // Upgrade materials by name (PR #9) — idempotent, safe to call on cached gltf.
   upgradeMaterials(root);
+
+  // PR #18 — once the gltf is mounted, lazily load the TSL sauce shader and
+  // re-upgrade any liquid material to its node-based version. Only runs on
+  // WebGPU-capable browsers; the WebGL fallback keeps the standard material.
+  useEffect(() => {
+    let cancelled = false;
+    ensureSauceFactory().then((factory) => {
+      if (cancelled || !factory) return;
+      upgradeSauceMaterialsTSL(root, factory);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [root]);
 
   // Centre + normalise so the model fits the camera frame.
   const { scale, offset } = fitToView(root);
