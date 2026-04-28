@@ -12,7 +12,7 @@ import Link from 'next/link';
 import { useCallback, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
-import { resolveAssetUrl, type Laboratory3DAsset } from '@/lib/laboratory-api';
+import { resolveAssetUrl, generateLaboratoryModel, type GeometryQuality, type Laboratory3DAsset } from '@/lib/laboratory-api';
 import type {
   CameraPresetKey,
   DisplayMode,
@@ -59,14 +59,27 @@ interface Props {
 }
 
 export function LaboratoryStudioViewer({ asset, backHref }: Props) {
+  // Live asset — replaced after a successful regenerate so the viewer can
+  // swap to the freshly-baked GLB without reloading the page.
+  const [currentAsset, setCurrentAsset] = useState<Laboratory3DAsset>(asset);
+
   const modelUrl = useMemo(
-    () => (asset.model_url ? resolveAssetUrl(asset.model_url) : null),
-    [asset.model_url],
+    () => (currentAsset.model_url ? resolveAssetUrl(currentAsset.model_url) : null),
+    [currentAsset.model_url],
   );
 
   const [autoRotate, setAutoRotate]       = useState(true);
   const [displayMode, setDisplayMode]     = useState<DisplayMode>('floor');
   const [renderQuality, setRenderQuality] = useState<RenderQuality>('hd');
+
+  // Geometry quality (PR #24). `generatedQuality` is what the live GLB was
+  // baked at; `pendingQuality` is the user's current pick. When they differ,
+  // the inspector shows a "Regenerate GLB" CTA — we never auto-regenerate
+  // on click because regeneration is slow/expensive.
+  const [generatedQuality, setGeneratedQuality] = useState<GeometryQuality>('high');
+  const [pendingQuality, setPendingQuality]     = useState<GeometryQuality>('high');
+  const [regenerating, setRegenerating]         = useState(false);
+
   const [lightSettings, setLightSettings] = useState<StudioLightSettings>(
     () => lightSettingsFromPreset('softFood'),
   );
@@ -109,6 +122,36 @@ export function LaboratoryStudioViewer({ asset, backHref }: Props) {
     applyPreset('default');
     toast.success('Camera reset');
   }, [applyPreset]);
+
+  /**
+   * Regenerate the GLB at `pendingQuality`. Hits the same Vision pipeline
+   * as the original generate, just with a stricter (or coarser) tessellation.
+   * The whole call is sync end-to-end, so we just `await` and swap the
+   * asset on success.
+   */
+  const onRegenerate = useCallback(async () => {
+    if (regenerating) return;
+    if (!currentAsset.image_id) {
+      toast.error('Cannot regenerate: source image is missing');
+      return;
+    }
+    setRegenerating(true);
+    const t = toast.loading(`Regenerating GLB at ${pendingQuality.toUpperCase()}…`);
+    try {
+      const next = await generateLaboratoryModel(currentAsset.image_id, pendingQuality);
+      if (next.status !== 'ready' || !next.model_url) {
+        throw new Error(next.error_message ?? `Pipeline returned status=${next.status}`);
+      }
+      setCurrentAsset(next);
+      setGeneratedQuality(pendingQuality);
+      toast.success(`GLB rebuilt at ${pendingQuality.toUpperCase()}`, { id: t });
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : 'Regenerate failed';
+      toast.error(msg, { id: t });
+    } finally {
+      setRegenerating(false);
+    }
+  }, [currentAsset.image_id, pendingQuality, regenerating]);
 
   const onScreenshot = useCallback(() => {
     const data = api?.takeScreenshot();
@@ -287,7 +330,7 @@ export function LaboratoryStudioViewer({ asset, backHref }: Props) {
           </div>
 
           <div className="min-h-0 flex-1 overflow-y-auto p-3 text-xs">
-            {tab === 'object'  && <ObjectTab asset={asset} />}
+            {tab === 'object'  && <ObjectTab asset={currentAsset} />}
             {tab === 'camera'  && <CameraTab activePreset={activePreset} onPreset={applyPreset} onReset={onReset} />}
             {tab === 'light'   && (
               <LightingTab
@@ -304,6 +347,11 @@ export function LaboratoryStudioViewer({ asset, backHref }: Props) {
                 onAutoRotate={() => setAutoRotate((v) => !v)}
                 renderQuality={renderQuality}
                 onRenderQuality={setRenderQuality}
+                generatedQuality={generatedQuality}
+                pendingQuality={pendingQuality}
+                onPendingQuality={setPendingQuality}
+                regenerating={regenerating}
+                onRegenerate={onRegenerate}
               />
             )}
           </div>
@@ -313,10 +361,10 @@ export function LaboratoryStudioViewer({ asset, backHref }: Props) {
       {/* ── Bottom status bar ───────────────────────────────────────── */}
       <footer className="flex h-7 shrink-0 items-center justify-between border-t border-zinc-800 bg-zinc-900/60 px-4">
         <span className="text-[10px] text-zinc-600">
-          {asset.model_format?.toUpperCase() ?? 'GLB'} · {asset.id.slice(0, 8)}
+          {currentAsset.model_format?.toUpperCase() ?? 'GLB'} · {currentAsset.id.slice(0, 8)}
         </span>
         <span className="text-[10px] text-zinc-600">
-          {lightSettings.preset} · {displayMode} · {RENDER_QUALITY_CONFIG[renderQuality].label}
+          {lightSettings.preset} · {displayMode} · render {RENDER_QUALITY_CONFIG[renderQuality].label} · model {generatedQuality.toUpperCase()}
         </span>
       </footer>
     </div>
@@ -644,6 +692,11 @@ function DisplayTab({
   onAutoRotate,
   renderQuality,
   onRenderQuality,
+  generatedQuality,
+  pendingQuality,
+  onPendingQuality,
+  regenerating,
+  onRegenerate,
 }: {
   displayMode: DisplayMode;
   onDisplayMode: (v: DisplayMode) => void;
@@ -651,6 +704,11 @@ function DisplayTab({
   onAutoRotate: () => void;
   renderQuality: RenderQuality;
   onRenderQuality: (v: RenderQuality) => void;
+  generatedQuality: GeometryQuality;
+  pendingQuality: GeometryQuality;
+  onPendingQuality: (v: GeometryQuality) => void;
+  regenerating: boolean;
+  onRegenerate: () => void;
 }) {
   const modes: { id: DisplayMode; label: string }[] = [
     { id: 'clean', label: '○ Clean' },
@@ -661,6 +719,14 @@ function DisplayTab({
     id,
     label: RENDER_QUALITY_CONFIG[id].label,
   }));
+  const modelQualities: { id: GeometryQuality; label: string; desc: string; segs: string }[] = [
+    { id: 'draft',    label: 'Draft',    desc: 'fast preview',   segs: '32 / 8'   },
+    { id: 'standard', label: 'Standard', desc: 'balanced',       segs: '48 / 14'  },
+    { id: 'high',     label: 'High',     desc: 'studio default', segs: '96 / 24'  },
+    { id: 'ultra',    label: 'Ultra',    desc: 'smoothest GLB',  segs: '128 / 32' },
+  ];
+  const dirty = pendingQuality !== generatedQuality;
+
   return (
     <div className="space-y-3">
       <InspectorSection title="Ground">
@@ -680,6 +746,9 @@ function DisplayTab({
       </InspectorSection>
 
       <InspectorSection title="Render Quality">
+        <p className="mb-1.5 text-[9px] text-zinc-500 leading-snug">
+          Pixels · DPR · shadows · AA. <span className="text-emerald-400/90">Changes instantly.</span>
+        </p>
         <div className="grid grid-cols-4 gap-1">
           {qualities.map((q) => (
             <button
@@ -706,6 +775,65 @@ function DisplayTab({
           <InspectorRow label="Shadow res" value={`${RENDER_QUALITY_CONFIG[renderQuality].shadowResolution}px`} />
           <InspectorRow label="Anisotropy" value={`${RENDER_QUALITY_CONFIG[renderQuality].textureAnisotropy}x`} />
         </div>
+      </InspectorSection>
+
+      <InspectorSection title="Model Quality">
+        <p className="mb-1.5 text-[9px] text-zinc-500 leading-snug">
+          Polygons · circle smoothness · GLB topology.{' '}
+          <span className="text-amber-400/90">Requires regeneration.</span>
+        </p>
+        <div className="flex flex-col gap-1">
+          {modelQualities.map((q) => {
+            const isPending  = pendingQuality === q.id;
+            const isCurrent  = generatedQuality === q.id;
+            return (
+              <button
+                key={q.id}
+                onClick={() => onPendingQuality(q.id)}
+                disabled={regenerating}
+                className={`flex items-center justify-between rounded border px-2 py-1.5 text-left text-[11px] font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                  isPending
+                    ? 'border-amber-500/60 bg-amber-500/10 text-amber-400'
+                    : 'border-zinc-700 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200'
+                }`}
+              >
+                <span className="flex flex-col">
+                  <span>
+                    {q.label}
+                    {isCurrent && (
+                      <span className="ml-1 text-[8px] uppercase tracking-wider text-emerald-400/80">
+                        · live
+                      </span>
+                    )}
+                  </span>
+                  <span className="text-[9px] text-zinc-500">{q.desc}</span>
+                </span>
+                <span className="font-mono text-[9px] text-zinc-500">{q.segs}</span>
+              </button>
+            );
+          })}
+        </div>
+        {dirty ? (
+          <button
+            onClick={onRegenerate}
+            disabled={regenerating}
+            className="mt-2 flex w-full items-center justify-center gap-2 rounded border border-amber-500/60 bg-amber-500/10 py-1.5 text-[11px] font-semibold text-amber-300 hover:bg-amber-500/20 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            {regenerating ? (
+              <>
+                <span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                Regenerating…
+              </>
+            ) : (
+              <>↻ Regenerate GLB at {pendingQuality.toUpperCase()}</>
+            )}
+          </button>
+        ) : (
+          <p className="mt-2 text-[9px] text-zinc-500 leading-snug">
+            Live model is at <span className="text-emerald-400/90">{generatedQuality.toUpperCase()}</span>.
+            Pick another preset above to enable Regenerate.
+          </p>
+        )}
       </InspectorSection>
 
       <InspectorSection title="Animation">

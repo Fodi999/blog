@@ -123,15 +123,34 @@ export async function uploadLaboratoryImage(file: File): Promise<LaboratoryImage
 }
 
 /**
+ * Geometry quality preset (PR #23 backend / PR #24 frontend hookup).
+ *
+ * Controls the Rust generator's tessellation density:
+ *   draft     32 segs · 8 rings   — fast preview
+ *   standard  48 segs · 14 rings  — legacy default
+ *   high      96 segs · 24 rings  — Studio default (server default)
+ *   ultra    128 segs · 32 rings  — final-render GLB
+ *
+ * Independent from frontend `RenderQuality` (DPR / shadows / AA).
+ */
+export type GeometryQuality = 'draft' | 'standard' | 'high' | 'ultra';
+
+/**
  * Trigger procedural 3D-model generation for a previously-uploaded image.
  *
  * Synchronous end-to-end: Gemini Vision → geometry dispatch → OBJ stored.
  * Returns asset with `status = "ready"` and `model_url` set on success,
  * or `status = "failed"` with `error_message` on any pipeline error.
+ *
+ * Pass `quality` to override the geometry preset (default = `high`).
  */
-export async function generateLaboratoryModel(imageId: string): Promise<Laboratory3DAsset> {
+export async function generateLaboratoryModel(
+  imageId: string,
+  quality?: GeometryQuality,
+): Promise<Laboratory3DAsset> {
+  const qs = quality ? `?quality=${encodeURIComponent(quality)}` : '';
   return api.post<Laboratory3DAsset>(
-    `/api/laboratory/images/${encodeURIComponent(imageId)}/generate-model`,
+    `/api/laboratory/images/${encodeURIComponent(imageId)}/generate-model${qs}`,
   );
 }
 
