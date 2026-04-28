@@ -52,6 +52,39 @@ function hasWebGPU(): boolean {
 }
 
 /**
+ * Whether WebGPU should actually be used for this page load.
+ *
+ * Even on browsers that *support* WebGPU we keep it off by default because
+ * `WebGPURenderer` rejects classic `ShaderMaterial`s (it requires the new
+ * node material system) and several drei helpers we rely on —
+ * notably `<ContactShadows />` — still ship a plain `ShaderMaterial`,
+ * triggering: *"THREE.NodeBuilder: Material 'ShaderMaterial' is not
+ * compatible."*
+ *
+ * Until drei catches up we expose WebGPU as an explicit opt-in:
+ *   * URL query param: `?webgpu=1`
+ *   * Or window flag set from devtools: `window.__chefosWebGPU = true`
+ *
+ * The TSL sauce shader (PR #18) uses the same gate — it can only run when
+ * the active renderer is a `WebGPURenderer`.
+ */
+function isWebGPURequested(): boolean {
+  if (typeof window === "undefined") return false;
+  if ((window as unknown as { __chefosWebGPU?: boolean }).__chefosWebGPU) {
+    return true;
+  }
+  try {
+    return new URLSearchParams(window.location.search).get("webgpu") === "1";
+  } catch {
+    return false;
+  }
+}
+
+function shouldUseWebGPU(): boolean {
+  return hasWebGPU() && isWebGPURequested();
+}
+
+/**
  * R3F `gl` factory that prefers `WebGPURenderer` and falls back to the
  * default `WebGLRenderer` if WebGPU isn't available or fails to init.
  *
@@ -63,7 +96,7 @@ function hasWebGPU(): boolean {
 async function createRenderer(props: {
   canvas: HTMLCanvasElement;
 }): Promise<THREE.WebGLRenderer> {
-  if (hasWebGPU()) {
+  if (shouldUseWebGPU()) {
     try {
       // Dynamic import keeps the WebGPU bundle out of the initial JS payload
       // for browsers that won't use it.
@@ -74,7 +107,7 @@ async function createRenderer(props: {
       });
       await renderer.init();
       // eslint-disable-next-line no-console
-      console.info("[ModelViewer] using WebGPURenderer");
+      console.info("[ModelViewer] using WebGPURenderer (opt-in)");
       // Cast: WebGPURenderer is API-compatible with WebGLRenderer for the
       // surface R3F + drei use (toneMapping / outputColorSpace / render).
       return renderer as unknown as THREE.WebGLRenderer;
@@ -113,7 +146,11 @@ type SauceFactory = (color: THREE.Color, name: string) => THREE.Material;
 let _sauceFactoryPromise: Promise<SauceFactory | null> | null = null;
 function ensureSauceFactory(): Promise<SauceFactory | null> {
   if (_sauceFactoryPromise) return _sauceFactoryPromise;
-  if (!hasWebGPU()) {
+  // Same opt-in gate as the renderer (PR #17). Without WebGPU the node
+  // material system is still loadable on WebGL via three/webgpu, but the
+  // sauce material would never render correctly through the legacy WebGL
+  // renderer that R3F builds when the opt-in flag is off.
+  if (!shouldUseWebGPU()) {
     _sauceFactoryPromise = Promise.resolve(null);
     return _sauceFactoryPromise;
   }
