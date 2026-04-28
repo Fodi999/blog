@@ -28,8 +28,8 @@
  */
 
 import { Suspense, useEffect, useRef } from "react";
-import { Canvas, useLoader } from "@react-three/fiber";
-import { ContactShadows, Environment, OrbitControls } from "@react-three/drei";
+import { Canvas, useFrame, useLoader, useThree } from "@react-three/fiber";
+import { ContactShadows, Environment, Grid, OrbitControls } from "@react-three/drei";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
 import { MTLLoader } from "three/examples/jsm/loaders/MTLLoader.js";
@@ -531,6 +531,46 @@ function fitToView(obj: THREE.Object3D): {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Camera animation helper (PR #19 — camera presets)
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** Camera positions for the standard preset views (model is fit to ~1.5 units). */
+const CAMERA_PRESETS = {
+  default: new THREE.Vector3(1.2, 0.8, 1.5),
+  front:   new THREE.Vector3(0,   0.1, 2.4),
+  side:    new THREE.Vector3(2.4, 0.1, 0),
+  top:     new THREE.Vector3(0,   2.6, 0.01),
+  iso:     new THREE.Vector3(1.5, 1.3, 1.5),
+} as const;
+
+export type CameraPresetKey = keyof typeof CAMERA_PRESETS;
+
+/**
+ * A render-loop component that smoothly lerps the camera to a target
+ * position stored in a shared ref. Runs inside the R3F Canvas context.
+ */
+function CameraAnimator({
+  targetRef,
+}: {
+  targetRef: React.MutableRefObject<THREE.Vector3 | null>;
+}) {
+  const { camera } = useThree();
+
+  useFrame(() => {
+    const tgt = targetRef.current;
+    if (!tgt) return;
+    camera.position.lerp(tgt, 0.09);
+    camera.lookAt(0, 0, 0);
+    if (camera.position.distanceTo(tgt) < 0.002) {
+      camera.position.copy(tgt);
+      targetRef.current = null;
+    }
+  });
+
+  return null;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Public component
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -553,30 +593,28 @@ export interface ModelViewerApi {
   resetCamera: () => void;
   /** Take a PNG screenshot of the current canvas (returns a data URL). */
   takeScreenshot: () => string | null;
+  /** Smoothly animate the camera to one of the standard preset views. */
+  setCameraPreset: (preset: CameraPresetKey) => void;
+  /**
+   * Set the zoom distance directly (0 = closest, 1 = farthest).
+   * Maps linearly between minDistance (0.4) and maxDistance (6).
+   */
+  setZoom: (t: number) => void;
+  /** Get current zoom as 0–1 (0 = closest). */
+  getZoom: () => number;
 }
 
+/** How the ground plane / grid is rendered under the model. */
+export type DisplayMode = "clean" | "floor" | "grid";
+
 interface ModelViewerProps {
-  /**
-   * Public URL of the model file. Supports `.glb` (preferred) and `.obj`
-   * (legacy — `model.mtl` is loaded from the same directory).
-   */
   modelUrl: string;
-  /** Tailwind/CSS class applied to the wrapping div. */
   className?: string;
-  /**
-   * PR #19 — fullscreen Studio mode.
-   *
-   * When `true`:
-   *   * removes the rounded card / gradient backdrop (the parent owns it)
-   *   * removes the "drag to rotate" hint
-   *   * enables panning so the user can frame the product freely
-   */
   studioMode?: boolean;
-  /** Whether OrbitControls should auto-rotate. Default `true`. */
   autoRotate?: boolean;
-  /** drei HDRI environment preset. Default `"studio"`. */
   environmentPreset?: StudioEnvPreset;
-  /** Receives the imperative API once the canvas is mounted. */
+  /** PR #19 — ground/grid display mode. Default `"floor"`. */
+  displayMode?: DisplayMode;
   onReady?: (api: ModelViewerApi) => void;
 }
 
@@ -586,11 +624,13 @@ export function ModelViewer({
   studioMode = false,
   autoRotate = true,
   environmentPreset = "studio",
+  displayMode = "floor",
   onReady,
 }: ModelViewerProps) {
   const ref = useRef<HTMLDivElement>(null);
   const glRef = useRef<THREE.WebGLRenderer | null>(null);
   const controlsRef = useRef<React.ComponentRef<typeof OrbitControls> | null>(null);
+  const cameraAnimTargetRef = useRef<THREE.Vector3 | null>(null);
   const useGlb = isGlb(modelUrl);
 
   // Re-publish the imperative API whenever a dependency changes.
@@ -607,14 +647,32 @@ export function ModelViewer({
         const gl = glRef.current;
         if (!gl) return null;
         try {
-          // Force a render so the back-buffer is fresh before reading.
-          (gl as unknown as { render?: (s: unknown, c: unknown) => void });
           return gl.domElement.toDataURL("image/png");
         } catch (e) {
           // eslint-disable-next-line no-console
           console.warn("[ModelViewer] screenshot failed", e);
           return null;
         }
+      },
+      setCameraPreset: (preset: CameraPresetKey) => {
+        cameraAnimTargetRef.current = CAMERA_PRESETS[preset].clone();
+      },
+      setZoom: (t: number) => {
+        const c = controlsRef.current as unknown as { object?: THREE.Camera; update?: () => void } | null;
+        if (!c?.object) return;
+        const MIN = 0.4, MAX = 6;
+        const dist = MIN + (MAX - MIN) * (1 - Math.max(0, Math.min(1, t)));
+        const cam = c.object as THREE.PerspectiveCamera;
+        const dir = cam.position.clone().normalize();
+        cam.position.copy(dir.multiplyScalar(dist));
+        c.update?.();
+      },
+      getZoom: () => {
+        const c = controlsRef.current as unknown as { object?: THREE.Camera } | null;
+        if (!c?.object) return 0.5;
+        const MIN = 0.4, MAX = 6;
+        const dist = (c.object as THREE.PerspectiveCamera).position.length();
+        return 1 - (dist - MIN) / (MAX - MIN);
       },
     });
   }, [onReady]);
@@ -629,7 +687,7 @@ export function ModelViewer({
         // PR #16 — product-shot camera. Narrow FOV (35°) reduces perspective
         // distortion on tall bottles; the slight downward angle from
         // (1.8, 1.2, 2.2) shows the rim highlights and the foot at once.
-        camera={{ position: [1.8, 1.2, 2.2], fov: 35, near: 0.01, far: 50 }}
+        camera={{ position: [1.2, 0.8, 1.5], fov: 40, near: 0.01, far: 50 }}
         dpr={[1, 2]}
         // PR #17 — WebGPU progressive enhancement. `gl` may be a factory
         // function returning a Renderer (sync or async). We try
@@ -677,27 +735,43 @@ export function ModelViewer({
         </Suspense>
 
         {/*
-          Contact shadow under the product. The model is fit-to-view to span
-          ~1.5 units along its largest axis and centred at origin, so its
-          base sits near y = -0.75. We place the shadow plane just below
-          that and keep its scale modest so the soft penumbra reads even on
-          smaller cards. In studio mode we widen and soften it.
+          Ground plane rendering depends on displayMode:
+          - "clean"  → nothing
+          - "floor"  → soft contact shadow only (default)
+          - "grid"   → grid + lighter shadow
         */}
-        <ContactShadows
-          position={[0, -0.78, 0]}
-          opacity={studioMode ? 0.55 : 0.45}
-          scale={studioMode ? 6 : 3}
-          blur={studioMode ? 3.2 : 2.6}
-          far={1.2}
-          resolution={studioMode ? 1024 : 512}
-          color="#000000"
-        />
+        {displayMode !== "clean" && (
+          <ContactShadows
+            position={[0, -0.78, 0]}
+            opacity={displayMode === "grid" ? 0.3 : studioMode ? 0.6 : 0.45}
+            scale={studioMode ? 5 : 3}
+            blur={studioMode ? 2.8 : 2.2}
+            far={1.0}
+            resolution={studioMode ? 1024 : 512}
+            color="#000000"
+          />
+        )}
+        {displayMode === "grid" && (
+          <Grid
+            args={[20, 20]}
+            position={[0, -0.78, 0]}
+            cellColor="#2a2a2e"
+            sectionColor="#3a3a3f"
+            cellSize={0.5}
+            sectionSize={2}
+            fadeDistance={10}
+            fadeStrength={1.5}
+            infiniteGrid
+          />
+        )}
+
+        <CameraAnimator targetRef={cameraAnimTargetRef} />
 
         <OrbitControls
           ref={controlsRef as never}
           enablePan={studioMode}
-          minDistance={1.0}
-          maxDistance={8}
+          minDistance={0.4}
+          maxDistance={6}
           minPolarAngle={Math.PI * 0.05}
           maxPolarAngle={Math.PI * 0.85}
           autoRotate={autoRotate}
