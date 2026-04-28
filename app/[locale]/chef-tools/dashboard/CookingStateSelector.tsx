@@ -57,7 +57,7 @@ export function CookingStateSelector({ states, active, onChange, rawState }: Pro
   return (
     <div className="flex flex-wrap gap-2">
       {states.map((s) => {
-        const Icon = STATE_ICONS[s.state] ?? Flame;
+        const Icon = (STATE_ICONS[s.state] ?? Flame) as React.ComponentType<{ className?: string }>;
         const isActive = s.state === active;
         const cal = s.calories_per_100g;
         const rawCal = rawState?.calories_per_100g ?? null;

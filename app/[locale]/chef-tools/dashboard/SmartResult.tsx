@@ -75,7 +75,7 @@ function CollapsibleSection({
   title, icon: Icon, iconColor, defaultOpen = false, children,
 }: {
   title: string;
-  icon: React.ElementType;
+  icon: React.ComponentType<{ className?: string }>;
   iconColor?: string;
   defaultOpen?: boolean;
   children: React.ReactNode;

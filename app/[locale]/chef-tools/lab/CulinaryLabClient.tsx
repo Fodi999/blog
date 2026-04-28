@@ -477,7 +477,7 @@ function CollapsibleDetail({
   title, icon: Icon, iconColor, defaultOpen = false, count, children,
 }: {
   title: string;
-  icon: React.ElementType;
+  icon: React.ComponentType<{ className?: string }>;
   iconColor?: string;
   defaultOpen?: boolean;
   count?: number;

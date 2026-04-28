@@ -420,7 +420,7 @@ function SmartModeCard({ fish, currentMonth, monthHeaders, i18n, locale, onShowC
   const router = useRouter();
   const status = fish.months[currentMonth];
   const insight = statusInsight(status, fish.isSushi, i18n);
-  const InsightIcon = insight.icon;
+  const InsightIcon = insight.icon as React.ComponentType<{ className?: string }>;
   const peakMonths = fish.months.map((a, i) => ({ a, i })).filter(x => x.a === 'peak').map(x => (monthHeaders[x.i] ?? MONTH_SHORT[x.i]).slice(0, 3));
 
   return (
@@ -981,7 +981,7 @@ export function FishSeasonClient({
                   {displayed.map((fish, fi) => {
                     const curStatus = fish.months[currentMonth];
                     const insight = statusInsight(curStatus, fish.isSushi, i18n);
-                    const InsightIcon = insight.icon;
+                    const InsightIcon = insight.icon as React.ComponentType<{ className?: string }>;
                     return (
                       <TableRow 
                         key={fish.slug} 
