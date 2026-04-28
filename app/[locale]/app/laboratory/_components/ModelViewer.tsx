@@ -76,8 +76,9 @@ function readBaseColor(mat: AnyStdMat): THREE.Color {
  */
 function classify(
   name: string,
-): "ceramic" | "glass" | "metal" | "liquid" | null {
+): "ceramic" | "glass" | "metal" | "liquid" | "label" | null {
   const n = name.toLowerCase();
+  if (n.includes("label")) return "label";
   if (n.includes("bowl") || n.includes("ceramic")) return "ceramic";
   if (n.includes("glass")) return "glass";
   if (n.includes("metal") || n.includes("lid") || n.includes("cap")) return "metal";
@@ -149,6 +150,57 @@ function makeLiquidMaterial(base: THREE.Color, name: string): THREE.MeshStandard
 }
 
 /**
+ * Paper-/sticker-like material used for product labels (PR #15).
+ *
+ * The `texture_url` (set on the Rust side in `Material::with_texture_url`,
+ * surfaced into glTF as `materials[i].extras.texture_url`, and retained by
+ * GLTFLoader on `material.userData`) is loaded asynchronously and bound as
+ * `material.map`. While the texture is in flight the material renders as a
+ * flat off-white card so there's no visual pop on slow networks.
+ */
+const _textureCache = new Map<string, THREE.Texture>();
+function loadLabelTexture(url: string, onReady: () => void): THREE.Texture {
+  const cached = _textureCache.get(url);
+  if (cached) return cached;
+  const tex = new THREE.TextureLoader().load(
+    url,
+    (t) => {
+      t.colorSpace = THREE.SRGBColorSpace;
+      t.anisotropy = 8;
+      onReady();
+    },
+    undefined,
+    (err) => {
+      // eslint-disable-next-line no-console
+      console.warn(`[ModelViewer] label texture failed: ${url}`, err);
+    },
+  );
+  tex.colorSpace = THREE.SRGBColorSpace;
+  _textureCache.set(url, tex);
+  return tex;
+}
+
+function makeLabelMaterial(
+  base: THREE.Color,
+  name: string,
+  textureUrl: string | undefined,
+): THREE.MeshStandardMaterial {
+  const mat = new THREE.MeshStandardMaterial({
+    name,
+    color: base,
+    roughness: 0.85,
+    metalness: 0.0,
+    side: THREE.DoubleSide,
+  });
+  if (textureUrl) {
+    mat.map = loadLabelTexture(textureUrl, () => {
+      mat.needsUpdate = true;
+    });
+  }
+  return mat;
+}
+
+/**
  * Walk every mesh in `root` and upgrade its material based on the material
  * name. Idempotent: if a mesh has already been upgraded (we tag it with
  * `userData.__upgraded`), it is skipped.
@@ -172,6 +224,16 @@ function upgradeMaterials(root: THREE.Object3D): void {
           return makeMetalMaterial(base, name);
         case "liquid":
           return makeLiquidMaterial(base, name);
+        case "label": {
+          // GLTFLoader stores material extras on `userData` directly
+          // (three.js ≥ 0.150). PR #15 emits `extras.texture_url` from
+          // the Rust exporter; pick it up here.
+          const extras = (src.userData ?? {}) as Record<string, unknown>;
+          const url = typeof extras.texture_url === "string"
+            ? extras.texture_url
+            : undefined;
+          return makeLabelMaterial(base, name, url);
+        }
       }
     };
 
