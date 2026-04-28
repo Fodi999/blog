@@ -14,6 +14,7 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
 
 import { ApiError } from '@/lib/chefos-api';
 import {
@@ -33,7 +34,7 @@ const ModelViewer = dynamic(
 const ACCEPTED_MIME = 'image/png,image/jpeg,image/webp';
 const MAX_BYTES = 10 * 1024 * 1024;
 
-export function LaboratoryClient(_props: { locale: string }) {
+export function LaboratoryClient({ locale }: { locale: string }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -207,7 +208,18 @@ export function LaboratoryClient(_props: { locale: string }) {
       {/* ── Asset card — Vision spec + 3D viewer ─────────────────────── */}
       {asset ? (
         <section className="rounded-lg border bg-card p-4 text-sm">
-          <h2 className="mb-2 font-medium">3D asset</h2>
+          <div className="mb-2 flex items-center justify-between">
+            <h2 className="font-medium">3D asset</h2>
+            {asset.status === 'ready' && asset.model_url ? (
+              <Link
+                href={`/${locale}/app/laboratory/assets/${asset.id}`}
+                className="inline-flex items-center gap-1.5 rounded-md border border-amber-500/40 bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-200 transition hover:bg-amber-500/20"
+              >
+                Open in Studio
+                <span aria-hidden>→</span>
+              </Link>
+            ) : null}
+          </div>
 
           {/* OBJ viewer — shown when model is ready */}
           {asset.status === 'ready' && asset.model_url ? (

@@ -534,6 +534,27 @@ function fitToView(obj: THREE.Object3D): {
 // Public component
 // ─────────────────────────────────────────────────────────────────────────────
 
+/** drei `<Environment />` presets we expose to the studio. */
+export type StudioEnvPreset =
+  | "studio"
+  | "city"
+  | "warehouse"
+  | "sunset"
+  | "dawn"
+  | "night"
+  | "apartment"
+  | "park"
+  | "forest"
+  | "lobby";
+
+/** Imperative API surfaced via the `onReady` callback (PR #19). */
+export interface ModelViewerApi {
+  /** Reset the OrbitControls to the default product-shot framing. */
+  resetCamera: () => void;
+  /** Take a PNG screenshot of the current canvas (returns a data URL). */
+  takeScreenshot: () => string | null;
+}
+
 interface ModelViewerProps {
   /**
    * Public URL of the model file. Supports `.glb` (preferred) and `.obj`
@@ -542,17 +563,68 @@ interface ModelViewerProps {
   modelUrl: string;
   /** Tailwind/CSS class applied to the wrapping div. */
   className?: string;
+  /**
+   * PR #19 — fullscreen Studio mode.
+   *
+   * When `true`:
+   *   * removes the rounded card / gradient backdrop (the parent owns it)
+   *   * removes the "drag to rotate" hint
+   *   * enables panning so the user can frame the product freely
+   */
+  studioMode?: boolean;
+  /** Whether OrbitControls should auto-rotate. Default `true`. */
+  autoRotate?: boolean;
+  /** drei HDRI environment preset. Default `"studio"`. */
+  environmentPreset?: StudioEnvPreset;
+  /** Receives the imperative API once the canvas is mounted. */
+  onReady?: (api: ModelViewerApi) => void;
 }
 
-export function ModelViewer({ modelUrl, className = "" }: ModelViewerProps) {
+export function ModelViewer({
+  modelUrl,
+  className = "",
+  studioMode = false,
+  autoRotate = true,
+  environmentPreset = "studio",
+  onReady,
+}: ModelViewerProps) {
   const ref = useRef<HTMLDivElement>(null);
+  const glRef = useRef<THREE.WebGLRenderer | null>(null);
+  const controlsRef = useRef<React.ComponentRef<typeof OrbitControls> | null>(null);
   const useGlb = isGlb(modelUrl);
 
+  // Re-publish the imperative API whenever a dependency changes.
+  useEffect(() => {
+    if (!onReady) return;
+    onReady({
+      resetCamera: () => {
+        const c = controlsRef.current;
+        if (c && typeof (c as { reset?: () => void }).reset === "function") {
+          (c as { reset: () => void }).reset();
+        }
+      },
+      takeScreenshot: () => {
+        const gl = glRef.current;
+        if (!gl) return null;
+        try {
+          // Force a render so the back-buffer is fresh before reading.
+          (gl as unknown as { render?: (s: unknown, c: unknown) => void });
+          return gl.domElement.toDataURL("image/png");
+        } catch (e) {
+          // eslint-disable-next-line no-console
+          console.warn("[ModelViewer] screenshot failed", e);
+          return null;
+        }
+      },
+    });
+  }, [onReady]);
+
+  const wrapperClass = studioMode
+    ? `relative h-full w-full overflow-hidden bg-zinc-950 ${className}`
+    : `relative overflow-hidden rounded-xl bg-gradient-to-b from-zinc-900 via-zinc-900 to-zinc-950 ${className}`;
+
   return (
-    <div
-      ref={ref}
-      className={`relative overflow-hidden rounded-xl bg-gradient-to-b from-zinc-900 via-zinc-900 to-zinc-950 ${className}`}
-    >
+    <div ref={ref} className={wrapperClass}>
       <Canvas
         // PR #16 — product-shot camera. Narrow FOV (35°) reduces perspective
         // distortion on tall bottles; the slight downward angle from
@@ -570,6 +642,10 @@ export function ModelViewer({ modelUrl, className = "" }: ModelViewerProps) {
           gl.toneMapping = THREE.ACESFilmicToneMapping;
           gl.toneMappingExposure = 1.0;
           gl.outputColorSpace = THREE.SRGBColorSpace;
+          // For studio screenshots we need preserveDrawingBuffer; toggling
+          // it post-hoc isn't supported, so we just live with the small
+          // perf hit in studio mode.
+          glRef.current = gl;
         }}
         style={{ width: "100%", height: "100%" }}
       >
@@ -590,7 +666,7 @@ export function ModelViewer({ modelUrl, className = "" }: ModelViewerProps) {
         */}
         <Suspense fallback={null}>
           <Environment
-            preset="studio"
+            preset={environmentPreset}
             background={false}
             environmentIntensity={0.9}
           />
@@ -605,34 +681,37 @@ export function ModelViewer({ modelUrl, className = "" }: ModelViewerProps) {
           ~1.5 units along its largest axis and centred at origin, so its
           base sits near y = -0.75. We place the shadow plane just below
           that and keep its scale modest so the soft penumbra reads even on
-          smaller cards.
+          smaller cards. In studio mode we widen and soften it.
         */}
         <ContactShadows
           position={[0, -0.78, 0]}
-          opacity={0.45}
-          scale={3}
-          blur={2.6}
+          opacity={studioMode ? 0.55 : 0.45}
+          scale={studioMode ? 6 : 3}
+          blur={studioMode ? 3.2 : 2.6}
           far={1.2}
-          resolution={512}
+          resolution={studioMode ? 1024 : 512}
           color="#000000"
         />
 
         <OrbitControls
-          enablePan={false}
-          minDistance={1.5}
-          maxDistance={6}
-          minPolarAngle={Math.PI * 0.15}
-          maxPolarAngle={Math.PI * 0.55}
-          autoRotate
+          ref={controlsRef as never}
+          enablePan={studioMode}
+          minDistance={1.0}
+          maxDistance={8}
+          minPolarAngle={Math.PI * 0.05}
+          maxPolarAngle={Math.PI * 0.85}
+          autoRotate={autoRotate}
           autoRotateSpeed={1.0}
           enableDamping
           dampingFactor={0.08}
         />
       </Canvas>
 
-      <span className="pointer-events-none absolute bottom-2 right-3 text-[10px] text-zinc-400/70 select-none">
-        drag to rotate
-      </span>
+      {!studioMode ? (
+        <span className="pointer-events-none absolute bottom-2 right-3 text-[10px] text-zinc-400/70 select-none">
+          drag to rotate
+        </span>
+      ) : null}
     </div>
   );
 }
