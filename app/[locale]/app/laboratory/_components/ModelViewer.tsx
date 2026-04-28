@@ -29,7 +29,7 @@
 
 import { Suspense, useRef } from "react";
 import { Canvas, useLoader } from "@react-three/fiber";
-import { Environment, OrbitControls } from "@react-three/drei";
+import { ContactShadows, Environment, OrbitControls } from "@react-three/drei";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
 import { MTLLoader } from "three/examples/jsm/loaders/MTLLoader.js";
@@ -292,42 +292,83 @@ export function ModelViewer({ modelUrl, className = "" }: ModelViewerProps) {
   return (
     <div
       ref={ref}
-      className={`relative overflow-hidden rounded-xl bg-zinc-900 ${className}`}
+      className={`relative overflow-hidden rounded-xl bg-gradient-to-b from-zinc-900 via-zinc-900 to-zinc-950 ${className}`}
     >
       <Canvas
-        camera={{ position: [0, 1.5, 3], fov: 45 }}
+        // PR #16 — product-shot camera. Narrow FOV (35°) reduces perspective
+        // distortion on tall bottles; the slight downward angle from
+        // (1.8, 1.2, 2.2) shows the rim highlights and the foot at once.
+        camera={{ position: [1.8, 1.2, 2.2], fov: 35, near: 0.01, far: 50 }}
+        dpr={[1, 2]}
         gl={{ antialias: true }}
+        // PR #16 — ACES Filmic tone mapping + sRGB output. Without this,
+        // glass/metal highlights blow out to pure white and the bowl
+        // ceramic looks chalky.
+        onCreated={({ gl }) => {
+          gl.toneMapping = THREE.ACESFilmicToneMapping;
+          gl.toneMappingExposure = 1.0;
+          gl.outputColorSpace = THREE.SRGBColorSpace;
+        }}
         style={{ width: "100%", height: "100%" }}
       >
-        {/* Lighting — tuned so PBR highlights are visible */}
-        <ambientLight intensity={0.45} />
-        <directionalLight position={[3, 5, 3]} intensity={1.2} castShadow={false} />
-        <directionalLight position={[-3, -2, -2]} intensity={0.3} />
-        <pointLight position={[0, 3, 2]} intensity={0.4} />
+        {/* Soft fill — HDRI does the heavy lifting; the directional adds a key. */}
+        <ambientLight intensity={0.25} />
+        <directionalLight
+          position={[2.5, 4, 2]}
+          intensity={0.9}
+          castShadow={false}
+        />
+        <directionalLight position={[-3, -1, -2]} intensity={0.2} />
 
         {/*
           Studio HDRI — gives glass / metal something to reflect (PR #9).
-          `background={false}` keeps the dark zinc-900 background but still
-          feeds the env map into PBR materials.
+          `background={false}` keeps our dark gradient backdrop while still
+          feeding the env map into PBR materials. Studio preset works best
+          for transparent glass and brushed metal lids/caps.
         */}
         <Suspense fallback={null}>
-          <Environment preset="studio" background={false} environmentIntensity={0.8} />
+          <Environment
+            preset="studio"
+            background={false}
+            environmentIntensity={0.9}
+          />
         </Suspense>
 
         <Suspense fallback={null}>
           {useGlb ? <GltfModel url={modelUrl} /> : <ObjModel url={modelUrl} />}
         </Suspense>
 
+        {/*
+          Contact shadow under the product. The model is fit-to-view to span
+          ~1.5 units along its largest axis and centred at origin, so its
+          base sits near y = -0.75. We place the shadow plane just below
+          that and keep its scale modest so the soft penumbra reads even on
+          smaller cards.
+        */}
+        <ContactShadows
+          position={[0, -0.78, 0]}
+          opacity={0.45}
+          scale={3}
+          blur={2.6}
+          far={1.2}
+          resolution={512}
+          color="#000000"
+        />
+
         <OrbitControls
           enablePan={false}
-          minDistance={0.5}
-          maxDistance={10}
+          minDistance={1.5}
+          maxDistance={6}
+          minPolarAngle={Math.PI * 0.15}
+          maxPolarAngle={Math.PI * 0.55}
           autoRotate
-          autoRotateSpeed={1.2}
+          autoRotateSpeed={1.0}
+          enableDamping
+          dampingFactor={0.08}
         />
       </Canvas>
 
-      <span className="pointer-events-none absolute bottom-2 right-3 text-[10px] text-zinc-500 select-none">
+      <span className="pointer-events-none absolute bottom-2 right-3 text-[10px] text-zinc-400/70 select-none">
         drag to rotate
       </span>
     </div>
