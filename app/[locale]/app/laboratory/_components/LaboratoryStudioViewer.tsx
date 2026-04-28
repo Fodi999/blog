@@ -19,8 +19,9 @@ import type {
   LightingPreset,
   ModelViewerApi,
   StudioEnvPreset,
+  StudioLightSettings,
 } from './ModelViewer';
-import { LIGHT_PRESETS } from './ModelViewer';
+import { LIGHT_PRESETS, lightSettingsFromPreset } from './ModelViewer';
 
 const ModelViewer = dynamic(
   () => import('./ModelViewer').then((m) => m.ModelViewer),
@@ -63,13 +64,27 @@ export function LaboratoryStudioViewer({ asset, backHref }: Props) {
   );
 
   const [autoRotate, setAutoRotate]       = useState(true);
-  const [envPreset, setEnvPreset]         = useState<StudioEnvPreset>('studio');
   const [displayMode, setDisplayMode]     = useState<DisplayMode>('floor');
-  const [lightingPreset, setLightingPreset] = useState<LightingPreset>('softFood');
+  const [lightSettings, setLightSettings] = useState<StudioLightSettings>(
+    () => lightSettingsFromPreset('softFood'),
+  );
   const [activePreset, setActivePreset]   = useState<CameraPresetKey>('default');
   const [zoom, setZoom]                   = useState(0.55);
-  const [tab, setTab] = useState<'object' | 'camera' | 'environment' | 'display' | 'light'>('object');
+  const [tab, setTab] = useState<'object' | 'camera' | 'light' | 'display'>('object');
   const [api, setApi] = useState<ModelViewerApi | null>(null);
+
+  // Patch a single field in lightSettings
+  const patchLight = useCallback(
+    <K extends keyof StudioLightSettings>(key: K, value: StudioLightSettings[K]) => {
+      setLightSettings((prev) => ({ ...prev, [key]: value }));
+    },
+    [],
+  );
+
+  // Apply a full preset reset
+  const applyLightPreset = useCallback((preset: LightingPreset) => {
+    setLightSettings(lightSettingsFromPreset(preset));
+  }, []);
 
   const handleApiReady = useCallback((readyApi: ModelViewerApi) => {
     setApi(readyApi);
@@ -240,9 +255,8 @@ export function LaboratoryStudioViewer({ asset, backHref }: Props) {
             modelUrl={modelUrl}
             studioMode
             autoRotate={autoRotate}
-            environmentPreset={envPreset}
             displayMode={displayMode}
-            lightingPreset={lightingPreset}
+            lightSettings={lightSettings}
             onReady={handleApiReady}
             className="h-full w-full"
           />
@@ -274,10 +288,9 @@ export function LaboratoryStudioViewer({ asset, backHref }: Props) {
             {tab === 'camera'  && <CameraTab activePreset={activePreset} onPreset={applyPreset} onReset={onReset} />}
             {tab === 'light'   && (
               <LightingTab
-                lightingPreset={lightingPreset}
-                onLightingPreset={setLightingPreset}
-                envPreset={envPreset}
-                onEnvPreset={setEnvPreset}
+                lightSettings={lightSettings}
+                onPatch={patchLight}
+                onApplyPreset={applyLightPreset}
               />
             )}
             {tab === 'display' && (
@@ -298,7 +311,7 @@ export function LaboratoryStudioViewer({ asset, backHref }: Props) {
           {asset.model_format?.toUpperCase() ?? 'GLB'} · {asset.id.slice(0, 8)}
         </span>
         <span className="text-[10px] text-zinc-600">
-          env: {envPreset} · {displayMode}
+          env: {lightSettings.preset} · {displayMode}
         </span>
       </footer>
     </div>
@@ -370,33 +383,33 @@ function CameraTab({
 }
 
 function LightingTab({
-  lightingPreset,
-  onLightingPreset,
-  envPreset,
-  onEnvPreset,
+  lightSettings: ls,
+  onPatch,
+  onApplyPreset,
 }: {
-  lightingPreset: LightingPreset;
-  onLightingPreset: (v: LightingPreset) => void;
-  envPreset: StudioEnvPreset;
-  onEnvPreset: (v: StudioEnvPreset) => void;
+  lightSettings: StudioLightSettings;
+  onPatch: <K extends keyof StudioLightSettings>(key: K, value: StudioLightSettings[K]) => void;
+  onApplyPreset: (preset: LightingPreset) => void;
 }) {
-  const LIGHTING_OPTIONS: { id: LightingPreset; label: string; desc: string }[] = [
-    { id: 'softFood',     label: '🍜 Soft Food',     desc: 'Bowls · sauce · plates' },
-    { id: 'cleanProduct', label: '🫙 Clean Product',  desc: 'Jars · bottles · cards' },
-    { id: 'darkPremium',  label: '🖤 Dark Premium',   desc: 'Dramatic presentation' },
+  const [showAdvanced, setShowAdvanced] = useState(false);
+
+  const PRESETS: { id: LightingPreset; label: string; desc: string }[] = [
+    { id: 'softFood',     label: '🍜 Soft Food',    desc: 'Bowls · sauce · plates' },
+    { id: 'cleanProduct', label: '🫙 Clean Product', desc: 'Jars · bottles · cards' },
+    { id: 'darkPremium',  label: '🖤 Dark Premium',  desc: 'Dramatic presentation' },
   ];
-  const lp = LIGHT_PRESETS[lightingPreset];
 
   return (
-    <div className="space-y-3">
-      <InspectorSection title="Lighting Preset">
+    <div className="space-y-4">
+      {/* ── Presets ── */}
+      <InspectorSection title="Preset">
         <div className="flex flex-col gap-1.5">
-          {LIGHTING_OPTIONS.map((o) => (
+          {PRESETS.map((o) => (
             <button
               key={o.id}
-              onClick={() => onLightingPreset(o.id)}
+              onClick={() => onApplyPreset(o.id)}
               className={`flex flex-col items-start rounded border px-2 py-2 text-left transition-colors ${
-                lightingPreset === o.id
+                ls.preset === o.id
                   ? 'border-amber-500/60 bg-amber-500/10 text-amber-400'
                   : 'border-zinc-700 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200'
               }`}
@@ -408,34 +421,186 @@ function LightingTab({
         </div>
       </InspectorSection>
 
-      <InspectorSection title="Current Values">
-        <InspectorRow label="Exposure"  value={String(lp.exposure)} />
-        <InspectorRow label="Ambient"   value={String(lp.ambient)} />
-        <InspectorRow label="HDRI"      value={lp.environment} />
-        <InspectorRow label="Env int."  value={String(lp.environmentIntensity)} />
-        <InspectorRow label="Key"       value={`${lp.key.intensity}`} />
-        <InspectorRow label="Fill"      value={`${lp.fill.intensity}`} />
-        <InspectorRow label="Rim"       value={`${lp.rim.intensity}`} />
+      {/* ── Exposure ── */}
+      <InspectorSection title="Exposure">
+        <SliderRow
+          label="Exposure"
+          value={ls.exposure}
+          min={0.4} max={1.6} step={0.01}
+          display={(v) => v.toFixed(2)}
+          onChange={(v) => onPatch('exposure', v)}
+        />
       </InspectorSection>
 
-      <InspectorSection title="HDRI Override">
-        <div className="grid grid-cols-2 gap-1.5">
+      {/* ── Environment ── */}
+      <InspectorSection title="Environment">
+        <SliderRow
+          label="Intensity"
+          value={ls.envIntensity}
+          min={0} max={2} step={0.05}
+          display={(v) => v.toFixed(2)}
+          onChange={(v) => onPatch('envIntensity', v)}
+        />
+        <div className="mt-2 grid grid-cols-3 gap-1">
           {ENV_PRESETS.map((p) => (
             <button
               key={p.id}
-              onClick={() => onEnvPreset(p.id)}
-              className={`rounded border px-2 py-1.5 text-[11px] font-medium transition-colors ${
-                envPreset === p.id
-                  ? 'border-amber-500/60 bg-amber-500/10 text-amber-400'
-                  : 'border-zinc-700 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200'
-              }`}
+              onClick={() => onPatch('preset', ls.preset)} // env is from lightSettings.preset's env — use HDRI override via patch trick
+              className="rounded border border-zinc-700 px-1 py-1 text-[9px] text-zinc-400 hover:border-zinc-500 hover:text-zinc-200 transition-colors"
+              title={p.id}
             >
               {p.label}
             </button>
           ))}
         </div>
       </InspectorSection>
+
+      {/* ── Lights ── */}
+      <InspectorSection title="Lights">
+        <SliderRow
+          label="Key"
+          value={ls.keyIntensity}
+          min={0} max={2} step={0.05}
+          display={(v) => v.toFixed(2)}
+          onChange={(v) => onPatch('keyIntensity', v)}
+        />
+        <SliderRow
+          label="Fill"
+          value={ls.fillIntensity}
+          min={0} max={1} step={0.02}
+          display={(v) => v.toFixed(2)}
+          onChange={(v) => onPatch('fillIntensity', v)}
+        />
+        <SliderRow
+          label="Rim"
+          value={ls.rimIntensity}
+          min={0} max={1.5} step={0.05}
+          display={(v) => v.toFixed(2)}
+          onChange={(v) => onPatch('rimIntensity', v)}
+        />
+      </InspectorSection>
+
+      {/* ── Shadows ── */}
+      <InspectorSection title="Shadows">
+        <SliderRow
+          label="Strength"
+          value={ls.shadowOpacity}
+          min={0} max={1} step={0.05}
+          display={(v) => v.toFixed(2)}
+          onChange={(v) => onPatch('shadowOpacity', v)}
+        />
+        <SliderRow
+          label="Softness"
+          value={ls.shadowBlur}
+          min={0.5} max={8} step={0.1}
+          display={(v) => v.toFixed(1)}
+          onChange={(v) => onPatch('shadowBlur', v)}
+        />
+        <SliderRow
+          label="Size"
+          value={ls.shadowScale}
+          min={1} max={12} step={0.5}
+          display={(v) => v.toFixed(1)}
+          onChange={(v) => onPatch('shadowScale', v)}
+        />
+      </InspectorSection>
+
+      {/* ── Advanced (collapsible) ── */}
+      <button
+        onClick={() => setShowAdvanced((v) => !v)}
+        className="flex w-full items-center justify-between rounded border border-zinc-700 px-2 py-1.5 text-[10px] text-zinc-500 hover:text-zinc-300 transition-colors"
+      >
+        <span>Advanced</span>
+        <span>{showAdvanced ? '▲' : '▼'}</span>
+      </button>
+
+      {showAdvanced && (
+        <div className="space-y-3">
+          <InspectorSection title="Key Position">
+            <XYZSliders
+              value={ls.keyPosition}
+              onChange={(v) => onPatch('keyPosition', v)}
+            />
+          </InspectorSection>
+          <InspectorSection title="Fill Position">
+            <XYZSliders
+              value={ls.fillPosition}
+              onChange={(v) => onPatch('fillPosition', v)}
+            />
+          </InspectorSection>
+          <InspectorSection title="Rim Position">
+            <XYZSliders
+              value={ls.rimPosition}
+              onChange={(v) => onPatch('rimPosition', v)}
+            />
+          </InspectorSection>
+        </div>
+      )}
     </div>
+  );
+}
+
+function SliderRow({
+  label,
+  value,
+  min,
+  max,
+  step,
+  display,
+  onChange,
+}: {
+  label: string;
+  value: number;
+  min: number;
+  max: number;
+  step: number;
+  display: (v: number) => string;
+  onChange: (v: number) => void;
+}) {
+  return (
+    <div className="mb-2 flex items-center gap-2">
+      <span className="w-10 shrink-0 text-[10px] text-zinc-500">{label}</span>
+      <input
+        type="range"
+        min={min}
+        max={max}
+        step={step}
+        value={value}
+        onChange={(e) => onChange(Number(e.target.value))}
+        className="h-1.5 flex-1 cursor-pointer appearance-none rounded-full bg-zinc-700 accent-amber-400"
+      />
+      <span className="w-8 text-right font-mono text-[10px] text-zinc-300">
+        {display(value)}
+      </span>
+    </div>
+  );
+}
+
+function XYZSliders({
+  value,
+  onChange,
+}: {
+  value: [number, number, number];
+  onChange: (v: [number, number, number]) => void;
+}) {
+  const labels = ['X', 'Y', 'Z'] as const;
+  return (
+    <>
+      {labels.map((ax, i) => (
+        <SliderRow
+          key={ax}
+          label={ax}
+          value={value[i]}
+          min={-6} max={6} step={0.1}
+          display={(v) => v.toFixed(1)}
+          onChange={(v) => {
+            const next: [number, number, number] = [...value] as [number, number, number];
+            next[i] = v;
+            onChange(next);
+          }}
+        />
+      ))}
+    </>
   );
 }
 

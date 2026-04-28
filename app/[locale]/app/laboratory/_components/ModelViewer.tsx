@@ -16,7 +16,17 @@
  *
  *     *glass*           → MeshPhysicalMaterial { transmission, ior, thickness }
  *     *metal* / *lid*   → MeshStandardMaterial { metalness: 0.8, roughness: 0.25 }
- *     *liquid|sauce|product* → glossy MeshStandardMaterial (low roughness)
+ *     *liquid|sauce|product* → glossy MeshStanda        {displayMode !== "clean" && (
+          <ContactShadows
+            position={[0, -0.78, 0]}
+            opacity={displayMode === "grid" ? shadOp * 0.6 : shadOp}
+            scale={shadSc}
+            blur={shadBlur}
+            far={1.0}
+            resolution={studioMode ? 1024 : 512}
+            color="#000000"
+          />
+        )}(low roughness)
  *
  *   Combined with a studio HDRI environment map (drei `<Environment />`),
  *   this gets us recognisable glass / metal / glossy looks without any extra
@@ -660,6 +670,44 @@ export interface ModelViewerApi {
 /** How the ground plane / grid is rendered under the model. */
 export type DisplayMode = "clean" | "floor" | "grid";
 
+/**
+ * PR #21 — full live light settings.
+ * All fields override the active `LightingPreset` value when provided.
+ */
+export interface StudioLightSettings {
+  preset: LightingPreset;
+  exposure: number;
+  envIntensity: number;
+  keyIntensity: number;
+  fillIntensity: number;
+  rimIntensity: number;
+  keyPosition: [number, number, number];
+  fillPosition: [number, number, number];
+  rimPosition: [number, number, number];
+  shadowOpacity: number;
+  shadowBlur: number;
+  shadowScale: number;
+}
+
+/** Build a `StudioLightSettings` from a preset (all values resolved). */
+export function lightSettingsFromPreset(preset: LightingPreset): StudioLightSettings {
+  const lp = LIGHT_PRESETS[preset];
+  return {
+    preset,
+    exposure:      lp.exposure,
+    envIntensity:  lp.environmentIntensity,
+    keyIntensity:  lp.key.intensity,
+    fillIntensity: lp.fill.intensity,
+    rimIntensity:  lp.rim.intensity,
+    keyPosition:   [...lp.key.position]  as [number,number,number],
+    fillPosition:  [...lp.fill.position] as [number,number,number],
+    rimPosition:   [...lp.rim.position]  as [number,number,number],
+    shadowOpacity: lp.shadowOpacity,
+    shadowBlur:    2.8,
+    shadowScale:   5,
+  };
+}
+
 interface ModelViewerProps {
   modelUrl: string;
   className?: string;
@@ -668,8 +716,10 @@ interface ModelViewerProps {
   environmentPreset?: StudioEnvPreset;
   /** PR #19 — ground/grid display mode. Default `"floor"`. */
   displayMode?: DisplayMode;
-  /** PR #20 — studio lighting preset. Default `"softFood"`. */
+  /** PR #20 — studio lighting preset (used when `lightSettings` is absent). Default `"softFood"`. */
   lightingPreset?: LightingPreset;
+  /** PR #21 — full resolved light settings (overrides `lightingPreset`). */
+  lightSettings?: StudioLightSettings;
   /** PR #20 — override tone-mapping exposure (0.5–1.5). */
   exposure?: number;
   onReady?: (api: ModelViewerApi) => void;
@@ -683,6 +733,7 @@ export function ModelViewer({
   environmentPreset,
   displayMode = "floor",
   lightingPreset = "softFood",
+  lightSettings,
   exposure,
   onReady,
 }: ModelViewerProps) {
@@ -692,10 +743,22 @@ export function ModelViewer({
   const cameraAnimTargetRef = useRef<THREE.Vector3 | null>(null);
   const useGlb = isGlb(modelUrl);
 
-  // PR #20 — resolve lighting config (preset values, with optional exposure override)
-  const lp = LIGHT_PRESETS[lightingPreset];
-  const resolvedEnv   = environmentPreset ?? lp.environment;
-  const resolvedExp   = exposure ?? lp.exposure;
+  // PR #21 — merge preset + live overrides from StudioLightSettings
+  const lp = LIGHT_PRESETS[lightSettings?.preset ?? lightingPreset];
+  const ls = lightSettings;
+  const resolvedEnv = environmentPreset ?? lp.environment;
+  const resolvedExp = ls?.exposure ?? exposure ?? lp.exposure;
+
+  const keyPos   = ls?.keyPosition  ?? lp.key.position;
+  const fillPos  = ls?.fillPosition ?? lp.fill.position;
+  const rimPos   = ls?.rimPosition  ?? lp.rim.position;
+  const keyInt   = ls?.keyIntensity  ?? lp.key.intensity;
+  const fillInt  = ls?.fillIntensity ?? lp.fill.intensity;
+  const rimInt   = ls?.rimIntensity  ?? lp.rim.intensity;
+  const envInt   = ls?.envIntensity  ?? lp.environmentIntensity;
+  const shadOp   = ls?.shadowOpacity ?? lp.shadowOpacity;
+  const shadBlur = ls?.shadowBlur    ?? 2.8;
+  const shadSc   = ls?.shadowScale   ?? 5;
 
   // Re-publish the imperative API whenever a dependency changes.
   useEffect(() => {
@@ -768,21 +831,11 @@ export function ModelViewer({
         }}
         style={{ width: "100%", height: "100%" }}
       >
-        {/* PR #20 — 3-point studio lighting from active preset */}
+        {/* PR #21 — 3-point studio lighting, all values from live settings */}
         <ambientLight intensity={lp.ambient} />
-        <directionalLight
-          position={lp.key.position}
-          intensity={lp.key.intensity}
-          castShadow={false}
-        />
-        <directionalLight
-          position={lp.fill.position}
-          intensity={lp.fill.intensity}
-        />
-        <directionalLight
-          position={lp.rim.position}
-          intensity={lp.rim.intensity}
-        />
+        <directionalLight position={keyPos}  intensity={keyInt}  castShadow={false} />
+        <directionalLight position={fillPos} intensity={fillInt} />
+        <directionalLight position={rimPos}  intensity={rimInt}  />
 
         {/*
           Studio HDRI — gives glass / metal something to reflect (PR #9).
@@ -794,7 +847,7 @@ export function ModelViewer({
           <Environment
             preset={resolvedEnv}
             background={false}
-            environmentIntensity={lp.environmentIntensity}
+            environmentIntensity={envInt}
           />
         </Suspense>
 
