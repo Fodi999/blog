@@ -330,16 +330,20 @@ function readBaseColor(mat: AnyStdMat): THREE.Color {
  * Decide which physically-themed material a material name implies.
  * Returns `null` if no rule matches and the original material should be kept.
  *
- * Order matters — `bowl` / `ceramic` are checked **before** `glass` so the
- * ceramic bowl in `sauce_in_bowl` never accidentally turns transmissive.
+ * Order matters:
+ *   1. `bowl_glass` / anything with `glass` → transmissive glass
+ *   2. `bowl_ceramic` / `ceramic` → opaque ceramic
+ *   3. plain `bowl` (legacy fallback) → ceramic
+ * This ensures `bowl_glass` produced by the Rust generator is treated as
+ * glass, not ceramic.
  */
 function classify(
   name: string,
 ): "ceramic" | "glass" | "metal" | "liquid" | "label" | null {
   const n = name.toLowerCase();
   if (n.includes("label")) return "label";
-  if (n.includes("bowl") || n.includes("ceramic")) return "ceramic";
   if (n.includes("glass")) return "glass";
+  if (n.includes("ceramic") || n.includes("bowl")) return "ceramic";
   if (n.includes("metal") || n.includes("lid") || n.includes("cap")) return "metal";
   if (
     n.includes("liquid") ||
