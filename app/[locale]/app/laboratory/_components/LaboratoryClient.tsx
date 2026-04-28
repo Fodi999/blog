@@ -18,6 +18,7 @@ import dynamic from 'next/dynamic';
 import { ApiError } from '@/lib/chefos-api';
 import {
   generateLaboratoryModel,
+  resolveAssetUrl,
   uploadLaboratoryImage,
   type Laboratory3DAsset,
   type LaboratoryImage,
@@ -169,6 +170,16 @@ export function LaboratoryClient(_props: { locale: string }) {
           >
             {generating ? 'Generating…' : 'Generate 3D model'}
           </button>
+          {asset ? (
+            <button
+              type="button"
+              disabled={!image || generating}
+              onClick={() => { setAsset(null); void onGenerate(); }}
+              className="rounded-md border px-4 py-2 text-sm font-medium disabled:opacity-50"
+            >
+              {generating ? 'Regenerating…' : 'Regenerate'}
+            </button>
+          ) : null}
         </div>
       </section>
 
@@ -200,7 +211,14 @@ export function LaboratoryClient(_props: { locale: string }) {
 
           {/* OBJ viewer — shown when model is ready */}
           {asset.status === 'ready' && asset.model_url ? (
-            <ObjViewer modelUrl={asset.model_url} className="mb-4 h-72 w-full" />
+            <ObjViewer modelUrl={resolveAssetUrl(asset.model_url)!} className="mb-4 h-72 w-full" />
+          ) : null}
+
+          {/* Failed state placeholder */}
+          {asset.status === 'failed' ? (
+            <div className="mb-4 flex h-40 items-center justify-center rounded-xl border border-dashed border-destructive/40 bg-destructive/5 text-sm text-destructive">
+              Generation failed — click&nbsp;<strong>Regenerate</strong>&nbsp;to retry.
+            </div>
           ) : null}
 
           <dl className="grid grid-cols-[max-content_1fr] gap-x-4 gap-y-1 text-muted-foreground">
@@ -229,9 +247,10 @@ export function LaboratoryClient(_props: { locale: string }) {
           </dl>
 
           {asset.object_spec ? (
-            <details className="mt-3">
-              <summary className="cursor-pointer text-xs text-muted-foreground hover:text-foreground">
-                Show Vision spec JSON
+            <details className="mt-3 group">
+              <summary className="cursor-pointer select-none rounded-md border border-dashed border-zinc-700 px-2 py-1 text-xs text-muted-foreground transition hover:bg-zinc-900/40 hover:text-foreground">
+                <span className="group-open:hidden">▸ Advanced (debug spec)</span>
+                <span className="hidden group-open:inline">▾ Hide debug spec</span>
               </summary>
               <pre className="mt-2 max-h-72 overflow-auto rounded-md bg-muted p-2 text-xs">
                 {JSON.stringify(asset.object_spec, null, 2)}

@@ -5,14 +5,12 @@
  * analyze / scenes). The new contract is intentionally tiny:
  *
  *   • POST /api/laboratory/images                      (multipart "file" or JSON URL)
- *   • POST /api/laboratory/images/:id/generate-model   (sync; PR #3 returns
- *                                                       Vision spec + status
- *                                                       `generating_model`,
- *                                                       OBJ/GLB lands in PR #4)
+ *   • POST /api/laboratory/images/:id/generate-model   (sync; returns Vision spec +
+ *                                                       OBJ model_url when ready)
  *   • GET  /api/laboratory/assets/:id
  *
  * All endpoints are JWT-authenticated. Static files (uploaded images,
- * generated OBJ/GLB) are served from `/static/...` without auth.
+ * generated OBJ/MTL) are served from `/static/...` without auth.
  *
  * Backend: `assistant/src/application/laboratory_v2/*`.
  */
@@ -61,6 +59,28 @@ export type Laboratory3DAsset = {
   updated_at: string;
 };
 
+// ── URL helpers ───────────────────────────────────────────────────────────────
+
+/**
+ * Resolve a backend asset URL to a fully-qualified URL.
+ *
+ * The backend stores relative paths like `/static/laboratory/models/…/model.obj`.
+ * When frontend and backend run on different domains (e.g. Next.js on Vercel,
+ * Rust API on Koyeb) the browser would look for `/static/…` on the frontend
+ * domain — which is wrong.
+ *
+ * Rule:
+ *   - URL already absolute (`http://` or `https://`) → return as-is.
+ *   - URL starts with `/` → prepend `API_URL` (the backend origin).
+ *   - Anything else → return as-is.
+ */
+export function resolveAssetUrl(url: string | null | undefined): string | null {
+  if (!url) return null;
+  if (url.startsWith('http://') || url.startsWith('https://')) return url;
+  if (url.startsWith('/')) return `${API_URL}${url}`;
+  return url;
+}
+
 // ── Endpoints ────────────────────────────────────────────────────────────────
 
 /**
@@ -105,11 +125,9 @@ export async function uploadLaboratoryImage(file: File): Promise<LaboratoryImage
 /**
  * Trigger procedural 3D-model generation for a previously-uploaded image.
  *
- * MVP is synchronous. As of PR #3 the backend runs Gemini Vision inline and
- * returns the asset with `object_type` + `object_spec` populated and
- * `status = "generating_model"`. The OBJ/GLB itself (and `model_url`) lands
- * in PR #4 — until then `model_url` will be `null` and the UI should treat
- * `generating_model` as a successful intermediate state.
+ * Synchronous end-to-end: Gemini Vision → geometry dispatch → OBJ stored.
+ * Returns asset with `status = "ready"` and `model_url` set on success,
+ * or `status = "failed"` with `error_message` on any pipeline error.
  */
 export async function generateLaboratoryModel(imageId: string): Promise<Laboratory3DAsset> {
   return api.post<Laboratory3DAsset>(

@@ -18,14 +18,56 @@ import { Suspense, useRef } from "react";
 import { Canvas, useLoader } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
+import { MTLLoader } from "three/examples/jsm/loaders/MTLLoader.js";
 import * as THREE from "three";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Inner model component (must be inside Canvas + Suspense)
 // ─────────────────────────────────────────────────────────────────────────────
 
+/**
+ * Derive the sibling MTL URL from an OBJ URL by replacing `.obj` with `.mtl`.
+ * The Rust backend always writes `model.obj` + `model.mtl` side by side.
+ */
+function deriveMtlUrl(objUrl: string): string {
+  return objUrl.replace(/\.obj(\?.*)?$/i, ".mtl$1");
+}
+
 function ObjModel({ url }: { url: string }) {
-  const obj = useLoader(OBJLoader, url);
+  // Load MTL first so the OBJLoader can attach materials. If MTL fails to
+  // load (e.g. older asset without one), useLoader will throw — Suspense
+  // will keep showing fallback. To stay robust we *try* MTL; if there is no
+  // MTL the OBJ still renders with a default grey material.
+  const mtlUrl = deriveMtlUrl(url);
+  const materials = useLoader(MTLLoader, mtlUrl);
+  materials.preload();
+
+  const obj = useLoader(OBJLoader, url, (loader) => {
+    (loader as OBJLoader).setMaterials(materials);
+  });
+
+  // Belt & suspenders: walk the scene graph and upgrade every mesh material
+  // to a MeshStandardMaterial that carries the same Kd colour, so glossy
+  // sauces actually look glossy under the simple Canvas lighting.
+  obj.traverse((child) => {
+    const mesh = child as THREE.Mesh;
+    if (!mesh.isMesh) return;
+    const src = mesh.material as THREE.MeshPhongMaterial | THREE.MeshStandardMaterial;
+    // If we already have a Standard material, leave it.
+    if ((src as THREE.MeshStandardMaterial).isMeshStandardMaterial) return;
+
+    const color = (src as THREE.MeshPhongMaterial).color ?? new THREE.Color("#cccccc");
+    const shininess = (src as THREE.MeshPhongMaterial).shininess ?? 32;
+    // Map Phong shininess → Standard roughness (rough heuristic).
+    const roughness = THREE.MathUtils.clamp(1 - shininess / 200, 0.15, 0.9);
+
+    mesh.material = new THREE.MeshStandardMaterial({
+      color,
+      roughness,
+      metalness: 0,
+      name: src.name,
+    });
+  });
 
   // Centre and normalise the model so it always fits the view.
   const box = new THREE.Box3().setFromObject(obj);
@@ -70,10 +112,11 @@ export function ObjViewer({ modelUrl, className = "" }: ObjViewerProps) {
         gl={{ antialias: true }}
         style={{ width: "100%", height: "100%" }}
       >
-        {/* Lighting */}
-        <ambientLight intensity={0.8} />
-        <directionalLight position={[3, 5, 3]} intensity={1.2} castShadow={false} />
-        <directionalLight position={[-3, -2, -2]} intensity={0.3} />
+        {/* Lighting — tuned so MeshStandardMaterial highlights are visible */}
+        <ambientLight intensity={0.55} />
+        <directionalLight position={[3, 5, 3]} intensity={1.4} castShadow={false} />
+        <directionalLight position={[-3, -2, -2]} intensity={0.35} />
+        <pointLight position={[0, 3, 2]} intensity={0.5} />
 
         {/* Model */}
         <Suspense
