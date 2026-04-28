@@ -806,7 +806,7 @@ export function ModelViewer({
       setZoom: (t: number) => {
         const c = controlsRef.current as unknown as { object?: THREE.Camera; update?: () => void } | null;
         if (!c?.object) return;
-        const MIN = 0.4, MAX = 6;
+        const MIN = 0.18, MAX = 6;
         const dist = MIN + (MAX - MIN) * (1 - Math.max(0, Math.min(1, t)));
         const cam = c.object as THREE.PerspectiveCamera;
         const dir = cam.position.clone().normalize();
@@ -816,7 +816,7 @@ export function ModelViewer({
       getZoom: () => {
         const c = controlsRef.current as unknown as { object?: THREE.Camera } | null;
         if (!c?.object) return 0.5;
-        const MIN = 0.4, MAX = 6;
+        const MIN = 0.18, MAX = 6;
         const dist = (c.object as THREE.PerspectiveCamera).position.length();
         return 1 - (dist - MIN) / (MAX - MIN);
       },
@@ -910,7 +910,7 @@ export function ModelViewer({
         <OrbitControls
           ref={controlsRef as never}
           enablePan={studioMode}
-          minDistance={0.4}
+          minDistance={0.18}
           maxDistance={6}
           minPolarAngle={Math.PI * 0.05}
           maxPolarAngle={Math.PI * 0.85}
