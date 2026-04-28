@@ -18,10 +18,11 @@ import type {
   DisplayMode,
   LightingPreset,
   ModelViewerApi,
+  RenderQuality,
   StudioEnvPreset,
   StudioLightSettings,
 } from './ModelViewer';
-import { LIGHT_PRESETS, lightSettingsFromPreset } from './ModelViewer';
+import { LIGHT_PRESETS, RENDER_QUALITY_CONFIG, lightSettingsFromPreset } from './ModelViewer';
 
 const ModelViewer = dynamic(
   () => import('./ModelViewer').then((m) => m.ModelViewer),
@@ -65,6 +66,7 @@ export function LaboratoryStudioViewer({ asset, backHref }: Props) {
 
   const [autoRotate, setAutoRotate]       = useState(true);
   const [displayMode, setDisplayMode]     = useState<DisplayMode>('floor');
+  const [renderQuality, setRenderQuality] = useState<RenderQuality>('hd');
   const [lightSettings, setLightSettings] = useState<StudioLightSettings>(
     () => lightSettingsFromPreset('softFood'),
   );
@@ -256,6 +258,7 @@ export function LaboratoryStudioViewer({ asset, backHref }: Props) {
             studioMode
             autoRotate={autoRotate}
             displayMode={displayMode}
+            renderQuality={renderQuality}
             lightSettings={lightSettings}
             onReady={handleApiReady}
             className="h-full w-full"
@@ -299,6 +302,8 @@ export function LaboratoryStudioViewer({ asset, backHref }: Props) {
                 onDisplayMode={setDisplayMode}
                 autoRotate={autoRotate}
                 onAutoRotate={() => setAutoRotate((v) => !v)}
+                renderQuality={renderQuality}
+                onRenderQuality={setRenderQuality}
               />
             )}
           </div>
@@ -311,7 +316,7 @@ export function LaboratoryStudioViewer({ asset, backHref }: Props) {
           {asset.model_format?.toUpperCase() ?? 'GLB'} · {asset.id.slice(0, 8)}
         </span>
         <span className="text-[10px] text-zinc-600">
-          env: {lightSettings.preset} · {displayMode}
+          {lightSettings.preset} · {displayMode} · {RENDER_QUALITY_CONFIG[renderQuality].label}
         </span>
       </footer>
     </div>
@@ -637,17 +642,25 @@ function DisplayTab({
   onDisplayMode,
   autoRotate,
   onAutoRotate,
+  renderQuality,
+  onRenderQuality,
 }: {
   displayMode: DisplayMode;
   onDisplayMode: (v: DisplayMode) => void;
   autoRotate: boolean;
   onAutoRotate: () => void;
+  renderQuality: RenderQuality;
+  onRenderQuality: (v: RenderQuality) => void;
 }) {
   const modes: { id: DisplayMode; label: string }[] = [
     { id: 'clean', label: '○ Clean' },
     { id: 'floor', label: '◑ Shadow Floor' },
     { id: 'grid',  label: '⊞ Grid' },
   ];
+  const qualities = (Object.keys(RENDER_QUALITY_CONFIG) as RenderQuality[]).map((id) => ({
+    id,
+    label: RENDER_QUALITY_CONFIG[id].label,
+  }));
   return (
     <div className="space-y-3">
       <InspectorSection title="Ground">
@@ -665,6 +678,36 @@ function DisplayTab({
           </button>
         ))}
       </InspectorSection>
+
+      <InspectorSection title="Render Quality">
+        <div className="grid grid-cols-4 gap-1">
+          {qualities.map((q) => (
+            <button
+              key={q.id}
+              onClick={() => onRenderQuality(q.id)}
+              title={q.id === '4k' ? '⚠ Heavy on GPU' : undefined}
+              className={`rounded border py-1.5 text-[10px] font-semibold transition-colors ${
+                renderQuality === q.id
+                  ? 'border-amber-500/60 bg-amber-500/10 text-amber-400'
+                  : 'border-zinc-700 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200'
+              }`}
+            >
+              {q.label}
+            </button>
+          ))}
+        </div>
+        {renderQuality === '4k' && (
+          <p className="mt-1.5 text-[9px] text-amber-500/80">
+            ⚠ 4K is GPU-heavy. Best for screenshots, not live orbit.
+          </p>
+        )}
+        <div className="mt-1.5 space-y-0.5">
+          <InspectorRow label="DPR" value={RENDER_QUALITY_CONFIG[renderQuality].dpr.join('–')} />
+          <InspectorRow label="Shadow res" value={`${RENDER_QUALITY_CONFIG[renderQuality].shadowResolution}px`} />
+          <InspectorRow label="Anisotropy" value={`${RENDER_QUALITY_CONFIG[renderQuality].textureAnisotropy}x`} />
+        </div>
+      </InspectorSection>
+
       <InspectorSection title="Animation">
         <button
           onClick={onAutoRotate}

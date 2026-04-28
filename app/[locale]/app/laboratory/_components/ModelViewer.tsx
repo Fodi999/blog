@@ -228,6 +228,19 @@ function upgradeSauceMaterialsTSL(root: THREE.Object3D, factory: SauceFactory): 
   });
 }
 
+/** PR #22 — viewport render quality. */
+export type RenderQuality = "performance" | "hd" | "2k" | "4k";
+
+export const RENDER_QUALITY_CONFIG: Record<
+  RenderQuality,
+  { dpr: [number, number]; shadowResolution: number; textureAnisotropy: number; label: string }
+> = {
+  performance: { dpr: [1, 1.25],   shadowResolution: 256,  textureAnisotropy: 4,  label: "Perf" },
+  hd:          { dpr: [1, 2],      shadowResolution: 512,  textureAnisotropy: 8,  label: "HD"   },
+  "2k":        { dpr: [1.5, 2.5],  shadowResolution: 1024, textureAnisotropy: 12, label: "2K"   },
+  "4k":        { dpr: [2, 3],      shadowResolution: 2048, textureAnisotropy: 16, label: "4K"   },
+};
+
 // ─────────────────────────────────────────────────────────────────────────────
 // PR #20 — Studio Lighting Presets
 // ─────────────────────────────────────────────────────────────────────────────
@@ -720,6 +733,8 @@ interface ModelViewerProps {
   lightingPreset?: LightingPreset;
   /** PR #21 — full resolved light settings (overrides `lightingPreset`). */
   lightSettings?: StudioLightSettings;
+  /** PR #22 — viewport render quality. Default `"hd"`. */
+  renderQuality?: RenderQuality;
   /** PR #20 — override tone-mapping exposure (0.5–1.5). */
   exposure?: number;
   onReady?: (api: ModelViewerApi) => void;
@@ -734,6 +749,7 @@ export function ModelViewer({
   displayMode = "floor",
   lightingPreset = "softFood",
   lightSettings,
+  renderQuality = "hd",
   exposure,
   onReady,
 }: ModelViewerProps) {
@@ -759,6 +775,9 @@ export function ModelViewer({
   const shadOp   = ls?.shadowOpacity ?? lp.shadowOpacity;
   const shadBlur = ls?.shadowBlur    ?? 2.8;
   const shadSc   = ls?.shadowScale   ?? 5;
+
+  // PR #22 — render quality config
+  const rq = RENDER_QUALITY_CONFIG[renderQuality];
 
   // Re-publish the imperative API whenever a dependency changes.
   useEffect(() => {
@@ -815,7 +834,7 @@ export function ModelViewer({
         // distortion on tall bottles; the slight downward angle from
         // (1.8, 1.2, 2.2) shows the rim highlights and the foot at once.
         camera={{ position: [1.2, 0.8, 1.5], fov: 40, near: 0.01, far: 50 }}
-        dpr={[1, 2]}
+        dpr={rq.dpr}
         // PR #17 — WebGPU progressive enhancement. `gl` may be a factory
         // function returning a Renderer (sync or async). We try
         // WebGPURenderer first and fall back to WebGLRenderer transparently.
@@ -864,11 +883,11 @@ export function ModelViewer({
         {displayMode !== "clean" && (
           <ContactShadows
             position={[0, -0.78, 0]}
-            opacity={displayMode === "grid" ? lp.shadowOpacity * 0.6 : lp.shadowOpacity}
-            scale={studioMode ? 5 : 3}
-            blur={studioMode ? 2.8 : 2.2}
+            opacity={displayMode === "grid" ? shadOp * 0.6 : shadOp}
+            scale={shadSc}
+            blur={shadBlur}
             far={1.0}
-            resolution={studioMode ? 1024 : 512}
+            resolution={rq.shadowResolution}
             color="#000000"
           />
         )}
