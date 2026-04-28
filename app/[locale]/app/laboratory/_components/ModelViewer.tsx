@@ -36,6 +36,60 @@ import { MTLLoader } from "three/examples/jsm/loaders/MTLLoader.js";
 import * as THREE from "three";
 
 // ─────────────────────────────────────────────────────────────────────────────
+// PR #17 — WebGPU progressive enhancement
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Detect whether the current browser exposes the WebGPU API.
+ *
+ * We don't actually request an adapter here — that's an async call and
+ * `WebGPURenderer.init()` will do it again immediately after. A simple
+ * presence check is enough to avoid loading the WebGPU bundle on browsers
+ * that can't use it (Safari < 18, Firefox without flags, …).
+ */
+function hasWebGPU(): boolean {
+  return typeof navigator !== "undefined" && "gpu" in navigator;
+}
+
+/**
+ * R3F `gl` factory that prefers `WebGPURenderer` and falls back to the
+ * default `WebGLRenderer` if WebGPU isn't available or fails to init.
+ *
+ * The renderer object exposes the same `toneMapping` / `outputColorSpace`
+ * API on both backends, so the rest of the viewer (PR #16 ACES tone
+ * mapping, `<Environment />`, `<ContactShadows />`, our PR #9 material
+ * upgrades) keeps working unchanged.
+ */
+async function createRenderer(props: {
+  canvas: HTMLCanvasElement;
+}): Promise<THREE.WebGLRenderer> {
+  if (hasWebGPU()) {
+    try {
+      // Dynamic import keeps the WebGPU bundle out of the initial JS payload
+      // for browsers that won't use it.
+      const webgpu = await import("three/webgpu");
+      const renderer = new webgpu.WebGPURenderer({
+        canvas: props.canvas,
+        antialias: true,
+      });
+      await renderer.init();
+      // eslint-disable-next-line no-console
+      console.info("[ModelViewer] using WebGPURenderer");
+      // Cast: WebGPURenderer is API-compatible with WebGLRenderer for the
+      // surface R3F + drei use (toneMapping / outputColorSpace / render).
+      return renderer as unknown as THREE.WebGLRenderer;
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.warn("[ModelViewer] WebGPU init failed, falling back to WebGL", e);
+    }
+  }
+  return new THREE.WebGLRenderer({
+    canvas: props.canvas,
+    antialias: true,
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Format detection
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -362,7 +416,10 @@ export function ModelViewer({ modelUrl, className = "" }: ModelViewerProps) {
         // (1.8, 1.2, 2.2) shows the rim highlights and the foot at once.
         camera={{ position: [1.8, 1.2, 2.2], fov: 35, near: 0.01, far: 50 }}
         dpr={[1, 2]}
-        gl={{ antialias: true }}
+        // PR #17 — WebGPU progressive enhancement. `gl` may be a factory
+        // function returning a Renderer (sync or async). We try
+        // WebGPURenderer first and fall back to WebGLRenderer transparently.
+        gl={createRenderer as unknown as undefined}
         // PR #16 — ACES Filmic tone mapping + sRGB output. Without this,
         // glass/metal highlights blow out to pure white and the bowl
         // ceramic looks chalky.
