@@ -10,23 +10,14 @@
  * PR #9: per-name material upgrade.
  *   The Rust generators tag every material with a stable name
  *   (`bottle_glass`, `jar_glass`, `cap_metal`, `lid_metal`, `liquid_material`,
- *   `product_material`, `sauce_material`, `bowl_material`, …). We walk the
- *   loaded scene and swap the default `MeshStandardMaterial` for a more
- *   physically-correct one based on that name:
+ *   `product_material`, `sauce_material`, `sauce_volume`, `bowl_ceramic`,
+ *   `bowl_glass`, …). We walk the loaded scene and swap the default
+ *   `MeshStandardMaterial` for a more physically-correct one based on that name:
  *
  *     *glass*           → MeshPhysicalMaterial { transmission, ior, thickness }
  *     *metal* / *lid*   → MeshStandardMaterial { metalness: 0.8, roughness: 0.25 }
- *     *liquid|sauce|product* → glossy MeshStanda        {displayMode !== "clean" && (
-          <ContactShadows
-            position={[0, -0.78, 0]}
-            opacity={displayMode === "grid" ? shadOp * 0.6 : shadOp}
-            scale={shadSc}
-            blur={shadBlur}
-            far={1.0}
-            resolution={studioMode ? 1024 : 512}
-            color="#000000"
-          />
-        )}(low roughness)
+ *     *liquid|sauce|volume|product* → glossy MeshStandardMaterial (low roughness)
+ *                         PR #29: sauce_volume (side wall) uses same liquid shader
  *
  *   Combined with a studio HDRI environment map (drei `<Environment />`),
  *   this gets us recognisable glass / metal / glossy looks without any extra
@@ -358,7 +349,8 @@ function classify(
   if (n.includes("metal") || n.includes("lid") || n.includes("cap")) return "metal";
   if (
     n.includes("liquid") ||
-    n.includes("sauce") ||
+    n.includes("sauce") ||   // covers sauce_material + sauce_volume (PR #29)
+    n.includes("volume") ||
     n.includes("product")
   ) {
     return "liquid";
