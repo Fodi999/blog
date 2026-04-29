@@ -330,16 +330,27 @@ function readBaseColor(mat: AnyStdMat): THREE.Color {
  * Decide which physically-themed material a material name implies.
  * Returns `null` if no rule matches and the original material should be kept.
  *
- * Order matters:
+ * PR #28: first try `extras.material_class` (set by Rust GLB exporter),
+ * then fall back to name-based heuristics.
+ * Order for name heuristics:
  *   1. `bowl_glass` / anything with `glass` → transmissive glass
  *   2. `bowl_ceramic` / `ceramic` → opaque ceramic
  *   3. plain `bowl` (legacy fallback) → ceramic
- * This ensures `bowl_glass` produced by the Rust generator is treated as
- * glass, not ceramic.
  */
 function classify(
   name: string,
+  extras?: Record<string, unknown>,
 ): "ceramic" | "glass" | "metal" | "liquid" | "label" | null {
+  // PR #28: authoritative class from GLB extras (set by Rust material_class field).
+  const cls = extras?.material_class;
+  if (typeof cls === "string") {
+    if (cls === "glass") return "glass";
+    if (cls === "ceramic") return "ceramic";
+    if (cls === "metal") return "metal";
+    if (cls === "liquid" || cls === "food") return "liquid";
+    if (cls === "label") return "label";
+  }
+  // Fallback: name heuristics.
   const n = name.toLowerCase();
   if (n.includes("label")) return "label";
   if (n.includes("glass")) return "glass";
@@ -355,20 +366,30 @@ function classify(
   return null;
 }
 
-/** Build a `MeshPhysicalMaterial` configured for translucent product glass. */
-function makeGlassMaterial(base: THREE.Color, name: string): THREE.MeshPhysicalMaterial {
+/** Build a `MeshPhysicalMaterial` configured for translucent product glass.
+ * PR #28: transmission and roughness can be overridden from GLB extras.
+ */
+function makeGlassMaterial(
+  base: THREE.Color,
+  name: string,
+  extras?: Record<string, unknown>,
+): THREE.MeshPhysicalMaterial {
+  const roughness = typeof extras?.roughness === "number" ? extras.roughness : 0.05;
+  const transmission = typeof extras?.opacity === "number"
+    ? Math.min(0.97, extras.opacity)   // opacity in Rust = transparency; invert for THREE
+    : 0.92;
   return new THREE.MeshPhysicalMaterial({
     name,
     color: base,
-    roughness: 0.05,
+    roughness,
     metalness: 0.0,
-    transmission: 0.92,    // see-through
-    thickness: 0.5,        // refraction strength
-    ior: 1.45,             // typical for glass
+    transmission,
+    thickness: 0.5,
+    ior: 1.52,
     attenuationDistance: 0.4,
     attenuationColor: base,
     transparent: true,
-    opacity: 1.0,          // transmission handles the look; keep opacity 1
+    opacity: 1.0,
     side: THREE.DoubleSide,
     envMapIntensity: 1.2,
   });
@@ -385,12 +406,17 @@ function makeMetalMaterial(base: THREE.Color, name: string): THREE.MeshStandardM
   });
 }
 
-/** Matt-ish ceramic for bowls. Never transmissive — opaque dish. */
-function makeCeramicMaterial(base: THREE.Color, name: string): THREE.MeshStandardMaterial {
+/** Matt-ish ceramic for bowls. PR #28: roughness from extras. */
+function makeCeramicMaterial(
+  base: THREE.Color,
+  name: string,
+  extras?: Record<string, unknown>,
+): THREE.MeshStandardMaterial {
+  const roughness = typeof extras?.roughness === "number" ? extras.roughness : 0.58;
   return new THREE.MeshStandardMaterial({
     name,
     color: base,
-    roughness: 0.58,
+    roughness,
     metalness: 0.0,
     envMapIntensity: 0.5,
     side: THREE.DoubleSide,
@@ -398,14 +424,19 @@ function makeCeramicMaterial(base: THREE.Color, name: string): THREE.MeshStandar
 }
 
 /**
- * Glossy liquid / sauce / generic product surface. Tuned for the swirl
- * relief on top of `sauce_in_bowl` and the meniscus on jars/bottles.
+ * Glossy liquid / sauce / generic product surface.
+ * PR #28: roughness from extras (thin sauces = 0.05, thick pastes = 0.30).
  */
-function makeLiquidMaterial(base: THREE.Color, name: string): THREE.MeshStandardMaterial {
+function makeLiquidMaterial(
+  base: THREE.Color,
+  name: string,
+  extras?: Record<string, unknown>,
+): THREE.MeshStandardMaterial {
+  const roughness = typeof extras?.roughness === "number" ? extras.roughness : 0.18;
   return new THREE.MeshStandardMaterial({
     name,
     color: base,
-    roughness: 0.18,
+    roughness,
     metalness: 0.0,
     envMapIntensity: 1.2,
     side: THREE.DoubleSide,
@@ -475,23 +506,21 @@ function upgradeMaterials(root: THREE.Object3D): void {
 
     const upgrade = (src: AnyStdMat): THREE.Material => {
       const name = src.name ?? "";
-      const kind = classify(name);
+      // PR #28: read material_class + PBR overrides from GLB extras.
+      const extras = (src.userData ?? {}) as Record<string, unknown>;
+      const kind = classify(name, extras);
       if (!kind) return src;
       const base = readBaseColor(src);
       switch (kind) {
         case "ceramic":
-          return makeCeramicMaterial(base, name);
+          return makeCeramicMaterial(base, name, extras);
         case "glass":
-          return makeGlassMaterial(base, name);
+          return makeGlassMaterial(base, name, extras);
         case "metal":
           return makeMetalMaterial(base, name);
         case "liquid":
-          return makeLiquidMaterial(base, name);
+          return makeLiquidMaterial(base, name, extras);
         case "label": {
-          // GLTFLoader stores material extras on `userData` directly
-          // (three.js ≥ 0.150). PR #15 emits `extras.texture_url` from
-          // the Rust exporter; pick it up here.
-          const extras = (src.userData ?? {}) as Record<string, unknown>;
           const url = typeof extras.texture_url === "string"
             ? extras.texture_url
             : undefined;
