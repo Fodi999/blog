@@ -3,10 +3,9 @@
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import {
-  Scale, Fish, FlaskConical, Calculator, Utensils, Sparkles,
-  Search, BarChart3, Salad, ArrowRight, ChefHat,
-  Microscope, Database, Wrench, Brain,
-  Trophy,
+  FlaskConical, Sparkles,
+  Search, BarChart3, ArrowRight, ChefHat,
+  Database, Wrench, Brain,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { AISousChef } from './dashboard/AISousChef';
@@ -22,30 +21,30 @@ type ToolItem = {
 };
 
 const QUICK_ACTIONS: ToolItem[] = [
-  { href: '/chef-tools/recipe-analyzer',      icon: Calculator,    key: 'analyzeRecipe'    },
-  { href: '/chef-tools/ingredients',          icon: Search,        key: 'checkIngredient'  },
-  { href: '/chef-tools/converter',            icon: Scale,         key: 'convertUnits'     },
   { href: '/chef-tools/lab',                  icon: FlaskConical,  key: 'createRecipe'     },
+  { href: '/chef-tools/ingredients',          icon: Search,        key: 'checkIngredient'  },
+  { href: '/chef-tools/nutrition',            icon: BarChart3,     key: 'convertUnits'     },
+  { href: '/chef-tools/lab',                  icon: FlaskConical,  key: 'analyzeRecipe'    },
 ];
 
 const DATABASE_TOOLS: ToolItem[] = [
   { href: '/chef-tools/ingredients',          icon: Search,      key: 'ingredients'         },
-  { href: '/chef-tools/ingredient-analyzer',  icon: Microscope,  key: 'ingredientAnalyzer'  },
-  { href: '/chef-tools/fish-season',          icon: Fish,        key: 'fishSeason'          },
+  { href: '/chef-tools/nutrition',            icon: BarChart3,   key: 'ingredientAnalyzer'  },
+  { href: '/chef-tools/lab',                  icon: FlaskConical, key: 'fishSeason'         },
 ];
 
 const UTILITY_TOOLS: ToolItem[] = [
-  { href: '/chef-tools/converter',            icon: Scale,       key: 'converter'           },
   { href: '/chef-tools/nutrition',            icon: BarChart3,   key: 'nutrition'           },
-  { href: '/chef-tools/ranking/protein',      icon: Trophy,      key: 'ranking'             },
-  { href: '/chef-tools/diet/vegan',           icon: Salad,       key: 'diet'                },
+  { href: '/chef-tools/ingredients',          icon: Search,      key: 'ingredients'         },
+  { href: '/chef-tools/lab',                  icon: FlaskConical, key: 'lab'                },
+  { href: '/chef-tools/chat',                 icon: Sparkles,    key: 'aiChat'              },
 ];
 
 const AI_TOOLS: ToolItem[] = [
-  { href: '/chef-tools/recipe-analyzer',      icon: Calculator,    key: 'recipeAnalyzer'    },
   { href: '/chef-tools/lab',                  icon: FlaskConical,  key: 'lab'               },
-  { href: '/chef-tools/flavor-pairing',       icon: Utensils,      key: 'flavorPairing'     },
   { href: '/chef-tools/chat',                icon: Sparkles,      key: 'aiChat'            },
+  { href: '/chef-tools/dashboard',            icon: Brain,         key: 'recipeAnalyzer'    },
+  { href: '/chef-tools/chat',                icon: Sparkles,      key: 'flavorPairing'     },
 ];
 
 /* ══════════════════════════════════════════════════════════════

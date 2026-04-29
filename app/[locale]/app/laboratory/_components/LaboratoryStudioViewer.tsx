@@ -9,10 +9,10 @@
 
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
-import { resolveAssetUrl, generateLaboratoryModel, type GeometryQuality, type Laboratory3DAsset } from '@/lib/laboratory-api';
+import { resolveAssetUrl, generateLaboratoryModel, tuneSurface, type GeometryQuality, type Laboratory3DAsset, type SurfaceTuneInfo } from '@/lib/laboratory-api';
 import type {
   CameraPresetKey,
   DisplayMode,
@@ -85,8 +85,23 @@ export function LaboratoryStudioViewer({ asset, backHref }: Props) {
   );
   const [activePreset, setActivePreset]   = useState<CameraPresetKey>('default');
   const [zoom, setZoom]                   = useState(0.55);
-  const [tab, setTab] = useState<'object' | 'camera' | 'light' | 'display'>('object');
+  const [tab, setTab] = useState<'object' | 'surface' | 'camera' | 'light' | 'display'>('object');
   const [api, setApi] = useState<ModelViewerApi | null>(null);
+
+  // PR #31 — Smoothness Slider state
+  const [smoothness, setSmoothness]   = useState(0.55);
+  const [tuning, setTuning]           = useState(false);
+  const [tuneInfo, setTuneInfo]       = useState<SurfaceTuneInfo | null>(null);
+  const tuneTimerRef                  = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Use refs so the debounce closure always sees fresh values without
+  // recreating the callback (avoids the stale-closure / tuning-stuck bug).
+  const tuningRef    = useRef(false);
+  const assetIdRef   = useRef(currentAsset.id);
+  const smoothnessRef = useRef(smoothness);
+  const apiRef        = useRef<ModelViewerApi | null>(null);
+  // Keep refs in sync
+  assetIdRef.current   = currentAsset.id;
+  smoothnessRef.current = smoothness;
 
   // Patch a single field in lightSettings
   const patchLight = useCallback(
@@ -101,8 +116,59 @@ export function LaboratoryStudioViewer({ asset, backHref }: Props) {
     setLightSettings(lightSettingsFromPreset(preset));
   }, []);
 
+  // PR #31 — Smoothness debounce → draft preview
+  // Fixed bugs vs original:
+  //   ① Use refs for tuning/assetId so closure never goes stale
+  //   ② Never early-return inside the timer — always set tuning=false in finally
+  //   ③ deps array is stable (only the setter functions, which never change)
+  const onSmoothnessChange = useCallback((val: number) => {
+    setSmoothness(val);
+    smoothnessRef.current = val;
+    // ── Instant real-time feedback ─────────────────────────────────────────
+    // 1. Geometry: Laplacian smooth vertices (val=0 bumpy, val=1 smooth)
+    apiRef.current?.setFoodSmooth(val);
+    // 2. Material: roughness also tracks smoothness (smooth = low roughness)
+    const roughness = 0.85 - val * 0.80;
+    apiRef.current?.setFoodRoughness(roughness);
+    // ── Debounced full geometry rebake (backend) ───────────────────────────
+    if (tuneTimerRef.current) clearTimeout(tuneTimerRef.current);
+    tuneTimerRef.current = setTimeout(async () => {
+      if (tuningRef.current) return; // skip if a request is already in flight
+      tuningRef.current = true;
+      setTuning(true);
+      try {
+        const res = await tuneSurface(assetIdRef.current, smoothnessRef.current, 'draft');
+        setCurrentAsset(res.asset);
+        setTuneInfo(res.surface_info);
+      } catch {
+        // silent — stale GLB stays in view
+      } finally {
+        tuningRef.current = false;
+        setTuning(false);
+      }
+    }, 320);
+  }, []); // stable — reads live values from refs
+
+  const onSmoothnessApply = useCallback(async (quality: GeometryQuality = 'high') => {
+    if (tuningRef.current) return;
+    tuningRef.current = true;
+    setTuning(true);
+    try {
+      const res = await tuneSurface(assetIdRef.current, smoothnessRef.current, quality);
+      setCurrentAsset(res.asset);
+      setTuneInfo(res.surface_info);
+      toast.success(`Baked at ${quality.toUpperCase()} ✦`);
+    } catch {
+      toast.error('Failed to apply surface');
+    } finally {
+      tuningRef.current = false;
+      setTuning(false);
+    }
+  }, []); // stable
+
   const handleApiReady = useCallback((readyApi: ModelViewerApi) => {
     setApi(readyApi);
+    apiRef.current = readyApi;
   }, []);
 
   const handleZoomChange = useCallback((val: number) => {
@@ -173,6 +239,10 @@ export function LaboratoryStudioViewer({ asset, backHref }: Props) {
     a.click();
   }, [asset.id, asset.model_format, asset.object_type, modelUrl]);
 
+  // PR #32 — track if the GLB returned 404 (Koyeb ephemeral FS wipe on redeploy).
+  // When true we show a "Model lost — Regenerate" overlay instead of crashing.
+  const [modelLost, setModelLost] = useState(false);
+
   if (!modelUrl) {
     return (
       <div className="fixed inset-0 z-[60] flex items-center justify-center bg-zinc-950 text-zinc-300">
@@ -195,6 +265,25 @@ export function LaboratoryStudioViewer({ asset, backHref }: Props) {
   return (
     /* z-[60] covers glass-nav (z-50) and MobileAppNav (z-40) */
     <div className="fixed inset-0 z-[60] flex flex-col bg-zinc-950 text-zinc-100">
+
+      {/* ── PR #32 Model-lost overlay (Koyeb ephemeral FS wipe) ──────────── */}
+      {modelLost && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-zinc-950/95 backdrop-blur-sm">
+          <div className="rounded-xl border border-zinc-700 bg-zinc-900 p-6 text-center shadow-2xl max-w-xs">
+            <div className="mb-2 text-2xl">⚠️</div>
+            <p className="font-semibold text-zinc-100">Model file not found</p>
+            <p className="mt-1 text-sm text-zinc-400">
+              The 3D file was lost after a server redeploy. Regenerate to rebuild it.
+            </p>
+            <button
+              onClick={() => { setModelLost(false); onRegenerate(); }}
+              className="mt-4 w-full rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-zinc-950 hover:bg-amber-400 transition-colors"
+            >
+              ✦ Regenerate model
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* ── Top Bar ─────────────────────────────────────────────────── */}
       <header className="flex h-12 shrink-0 items-center justify-between border-b border-zinc-800 bg-zinc-900/80 px-3 backdrop-blur-md">
@@ -304,17 +393,27 @@ export function LaboratoryStudioViewer({ asset, backHref }: Props) {
             renderQuality={renderQuality}
             lightSettings={lightSettings}
             onReady={handleApiReady}
+            onModelError={() => setModelLost(true)}
             className="h-full w-full"
           />
           <div className="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-black/50 px-3 py-1 text-[10px] text-zinc-400 backdrop-blur-sm select-none whitespace-nowrap">
             Drag to orbit · Scroll to zoom · Right-drag to pan
           </div>
+
+          {/* ── PR #31 Smoothness Island ──────────────────────────── */}
+          <SmoothnessIsland
+            smoothness={smoothness}
+            tuneInfo={tuneInfo}
+            tuning={tuning}
+            onChange={onSmoothnessChange}
+            onApply={onSmoothnessApply}
+          />
         </main>
 
         {/* Right Inspector */}
         <aside className="flex flex-col border-l border-zinc-800 bg-zinc-900/60">
           <div className="flex shrink-0 border-b border-zinc-800">
-            {(['object', 'camera', 'light', 'display'] as const).map((t) => (
+            {(['object', 'surface', 'camera', 'light', 'display'] as const).map((t) => (
               <button
                 key={t}
                 onClick={() => setTab(t)}
@@ -331,6 +430,15 @@ export function LaboratoryStudioViewer({ asset, backHref }: Props) {
 
           <div className="min-h-0 flex-1 overflow-y-auto p-3 text-xs">
             {tab === 'object'  && <ObjectTab asset={currentAsset} />}
+            {tab === 'surface' && (
+              <SurfaceTab
+                smoothness={smoothness}
+                tuneInfo={tuneInfo}
+                tuning={tuning}
+                onSmoothness={onSmoothnessChange}
+                onApply={onSmoothnessApply}
+              />
+            )}
             {tab === 'camera'  && <CameraTab activePreset={activePreset} onPreset={applyPreset} onReset={onReset} />}
             {tab === 'light'   && (
               <LightingTab
@@ -389,6 +497,113 @@ function ObjectTab({ asset }: { asset: Laboratory3DAsset }) {
     </InspectorSection>
   );
 }
+
+// ── PR #31 — Surface Tuning Tab ───────────────────────────────────────────────
+
+function SurfaceTab({
+  smoothness,
+  tuneInfo,
+  tuning,
+  onSmoothness,
+  onApply,
+}: {
+  smoothness: number;
+  tuneInfo: SurfaceTuneInfo | null;
+  tuning: boolean;
+  onSmoothness: (v: number) => void;
+  onApply: (q: GeometryQuality) => void;
+}) {
+  const pct = Math.round(smoothness * 100);
+
+  return (
+    <div className="space-y-4">
+      <InspectorSection title="Surface">
+        {/* Main smoothness slider */}
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-zinc-400">Smoothness</span>
+            <span className="font-mono text-amber-400">{pct}</span>
+          </div>
+          <input
+            type="range"
+            min={0}
+            max={100}
+            value={pct}
+            disabled={tuning}
+            onChange={(e) => onSmoothness(Number(e.target.value) / 100)}
+            className="w-full cursor-pointer accent-amber-400 disabled:opacity-50"
+          />
+          <div className="flex justify-between text-[9px] text-zinc-600">
+            <span>Textured</span>
+            <span>Smooth</span>
+          </div>
+        </div>
+
+        {/* Derived values — shown after first tune */}
+        {tuneInfo && (
+          <div className="mt-3 rounded border border-zinc-800 bg-zinc-950/60 p-2 space-y-1">
+            <p className="mb-1.5 text-[9px] font-semibold uppercase tracking-widest text-zinc-600">Derived</p>
+            {(
+              [
+                ['Ridge',        tuneInfo.ridge_height],
+                ['Groove',       tuneInfo.groove_depth],
+                ['Peak',         tuneInfo.center_peak],
+                ['Irregularity', tuneInfo.surface_irregularity],
+                ['Highlight',    tuneInfo.highlight_strength],
+              ] as [string, number][]
+            ).map(([k, v]) => (
+              <div key={k} className="flex items-center gap-2">
+                <span className="w-20 shrink-0 text-zinc-500">{k}</span>
+                <div className="flex-1 h-1 rounded-full bg-zinc-800 overflow-hidden">
+                  <div
+                    className="h-full rounded-full bg-amber-500/70 transition-all"
+                    style={{ width: `${Math.round(v * 100)}%` }}
+                  />
+                </div>
+                <span className="w-7 text-right font-mono text-[10px] text-zinc-400">
+                  {v.toFixed(2)}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {tuning && (
+          <p className="text-center text-[10px] text-amber-400 animate-pulse">Rebuilding…</p>
+        )}
+      </InspectorSection>
+
+      {/* Bake buttons */}
+      <InspectorSection title="Bake">
+        <div className="space-y-1.5">
+          <button
+            onClick={() => onApply('draft')}
+            disabled={tuning}
+            className="w-full rounded border border-zinc-700 py-1.5 text-[11px] font-medium text-zinc-300 transition-colors hover:border-zinc-500 hover:text-white disabled:opacity-40"
+          >
+            Preview (Draft)
+          </button>
+          <button
+            onClick={() => onApply('high')}
+            disabled={tuning}
+            className="w-full rounded border border-amber-500/50 bg-amber-500/10 py-1.5 text-[11px] font-medium text-amber-300 transition-colors hover:bg-amber-500/20 disabled:opacity-40"
+          >
+            Apply High ✦
+          </button>
+          <button
+            onClick={() => onApply('ultra')}
+            disabled={tuning}
+            className="w-full rounded border border-zinc-700 py-1.5 text-[11px] font-medium text-zinc-500 transition-colors hover:border-zinc-500 hover:text-zinc-300 disabled:opacity-40"
+          >
+            Bake Ultra
+          </button>
+        </div>
+      </InspectorSection>
+    </div>
+  );
+}
+
+// ── PR #31 — Floating Smoothness Island: defined further below ───────────────
 
 function CameraTab({
   activePreset,
@@ -929,6 +1144,132 @@ function InspectorRow({ label, value }: { label: string; value: string }) {
     <div className="flex items-center justify-between py-0.5">
       <span className="text-zinc-500">{label}</span>
       <span className="font-mono text-zinc-300">{value}</span>
+    </div>
+  );
+}
+
+// ── PR #31 — Smoothness Island (floating bottom-centre of canvas) ─────────────
+//
+// Architecture note — why is this a server round-trip and not instant like ZBrush?
+//
+//   ZBrush: deforms vertices already in GPU memory (microseconds)
+//   ChefOS: smoothness → POST /tune-surface → Rust regenerates full GLB
+//           → stored to disk → new URL → ModelViewer reloads GLB
+//
+// This is intentional: the mesh is procedural (parametric geometry kernel),
+// not a sculpt. The tradeoff is perfect PBR materials + physics-accurate
+// fill volume at the cost of ~0.5–2 s per regeneration.
+// Draft quality makes each rebuild ~3–5× faster than High.
+
+function SmoothnessIsland({
+  smoothness,
+  tuneInfo,
+  tuning,
+  onChange,
+  onApply,
+}: {
+  smoothness: number;
+  tuneInfo: SurfaceTuneInfo | null;
+  tuning: boolean;
+  onChange: (v: number) => void;
+  onApply: (q: GeometryQuality) => void;
+}) {
+  const pct = Math.round(smoothness * 100);
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <div className="pointer-events-auto absolute bottom-10 left-1/2 -translate-x-1/2 z-20 select-none">
+      {/* Main island pill */}
+      <div className="flex items-center gap-3 rounded-2xl border border-zinc-700/80 bg-zinc-900/90 px-4 py-2.5 shadow-2xl backdrop-blur-md">
+
+        {/* Label */}
+        <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-500 whitespace-nowrap">
+          Smoothness
+        </span>
+
+        {/* Slider */}
+        <div className="relative flex items-center gap-2">
+          <span className="text-[9px] text-zinc-600">Rough</span>
+          <input
+            type="range"
+            min={0}
+            max={100}
+            value={pct}
+            disabled={tuning}
+            onChange={(e) => onChange(Number(e.target.value) / 100)}
+            className="w-36 cursor-pointer accent-amber-400 disabled:opacity-50"
+          />
+          <span className="text-[9px] text-zinc-600">Smooth</span>
+        </div>
+
+        {/* Live value */}
+        <span className={`w-7 text-right font-mono text-[12px] font-bold transition-colors ${tuning ? 'text-amber-400 animate-pulse' : 'text-white'}`}>
+          {pct}
+        </span>
+
+        {/* Apply High button */}
+        <button
+          onClick={() => onApply('high')}
+          disabled={tuning}
+          className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-1 text-[10px] font-semibold text-amber-300 transition-all hover:bg-amber-500/20 disabled:opacity-40 whitespace-nowrap"
+        >
+          {tuning ? 'Building…' : 'Apply ✦'}
+        </button>
+
+        {/* Expand toggle */}
+        <button
+          onClick={() => setExpanded((v) => !v)}
+          className="text-zinc-600 hover:text-zinc-300 transition-colors text-[14px] leading-none"
+          title="Show derived values"
+        >
+          {expanded ? '▲' : '▼'}
+        </button>
+      </div>
+
+      {/* Expanded derived-values panel */}
+      {expanded && tuneInfo && (
+        <div className="mt-1.5 rounded-xl border border-zinc-700/80 bg-zinc-900/90 px-4 py-3 shadow-2xl backdrop-blur-md">
+          <p className="mb-2 text-[9px] font-bold uppercase tracking-widest text-zinc-600">
+            Surface Parameters
+          </p>
+          <div className="grid grid-cols-2 gap-x-6 gap-y-1.5">
+            {(
+              [
+                ['Ridge height',    tuneInfo.ridge_height],
+                ['Groove depth',    tuneInfo.groove_depth],
+                ['Center peak',     tuneInfo.center_peak],
+                ['Irregularity',    tuneInfo.surface_irregularity],
+                ['Highlight',       tuneInfo.highlight_strength],
+              ] as [string, number][]
+            ).map(([label, val]) => (
+              <div key={label} className="flex items-center gap-2">
+                <span className="w-24 shrink-0 text-[10px] text-zinc-500">{label}</span>
+                <div className="h-1 w-20 overflow-hidden rounded-full bg-zinc-800">
+                  <div
+                    className="h-full rounded-full bg-amber-500/70 transition-all duration-300"
+                    style={{ width: `${Math.round(val * 100)}%` }}
+                  />
+                </div>
+                <span className="w-8 text-right font-mono text-[10px] text-zinc-400">
+                  {val.toFixed(2)}
+                </span>
+              </div>
+            ))}
+          </div>
+          <div className="mt-2.5 flex gap-1.5">
+            {(['draft', 'standard', 'high', 'ultra'] as GeometryQuality[]).map((q) => (
+              <button
+                key={q}
+                onClick={() => onApply(q)}
+                disabled={tuning}
+                className="flex-1 rounded border border-zinc-700 py-1 text-[9px] font-medium text-zinc-400 transition-colors hover:border-zinc-500 hover:text-white disabled:opacity-40"
+              >
+                {q.charAt(0).toUpperCase() + q.slice(1)}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

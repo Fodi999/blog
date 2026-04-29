@@ -11,7 +11,7 @@
  *   The Rust generators tag every material with a stable name
  *   (`bottle_glass`, `jar_glass`, `cap_metal`, `lid_metal`, `liquid_material`,
  *   `product_material`, `sauce_material`, `sauce_volume`, `bowl_ceramic`,
- *   `bowl_glass`, …). We walk the loaded scene and swap the default
+ *   `bowl_glass`, `plate_ceramic`, `food_material`, …). We walk the loaded scene and swap the default
  *   `MeshStandardMaterial` for a more physically-correct one based on that name:
  *
  *     *glass*           → MeshPhysicalMaterial { transmission, ior, thickness }
@@ -28,7 +28,7 @@
  * PR #8 keep rendering. New assets are always GLB.
  */
 
-import { Suspense, useEffect, useRef } from "react";
+import React, { Suspense, useEffect, useRef } from "react";
 import { Canvas, useFrame, useLoader, useThree } from "@react-three/fiber";
 import { ContactShadows, Environment, Grid, OrbitControls } from "@react-three/drei";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
@@ -351,7 +351,8 @@ function classify(
     n.includes("liquid") ||
     n.includes("sauce") ||   // covers sauce_material + sauce_volume (PR #29)
     n.includes("volume") ||
-    n.includes("product")
+    n.includes("product") ||
+    n.includes("food")     // food_material (PR #30: plate_food)
   ) {
     return "liquid";
   }
@@ -534,12 +535,46 @@ function upgradeMaterials(root: THREE.Object3D): void {
 // GLB branch (preferred)
 // ─────────────────────────────────────────────────────────────────────────────
 
-function GltfModel({ url }: { url: string }) {
+// ─────────────────────────────────────────────────────────────────────────────
+// PR #32 — Error boundary for GLB loading failures (e.g. Koyeb ephemeral FS
+// wipes uploads on redeploy → stale model_url in DB → 404).  Class components
+// are required by React for error boundaries; this one calls `onError` so the
+// parent (LaboratoryStudioViewer) can surface a graceful "Regenerate" prompt.
+// ─────────────────────────────────────────────────────────────────────────────
+interface GltfErrorBoundaryProps {
+  onError: (e: Error) => void;
+  children: React.ReactNode;
+}
+interface GltfErrorBoundaryState { hasError: boolean }
+
+class GltfErrorBoundary extends React.Component<GltfErrorBoundaryProps, GltfErrorBoundaryState> {
+  constructor(props: GltfErrorBoundaryProps) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError(): GltfErrorBoundaryState {
+    return { hasError: true };
+  }
+  componentDidCatch(error: Error) {
+    this.props.onError(error);
+  }
+  render() {
+    if (this.state.hasError) return null;
+    return this.props.children;
+  }
+}
+
+function GltfModel({ url, onScene }: { url: string; onScene?: (root: THREE.Object3D) => void }) {
   const gltf = useLoader(GLTFLoader, url);
   const root = gltf.scene;
 
   // Upgrade materials by name (PR #9) — idempotent, safe to call on cached gltf.
   upgradeMaterials(root);
+
+  // PR #31 — publish root so the parent can walk it for real-time roughness edits.
+  useEffect(() => {
+    onScene?.(root);
+  }, [root, onScene]);
 
   // PR #18 — once the gltf is mounted, lazily load the TSL sauce shader and
   // re-upgrade any liquid material to its node-based version. Only runs on
@@ -703,6 +738,19 @@ export interface ModelViewerApi {
   setZoom: (t: number) => void;
   /** Get current zoom as 0–1 (0 = closest). */
   getZoom: () => number;
+  /**
+   * PR #31 — instantly update roughness on all food/sauce/liquid materials
+   * (client-side only, no backend call). v = 0.0 (mirror-glossy) → 1.0 (fully matte).
+   */
+  setFoodRoughness: (v: number) => void;
+  /**
+   * PR #31 — visual smoothness via material parameters only (no geometry mutation).
+   * t = 0.0 → rough/matte sauce, t = 1.0 → glossy/smooth sauce.
+   * Adjusts roughness, envMapIntensity and clearcoat so the surface *looks*
+   * smoother without touching any vertices (geometry is unchanged client-side;
+   * the backend regenerates the GLB after the debounce).
+   */
+  setFoodSmooth: (t: number) => void;
 }
 
 /** How the ground plane / grid is rendered under the model. */
@@ -763,6 +811,8 @@ interface ModelViewerProps {
   /** PR #20 — override tone-mapping exposure (0.5–1.5). */
   exposure?: number;
   onReady?: (api: ModelViewerApi) => void;
+  /** PR #32 — called when the GLB file returns 404 (ephemeral storage wipe). */
+  onModelError?: (e: Error) => void;
 }
 
 export function ModelViewer({
@@ -777,11 +827,17 @@ export function ModelViewer({
   renderQuality = "hd",
   exposure,
   onReady,
+  onModelError,
 }: ModelViewerProps) {
   const ref = useRef<HTMLDivElement>(null);
   const glRef = useRef<THREE.WebGLRenderer | null>(null);
   const controlsRef = useRef<React.ComponentRef<typeof OrbitControls> | null>(null);
   const cameraAnimTargetRef = useRef<THREE.Vector3 | null>(null);
+  // PR #31 — root scene ref (used to store the loaded GLB root)
+  const sceneRef = useRef<THREE.Object3D | null>(null);
+  // PR #31 — pre-classified mesh lists, populated once when the GLB loads.
+  // Separating food from bowl meshes means smoothness only ever touches food.
+  const foodMeshesRef = useRef<THREE.Mesh[]>([]);
   const useGlb = isGlb(modelUrl);
 
   // PR #21 — merge preset + live overrides from StudioLightSettings
@@ -845,6 +901,42 @@ export function ModelViewer({
         const dist = (c.object as THREE.PerspectiveCamera).position.length();
         return 1 - (dist - MIN) / (MAX - MIN);
       },
+      setFoodRoughness: (v: number) => {
+        // Only food meshes — bowl is in a separate list and is never touched.
+        for (const mesh of foodMeshesRef.current) {
+          const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+          for (const m of mats) {
+            const mat = m as THREE.MeshStandardMaterial;
+            if (!mat?.isMeshStandardMaterial) continue;
+            mat.roughness = Math.max(0, Math.min(1, v));
+            mat.needsUpdate = true;
+          }
+        }
+      },
+      setFoodSmooth: (t: number) => {
+        // Material-only visual smoothness — geometry is NEVER modified client-side.
+        // t=0 → rough/matte,  t=1 → glossy/smooth
+        // roughness:        0.85 → 0.08
+        // envMapIntensity:  0.6  → 2.2  (more reflection = looks smoother)
+        // clearcoat:        0.0  → 0.6  (wet sheen at high smoothness)
+        const roughness       = 0.85 - t * 0.77;
+        const envMapIntensity = 0.6 + t * 1.6;
+        const clearcoat       = t * 0.6;
+        for (const mesh of foodMeshesRef.current) {
+          const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+          for (const m of mats) {
+            const mat = m as THREE.MeshStandardMaterial & { clearcoat?: number; clearcoatRoughness?: number };
+            if (!mat?.isMeshStandardMaterial) continue;
+            mat.roughness       = roughness;
+            mat.envMapIntensity = envMapIntensity;
+            if ('clearcoat' in mat) {
+              mat.clearcoat          = clearcoat;
+              mat.clearcoatRoughness = 0.1;
+            }
+            mat.needsUpdate = true;
+          }
+        }
+      },
     });
   }, [onReady]);
 
@@ -896,7 +988,34 @@ export function ModelViewer({
         </Suspense>
 
         <Suspense fallback={null}>
-          {useGlb ? <GltfModel url={modelUrl} /> : <ObjModel url={modelUrl} />}
+          {useGlb ? (
+            <GltfErrorBoundary onError={(e) => onModelError?.(e)}>
+            <GltfModel
+              url={modelUrl}
+              onScene={(r) => {
+                sceneRef.current = r;
+                // Classify meshes once on load — food vs bowl/everything else.
+                // food: material_class "food" OR name matches food|sauce|liquid|product|mound|swirl
+                // bowl: everything else (ceramic, glass, metal, label…)
+                const food: THREE.Mesh[] = [];
+                r.traverse((child) => {
+                  const mesh = child as THREE.Mesh;
+                  if (!mesh.isMesh) return;
+                  const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+                  const isFood = mats.some((m) => {
+                    const mat = m as THREE.MeshStandardMaterial;
+                    const cls = (mat.userData as Record<string, unknown>)?.material_class;
+                    // "food" = plate_food generator, "liquid" = sauce_in_bowl generator
+                    if (cls === 'food' || cls === 'liquid') return true;
+                    return /food|sauce|liquid|product|mound|swirl/.test(mat.name ?? '');
+                  });
+                  if (isFood) food.push(mesh);
+                });
+                foodMeshesRef.current = food;
+              }}
+            />
+            </GltfErrorBoundary>
+          ) : <ObjModel url={modelUrl} />}
         </Suspense>
 
         {/*

@@ -160,3 +160,38 @@ export async function getLaboratoryAsset(assetId: string): Promise<Laboratory3DA
     `/api/laboratory/assets/${encodeURIComponent(assetId)}`,
   );
 }
+
+// ── PR #31 — Smoothness Slider ────────────────────────────────────────────────
+
+/** Values that the backend actually used when building the surface. */
+export type SurfaceTuneInfo = {
+  smoothness: number;
+  ridge_height: number;
+  groove_depth: number;
+  center_peak: number;
+  surface_irregularity: number;
+  highlight_strength: number;
+};
+
+export type TuneSurfaceResponse = {
+  asset: Laboratory3DAsset;
+  surface_info: SurfaceTuneInfo;
+};
+
+/**
+ * Regenerate the geometry for an existing asset using a `smoothness` value
+ * (0.0 = very textured, 1.0 = flat/mirror-smooth) without re-running Gemini.
+ *
+ * Use `quality = 'draft'` during slider drag (fast preview) and
+ * `quality = 'high'` when the user clicks "Apply".
+ */
+export async function tuneSurface(
+  assetId: string,
+  smoothness: number,   // 0.0 – 1.0
+  quality: GeometryQuality = 'draft',
+): Promise<TuneSurfaceResponse> {
+  return api.post<TuneSurfaceResponse>(
+    `/api/laboratory/assets/${encodeURIComponent(assetId)}/tune-surface`,
+    { smoothness: Math.round(smoothness * 1000) / 1000, quality },
+  );
+}
