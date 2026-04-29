@@ -3,7 +3,6 @@ import { getAllPosts } from '@/lib/posts';
 import { fetchIngredients, fetchIngredientsStatesMap, fetchSitemapCombos } from '@/lib/api';
 import { locales } from '@/i18n';
 import { CATEGORY_MAP } from './[locale]/chef-tools/ingredients/[slug]/category-page';
-import { CONVERSION_MAP } from './[locale]/chef-tools/converter/[conversion]/page';
 import { RECIPE_TEMPLATES } from '@/lib/recipe-templates';
 
 const BASE_URL = 'https://dima-fomin.pl';
@@ -93,7 +92,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       { path: '/chef-tools/ingredient-analyzer', priority: 0.8, changeFrequency: 'weekly' },
       // ❌ /chef-tools/fish-season removed — same content as /fish-season/pl (canonical conflict).
       // The page.tsx canonical already points to /fish-season/pl.
-      { path: '/chef-tools/converter', priority: 0.75, changeFrequency: 'monthly' },
       { path: '/chef-tools/lab', priority: 0.85, changeFrequency: 'weekly' },
       { path: '/chef-tools/recipe-analyzer', priority: 0.8, changeFrequency: 'weekly' },
       { path: '/chef-tools/flavor-pairing', priority: 0.8, changeFrequency: 'weekly' },
@@ -124,12 +122,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         path: `/chef-tools/ingredients/${cat}`,
         priority: 0.85,
         changeFrequency: 'weekly' as const,
-      })),
-      // SEO converter pages: cup-to-grams, tablespoon-to-grams, etc.
-      ...Object.keys(CONVERSION_MAP).map((conv) => ({
-        path: `/chef-tools/converter/${conv}`,
-        priority: 0.85,
-        changeFrequency: 'monthly' as const,
       })),
     ];
 
