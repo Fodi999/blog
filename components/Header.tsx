@@ -36,8 +36,6 @@ export async function Header({ locale }: { locale: string }) {
           {[
             { href: '/', label: t('home') },
             { href: '/blog', label: t('blog') },
-            { href: '/recipes', label: t('recipes') },
-            { href: '/chef-tools', label: t('chefTools') },
             { href: '/about', label: t('about') },
             { href: '/contact', label: t('contact') },
           ].map((item) => (

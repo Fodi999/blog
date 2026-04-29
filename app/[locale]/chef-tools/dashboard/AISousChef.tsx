@@ -93,15 +93,10 @@ const QUICK_ACTIONS: {
 
 const DATABASE_TOOLS: ToolItem[] = [
   { href: '/chef-tools/ingredients',          icon: Search,      key: 'ingredients'         },
-  { href: '/chef-tools/ingredient-analyzer',  icon: Microscope,  key: 'ingredientAnalyzer'  },
-  { href: '/chef-tools/fish-season',          icon: Fish,        key: 'fishSeason'          },
 ];
 
 const UTILITY_TOOLS: ToolItem[] = [
-  { href: '/chef-tools/converter',            icon: Scale,       key: 'converter'           },
   { href: '/chef-tools/nutrition',            icon: BarChart3,   key: 'nutrition'           },
-  { href: '/chef-tools/ranking/protein',      icon: Trophy,      key: 'ranking'             },
-  { href: '/chef-tools/diet/vegan',           icon: Salad,       key: 'diet'                },
 ];
 
 // ── Locale copy ────────────────────────────────────────────────────────────────
@@ -154,7 +149,6 @@ export function AISousChef() {
   const t = useTranslations('chefTools');
   const copy = COPY[locale] ?? COPY.en;
 
-  const [activeTab, setActiveTab] = useState<'chat' | 'database' | 'tools'>('chat');
   const [query, setQuery] = useState('');
   const [turns, setTurns] = useState<Turn[]>([]);
   const [loading, setLoading] = useState(false);
@@ -368,37 +362,11 @@ export function AISousChef() {
         </div>
       </div>
 
-      {/* ── Tab Switcher ── */}
-      <div className="flex items-center justify-center mb-6 sm:mb-8">
-        <div className="flex p-1 rounded-2xl bg-secondary/30 border border-border/40 backdrop-blur-xl max-w-full overflow-x-auto no-scrollbar">
-          {[
-            { id: 'chat',     icon: Sparkles, label: t('landing.sections.ai') },
-            { id: 'database', icon: Database, label: t('landing.sections.database') },
-            { id: 'tools',    icon: Wrench,   label: t('landing.sections.tools') },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id as any)}
-              className={cn(
-                "flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-2.5 rounded-xl text-[10px] sm:text-xs font-bold uppercase tracking-widest transition-all duration-300 shrink-0",
-                activeTab === tab.id
-                  ? "bg-foreground text-background shadow-xl scale-105 sm:scale-100"
-                  : "text-muted-foreground hover:text-foreground hover:bg-foreground/5"
-              )}
-            >
-              <tab.icon className={cn("w-3 h-3 sm:w-3.5 sm:h-3.5", activeTab === tab.id ? "text-background" : "text-muted-foreground")} />
-              <span>{tab.label}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-
       {/* ═══════════════════════════════════════════════════════
           CONTENT AREA — page scrolls, fixed input island below
           ═══════════════════════════════════════════════════════ */}
       <div ref={scrollRef} className="flex-1">
-        {activeTab === 'chat' ? (
-          <>
+        <>
             {/* STATE 1: IDLE — kitchen command center */}
             {isIdle && (
               <div className="flex-1 flex flex-col items-center justify-center min-h-[50vh] py-8 sm:py-12 animate-in fade-in zoom-in-95 duration-1000">
@@ -488,23 +456,13 @@ export function AISousChef() {
               className="pointer-events-none w-full shrink-0"
             />
           </>
-        ) : (
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both">
-            <ToolGrid
-              tools={activeTab === 'database' ? DATABASE_TOOLS : UTILITY_TOOLS}
-              locale={locale}
-              t={t}
-              accent={activeTab === 'database' ? 'text-violet-400' : 'text-sky-400'}
-            />
-          </div>
-        )}
       </div>
 
       {/* ═══════════════════════════════════════════════════════
           INPUT BAR — fixed island at the bottom of viewport
           (replaced by Sign-In CTA for anonymous visitors)
           ═══════════════════════════════════════════════════════ */}
-      {activeTab === 'chat' && authReady && !authed && (
+      {authReady && !authed && (
         <div className="fixed bottom-0 left-0 right-0 z-50 pointer-events-none">
           <div className="pointer-events-auto max-w-5xl mx-auto px-4 pt-3 sm:pt-4 pb-4 sm:pb-6 bg-gradient-to-t from-background via-background/98 to-background/80 backdrop-blur-xl">
             <div className="relative rounded-2xl sm:rounded-3xl border-2 border-border/50 bg-card/80 dark:bg-[#0a0a0a]/90 dark:border-white/[0.1] shadow-2xl backdrop-blur-xl overflow-hidden p-5 sm:p-7">
@@ -546,7 +504,7 @@ export function AISousChef() {
         </div>
       )}
 
-      {activeTab === 'chat' && (!authReady || authed) && (
+      {(!authReady || authed) && (
         <div ref={inputContainerRef} className="fixed bottom-0 left-0 right-0 z-50 pointer-events-none">
           <div className={cn(
             "pointer-events-auto max-w-5xl mx-auto px-4 pt-3 sm:pt-4 pb-4 sm:pb-6",

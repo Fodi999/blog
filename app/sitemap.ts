@@ -3,7 +3,6 @@ import { getAllPosts } from '@/lib/posts';
 import { fetchIngredients, fetchIngredientsStatesMap, fetchSitemapCombos } from '@/lib/api';
 import { locales } from '@/i18n';
 import { CATEGORY_MAP } from './[locale]/chef-tools/ingredients/[slug]/category-page';
-import { RECIPE_TEMPLATES } from '@/lib/recipe-templates';
 
 const BASE_URL = 'https://dima-fomin.pl';
 const API_URL = 'https://ministerial-yetta-fodi999-c58d8823.koyeb.app';
@@ -86,33 +85,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       { path: '/blog', priority: 0.9, changeFrequency: 'daily' },
       { path: '/about', priority: 0.7, changeFrequency: 'monthly' },
       { path: '/contact', priority: 0.6, changeFrequency: 'monthly' },
-      { path: '/recipes', priority: 0.9, changeFrequency: 'daily' },
       { path: '/chef-tools', priority: 0.8, changeFrequency: 'monthly' },
       { path: '/chef-tools/ingredients', priority: 0.9, changeFrequency: 'daily' },
-      { path: '/chef-tools/ingredient-analyzer', priority: 0.8, changeFrequency: 'weekly' },
-      // ❌ /chef-tools/fish-season removed — same content as /fish-season/pl (canonical conflict).
-      // The page.tsx canonical already points to /fish-season/pl.
       { path: '/chef-tools/lab', priority: 0.85, changeFrequency: 'weekly' },
-      { path: '/chef-tools/recipe-analyzer', priority: 0.8, changeFrequency: 'weekly' },
-      { path: '/chef-tools/flavor-pairing', priority: 0.8, changeFrequency: 'weekly' },
       { path: '/chef-tools/nutrition', priority: 0.85, changeFrequency: 'daily' },
       // /chef-tools/diet and /chef-tools/ranking have NO index page
       // — only /chef-tools/diet/[flag] and /chef-tools/ranking/[metric] exist
 
-      // Fish season — hierarchical: /fish-season/{region} + /fish-season/{region}/{month}
-      // Priority: pl (main market) > eu > others
-      ...(['global', 'pl', 'eu', 'es', 'ua'] as const).map((region) => ({
-        path: `/chef-tools/fish-season/${region}`,
-        priority: (region === 'pl' ? 0.9 : region === 'eu' ? 0.85 : 0.8) as number,
-        changeFrequency: 'weekly' as const,
-      })),
-      ...(['global', 'pl', 'eu', 'es', 'ua'] as const).flatMap((region) =>
-        ['january','february','march','april','may','june','july','august','september','october','november','december'].map((month) => ({
-          path: `/chef-tools/fish-season/${region}/${month}`,
-          priority: (region === 'pl' ? 0.8 : region === 'eu' ? 0.75 : 0.7) as number,
-          changeFrequency: 'monthly' as const,
-        })),
-      ),
       // Legal / GDPR pages
       { path: '/privacy', priority: 0.3, changeFrequency: 'yearly' },
       { path: '/terms', priority: 0.3, changeFrequency: 'yearly' },
@@ -288,16 +267,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         })
     : [];
 
-  // ─── Recipe analysis pages ───────────────────────────────────────────
-  const recipeAnalysisUrls: MetadataRoute.Sitemap = RECIPE_TEMPLATES.flatMap(
-    (recipe) =>
-      multiLocaleEntry(`/chef-tools/recipe-analysis/${recipe.slug}`, {
-        lastModified: STATIC_DATE,
-        changeFrequency: 'weekly',
-        priority: 0.85,
-      })
-  );
-
   // ─── Diet pages ──────────────────────────────────────────────────────
   const DIET_FLAGS = ['vegan', 'vegetarian', 'keto', 'paleo', 'gluten-free', 'mediterranean', 'low-carb'];
 
@@ -360,5 +329,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   );
 
-  return [...staticUrls, ...postUrls, ...ingredientUrls, ...ingredientProfileUrls, ...howManyUrls, ...ingredientStateUrls, ...recipeAnalysisUrls, ...dietUrls, ...rankingUrls, ...recipePageUrls];
+  return [...staticUrls, ...postUrls, ...ingredientUrls, ...ingredientProfileUrls, ...howManyUrls, ...ingredientStateUrls, ...dietUrls, ...rankingUrls, ...recipePageUrls];
 }

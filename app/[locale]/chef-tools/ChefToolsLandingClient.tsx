@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import {
-  FlaskConical, Sparkles,
+  FlaskConical,
   Search, BarChart3, ArrowRight, ChefHat,
   Database, Wrench, Brain,
 } from 'lucide-react';
@@ -29,22 +29,17 @@ const QUICK_ACTIONS: ToolItem[] = [
 
 const DATABASE_TOOLS: ToolItem[] = [
   { href: '/chef-tools/ingredients',          icon: Search,      key: 'ingredients'         },
-  { href: '/chef-tools/nutrition',            icon: BarChart3,   key: 'ingredientAnalyzer'  },
-  { href: '/chef-tools/lab',                  icon: FlaskConical, key: 'fishSeason'         },
 ];
 
 const UTILITY_TOOLS: ToolItem[] = [
   { href: '/chef-tools/nutrition',            icon: BarChart3,   key: 'nutrition'           },
   { href: '/chef-tools/ingredients',          icon: Search,      key: 'ingredients'         },
   { href: '/chef-tools/lab',                  icon: FlaskConical, key: 'lab'                },
-  { href: '/chef-tools/chat',                 icon: Sparkles,    key: 'aiChat'              },
 ];
 
 const AI_TOOLS: ToolItem[] = [
   { href: '/chef-tools/lab',                  icon: FlaskConical,  key: 'lab'               },
-  { href: '/chef-tools/chat',                icon: Sparkles,      key: 'aiChat'            },
   { href: '/chef-tools/dashboard',            icon: Brain,         key: 'recipeAnalyzer'    },
-  { href: '/chef-tools/chat',                icon: Sparkles,      key: 'flavorPairing'     },
 ];
 
 /* ══════════════════════════════════════════════════════════════

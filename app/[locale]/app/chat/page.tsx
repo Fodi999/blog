@@ -1,13 +1,12 @@
 import type { Metadata } from 'next';
-import { ChatClient } from './_components/ChatClient';
+import { AISousChef } from '@/app/[locale]/chef-tools/dashboard/AISousChef';
 
 export const metadata: Metadata = {
-  title: 'Assistant — ChefOS',
+  title: 'Кухонный терминал — ChefOS',
 };
 
 type Params = Promise<{ locale: string }>;
 
-export default async function ChatPage({ params }: { params: Params }) {
-  const { locale } = await params;
-  return <ChatClient locale={locale} />;
+export default async function ChatPage({ params: _params }: { params: Params }) {
+  return <AISousChef />;
 }

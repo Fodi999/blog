@@ -86,7 +86,7 @@ const nextConfig: NextConfig = {
       },
       {
         source: '/:locale/chef-tools/fish-season/:slug*',
-        destination: '/:locale/chef-tools/ingredients',
+        destination: '/:locale/chef-tools/dashboard',
         permanent: true,
       },
       {

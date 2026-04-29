@@ -2,8 +2,6 @@
 
 import { ThemeProvider } from 'next-themes';
 import { ReactNode } from 'react';
-import { ThemeLogger } from './ThemeLogger';
-import { ComponentStyleLogger } from './ComponentStyleLogger';
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
@@ -13,9 +11,8 @@ export function Providers({ children }: { children: ReactNode }) {
       enableSystem={false}
       disableTransitionOnChange
     >
-      <ThemeLogger />
-      <ComponentStyleLogger />
       {children}
     </ThemeProvider>
   );
 }
+
