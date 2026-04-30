@@ -5,7 +5,7 @@ import { PostCard } from '@/components/PostCard';
 import { ImageGallery } from '@/components/ImageGallery';
 import { ScrollReveal } from '@/components/ScrollReveal';
 import { HeroIngredientCards, type HeroIngredient } from '@/components/HeroIngredientCards';
-import { ArrowRight, Sparkles, BookOpen, Scale, Search, Fish, FlaskConical, Utensils } from 'lucide-react';
+import { ArrowRight, Sparkles, BookOpen } from 'lucide-react';
 import { getLatestPosts } from '@/lib/posts';
 import { Button } from '@/components/ui/button';
 import { JsonLd } from '@/components/JsonLd';
@@ -237,50 +237,6 @@ export default async function HomePage({
             </ScrollReveal>
           ))}
         </div>
-      </section>
-
-      {/* ═══ Chef Tools Teaser ═══ */}
-      <section className="py-32 lg:py-40 border-t border-border/40">
-        <ScrollReveal>
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
-            <div>
-              <h2 className="text-4xl md:text-5xl font-black tracking-tighter text-foreground uppercase italic mb-3">
-                {t('chefToolsSection.title')}
-              </h2>
-              <div className="h-1.5 w-24 bg-primary rounded-full" />
-              <p className="text-xl text-muted-foreground font-medium mt-4 max-w-xl">
-                {t('chefToolsSection.description')}
-              </p>
-            </div>
-            <Button variant="ghost" asChild className="text-primary font-black uppercase tracking-widest px-0 hover:bg-transparent hover:text-primary/80 group link-underline">
-              <Link href="/chef-tools">
-                {t('chefToolsSection.link')} <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-              </Link>
-            </Button>
-          </div>
-        </ScrollReveal>
-        
-        <ScrollReveal delay={200}>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              { href: '/chef-tools/ingredients', icon: Search, title: t('chefToolsSection.ingredientsTitle'), desc: t('chefToolsSection.ingredientsDesc') },
-              { href: '/chef-tools/fish-season', icon: Fish, title: t('chefToolsSection.fishSeasonTitle'), desc: t('chefToolsSection.fishSeasonDesc') },
-              { href: '/chef-tools/lab', icon: FlaskConical, title: t('chefToolsSection.labTitle'), desc: t('chefToolsSection.labDesc') },
-              { href: '/chef-tools/converter', icon: Scale, title: t('chefToolsSection.converterTitle'), desc: t('chefToolsSection.converterDesc') },
-              { href: '/chef-tools/flavor-pairing', icon: Utensils, title: t('chefToolsSection.flavorPairingTitle'), desc: t('chefToolsSection.flavorPairingDesc') },
-            ].map(({ href, icon: Icon, title, desc }) => (
-              <Link key={href} href={href}>
-                <div className="group border-2 border-border/60 rounded-3xl p-8 hover:border-primary/40 transition-all duration-500 bg-background h-full hover-lift hover-glow glow-border">
-                  <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary/20 group-hover:scale-110 transition-all duration-500">
-                    <Icon className="h-6 w-6 text-primary" />
-                  </div>
-                  <h3 className="text-lg font-black uppercase tracking-tight text-foreground mb-2 group-hover:text-primary transition-colors italic">{title}</h3>
-                  <p className="text-muted-foreground font-medium text-sm leading-relaxed">{desc}</p>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </ScrollReveal>
       </section>
 
       {/* ═══ About Section — Premium Card ═══ */}
