@@ -85,6 +85,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       { path: '/blog', priority: 0.9, changeFrequency: 'daily' },
       { path: '/about', priority: 0.7, changeFrequency: 'monthly' },
       { path: '/contact', priority: 0.6, changeFrequency: 'monthly' },
+      { path: '/pricing', priority: 0.8, changeFrequency: 'monthly' },
       { path: '/chef-tools', priority: 0.8, changeFrequency: 'monthly' },
       { path: '/chef-tools/ingredients', priority: 0.9, changeFrequency: 'daily' },
       { path: '/chef-tools/lab', priority: 0.85, changeFrequency: 'weekly' },

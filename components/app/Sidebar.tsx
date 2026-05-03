@@ -7,7 +7,6 @@ import {
   LayoutDashboard,
   Package,
   Heart,
-  MessageCircle,
   Settings,
   LogOut,
   User as UserIcon,
@@ -15,6 +14,8 @@ import {
   Coins,
   Sparkles,
   FlaskConical,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -23,6 +24,7 @@ import { logout, getCurrentUser, type StoredUser } from '@/lib/auth-client';
 import { api } from '@/lib/chefos-api';
 import type { MeResponse } from '@/lib/chefos-types';
 import { cn } from '@/lib/utils';
+import { useCopilot } from '@/components/copilot/CopilotProvider';
 
 type NavItem = { href: string; labelKey: string; icon: LucideIcon };
 
@@ -32,6 +34,11 @@ type NavItem = { href: string; labelKey: string; icon: LucideIcon };
  * every device. iOS bundles cook/stock under "Recipes" and Settings
  * inside Profile; on the web they get their own routes for screen
  * real-estate, but the underlying data is the same.
+ *
+ * NOTE: "Chat / Assistant" is no longer a top-level entry — Copilot is
+ * mounted as the right rail of every page (see `<CopilotPanel />`),
+ * and the legacy `/app/chat` route stays available as a fullscreen
+ * fallback but is reachable from the rail's expand button.
  */
 export const NAV_ITEMS: NavItem[] = [
   { href: '/app/dashboard', labelKey: 'dashboard', icon: LayoutDashboard },
@@ -40,7 +47,6 @@ export const NAV_ITEMS: NavItem[] = [
   { href: '/app/my-dishes', labelKey: 'myDishes', icon: Heart },
   { href: '/app/plan', labelKey: 'plan', icon: Calendar },
   { href: '/app/laboratory', labelKey: 'laboratory', icon: FlaskConical },
-  { href: '/app/chat', labelKey: 'chat', icon: MessageCircle },
   { href: '/app/profile', labelKey: 'profile', icon: UserIcon },
   { href: '/app/settings', labelKey: 'settings', icon: Settings },
   { href: '/pricing', labelKey: 'topUp', icon: Coins },
@@ -77,20 +83,25 @@ export function Sidebar({ locale, className }: { locale: string; className?: str
   const displayName = me?.user.display_name?.trim() || me?.user.email || stored?.email || '—';
   const restaurant = me?.tenant.name || t('workspace');
   const initial = displayName.charAt(0).toUpperCase();
+  const { sidebarCollapsed, setSidebarCollapsed } = useCopilot();
 
   return (
     <aside
       className={cn(
-        // Sticky just below the global site header (--site-header-height) plus
-        // a 1.5rem breathing gap, so it never slides under the nav on scroll.
-        'sticky top-[calc(var(--site-header-height,72px)+1.5rem)] flex h-[calc(100vh-var(--site-header-height,72px)-3rem)] w-60 flex-shrink-0 flex-col rounded-2xl border border-border/60 bg-background p-3 shadow-sm',
+        // Lives inside the fixed-viewport AppShell grid: just fill the cell.
+        'flex h-full flex-col border-r border-border/60 bg-background',
+        sidebarCollapsed ? 'p-2' : 'p-3',
         className,
       )}
     >
       <Link
         href="/app/profile"
         locale={locale}
-        className="flex items-center gap-3 rounded-xl px-3 py-3 transition-colors hover:bg-muted"
+        className={cn(
+          'flex items-center rounded-xl transition-colors hover:bg-muted',
+          sidebarCollapsed ? 'justify-center px-2 py-2' : 'gap-3 px-3 py-3',
+        )}
+        title={sidebarCollapsed ? `${restaurant} · ${displayName}` : undefined}
       >
         <div className="relative flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary/10 text-sm font-semibold text-primary">
           {me?.user.avatar_url ? (
@@ -104,10 +115,12 @@ export function Sidebar({ locale, className }: { locale: string; className?: str
             initial
           )}
         </div>
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-semibold leading-tight">{restaurant}</p>
-          <p className="truncate text-xs text-muted-foreground">{displayName}</p>
-        </div>
+        {!sidebarCollapsed && (
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-semibold leading-tight">{restaurant}</p>
+            <p className="truncate text-xs text-muted-foreground">{displayName}</p>
+          </div>
+        )}
       </Link>
 
       <div className="my-2 h-px bg-border/60" />
@@ -116,20 +129,25 @@ export function Sidebar({ locale, className }: { locale: string; className?: str
         {NAV_ITEMS.map((item) => {
           const active = pathname === item.href || pathname.startsWith(item.href + '/');
           const Icon = item.icon;
+          const label = t(item.labelKey);
           return (
             <Link
               key={item.href}
               href={item.href}
               locale={locale}
+              title={sidebarCollapsed ? label : undefined}
               className={cn(
-                'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors',
+                'flex items-center rounded-xl text-sm font-medium transition-colors',
+                sidebarCollapsed
+                  ? 'justify-center px-2 py-2.5'
+                  : 'gap-3 px-3 py-2.5',
                 active
                   ? 'bg-primary/10 text-primary'
                   : 'text-muted-foreground hover:bg-muted hover:text-foreground',
               )}
             >
-              <Icon className="h-4 w-4" />
-              {t(item.labelKey)}
+              <Icon className="h-4 w-4 flex-shrink-0" />
+              {!sidebarCollapsed && <span className="truncate">{label}</span>}
             </Link>
           );
         })}
@@ -137,11 +155,38 @@ export function Sidebar({ locale, className }: { locale: string; className?: str
 
       <Button
         variant="ghost"
-        className="mt-2 justify-start text-muted-foreground hover:text-destructive"
-        onClick={onLogout}
+        size={sidebarCollapsed ? 'icon' : 'default'}
+        className={cn(
+          'mt-1 text-muted-foreground hover:text-foreground',
+          !sidebarCollapsed && 'justify-start',
+        )}
+        onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+        title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
       >
-        <LogOut className="mr-2 h-4 w-4" />
-        {t('logout')}
+        {sidebarCollapsed ? (
+          <PanelLeftOpen className="h-4 w-4" />
+        ) : (
+          <>
+            <PanelLeftClose className="mr-2 h-4 w-4" />
+            <span className="text-xs">Collapse</span>
+          </>
+        )}
+      </Button>
+
+      <Button
+        variant="ghost"
+        size={sidebarCollapsed ? 'icon' : 'default'}
+        className={cn(
+          'mt-1 text-muted-foreground hover:text-destructive',
+          !sidebarCollapsed && 'justify-start',
+        )}
+        onClick={onLogout}
+        title={sidebarCollapsed ? t('logout') : undefined}
+        aria-label={t('logout')}
+      >
+        <LogOut className={cn('h-4 w-4', !sidebarCollapsed && 'mr-2')} />
+        {!sidebarCollapsed && t('logout')}
       </Button>
     </aside>
   );

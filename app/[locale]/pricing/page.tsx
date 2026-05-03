@@ -1,5 +1,28 @@
-import { setRequestLocale } from 'next-intl/server';
+import { setRequestLocale, getTranslations } from 'next-intl/server';
+import type { Metadata } from 'next';
 import { PricingClient } from './_components/PricingClient';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'pricing' });
+  return {
+    title: t('title'),
+    description: t('subtitle'),
+    alternates: {
+      canonical: `/${locale}/pricing`,
+      languages: {
+        pl: '/pl/pricing',
+        en: '/en/pricing',
+        ru: '/ru/pricing',
+        uk: '/uk/pricing',
+      },
+    },
+  };
+}
 
 /**
  * Pricing — public page listing action bundles + Stripe Checkout entry.

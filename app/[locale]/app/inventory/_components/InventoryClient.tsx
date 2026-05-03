@@ -68,6 +68,19 @@ import {
 } from '@/lib/chefos-types';
 import { categoryEmoji, categoryLabel } from '@/lib/category';
 import { cn } from '@/lib/utils';
+import {
+  useSetCopilotContext,
+  useSetCopilotInsights,
+  useCopilot,
+  type CopilotInsight,
+  type CopilotPageInsights,
+  type CopilotQuickPrompt,
+} from '@/components/copilot/CopilotProvider';
+import {
+  WorkspaceModeToggle,
+  type WorkspaceView,
+} from '@/components/workspace/WorkspaceModeToggle';
+import { InventoryVisualWorkspace } from '@/components/workspace/scenes/InventoryVisualWorkspace';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -215,6 +228,21 @@ export function InventoryClient({ locale }: { locale: string }) {
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<Filter>({ kind: 'all' });
   const [addOpen, setAddOpen] = useState(false);
+  // Visual Workspace toggle (PR1) — defaults to classic table; choice
+  // persists in localStorage so power users stay in their preferred mode.
+  const [view, setView] = useState<WorkspaceView>('data');
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const saved = window.localStorage.getItem('chefos:inventory:view');
+    if (saved === 'data' || saved === 'visual') setView(saved);
+  }, []);
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem('chefos:inventory:view', view);
+    }
+  }, [view]);
+  const [visualSelected, setVisualSelected] = useState<InventoryItem | null>(null);
+  const { sendMessage: copilotSend } = useCopilot();
 
   const load = useCallback(
     async (silent = false) => {
@@ -265,6 +293,71 @@ export function InventoryClient({ locale }: { locale: string }) {
       categories,
     };
   }, [items]);
+
+  // ── Copilot wiring ────────────────────────────────────────────────────
+  // Tell the right rail "user is on Inventory" so the backend planner
+  // chooses inventory tools and the input placeholder switches to
+  // stock-related prompts. When the user picks a block in the visual
+  // scene, that selection becomes the Copilot's `selectedEntity`, so
+  // questions like "Write off this" resolve to the right product.
+  useSetCopilotContext({
+    page: 'inventory',
+    selectedEntity: visualSelected
+      ? {
+          type: 'inventory_item',
+          id: visualSelected.id,
+          name: visualSelected.product.name,
+        }
+      : null,
+  });
+
+  // Build the "AI insights" block shown above the chat. Pages stay in
+  // charge of WHAT to surface; the panel just renders it.
+  const copilotInsights = useMemo<CopilotPageInsights | null>(() => {
+    if (!stats) return null;
+    const alerts: CopilotInsight[] = [];
+    if (stats.expiringCount > 0) {
+      alerts.push({
+        label: `${stats.expiringCount} expiring soon`,
+        tone: 'warn',
+        prompt: 'Show items that expire in the next 3 days',
+      });
+    }
+    if (stats.lowCount > 0) {
+      alerts.push({
+        label: `${stats.lowCount} running low`,
+        tone: 'danger',
+        prompt: 'Which inventory items are running low?',
+      });
+    }
+    if (alerts.length === 0 && stats.itemsCount > 0) {
+      alerts.push({
+        label: 'No risks detected',
+        tone: 'success',
+      });
+    }
+
+    const quickPrompts: CopilotQuickPrompt[] = [
+      { label: 'Daily briefing', prompt: 'Daily briefing', tone: 'primary' },
+      { label: 'What expires soon?', prompt: 'What inventory expires soon?' },
+    ];
+    if (stats.expiringCount > 0) {
+      quickPrompts.push({
+        label: 'Write off expired',
+        prompt: 'Write off all expired inventory items',
+      });
+    }
+    quickPrompts.push({ label: 'Add product', prompt: 'How do I add a new product?' });
+
+    return {
+      title: 'Inventory needs attention',
+      subtitle: `${stats.itemsCount} items · €${stats.totalValuePLN.toFixed(0)} · ${stats.expiringCount} expiring · ${stats.lowCount} low`,
+      alerts,
+      quickPrompts,
+    };
+  }, [stats]);
+
+  useSetCopilotInsights(copilotInsights);
 
   const filtered = useMemo(() => {
     if (!items) return [];
@@ -404,7 +497,12 @@ export function InventoryClient({ locale }: { locale: string }) {
       <Header
         t={t}
         right={
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
+            <WorkspaceModeToggle
+              value={view}
+              onChange={setView}
+              available={['data', 'visual']}
+            />
             <Button
               variant="outline"
               size="sm"
@@ -422,24 +520,28 @@ export function InventoryClient({ locale }: { locale: string }) {
         }
       />
 
-      {/* KPI strip */}
-      <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        {tiles.map(({ icon: Icon, label, value, accent }) => (
-          <Card key={label} className="border-border/60">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  {label}
-                </p>
-                <Icon className={cn('h-4 w-4', accent)} />
-              </div>
-              <p className="mt-3 text-xl font-black tracking-tight sm:text-2xl">{value}</p>
-            </CardContent>
-          </Card>
-        ))}
-      </section>
+      {/* KPI strip — only shown in Data mode. In Visual mode the scene
+          renders its own HUD with the same numbers, so we don't duplicate. */}
+      {view === 'data' && (
+        <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          {tiles.map(({ icon: Icon, label, value, accent }) => (
+            <Card key={label} className="border-border/60">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    {label}
+                  </p>
+                  <Icon className={cn('h-4 w-4', accent)} />
+                </div>
+                <p className="mt-3 text-xl font-black tracking-tight sm:text-2xl">{value}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </section>
+      )}
 
       {/* Search + filter chips */}
+      {view === 'data' && (
       <Card className="border-border/60">
         <CardContent className="space-y-3 p-4">
           <div className="relative">
@@ -469,8 +571,37 @@ export function InventoryClient({ locale }: { locale: string }) {
           </div>
         </CardContent>
       </Card>
+      )}
 
-      {/* Grouped list */}
+      {/* Visual Workspace (PR3) — almost full-bleed spatial overview.
+          KPI strip is hidden in this mode; the scene renders its own HUD. */}
+      {view === 'visual' && (
+        <div className="h-[calc(100vh-180px)] min-h-[640px]">
+          <InventoryVisualWorkspace
+            items={items ?? []}
+            stats={{
+              totalValueLabel: formatCurrencyPLN(locale, stats.totalValuePLN),
+              itemsCount: stats.itemsCount,
+              expiringCount: stats.expiringCount,
+              lowCount: stats.lowCount,
+            }}
+            onSelectItem={setVisualSelected}
+            onAskCopilot={(item, intent) => {
+              if (intent === 'writeoff') {
+                void copilotSend(
+                  `Write off ${item.remaining_quantity} ${item.product.base_unit} of ${item.product.name}`,
+                );
+              } else {
+                void copilotSend(`Tell me about ${item.product.name} in my inventory`);
+              }
+            }}
+          />
+        </div>
+      )}
+
+      {/* Grouped list — classic data view */}
+      {view === 'data' && (
+      <>
       {stats.itemsCount === 0 ? (
         <EmptyState t={t} onAdd={() => setAddOpen(true)} />
       ) : grouped.length === 0 ? (
@@ -526,6 +657,8 @@ export function InventoryClient({ locale }: { locale: string }) {
             </Card>
           ))}
         </div>
+      )}
+      </>
       )}
 
       <AddProductDialog

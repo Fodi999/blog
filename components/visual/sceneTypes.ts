@@ -1,0 +1,250 @@
+/**
+ * sceneTypes — game-like SceneState contract.
+ *
+ * The renderer doesn't know what "inventory" means. It knows entities
+ * with a transform, a geometry kind, a material theme, and optional
+ * content/gameplay metadata. Backend (or temporary frontend adapter)
+ * is responsible for building these entities from domain data.
+ *
+ * Mirror this file 1:1 in Rust (`assistant/src/domain/scene/`) when the
+ * backend service is added. `camelCase` here ↔ `serde(rename_all = "camelCase")`.
+ */
+
+// ── Primitives ───────────────────────────────────────────────────────────────
+
+export type Vec3Tuple = [number, number, number];
+
+export interface Transform {
+  position: Vec3Tuple;
+  rotation: Vec3Tuple;
+  scale: Vec3Tuple;
+}
+
+// ── Entities ─────────────────────────────────────────────────────────────────
+
+/** Domain-agnostic entity classification. The renderer cares about
+ *  `geometry.kind` for prefab lookup; `entityType` is for filtering/groups. */
+export type EntityType =
+  | 'storageZone'
+  | 'inventoryProduct'
+  | 'label'
+  | 'effect'
+  | 'marker';
+
+/** Prefab key — the renderer's prefab registry maps each kind to a React
+ *  component. Add a new kind only when adding a new prefab. */
+export type GeometryKind =
+  | 'storageRoom'
+  | 'productCard'
+  | 'zoneLabel'
+  | 'riskMarker'
+  | 'container'
+  | 'tray'
+  | 'bottle';
+
+/** Material themes — semantic, not raw colors. The prefab decides how
+ *  to render each theme (border tint, glow intensity, etc.). */
+export type MaterialTheme =
+  | 'cold'
+  | 'dry'
+  | 'freezer'
+  | 'risk'
+  | 'ok'
+  | 'warning'
+  | 'critical'
+  | 'expired'
+  | 'neutral';
+
+export interface EntityGeometry {
+  kind: GeometryKind;
+  /** Optional bounding-box size (width, height, depth) in scene units.
+   *  When absent, the prefab uses its built-in default. */
+  size?: Vec3Tuple;
+  /** Wall height for `storageRoom` prefabs. */
+  wallHeight?: number;
+  /** Wall thickness for `storageRoom` prefabs. */
+  wallThickness?: number;
+  /** Corner radius for rounded boxes / cards. */
+  cornerRadius?: number;
+}
+
+export interface EntityMaterial {
+  theme: MaterialTheme;
+  /** Optional explicit accent color override (hex string). Falls back to
+   *  the theme color. Wire field is `color` for backwards compat. */
+  color?: string;
+  emissive: number;
+  opacity: number;
+  /** 0..1 glass-like transparency for storage-room walls. */
+  glassOpacity?: number;
+  /** 0..1 PBR roughness override. */
+  roughness?: number;
+  /** 0..1 PBR metalness override. */
+  metalness?: number;
+}
+
+export interface EntityContent {
+  title?: string;
+  subtitle?: string;
+  /** Stable asset key resolved against `assetRegistry`. Preferred over imageUrl. */
+  assetKey?: string;
+  imageUrl?: string | null;
+  fallbackIcon?: string;
+  /** Optional extra labels (e.g. "10 piece", "expires in 2d"). */
+  badges?: string[];
+}
+
+/** Action verbs the entity can produce. Backend decides what's allowed
+ *  based on severity/permissions. Frontend only renders buttons. */
+export type EntityAction =
+  | 'writeOff'
+  | 'useToday'
+  | 'openDetails'
+  | 'restock'
+  | 'inspect';
+
+export interface EntityGameplay {
+  selectable: boolean;
+  hoverable: boolean;
+  actions: EntityAction[];
+  /** Foreign key into a domain entity (inventory_item.id, dish.id, …). */
+  linkedEntityId?: string;
+}
+
+/** Reverse-link to the domain row this entity represents. Used by the
+ *  shell to open detail panels / Copilot context. */
+export interface EntityDataRef {
+  domain: 'inventory' | 'recipes' | 'dishes' | 'laboratory';
+  entityId: string;
+}
+
+export interface SceneEntity {
+  id: string;
+  entityType: EntityType;
+  /** Stable prefab key — the renderer's `prefabRegistry` dispatches on it.
+   *  Optional during migration: when absent, the renderer falls back to
+   *  picking a prefab from `geometry.kind`. */
+  prefab?: PrefabKey;
+  transform: Transform;
+  geometry: EntityGeometry;
+  material: EntityMaterial;
+  content?: EntityContent;
+  gameplay?: EntityGameplay;
+  /** Per-entity visual mechanics (pulse / glow / …). */
+  mechanics?: EntityMechanic[];
+  data?: EntityDataRef;
+}
+
+// ── Prefabs / mechanics / environment ────────────────────────────────────────
+
+/** Stable prefab keys — must match Rust `PrefabKey` and the entries of
+ *  `prefabs/registry.tsx`. Unknown keys fall back to `placeholder`. */
+export type PrefabKey =
+  | 'glassFridgeRoom'
+  | 'dryStorageRoom'
+  | 'freezerRoom'
+  | 'riskRoom'
+  | 'glassProductCard'
+  | 'zoneLabel'
+  | 'riskMarker'
+  | 'placeholder';
+
+export type MechanicKind =
+  | 'pulse'
+  | 'glow'
+  | 'shake'
+  | 'fadeOut'
+  | 'moveToZone'
+  | 'snapToSlot';
+
+export type MechanicTrigger =
+  | 'always'
+  | 'onAppear'
+  | 'onDisappear'
+  | 'onHover'
+  | 'onSelect';
+
+export interface EntityMechanic {
+  kind: MechanicKind;
+  trigger: MechanicTrigger;
+  /** 0..1 amplitude / strength of the effect. */
+  intensity: number;
+  /** Hz / playback rate. */
+  speed?: number;
+  /** Total duration in milliseconds. Absent = continuous. */
+  durationMs?: number;
+}
+
+/** Optional global lighting / fog / background hints. */
+export interface SceneEnvironment {
+  ambientIntensity?: number;
+  ambientColor?: string;
+  keyLightIntensity?: number;
+  background?: string;
+  fogColor?: string;
+  fogDensity?: number;
+}
+
+// ── Scene-level metadata ─────────────────────────────────────────────────────
+
+export type SceneMode = 'inventory' | 'recipes' | 'dishes' | 'laboratory';
+
+export type CameraPreset = 'overview' | 'risk' | 'zone' | 'focused';
+
+export interface SceneCamera {
+  preset: CameraPreset;
+  position: Vec3Tuple;
+  target: Vec3Tuple;
+  fov: number;
+}
+
+/** Pre-formatted, locale-aware HUD strings. Backend formats currency etc.
+ *  so the frontend never has to know about i18n number rules. */
+export interface SceneHud {
+  totalValueLabel?: string;
+  itemsLabel?: string;
+  expiringLabel?: string;
+  lowStockLabel?: string;
+  riskLabel?: string;
+}
+
+export interface SceneState {
+  sceneId: string;
+  mode: SceneMode;
+  /** Monotonically increasing tick — frontend uses it to invalidate caches
+   *  and detect stale snapshots. */
+  tick: number;
+  /** ISO timestamp for "as of" labels. */
+  generatedAt: string;
+  camera: SceneCamera;
+  /** Optional global lighting / background hints. */
+  environment?: SceneEnvironment;
+  hud: SceneHud;
+  entities: SceneEntity[];
+  /** Scene-wide visual mechanics. */
+  mechanics?: EntityMechanic[];
+  selectedEntityId?: string | null;
+}
+
+// ── Commands (client → server / engine) ──────────────────────────────────────
+
+export type SceneCommand =
+  | { type: 'selectEntity'; entityId: string | null }
+  | { type: 'requestAction'; entityId: string; action: EntityAction }
+  | { type: 'focusRisks' }
+  | { type: 'resetCamera' }
+  | { type: 'setViewMode'; mode: SceneMode };
+
+// ── Events (server → client) ─────────────────────────────────────────────────
+
+export type SceneEvent =
+  | { type: 'entitySelected'; entityId: string | null }
+  | { type: 'entityHovered'; entityId: string | null }
+  | { type: 'cameraChanged' }
+  | {
+      type: 'requiresConfirmation';
+      planId: string;
+      planType: string;
+      message: string;
+    }
+  | { type: 'sceneInvalidated'; tick: number };

@@ -5,6 +5,10 @@ const withNextIntl = createNextIntlPlugin('./i18n.ts');
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
+  // Disable strict mode in dev — it double-mounts every component, which
+  // creates two WebGL canvases for `<VisualSceneRenderer>` and the first
+  // one loses its context without any chance of recovery (browser limit).
+  reactStrictMode: false,
   async redirects() {
     return [
       // 301 permanent redirect: /chef-tools/lab/combo/{slug} → /recipes/{slug}

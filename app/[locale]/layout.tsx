@@ -4,6 +4,7 @@ import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server
 import { Inter, Noto_Sans_JP } from 'next/font/google';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
+import { ChromeGate } from '@/components/ChromeGate';
 import { Providers } from '@/components/Providers';
 import { ConditionalAnalytics } from '@/components/ConditionalAnalytics';
 import { Toaster } from 'sonner';
@@ -73,11 +74,15 @@ export default async function LocaleLayout({
       <body className="antialiased min-h-screen">
         <Providers>
           <NextIntlClientProvider locale={locale} messages={messages}>
-            <Header locale={locale} />
+            <ChromeGate>
+              <Header locale={locale} />
+            </ChromeGate>
             <main className="container mx-auto px-4 py-8">
               {children}
             </main>
-            <Footer locale={locale} />
+            <ChromeGate>
+              <Footer locale={locale} />
+            </ChromeGate>
             <CookieConsent />
             <Toaster position="top-right" richColors />
           </NextIntlClientProvider>
