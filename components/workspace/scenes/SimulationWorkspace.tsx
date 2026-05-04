@@ -173,9 +173,7 @@ export function SimulationWorkspace({ items, activeTab, spawnedShapes: externalS
   const [surfaceType, setSurfaceType] = useState<SurfaceType>('sci_fi_card');
 
   // Use lifted state if provided, otherwise own local state
-  const [localShapes, setLocalShapes] = useState<SpawnedShape[]>([
-    { id: 'default-cube', shape: 'cube', label: 'Cube', color: '#a0a8b8' },
-  ]);
+  const [localShapes, setLocalShapes] = useState<SpawnedShape[]>([]);
   const spawnedShapes = externalShapes ?? localShapes;
   const setSpawnedShapes = onSetSpawnedShapes ?? setLocalShapes;
 
@@ -239,7 +237,7 @@ export function SimulationWorkspace({ items, activeTab, spawnedShapes: externalS
               </div>
             ) : spawnedShapes.length === 1 ? (
               /* Single object — full viewport, like Blender default cube */
-              <div className="relative flex-1">
+              <div className="absolute inset-0">
                 <LabShapeCard
                   key={spawnedShapes[0].id}
                   shape={spawnedShapes[0].shape}
@@ -250,19 +248,26 @@ export function SimulationWorkspace({ items, activeTab, spawnedShapes: externalS
                 />
               </div>
             ) : (
-              /* Multi-object grid */
-              <div className="flex flex-1 flex-wrap content-start items-start gap-3 overflow-y-auto p-4">
+              /* Multi-object — Blender-style split viewport, each fills its cell */
+              <div
+                className="grid h-full w-full"
+                style={{
+                  gridTemplateColumns: spawnedShapes.length <= 2 ? `repeat(${spawnedShapes.length}, 1fr)` : 'repeat(2, 1fr)',
+                  gridTemplateRows: spawnedShapes.length <= 2 ? '1fr' : `repeat(${Math.ceil(spawnedShapes.length / 2)}, 1fr)`,
+                }}
+              >
                 {spawnedShapes.map((s) => (
-                  <LabShapeCard
-                    key={s.id}
-                    shape={s.shape}
-                    label={s.label}
-                    color={s.color}
-                    fullscreen={false}
-                    onRemove={() =>
-                      setSpawnedShapes((prev) => prev.filter((x) => x.id !== s.id))
-                    }
-                  />
+                  <div key={s.id} className="relative min-h-0 border border-white/5">
+                    <LabShapeCard
+                      shape={s.shape}
+                      label={s.label}
+                      color={s.color}
+                      fullscreen
+                      onRemove={() =>
+                        setSpawnedShapes((prev) => prev.filter((x) => x.id !== s.id))
+                      }
+                    />
+                  </div>
                 ))}
               </div>
             )}

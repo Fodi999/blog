@@ -40,9 +40,7 @@ export function SceneClient({ locale }: { locale: string }) {
   const [simTab, setSimTab] = useState<SimTab>('forecast');
   const [items, setItems] = useState<InventoryItem[] | null>(null);
   const [refreshing, setRefreshing] = useState(false);
-  const [spawnedShapes, setSpawnedShapes] = useState<SpawnedShape[]>([
-    { id: 'default-cube', shape: 'cube', label: 'Cube', color: '#a0a8b8' },
-  ]);
+  const [spawnedShapes, setSpawnedShapes] = useState<SpawnedShape[]>([]);
   const [fullscreen, setFullscreen] = useState(false);
   const { sendMessage: copilotSend } = useCopilot();
 

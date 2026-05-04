@@ -155,19 +155,28 @@ const RISK_PLAN_TYPES = new Set([
 // We match both English and Russian keywords so the feature works
 // regardless of the user's locale.
 
+// NOTE: \b does NOT work with Cyrillic in JS — Cyrillic chars are \W.
+// We use (?<![а-яёa-zА-ЯЁA-Z0-9]) / (?![а-яёa-zА-ЯЁA-Z0-9]) as Unicode-safe
+// word boundaries so both Russian and English keywords are matched correctly.
+const W = '(?<![а-яёА-ЯЁa-zA-Z0-9])';
+const E = '(?![а-яёА-ЯЁa-zA-Z0-9])';
+const w = (s: string) => new RegExp(`${W}(${s})${E}`, 'i');
+
 const SHAPE_PATTERNS: Array<{ pattern: RegExp; shape: SpawnShape; label: string; color: string }> = [
-  { pattern: /\b(square|квадрат)\b/i,                shape: 'square',    label: 'Square',    color: '#38bdf8' },
-  { pattern: /\b(rectangle|прямоугольник)\b/i,        shape: 'rectangle', label: 'Rectangle', color: '#a78bfa' },
-  { pattern: /\b(circle|круг|окружность|кружок)\b/i,  shape: 'circle',    label: 'Circle',    color: '#34d399' },
-  { pattern: /\b(triangle|треугольник)\b/i,           shape: 'triangle',  label: 'Triangle',  color: '#fb923c' },
-  { pattern: /\b(cube|куб)\b/i,                       shape: 'cube',      label: 'Cube',      color: '#f472b6' },
-  { pattern: /\b(sphere|шар|сфера)\b/i,               shape: 'sphere',    label: 'Sphere',    color: '#facc15' },
-  { pattern: /\b(line|линия|линию|линии)\b/i,         shape: 'line',      label: 'Line',      color: '#94a3b8' },
+  { pattern: w('square|квадрат'),                    shape: 'square',    label: 'Square',    color: '#38bdf8' },
+  { pattern: w('rectangle|прямоугольник'),            shape: 'rectangle', label: 'Rectangle', color: '#a78bfa' },
+  { pattern: w('circle|круг|окружность|кружок'),      shape: 'circle',    label: 'Circle',    color: '#34d399' },
+  { pattern: w('triangle|треугольник'),               shape: 'triangle',  label: 'Triangle',  color: '#fb923c' },
+  { pattern: w('cube|куб'),                           shape: 'cube',      label: 'Cube',      color: '#f472b6' },
+  { pattern: w('sphere|шар|сфера'),                   shape: 'sphere',    label: 'Sphere',    color: '#facc15' },
+  { pattern: w('line|линия|линию|линии'),              shape: 'line',      label: 'Line',      color: '#94a3b8' },
 ];
 
-// Trigger phrase patterns — must appear alongside a shape keyword.
-// "create", "draw", "add", "make", "show", "нарисуй", "создай", etc.
-const SPAWN_TRIGGER = /\b(creat|draw|add|make|show|spawn|render|нарисуй|создай|покажи|добавь|сделай)\w*/i;
+// Trigger phrase — must appear alongside a shape keyword.
+const SPAWN_TRIGGER = new RegExp(
+  `${W}(creat|draw|add|make|show|spawn|render|нарисуй|создай|покажи|добавь|сделай)[а-яёА-ЯЁa-zA-Z]*${E}`,
+  'i',
+);
 
 /** Return the list of shapes explicitly requested in the user's message or copilot answer. */
 function detectShapes(text: string): Array<{ shape: SpawnShape; label: string; color: string }> {
@@ -199,23 +208,14 @@ function inferSceneCommands(
     }
   }
 
-  // ── Shape spawn detection ────────────────────────────────────────────────
-  // Check both the user's original message and the assistant answer so the
-  // command fires even when the LLM paraphrases the intent.
-  const shapesFromUser = detectShapes(userMessage);
+  // ── Shape spawn detection — only from the LLM answer now ───────────────
+  // Pure shape commands are short-circuited in sendMessage before reaching
+  // the backend, so we only scan the assistant answer here.
   const shapesFromAnswer = detectShapes(res.answer);
-  // Merge — deduplicate by shape key.
-  const seen = new Set<string>();
-  const allShapes = [...shapesFromUser, ...shapesFromAnswer].filter(({ shape }) => {
-    if (seen.has(shape)) return false;
-    seen.add(shape);
-    return true;
-  });
 
-  if (allShapes.length > 0) {
-    // Switch the scene to LAB before spawning so the shape is visible.
+  if (shapesFromAnswer.length > 0) {
     cmds.push({ type: 'switch_lab' });
-    for (const { shape, label, color } of allShapes) {
+    for (const { shape, label, color } of shapesFromAnswer) {
       cmds.push({ type: 'spawn_shape', shape, label, color });
     }
   }
@@ -278,6 +278,36 @@ export function CopilotProvider({ children }: { children: React.ReactNode }) {
       };
       setMessages((prev) => [...prev, userMsg]);
       setPending(true);
+
+      // ── Short-circuit: pure shape-spawn command ──────────────────────────
+      // If the user's message only matches a shape + spawn trigger (no other
+      // inventory / cost intent), skip the backend entirely and respond locally
+      // so the LLM cannot misinterpret "куб" as a cooking term.
+      const shapesEarly = detectShapes(trimmed);
+      if (shapesEarly.length > 0) {
+        const labels = shapesEarly.map((s) => s.label).join(', ');
+        const replyText =
+          locale === 'ru'
+            ? `✅ Создаю: ${labels}. Открываю лабораторию…`
+            : `✅ Spawning: ${labels}. Opening the lab…`;
+        const assistantEarly: CopilotMessage = {
+          id: uid(),
+          role: 'assistant',
+          text: replyText,
+          createdAt: Date.now(),
+          plan: null,
+          requiresConfirmation: false,
+          planStatus: 'confirmed',
+          usedTools: [],
+        };
+        setMessages((prev) => [...prev, assistantEarly]);
+        dispatchWorkspace({ type: 'switch_lab' });
+        for (const { shape, label, color } of shapesEarly) {
+          dispatchWorkspace({ type: 'spawn_shape', shape, label, color });
+        }
+        setPending(false);
+        return;
+      }
 
       abortRef.current?.abort();
       const ctrl = new AbortController();

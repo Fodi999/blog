@@ -958,7 +958,7 @@ export function ModelViewer({
     ? `relative h-full w-full overflow-hidden bg-zinc-950 ${className}`
     : displayMode === 'grid'
       ? `relative h-full w-full overflow-hidden ${className}`
-      : `relative overflow-hidden rounded-xl bg-gradient-to-b from-zinc-900 via-zinc-900 to-zinc-950 ${className}`;
+      : `relative h-full w-full overflow-hidden rounded-xl bg-gradient-to-b from-zinc-900 via-zinc-900 to-zinc-950 ${className}`;
 
   return (
     <div ref={ref} className={wrapperClass}>
