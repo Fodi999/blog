@@ -28,9 +28,9 @@
  * PR #8 keep rendering. New assets are always GLB.
  */
 
-import React, { Suspense, useEffect, useRef } from "react";
+import React, { Suspense, useEffect, useRef, useState } from "react";
 import { Canvas, useFrame, useLoader, useThree } from "@react-three/fiber";
-import { ContactShadows, Environment, Grid, OrbitControls } from "@react-three/drei";
+import { ContactShadows, Environment, Grid, OrbitControls, TransformControls } from "@react-three/drei";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
 import { MTLLoader } from "three/examples/jsm/loaders/MTLLoader.js";
@@ -613,6 +613,9 @@ function OriginCross({ y = FLOOR_Y, length = 50, opacity = 0.55 }: { y?: number;
   );
 }
 
+/** Transform-tool modes used by the scene gizmo. */
+export type TransformMode = 'select' | 'translate' | 'rotate' | 'scale';
+
 function GltfModel({
   url,
   onScene,
@@ -620,6 +623,10 @@ function GltfModel({
   viewMode = 'solid',
   selected = false,
   hovered = false,
+  transform,
+  transformMode = 'select',
+  onCommitTransform,
+  orbitRef,
 }: {
   url: string;
   onScene?: (root: THREE.Object3D) => void;
@@ -630,6 +637,14 @@ function GltfModel({
   selected?: boolean;
   /** Render a faint white edge overlay (hover feedback). */
   hovered?: boolean;
+  /** SceneObject transform (position / Euler rotation / scale, all XYZ). */
+  transform?: { position: [number, number, number]; rotation: [number, number, number]; scale: [number, number, number] };
+  /** Active transform tool. `select` hides the gizmo. */
+  transformMode?: TransformMode;
+  /** Called on gizmo drag-end with the new transform values. */
+  onCommitTransform?: (t: { position: [number, number, number]; rotation: [number, number, number]; scale: [number, number, number] }) => void;
+  /** OrbitControls ref so we can disable camera while the user drags the gizmo. */
+  orbitRef?: React.RefObject<React.ComponentRef<typeof OrbitControls> | null>;
 }) {
   const gltf = useLoader(GLTFLoader, url);
   const root = gltf.scene;
@@ -769,12 +784,61 @@ function GltfModel({
   // (derived from: bottomWorld = (boxMin.y - offset.y)*scale + yPos = FLOOR_Y)
   const yPos = snapToFloor ? FLOOR_Y - boxMin.y * scale : -offset.y * scale;
 
+  // ── Transform gizmo target ─────────────────────────────────────────────
+  // The outer <group> applies the SceneObject.transform (user-edited values).
+  // The inner <primitive> still applies fit-to-view normalisation. Composing
+  // them means the gizmo always operates in the object's *user* coord space,
+  // never on the fit-to-view scale.
+  const [gizmoTarget, setGizmoTarget] = useState<THREE.Group | null>(null);
+
+  // Sync external transform → the group whenever the prop changes
+  // (e.g. inspector edit, undo/redo, scene load). Gizmo drag does not
+  // change the prop until commit, so this won't fight the gizmo mid-drag.
+  useEffect(() => {
+    if (!gizmoTarget || !transform) return;
+    gizmoTarget.position.set(transform.position[0], transform.position[1], transform.position[2]);
+    gizmoTarget.rotation.set(transform.rotation[0], transform.rotation[1], transform.rotation[2]);
+    gizmoTarget.scale.set(transform.scale[0], transform.scale[1], transform.scale[2]);
+  }, [gizmoTarget, transform]);
+
+  const showGizmo =
+    selected && transformMode !== 'select' && gizmoTarget !== null;
+
   return (
-    <primitive
-      object={root}
-      scale={scale}
-      position={[-offset.x * scale, yPos, -offset.z * scale]}
-    />
+    <>
+      <group
+        ref={setGizmoTarget}
+        position={transform?.position ?? [0, 0, 0]}
+        rotation={transform?.rotation ?? [0, 0, 0]}
+        scale={transform?.scale ?? [1, 1, 1]}
+      >
+        <primitive
+          object={root}
+          scale={scale}
+          position={[-offset.x * scale, yPos, -offset.z * scale]}
+        />
+      </group>
+      {showGizmo && (
+        <TransformControls
+          object={gizmoTarget}
+          mode={transformMode as 'translate' | 'rotate' | 'scale'}
+          size={0.85}
+          onMouseDown={() => {
+            if (orbitRef?.current) (orbitRef.current as { enabled: boolean }).enabled = false;
+          }}
+          onMouseUp={() => {
+            if (orbitRef?.current) (orbitRef.current as { enabled: boolean }).enabled = true;
+            const g = gizmoTarget;
+            if (!g) return;
+            onCommitTransform?.({
+              position: [g.position.x, g.position.y, g.position.z],
+              rotation: [g.rotation.x, g.rotation.y, g.rotation.z],
+              scale:    [g.scale.x,    g.scale.y,    g.scale.z],
+            });
+          }}
+        />
+      )}
+    </>
   );
 }
 
@@ -1016,6 +1080,12 @@ interface ModelViewerProps {
   selected?: boolean;
   /** Show faint hover outline around the loaded model. */
   hovered?: boolean;
+  /** Active transform tool. `select` (default) hides the gizmo. */
+  transformMode?: TransformMode;
+  /** Current SceneObject transform — driven gizmo + group placement. */
+  transform?: { position: [number, number, number]; rotation: [number, number, number]; scale: [number, number, number] };
+  /** Called on gizmo drag-end with the new transform values. */
+  onCommitTransform?: (t: { position: [number, number, number]; rotation: [number, number, number]; scale: [number, number, number] }) => void;
 }
 
 export function ModelViewer({
@@ -1035,6 +1105,9 @@ export function ModelViewer({
   viewMode = 'solid',
   selected = false,
   hovered = false,
+  transformMode = 'select',
+  transform,
+  onCommitTransform,
 }: ModelViewerProps) {
   const ref = useRef<HTMLDivElement>(null);
   const glRef = useRef<THREE.WebGLRenderer | null>(null);
@@ -1222,6 +1295,10 @@ export function ModelViewer({
               viewMode={viewMode}
               selected={selected}
               hovered={hovered}
+              transform={transform}
+              transformMode={transformMode}
+              onCommitTransform={onCommitTransform}
+              orbitRef={controlsRef}
               onScene={(r) => {
                 sceneRef.current = r;
                 // Classify meshes once on load — food vs bowl/everything else.

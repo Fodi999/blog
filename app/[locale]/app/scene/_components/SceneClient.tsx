@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Box,
   ChevronDown,
@@ -14,10 +14,13 @@ import {
   Layers,
   Maximize2,
   Minimize2,
+  Move3D,
   MousePointer2,
   PanelRightClose,
   PanelRightOpen,
   Plus,
+  RotateCw,
+  Scale3D,
   Slash,
   Square,
   Trash2,
@@ -58,8 +61,13 @@ type PaletteGroup = {
 const PALETTE: PaletteGroup[] = [
   {
     id: 'select',
-    label: 'Select',
-    tools: [{ id: 'pointer', label: 'Select', hotkey: 'V', Icon: MousePointer2 }],
+    label: 'Tool',
+    tools: [
+      { id: 'pointer',   label: 'Select', hotkey: 'Q', Icon: MousePointer2 },
+      { id: 'translate', label: 'Move',   hotkey: 'W', Icon: Move3D,  needsSelection: true },
+      { id: 'rotate',    label: 'Rotate', hotkey: 'E', Icon: RotateCw, needsSelection: true },
+      { id: 'scale',     label: 'Scale',  hotkey: 'R', Icon: Scale3D, needsSelection: true },
+    ],
   },
   {
     id: 'solids',
@@ -146,6 +154,12 @@ export function SceneClient({ locale: _locale }: { locale: string }) {
   const [activeTool, setActiveTool] = useState<string>('pointer');
   const [statusHint, setStatusHint] = useState<string>('Ready');
 
+  /** `pointer` ↔ `select`, `translate|rotate|scale` ↔ gizmo modes. */
+  const transformMode: 'select' | 'translate' | 'rotate' | 'scale' =
+    activeTool === 'translate' || activeTool === 'rotate' || activeTool === 'scale'
+      ? activeTool
+      : 'select';
+
   const spawnPrimitive = (shape: SpawnShape) => {
     const obj = createSceneObject(shape, {
       label: SHAPE_LABEL[shape],
@@ -164,7 +178,26 @@ export function SceneClient({ locale: _locale }: { locale: string }) {
     );
   };
 
+  /** Gizmo drag-end → write transform back into the SceneObject. */
+  const commitTransform = (
+    id: string,
+    transform: { position: [number, number, number]; rotation: [number, number, number]; scale: [number, number, number] },
+  ) => {
+    updateSceneObject(id, { transform });
+  };
+
   const handleToolClick = (toolId: string) => {
+    if (['translate', 'rotate', 'scale'].includes(toolId)) {
+      if (!selectedId) {
+        setStatusHint(`Select an object first to ${toolId}`);
+        return;
+      }
+      setActiveTool(toolId);
+      const obj = spawnedShapes.find((s) => s.id === selectedId);
+      const verb = toolId === 'translate' ? 'Move' : toolId === 'rotate' ? 'Rotate' : 'Scale';
+      setStatusHint(obj ? `${verb} · ${obj.label}` : verb);
+      return;
+    }
     setActiveTool(toolId);
     if ((SHAPE_TOOLS as string[]).includes(toolId)) {
       spawnPrimitive(toolId as SpawnShape);
@@ -182,6 +215,42 @@ export function SceneClient({ locale: _locale }: { locale: string }) {
       setStatusHint('Select tool — click an object in the outliner');
     }
   };
+
+  // ── Hotkeys: Q/W/E/R for tools, Esc to deselect, Delete/Backspace to remove.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      // Don't hijack typing in inputs / textareas.
+      const t = e.target as HTMLElement | null;
+      if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      const k = e.key.toLowerCase();
+      if (k === 'q')          { handleToolClick('pointer');   e.preventDefault(); }
+      else if (k === 'w')     { handleToolClick('translate'); e.preventDefault(); }
+      else if (k === 'e')     { handleToolClick('rotate');    e.preventDefault(); }
+      else if (k === 'r')     { handleToolClick('scale');     e.preventDefault(); }
+      else if (k === 'escape') {
+        if (transformMode !== 'select') {
+          setActiveTool('pointer');
+          setStatusHint('Exit transform mode');
+        } else if (selectedId) {
+          setSelectedId(null);
+          setStatusHint('Cleared selection');
+        }
+        e.preventDefault();
+      } else if ((k === 'delete' || k === 'backspace') && selectedId) {
+        setSpawnedShapes((prev) => prev.filter((s) => s.id !== selectedId));
+        setSelectedId(null);
+        setActiveTool('pointer');
+        setStatusHint('Removed object');
+        e.preventDefault();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+    // handleToolClick closes over fresh state via React's render — but we want
+    // the latest `selectedId`/`transformMode`/`spawnedShapes`, so depend on them.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedId, transformMode, spawnedShapes]);
 
   useWorkspaceCommand((cmd) => {
     if (cmd.type === 'spawn_shape') {
@@ -339,6 +408,8 @@ export function SceneClient({ locale: _locale }: { locale: string }) {
                 setSelectedId(id);
                 setStatusHint(id ? 'Object selected' : 'Cleared selection');
               }}
+              transformMode={transformMode}
+              onCommitTransform={commitTransform}
             />
           )}
         </div>

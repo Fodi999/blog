@@ -169,6 +169,13 @@ interface Props {
   selectedId?: string | null;
   /** Click on a viewport card → notify parent. */
   onSelectObject?: (id: string | null) => void;
+  /** Active transform tool — passed only to the selected card's viewport. */
+  transformMode?: 'select' | 'translate' | 'rotate' | 'scale';
+  /** Called by the gizmo when the user releases a drag. Patches `obj.transform`. */
+  onCommitTransform?: (
+    id: string,
+    transform: { position: [number, number, number]; rotation: [number, number, number]; scale: [number, number, number] },
+  ) => void;
   /** CSG geometry operations dispatched by Gemini */
   pendingGeoOps?: GeometryOpCommand[];
 }
@@ -181,6 +188,8 @@ export function SimulationWorkspace({
   onUpdateObject,
   selectedId,
   onSelectObject,
+  transformMode = 'select',
+  onCommitTransform,
   pendingGeoOps = [],
 }: Props) {
   const { day, playing, speed, setSpeed, play, pause, jump } = useSimClock(SIM_DAYS);
@@ -261,6 +270,8 @@ export function SimulationWorkspace({
                   selected={selectedId === spawnedShapes[0].id}
                   onSelect={() => onSelectObject?.(spawnedShapes[0].id)}
                   onUpdate={(patch) => onUpdateObject?.(spawnedShapes[0].id, patch)}
+                  transformMode={selectedId === spawnedShapes[0].id ? transformMode : 'select'}
+                  onCommitTransform={(t) => onCommitTransform?.(spawnedShapes[0].id, t)}
                   fullscreen
                   onRemove={() => setSpawnedShapes([])}
                 />
@@ -471,6 +482,8 @@ function LabShapeCard({
   onUpdate,
   selected = false,
   onSelect,
+  transformMode = 'select',
+  onCommitTransform,
 }: {
   /** Full parametric scene object — single source of truth for params. */
   obj: SceneObject;
@@ -483,6 +496,10 @@ function LabShapeCard({
   selected?: boolean;
   /** Click on the viewport notifies the parent which object was picked. */
   onSelect?: () => void;
+  /** Active transform tool — drives the in-canvas gizmo. */
+  transformMode?: 'select' | 'translate' | 'rotate' | 'scale';
+  /** Gizmo drag-end → write back to obj.transform. */
+  onCommitTransform?: (t: { position: [number, number, number]; rotation: [number, number, number]; scale: [number, number, number] }) => void;
 }) {
   const { kind: shape, label, shape: shapeParams, material } = obj;
   const color = material.color_hex;
@@ -636,12 +653,15 @@ function LabShapeCard({
             className="h-full w-full"
             displayMode="grid"
             lightingPreset="cleanProduct"
-            autoRotate={rotating}
+            autoRotate={rotating && !(selected && transformMode !== 'select')}
             renderQuality="hd"
             snapToFloor
             viewMode={viewMode}
             selected={selected}
             hovered={hovered}
+            transform={obj.transform}
+            transformMode={transformMode}
+            onCommitTransform={onCommitTransform}
           />
           {/* Label bottom-left overlay */}
           <div className="pointer-events-none absolute bottom-3 left-3">
@@ -727,12 +747,15 @@ function LabShapeCard({
           className="h-full w-full"
           displayMode="grid"
           lightingPreset="cleanProduct"
-          autoRotate={rotating}
+          autoRotate={rotating && !(selected && transformMode !== 'select')}
           renderQuality="hd"
           snapToFloor
           viewMode={viewMode}
           selected={selected}
           hovered={hovered}
+          transform={obj.transform}
+          transformMode={transformMode}
+          onCommitTransform={onCommitTransform}
         />
       </div>
 
