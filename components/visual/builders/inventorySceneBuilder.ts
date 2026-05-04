@@ -8,6 +8,13 @@
  *   • storage zone derivation
  *   • product layout (positions per zone)
  *   • KPI aggregations / HUD strings
+ *   • glbUrl resolution (currently always null — backend sets it after
+ *     POST /laboratory/generate completes and stores model_url in DB)
+ *
+ * Frontend contract:
+ *   entity.content.glbUrl = string  → render useGLTF(glbUrl)
+ *   entity.content.glbUrl = null    → no GLB, render R3F fallback
+ *   entity.content.glbUrl = undefined → not yet resolved (loading)
  *
  * Keep this file pure — no React, no Three.js, no SSR globals.
  */
@@ -170,6 +177,9 @@ export function buildInventoryScene(
         imageUrl: item.product.image_url,
         fallbackIcon: undefined,
         badges: [item.product.category],
+        // null = no GLB yet; backend sets this after laboratory/generate.
+        // When backend returns SceneState directly, this will be a real URL.
+        glbUrl: (item as unknown as { glb_url?: string | null }).glb_url ?? null,
       },
       gameplay: {
         selectable: true,
@@ -199,9 +209,9 @@ export function buildInventoryScene(
     generatedAt: new Date().toISOString(),
     camera: {
       preset: 'overview',
-      position: [0, 9, 11],
-      target: [0, 0.5, 0],
-      fov: 40,
+      position: [0, 8, 13],
+      target: [0, 1.5, 0],
+      fov: 58,
     },
     hud: {
       totalValueLabel: `${(totalValueCents / 100).toFixed(2)} PLN`,

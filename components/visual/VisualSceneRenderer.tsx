@@ -26,6 +26,7 @@ import { memo, useEffect, useRef } from 'react';
 import * as THREE from 'three';
 
 import { resolveEntityPrefab } from './prefabs/registry';
+import { SceneFloor } from './SceneFloor';
 import type { SceneEntity, SceneState, Vec3Tuple } from './sceneTypes';
 
 interface Props {
@@ -84,6 +85,94 @@ function SceneInvalidator({ tick }: { tick: number }) {
     invalidate();
   }, [tick, invalidate]);
   return null;
+}
+
+// ── Atmospheric sky dome + horizon glow + dust ───────────────────────────────
+
+/** Subtle star/dust particles — very faint, non-distracting */
+const _dustPositions = (() => {
+  const COUNT = 280;
+  const arr = new Float32Array(COUNT * 3);
+  for (let i = 0; i < COUNT; i++) {
+    const r   = 30 + Math.random() * 55;
+    const phi = Math.random() * Math.PI * 2;
+    const th  = (0.05 + Math.random() * 0.7) * Math.PI;
+    arr[i * 3]     = r * Math.sin(th) * Math.cos(phi);
+    arr[i * 3 + 1] = r * Math.cos(th);
+    arr[i * 3 + 2] = r * Math.sin(th) * Math.sin(phi);
+  }
+  return arr;
+})();
+
+function SceneDust() {
+  return (
+    <points>
+      <bufferGeometry>
+        <bufferAttribute attach="attributes-position" args={[_dustPositions, 3]} />
+      </bufferGeometry>
+      <pointsMaterial
+        size={0.055}
+        color="#4a6fa8"
+        transparent
+        opacity={0.30}
+        sizeAttenuation
+        depthWrite={false}
+      />
+    </points>
+  );
+}
+
+/** Background sky dome — deep navy, BackSide material */
+function SceneSkyDome() {
+  return (
+    <mesh scale={110}>
+      <sphereGeometry args={[1, 32, 20]} />
+      <meshBasicMaterial color="#020810" side={THREE.BackSide} />
+    </mesh>
+  );
+}
+
+/** Layered atmosphere planes — gradient from top to horizon */
+function SceneAtmosphere() {
+  return (
+    <group>
+      {/* Top sky glow — very distant, cool deep blue */}
+      <mesh position={[0, 28, -55]} rotation={[0.32, 0, 0]}>
+        <planeGeometry args={[200, 80]} />
+        <meshBasicMaterial color="#06112a" transparent opacity={0.55} depthWrite={false} side={THREE.DoubleSide} />
+      </mesh>
+
+      {/* Mid glow layer */}
+      <mesh position={[0, 16, -48]} rotation={[0.22, 0, 0]}>
+        <planeGeometry args={[160, 50]} />
+        <meshBasicMaterial color="#08182e" transparent opacity={0.40} depthWrite={false} side={THREE.DoubleSide} />
+      </mesh>
+
+      {/* Horizon glow band */}
+      <mesh position={[0, 7, -38]} rotation={[0.10, 0, 0]}>
+        <planeGeometry args={[130, 22]} />
+        <meshBasicMaterial color="#0e2248" transparent opacity={0.28} depthWrite={false} side={THREE.DoubleSide} />
+      </mesh>
+
+      {/* Very faint aurora-tint — cyan strip high up */}
+      <mesh position={[0, 22, -50]} rotation={[0.28, 0, 0]}>
+        <planeGeometry args={[100, 10]} />
+        <meshBasicMaterial color="#0a2240" transparent opacity={0.18} depthWrite={false} side={THREE.DoubleSide} />
+      </mesh>
+
+      {/* Subtle left-side glow pillar */}
+      <mesh position={[-55, 14, -30]} rotation={[0, 0.35, 0]}>
+        <planeGeometry args={[18, 60]} />
+        <meshBasicMaterial color="#071830" transparent opacity={0.14} depthWrite={false} side={THREE.DoubleSide} />
+      </mesh>
+
+      {/* Subtle right-side glow pillar */}
+      <mesh position={[55, 14, -30]} rotation={[0, -0.35, 0]}>
+        <planeGeometry args={[18, 60]} />
+        <meshBasicMaterial color="#071830" transparent opacity={0.14} depthWrite={false} side={THREE.DoubleSide} />
+      </mesh>
+    </group>
+  );
 }
 
 // ── Main component ───────────────────────────────────────────────────────────
@@ -170,16 +259,85 @@ export function VisualSceneRenderer({ scene, selectedEntityId, onSelectEntity }:
       camera={initialCameraRef.current}
       className="h-full w-full"
       gl={glOptionsRef.current}
+      shadows
       onPointerMissed={() => onSelectEntity?.(null)}
       onCreated={handleCreated}
     >
-      <color attach="background" args={['#070707']} />
-      <ambientLight intensity={0.9} />
-      <directionalLight position={[5, 9, 5]} intensity={1.2} castShadow={false} />
-      <pointLight position={[-5, 4, -4]} intensity={0.4} color="#2d8cff" />
-      <pointLight position={[5, 4, -4]} intensity={0.4} color="#ef4444" />
+      {/* ── Background: deep space dark with subtle blue tint ── */}
+      <color attach="background" args={['#020810']} />
+
+      {/* ── Fog: blends scene into sky dome at distance ── */}
+      <fog attach="fog" args={['#040e20', 32, 90]} />
+
+      {/* ── Ambient: very low base, prevents total blackness ── */}
+      <ambientLight intensity={0.35} />
+
+      {/* ── Key light: main directional from top-right, warm white ── */}
+      <directionalLight
+        position={[8, 14, 6]}
+        intensity={1.6}
+        color="#e8f0ff"
+        castShadow
+        shadow-mapSize={[2048, 2048]}
+        shadow-camera-near={0.5}
+        shadow-camera-far={60}
+        shadow-camera-left={-20}
+        shadow-camera-right={20}
+        shadow-camera-top={20}
+        shadow-camera-bottom={-20}
+        shadow-bias={-0.0005}
+      />
+
+      {/* ── Rim light: cool blue from left-back (edge highlight) ── */}
+      <directionalLight
+        position={[-10, 6, -8]}
+        intensity={0.55}
+        color="#3b82f6"
+      />
+
+      {/* ── Fill light: soft warm from front-right ── */}
+      <directionalLight
+        position={[6, 3, 10]}
+        intensity={0.30}
+        color="#fcd34d"
+      />
+
+      {/* ── Overhead wide fill: ensures floors lit from above ── */}
+      <pointLight
+        position={[0, 16, 0]}
+        intensity={0.9}
+        color="#c7d8ff"
+        distance={55}
+        decay={1.5}
+      />
+
+      {/* ── Left accent: cold blue glow ── */}
+      <pointLight
+        position={[-14, 3, 0]}
+        intensity={0.4}
+        color="#38bdf8"
+        distance={22}
+        decay={2}
+      />
+
+      {/* ── Right accent: warm amber glow ── */}
+      <pointLight
+        position={[14, 3, 0]}
+        intensity={0.3}
+        color="#fb923c"
+        distance={22}
+        decay={2}
+      />
 
       <SceneInvalidator tick={scene.tick} />
+
+      {/* ── Atmosphere: sky dome + gradient planes + dust ── */}
+      <SceneSkyDome />
+      <SceneAtmosphere />
+      <SceneDust />
+
+      {/* Shared sci-fi grid floor */}
+      <SceneFloor size={60} divisions={30} />
 
       {scene.entities.map((entity) => (
         <EntityRenderer

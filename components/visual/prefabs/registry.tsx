@@ -15,6 +15,8 @@ import type { ReactElement } from 'react';
 import type { GeometryKind, PrefabKey, SceneEntity } from '../sceneTypes';
 
 import { ProductCard3D } from './ProductCard3D';
+import { ProductVisual3D } from './ProductVisual3D';
+import { CardDockPrefab } from './CardDockPrefab';
 import { StorageRoom3D } from './StorageRoom3D';
 
 export interface PrefabProps {
@@ -25,39 +27,56 @@ export interface PrefabProps {
 
 type PrefabComponent = (props: PrefabProps) => ReactElement | null;
 
-// Wrappers normalise prop signatures (some prefabs ignore selected/onSelect).
-const StorageRoomPrefab: PrefabComponent = ({ entity }) => <StorageRoom3D entity={entity} />;
+// ── Prefab adapters ───────────────────────────────────────────────────────────
 
-const ProductCardPrefab: PrefabComponent = ({ entity, selected, onSelect }) => (
-  <ProductCard3D entity={entity} selected={selected} onSelect={onSelect} />
-);
+const StorageRoomPrefab: PrefabComponent = ({ entity }) =>
+  <StorageRoom3D entity={entity} />;
+
+// ProductVisual3D decides GLB vs fallback ProductCard3D.
+const ProductVisualPrefab: PrefabComponent = ({ entity, selected, onSelect }) =>
+  <ProductVisual3D entity={entity} selected={selected} onSelect={onSelect} />;
+
+// ProductCard3D directly — pure R3F fallback, no GLB check.
+const ProductCardFallbackPrefab: PrefabComponent = ({ entity, selected, onSelect }) =>
+  <ProductCard3D entity={entity} selected={selected} onSelect={onSelect} />;
+
+// CardDockPrefab — dock adapter (GLB + future hover/insert state).
+const CardDockAdapter: PrefabComponent = ({ entity, selected, onSelect }) =>
+  <CardDockPrefab entity={entity} selected={selected} onSelect={onSelect} />;
 
 const NotImplemented: PrefabComponent = () => null;
 
-/** Stable prefab keys → components. Keep in sync with Rust `PrefabKey`. */
+// ── Stable prefab registry ────────────────────────────────────────────────────
+/** Keep in sync with Rust `PrefabKey` enum. */
 export const prefabRegistry: Record<PrefabKey, PrefabComponent> = {
-  // storage rooms — same component, different theme via material.theme
+  // storage rooms
   glassFridgeRoom: StorageRoomPrefab,
-  dryStorageRoom: StorageRoomPrefab,
-  freezerRoom: StorageRoomPrefab,
-  riskRoom: StorageRoomPrefab,
-  // cards
-  glassProductCard: ProductCardPrefab,
+  dryStorageRoom:  StorageRoomPrefab,
+  freezerRoom:     StorageRoomPrefab,
+  riskRoom:        StorageRoomPrefab,
+  // product cards — ProductVisual3D handles GLB vs R3F decision
+  glassProductCard: ProductVisualPrefab,
+  // hard-surface objects — always GLB from backend
+  cardDock:  CardDockAdapter,
+  glbModel:  CardDockAdapter, // generic GLB entity — reuses same adapter pattern
   // misc
-  zoneLabel: NotImplemented, // baked into StorageRoom3D for now
-  riskMarker: NotImplemented,
+  zoneLabel:   NotImplemented,
+  riskMarker:  NotImplemented,
   placeholder: NotImplemented,
 };
 
-/** Legacy fallback — used when an entity has no `prefab` field yet. */
+// ── Legacy kind-based fallback ────────────────────────────────────────────────
+/** Used when an entity has no `prefab` field yet. */
 const kindToPrefab: Record<GeometryKind, PrefabComponent> = {
-  storageRoom: StorageRoomPrefab,
-  productCard: ProductCardPrefab,
-  zoneLabel: NotImplemented,
-  riskMarker: NotImplemented,
-  container: ProductCardPrefab,
-  tray: ProductCardPrefab,
-  bottle: ProductCardPrefab,
+  storageRoom:  StorageRoomPrefab,
+  productCard:  ProductVisualPrefab,   // GLB or fallback
+  zoneLabel:    NotImplemented,
+  riskMarker:   NotImplemented,
+  container:    ProductCardFallbackPrefab,
+  tray:         ProductCardFallbackPrefab,
+  bottle:       ProductCardFallbackPrefab,
+  cardDock:     CardDockAdapter,
+  glbModel:     CardDockAdapter,
 };
 
 /** Resolve an entity to its renderer component. Prefers `prefab`, falls

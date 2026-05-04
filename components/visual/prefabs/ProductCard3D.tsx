@@ -268,6 +268,10 @@ function CartridgeFace({ imageUrl, fallbackIcon }: { imageUrl?: string | null; f
 
 // ── Main cartridge component ─────────────────────────────────────────────────
 export const ProductCard3D = memo(function ProductCard3D({ entity, selected, onSelect }: Props) {
+  // ── Procedural R3F fallback ────────────────────────────────────────────────
+  // ProductCard3D is a pure fallback renderer. It does NOT decide whether to
+  // show a GLB. That decision is made by ProductVisual3D (the wrapper).
+  // This component only renders the R3F procedural card shape.
   const [hovered, setHovered] = useState(false);
   const cartRef  = useRef<THREE.Group>(null);
   const glowRef  = useRef<THREE.MeshStandardMaterial>(null);
