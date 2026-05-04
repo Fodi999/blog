@@ -290,7 +290,8 @@ export const LIGHT_PRESETS: Record<LightingPreset, LightConfig> = {
 // ─────────────────────────────────────────────────────────────────────────────
 
 function isGlb(url: string): boolean {
-  return /\.glb(\?.*)?$/i.test(url);
+  // Match explicit .glb extension OR our backend's extensionless debug-glb endpoint.
+  return /\.glb(\?.*)?$/i.test(url) || /\/debug-glb\//i.test(url);
 }
 
 function deriveMtlUrl(objUrl: string): string {
@@ -833,6 +834,19 @@ export function ModelViewer({
   const glRef = useRef<THREE.WebGLRenderer | null>(null);
   const controlsRef = useRef<React.ComponentRef<typeof OrbitControls> | null>(null);
   const cameraAnimTargetRef = useRef<THREE.Vector3 | null>(null);
+
+  // ── Grid unit switcher (Plasticity-style: mm / cm / m) ──────────────────
+  type GridUnit = 'mm' | 'cm' | 'm';
+  const GRID_UNIT_PARAMS: Record<GridUnit, {
+    cellSize: number; sectionSize: number; fadeDistance: number;
+    cellLabel: string; sectionLabel: string;
+  }> = {
+    mm: { cellSize: 0.001, sectionSize: 0.01,  fadeDistance: 0.5,  cellLabel: '1 mm',  sectionLabel: '10 mm' },
+    cm: { cellSize: 0.01,  sectionSize: 0.1,   fadeDistance: 5,    cellLabel: '1 cm',  sectionLabel: '10 cm' },
+    m:  { cellSize: 0.1,   sectionSize: 1.0,   fadeDistance: 50,   cellLabel: '10 cm', sectionLabel: '1 m'   },
+  };
+  const [gridUnit, setGridUnit] = React.useState<GridUnit>('m');
+  const gp = GRID_UNIT_PARAMS[gridUnit];
   // PR #31 — root scene ref (used to store the loaded GLB root)
   const sceneRef = useRef<THREE.Object3D | null>(null);
   // PR #31 — pre-classified mesh lists, populated once when the GLB loads.
@@ -942,7 +956,9 @@ export function ModelViewer({
 
   const wrapperClass = studioMode
     ? `relative h-full w-full overflow-hidden bg-zinc-950 ${className}`
-    : `relative overflow-hidden rounded-xl bg-gradient-to-b from-zinc-900 via-zinc-900 to-zinc-950 ${className}`;
+    : displayMode === 'grid'
+      ? `relative h-full w-full overflow-hidden ${className}`
+      : `relative overflow-hidden rounded-xl bg-gradient-to-b from-zinc-900 via-zinc-900 to-zinc-950 ${className}`;
 
   return (
     <div ref={ref} className={wrapperClass}>
@@ -967,9 +983,13 @@ export function ModelViewer({
         }}
         style={{ width: "100%", height: "100%" }}
       >
+        {/* Blender-style background in grid mode */}
+        {displayMode === "grid" && <color attach="background" args={["#4a4a4a"]} />}
+        {displayMode === "grid" && <fog attach="fog" args={["#4a4a4a", 8, 30]} />}
+
         {/* PR #21 — 3-point studio lighting, all values from live settings */}
-        <ambientLight intensity={lp.ambient} />
-        <directionalLight position={keyPos}  intensity={keyInt}  castShadow={false} />
+        <ambientLight intensity={displayMode === "grid" ? 0.5 : lp.ambient} />
+        <directionalLight position={displayMode === "grid" ? [5, 8, 5] : keyPos} intensity={displayMode === "grid" ? 2.2 : keyInt} castShadow={false} />
         <directionalLight position={fillPos} intensity={fillInt} />
         <directionalLight position={rimPos}  intensity={rimInt}  />
 
@@ -1037,15 +1057,18 @@ export function ModelViewer({
         )}
         {displayMode === "grid" && (
           <Grid
-            args={[20, 20]}
+            args={[80, 80]}
             position={[0, -0.78, 0]}
-            cellColor="#2a2a2e"
-            sectionColor="#3a3a3f"
-            cellSize={0.5}
-            sectionSize={2}
-            fadeDistance={10}
+            cellColor="#4d4d4d"
+            cellThickness={0.5}
+            sectionColor="#6a6a6a"
+            sectionThickness={1.2}
+            cellSize={gp.cellSize}
+            sectionSize={gp.sectionSize}
+            fadeDistance={gp.fadeDistance}
             fadeStrength={1.5}
             infiniteGrid
+            followCamera
           />
         )}
 
@@ -1065,8 +1088,31 @@ export function ModelViewer({
         />
       </Canvas>
 
+      {/* Plasticity-style unit switcher — only in grid mode, right side */}
+      {displayMode === "grid" && (
+        <div className="pointer-events-auto absolute top-2 right-2 flex items-center gap-0.5 rounded-md border border-white/10 bg-black/40 px-1 py-0.5 backdrop-blur-sm select-none">
+          {(["mm", "cm", "m"] as GridUnit[]).map((u) => (
+            <button
+              key={u}
+              onClick={() => setGridUnit(u)}
+              className={[
+                "rounded px-2 py-0.5 text-[10px] font-mono font-semibold transition-colors",
+                gridUnit === u
+                  ? "bg-sky-500/80 text-white"
+                  : "text-zinc-400 hover:text-zinc-200",
+              ].join(" ")}
+            >
+              {u}
+            </button>
+          ))}
+          <span className="ml-1 text-[9px] text-zinc-500 font-mono">
+            {gp.cellLabel} / {gp.sectionLabel}
+          </span>
+        </div>
+      )}
+
       {!studioMode ? (
-        <span className="pointer-events-none absolute bottom-2 right-3 text-[10px] text-zinc-400/70 select-none">
+        <span className="pointer-events-none absolute bottom-2 left-3 text-[10px] text-zinc-400/70 select-none">
           drag to rotate
         </span>
       ) : null}

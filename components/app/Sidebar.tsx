@@ -13,7 +13,6 @@ import {
   Calendar,
   Coins,
   Sparkles,
-  FlaskConical,
   PanelLeftClose,
   PanelLeftOpen,
 } from 'lucide-react';
@@ -46,7 +45,6 @@ export const NAV_ITEMS: NavItem[] = [
   { href: '/app/cook-now', labelKey: 'cookNow', icon: Sparkles },
   { href: '/app/my-dishes', labelKey: 'myDishes', icon: Heart },
   { href: '/app/plan', labelKey: 'plan', icon: Calendar },
-  { href: '/app/laboratory', labelKey: 'laboratory', icon: FlaskConical },
   { href: '/app/profile', labelKey: 'profile', icon: UserIcon },
   { href: '/app/settings', labelKey: 'settings', icon: Settings },
   { href: '/pricing', labelKey: 'topUp', icon: Coins },

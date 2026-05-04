@@ -1,13 +1,16 @@
 import { setRequestLocale } from 'next-intl/server';
 import { redirect } from 'next/navigation';
 
-export default async function LaboratoryPage({
+export function generateStaticParams() {
+  return [{ locale: 'pl' }, { locale: 'en' }, { locale: 'ru' }, { locale: 'uk' }];
+}
+
+export default async function ConverterPage({
   params,
 }: {
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  // Lab is now embedded in Inventory → Simulation → Lab tab
-  redirect(`/${locale}/app/inventory`);
+  redirect(`/${locale}/chef-tools`);
 }

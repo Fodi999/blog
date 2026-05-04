@@ -1,162 +1,115 @@
 'use client';
 
 /**
- * SceneFloor — shared sci-fi grid floor for the whole 3D scene.
+ * SceneFloor — Plasticity-style infinite grid floor.
  *
- * Layers (bottom → top):
- *   1. Solid dark base plate (receives shadows)
- *   2. Main grid — thin emissive lines (custom, not gridHelper)
- *   3. Cross-accent lines every N cells (brighter)
- *   4. Subtle radial fade vignette (plane + radial gradient texture)
+ * Supports three real-world unit modes:
+ *   mm  — 1 mm cells,  10 mm sections
+ *   cm  — 1 cm cells,  10 cm sections
+ *   m   — 10 cm cells,  1 m  sections   (default)
+ *
+ * Uses drei <Grid> (shader-based infinite grid — no CPU geometry limit).
+ * X-axis (red) and Z-axis (green) drawn with custom BufferGeometry.
+ *
+ * All distances in metres (Three.js world units = 1 unit = 1 m).
  */
 
 import { useMemo } from 'react';
+import { Grid } from '@react-three/drei';
 import * as THREE from 'three';
 
+// ── Unit definitions ──────────────────────────────────────────────────────────
+
+export type GridUnit = 'mm' | 'cm' | 'm';
+
+/**
+ * | unit | cellSize | sectionSize | cell label   | section label |
+ * |------|----------|-------------|--------------|---------------|
+ * | mm   | 0.001 m  | 0.010 m     | 1 mm         | 10 mm         |
+ * | cm   | 0.010 m  | 0.100 m     | 1 cm         | 10 cm         |
+ * | m    | 0.100 m  | 1.000 m     | 10 cm        | 1 m           |
+ */
+export const GRID_UNIT_PARAMS: Record<
+  GridUnit,
+  {
+    cellSize: number;
+    sectionSize: number;
+    fadeDistance: number;
+    cellLabel: string;
+    sectionLabel: string;
+  }
+> = {
+  mm: { cellSize: 0.001, sectionSize: 0.01,  fadeDistance: 0.5,  cellLabel: '1 mm',  sectionLabel: '10 mm' },
+  cm: { cellSize: 0.01,  sectionSize: 0.1,   fadeDistance: 5,    cellLabel: '1 cm',  sectionLabel: '10 cm' },
+  m:  { cellSize: 0.1,   sectionSize: 1.0,   fadeDistance: 50,   cellLabel: '10 cm', sectionLabel: '1 m'   },
+};
+
+// ── Axis geometry (X = red, Z = green) ───────────────────────────────────────
+
+function buildAxisGeometry(size: number): THREE.BufferGeometry {
+  const half = size / 2;
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(
+    new Float32Array([
+      -half, 0, 0,   half, 0, 0,   // X
+       0, 0, -half,  0, 0,  half,  // Z
+    ]), 3));
+  geo.setAttribute('color', new THREE.BufferAttribute(
+    new Float32Array([
+      0.85, 0.18, 0.18,  0.85, 0.18, 0.18,  // X — red
+      0.18, 0.75, 0.35,  0.18, 0.75, 0.35,  // Z — green
+    ]), 3));
+  return geo;
+}
+
+// ── Component ─────────────────────────────────────────────────────────────────
+
 interface SceneFloorProps {
-  /** Total floor size in scene units. Default 60. */
+  /** Background plane + axis size in metres. Default 80. */
   size?: number;
-  /** Number of grid cells per side. Default 30 (= 2 units per cell). */
-  divisions?: number;
-  /** Main grid line color. Default dark blue-grey. */
-  gridColor?: string;
-  /** Accent line color (every 5th line). Default brighter blue-grey. */
-  accentColor?: string;
-  /** Base plate color. */
-  baseColor?: string;
-  /** Y position of the floor. Default -0.25. */
+  /** Real-world unit mode. Default 'm'. */
+  unit?: GridUnit;
+  /** Y position. Default -0.001. */
   y?: number;
+  /** @deprecated kept for backward compat — use `unit` instead. */
+  divisions?: number;
 }
 
-/** Build a Float32Array of line segment positions for a grid on the XZ plane. */
-function buildGridPositions(
-  size: number,
-  divisions: number,
-): Float32Array {
-  const half = size / 2;
-  const step = size / divisions;
-  const positions: number[] = [];
+export function SceneFloor({ size = 80, unit = 'm', y = -0.001 }: SceneFloorProps) {
+  const { cellSize, sectionSize, fadeDistance } = GRID_UNIT_PARAMS[unit];
 
-  for (let i = 0; i <= divisions; i++) {
-    const t = -half + i * step;
-    // line along X
-    positions.push(-half, 0, t,  half, 0, t);
-    // line along Z
-    positions.push(t, 0, -half,  t, 0,  half);
-  }
-  return new Float32Array(positions);
-}
-
-/** Build positions for accent lines (every `nth` cell). */
-function buildAccentPositions(
-  size: number,
-  divisions: number,
-  nth: number,
-): Float32Array {
-  const half = size / 2;
-  const step = size / divisions;
-  const positions: number[] = [];
-
-  for (let i = 0; i <= divisions; i++) {
-    if (i % nth !== 0) continue;
-    const t = -half + i * step;
-    positions.push(-half, 0, t,  half, 0, t);
-    positions.push(t, 0, -half,  t, 0,  half);
-  }
-  return new Float32Array(positions);
-}
-
-/** Radial gradient texture — dark center transparent, opaque at edges. */
-function buildVignetteTexture(): THREE.CanvasTexture {
-  const size = 256;
-  const canvas = document.createElement('canvas');
-  canvas.width = size;
-  canvas.height = size;
-  const ctx = canvas.getContext('2d')!;
-  const grad = ctx.createRadialGradient(
-    size / 2, size / 2, size * 0.2,
-    size / 2, size / 2, size * 0.72,
-  );
-  grad.addColorStop(0, 'rgba(0,0,0,0)');
-  grad.addColorStop(1, 'rgba(0,0,0,0.85)');
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, size, size);
-  return new THREE.CanvasTexture(canvas);
-}
-
-export function SceneFloor({
-  size = 60,
-  divisions = 30,
-  gridColor = '#1a2744',
-  accentColor = '#2a4070',
-  baseColor = '#020609',
-  y = -0.26,
-}: SceneFloorProps) {
-  // ── main grid geometry ────────────────────────────────────────────────────
-  const gridGeo = useMemo(() => {
-    const geo = new THREE.BufferGeometry();
-    geo.setAttribute('position', new THREE.BufferAttribute(buildGridPositions(size, divisions), 3));
-    return geo;
-  }, [size, divisions]);
-
-  // ── accent grid geometry ──────────────────────────────────────────────────
-  const accentGeo = useMemo(() => {
-    const geo = new THREE.BufferGeometry();
-    geo.setAttribute('position', new THREE.BufferAttribute(buildAccentPositions(size, divisions, 5), 3));
-    return geo;
-  }, [size, divisions]);
-
-  // ── vignette texture (only on client) ────────────────────────────────────
-  const vignetteTex = useMemo(() => {
-    if (typeof document === 'undefined') return null;
-    return buildVignetteTexture();
-  }, []);
-
-  const gridMat = useMemo(
-    () => new THREE.LineBasicMaterial({ color: gridColor, transparent: true, opacity: 0.7 }),
-    [gridColor],
-  );
-
-  const accentMat = useMemo(
-    () => new THREE.LineBasicMaterial({ color: accentColor, transparent: true, opacity: 1.0 }),
-    [accentColor],
+  const axisGeo = useMemo(() => buildAxisGeometry(size), [size]);
+  const axisMat = useMemo(
+    () => new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.95 }),
+    [],
   );
 
   return (
     <group position={[0, y, 0]}>
-      {/* ── 1. Solid dark base plate ── */}
+      {/* Base plate — Blender mid-gray */}
       <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[size, size]} />
-        <meshStandardMaterial
-          color={baseColor}
-          roughness={0.95}
-          metalness={0.08}
-        />
+        <meshStandardMaterial color="#3d3d3d" roughness={0.95} metalness={0} />
       </mesh>
 
-      {/* ── 2. Main grid lines ── */}
-      <lineSegments geometry={gridGeo} material={gridMat} />
+      {/* Infinite shader grid — minor + major lines */}
+      <Grid
+        position={[0, 0.001, 0]}
+        args={[size, size]}
+        cellSize={cellSize}
+        cellColor="#4d4d4d"
+        cellThickness={0.5}
+        sectionSize={sectionSize}
+        sectionColor="#6a6a6a"
+        sectionThickness={1.2}
+        fadeDistance={fadeDistance}
+        fadeStrength={1.5}
+        infiniteGrid
+        followCamera
+      />
 
-      {/* ── 3. Accent lines (every 5th) ── */}
-      <lineSegments geometry={accentGeo} material={accentMat} />
-
-      {/* ── 4. Central glow spot under origin ── */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.002, 0]}>
-        <planeGeometry args={[18, 18]} />
-        <meshBasicMaterial color="#0d1f3c" transparent opacity={0.55} depthWrite={false} />
-      </mesh>
-
-      {/* ── 5. Vignette fade at edges ── */}
-      {vignetteTex && (
-        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.003, 0]}>
-          <planeGeometry args={[size, size]} />
-          <meshBasicMaterial
-            map={vignetteTex}
-            transparent
-            depthWrite={false}
-          />
-        </mesh>
-      )}
+      {/* X = red,  Z = green */}
+      <lineSegments geometry={axisGeo} material={axisMat} />
     </group>
   );
 }
