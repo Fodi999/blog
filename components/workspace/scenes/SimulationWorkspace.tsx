@@ -512,7 +512,7 @@ function LabShapeCard({
 }) {
   const { kind: shape, label, shape: shapeParams, material } = obj;
   const color = material.color_hex;
-  const [rotating, setRotating] = useState(true);
+  const [rotating, setRotating] = useState(false);
   const [hovered, setHovered] = useState(false);
   /** Solid / wireframe / both — display mode for the viewport. */
   const [viewMode, setViewMode] = useState<'solid' | 'wire' | 'solid-wire'>('solid');
@@ -696,19 +696,19 @@ function LabShapeCard({
             <div className="flex items-center gap-1 rounded-lg border border-white/8 bg-white/4 p-1">
               <button
                 type="button"
-                onClick={() => setRotating(true)}
-                title="Auto-rotate"
-                className={`flex items-center gap-1.5 rounded-md px-3 py-1 text-[11px] font-medium transition-colors ${rotating ? 'bg-white/15 text-white' : 'text-white/35 hover:text-white/70'}`}
-              >
-                <span>↻</span> Rotate
-              </button>
-              <button
-                type="button"
                 onClick={() => setRotating(false)}
                 title="Freeze"
                 className={`flex items-center gap-1.5 rounded-md px-3 py-1 text-[11px] font-medium transition-colors ${!rotating ? 'bg-white/15 text-white' : 'text-white/35 hover:text-white/70'}`}
               >
                 <span>⏹</span> Static
+              </button>
+              <button
+                type="button"
+                onClick={() => setRotating(true)}
+                title="Auto-rotate"
+                className={`flex items-center gap-1.5 rounded-md px-3 py-1 text-[11px] font-medium transition-colors ${rotating ? 'bg-white/15 text-white' : 'text-white/35 hover:text-white/70'}`}
+              >
+                <span>↻</span> Rotate
               </button>
             </div>
             <div className="flex items-center gap-1 rounded-lg border border-white/8 bg-white/4 p-1">
@@ -788,16 +788,16 @@ function LabShapeCard({
           <div className="flex items-center gap-0.5 rounded-md border border-white/8 bg-white/4 p-0.5">
             <button
               type="button"
-              onClick={() => setRotating(true)}
-              title="Auto-rotate"
-              className={`rounded px-1.5 py-0.5 text-[10px] font-medium transition-colors ${rotating ? 'bg-white/15 text-white' : 'text-white/30 hover:text-white/60'}`}
-            >↻</button>
-            <button
-              type="button"
               onClick={() => setRotating(false)}
               title="Static"
               className={`rounded px-1.5 py-0.5 text-[10px] font-medium transition-colors ${!rotating ? 'bg-white/15 text-white' : 'text-white/30 hover:text-white/60'}`}
             >⏹</button>
+            <button
+              type="button"
+              onClick={() => setRotating(true)}
+              title="Auto-rotate"
+              className={`rounded px-1.5 py-0.5 text-[10px] font-medium transition-colors ${rotating ? 'bg-white/15 text-white' : 'text-white/30 hover:text-white/60'}`}
+            >↻</button>
           </div>
           <button
             type="button"
