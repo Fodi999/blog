@@ -104,6 +104,15 @@ function emissiveForTheme(theme: MaterialTheme): number {
     ?? 0.1;
 }
 
+// ── Dev GLB override ─────────────────────────────────────────────────────────
+// When running locally against the Rust backend on :8000, inject sci_fi_card.glb
+// so every product card renders as the Plasticity-style hard-surface card.
+// In production this is null and the backend supplies the real model_url.
+const DEV_GLB_URL: string | null =
+  typeof window !== 'undefined' && window.location.hostname === 'localhost'
+    ? 'http://localhost:8000/api/laboratory/debug-glb/sci_fi_card'
+    : null;
+
 // ── Public API ───────────────────────────────────────────────────────────────
 
 export function buildInventoryScene(
@@ -177,9 +186,9 @@ export function buildInventoryScene(
         imageUrl: item.product.image_url,
         fallbackIcon: undefined,
         badges: [item.product.category],
-        // null = no GLB yet; backend sets this after laboratory/generate.
-        // When backend returns SceneState directly, this will be a real URL.
-        glbUrl: (item as unknown as { glb_url?: string | null }).glb_url ?? null,
+        // DEV: use sci_fi_card.glb from local Rust backend to preview shape.
+        // PROD: backend supplies real model_url via laboratory/generate.
+        glbUrl: (item as unknown as { glb_url?: string | null }).glb_url ?? DEV_GLB_URL,
       },
       gameplay: {
         selectable: true,
