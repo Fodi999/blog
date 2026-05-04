@@ -1,32 +1,38 @@
 'use client';
 
-/**
- * SceneClient — standalone 3D Workspace page.
- *
- * Layout:
- *   ┌────────────┬──────────────────────────────────────┐
- *   │ Left tabs  │  3D scene (Visual or Simulation)     │
- *   │ Visual     │  fills remaining space               │
- *   │ Simulation │                                      │
- *   └────────────┴──────────────────────────────────────┘
- *
- * Copilot panel is handled by the global AppShell (right rail).
- */
+import { useState } from 'react';
+import {
+  Box,
+  ChevronDown,
+  ChevronRight,
+  Circle,
+  CircleDot,
+  Cone,
+  Cylinder,
+  Donut,
+  Hexagon,
+  Layers,
+  Maximize2,
+  Minimize2,
+  MousePointer2,
+  PanelRightClose,
+  PanelRightOpen,
+  Plus,
+  Slash,
+  Square,
+  Trash2,
+  Triangle,
+  Wand2,
+  type LucideIcon,
+} from 'lucide-react';
 
-import { useEffect, useState } from 'react';
-import { Boxes, FlaskConical, Maximize2, Minimize2, RefreshCw, TrendingUp } from 'lucide-react';
-
-import { api } from '@/lib/chefos-api';
-import { useChefOSSync } from '@/lib/chefos-store';
-import type { InventoryItem, InventoryListResponse } from '@/lib/chefos-types';
 import { cn } from '@/lib/utils';
-import { InventoryVisualWorkspace } from '@/components/workspace/scenes/InventoryVisualWorkspace';
 import { SimulationWorkspace } from '@/components/workspace/scenes/SimulationWorkspace';
-import { useCopilot } from '@/components/copilot/CopilotProvider';
-import { useWorkspaceCommand, type SpawnShape } from '@/components/workspace/WorkspaceCommands';
-
-type SceneTab = 'visual' | 'simulation';
-type SimTab = 'forecast' | 'lab';
+import {
+  useWorkspaceCommand,
+  type SpawnShape,
+  type GeometryOpCommand,
+} from '@/components/workspace/WorkspaceCommands';
 
 export type SpawnedShape = {
   id: string;
@@ -35,182 +41,537 @@ export type SpawnedShape = {
   color: string;
 };
 
-export function SceneClient({ locale }: { locale: string }) {
-  const [tab, setTab] = useState<SceneTab>('visual');
-  const [simTab, setSimTab] = useState<SimTab>('forecast');
-  const [items, setItems] = useState<InventoryItem[] | null>(null);
-  const [refreshing, setRefreshing] = useState(false);
-  const [spawnedShapes, setSpawnedShapes] = useState<SpawnedShape[]>([]);
-  const [fullscreen, setFullscreen] = useState(false);
-  const { sendMessage: copilotSend } = useCopilot();
+type PaletteTool = {
+  id: string;
+  label: string;
+  hotkey?: string;
+  Icon: LucideIcon;
+  color?: string;
+  needsSelection?: boolean;
+};
 
-  const load = async (silent = false) => {
-    if (!silent) setItems(null);
-    setRefreshing(true);
-    try {
-      const res = await api.get<InventoryListResponse>('/api/inventory/products');
-      setItems(res.items ?? []);
-    } catch {
-      setItems([]);
-    } finally {
-      setRefreshing(false);
+type PaletteGroup = {
+  id: 'select' | 'solids' | 'wires' | 'modify' | 'boolean';
+  label: string;
+  tools: PaletteTool[];
+};
+
+const PALETTE: PaletteGroup[] = [
+  {
+    id: 'select',
+    label: 'Select',
+    tools: [{ id: 'pointer', label: 'Select', hotkey: 'V', Icon: MousePointer2 }],
+  },
+  {
+    id: 'solids',
+    label: 'Solids',
+    tools: [
+      { id: 'cube', label: 'Box', hotkey: 'B', Icon: Box, color: '#38bdf8' },
+      { id: 'cylinder', label: 'Cylinder', hotkey: 'C', Icon: Cylinder, color: '#22d3ee' },
+      { id: 'cone', label: 'Cone', hotkey: 'N', Icon: Cone, color: '#fb923c' },
+      { id: 'torus', label: 'Torus', hotkey: 'T', Icon: Donut, color: '#a78bfa' },
+      { id: 'sphere', label: 'Sphere', hotkey: 'S', Icon: CircleDot, color: '#facc15' },
+    ],
+  },
+  {
+    id: 'wires',
+    label: 'Wires',
+    tools: [
+      { id: 'square', label: 'Rect', Icon: Square, color: '#a78bfa' },
+      { id: 'circle', label: 'Circle', Icon: Circle, color: '#34d399' },
+      { id: 'triangle', label: 'Tri', Icon: Triangle, color: '#fb923c' },
+    ],
+  },
+  {
+    id: 'modify',
+    label: 'Modify',
+    tools: [{ id: 'bevel', label: 'Bevel', hotkey: 'F', Icon: Wand2, needsSelection: true }],
+  },
+  {
+    id: 'boolean',
+    label: 'Boolean',
+    tools: [
+      { id: 'subtract', label: 'Subtract', hotkey: '-', Icon: Slash, needsSelection: true },
+      { id: 'union', label: 'Union', hotkey: '+', Icon: Plus, needsSelection: true },
+    ],
+  },
+];
+
+const SHAPE_TOOLS: SpawnShape[] = ['cube', 'cylinder', 'cone', 'torus', 'sphere', 'square', 'circle', 'triangle'];
+
+const SHAPE_LABEL: Record<SpawnShape, string> = {
+  cube: 'Cube',
+  sphere: 'Sphere',
+  cylinder: 'Cylinder',
+  cone: 'Cone',
+  torus: 'Torus',
+  square: 'Square',
+  rectangle: 'Rectangle',
+  circle: 'Circle',
+  triangle: 'Triangle',
+  line: 'Line',
+};
+
+const SHAPE_COLOR: Record<SpawnShape, string> = {
+  cube: '#38bdf8',
+  sphere: '#facc15',
+  cylinder: '#22d3ee',
+  cone: '#fb923c',
+  torus: '#a78bfa',
+  square: '#a78bfa',
+  rectangle: '#a78bfa',
+  circle: '#34d399',
+  triangle: '#fb923c',
+  line: '#94a3b8',
+};
+
+const SHAPE_ICON: Record<SpawnShape, LucideIcon> = {
+  cube: Box,
+  sphere: CircleDot,
+  cylinder: Cylinder,
+  cone: Cone,
+  torus: Donut,
+  square: Square,
+  rectangle: Square,
+  circle: Circle,
+  triangle: Triangle,
+  line: Slash,
+};
+
+export function SceneClient({ locale: _locale }: { locale: string }) {
+  const [spawnedShapes, setSpawnedShapes] = useState<SpawnedShape[]>([]);
+  const [pendingGeoOps, setPendingGeoOps] = useState<GeometryOpCommand[]>([]);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [fullscreen, setFullscreen] = useState(false);
+  const [outlinerOpen, setOutlinerOpen] = useState(true);
+  const [activeTool, setActiveTool] = useState<string>('pointer');
+  const [statusHint, setStatusHint] = useState<string>('Ready');
+
+  const spawnPrimitive = (shape: SpawnShape) => {
+    const id = `${shape}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+    const newShape: SpawnedShape = {
+      id,
+      shape,
+      label: SHAPE_LABEL[shape],
+      color: SHAPE_COLOR[shape],
+    };
+    setPendingGeoOps([]);
+    setSpawnedShapes([newShape]);
+    setSelectedId(id);
+    setStatusHint(`Created ${SHAPE_LABEL[shape]}`);
+  };
+
+  const handleToolClick = (toolId: string) => {
+    setActiveTool(toolId);
+    if ((SHAPE_TOOLS as string[]).includes(toolId)) {
+      spawnPrimitive(toolId as SpawnShape);
+      return;
+    }
+    if (['bevel', 'subtract', 'union'].includes(toolId)) {
+      if (!selectedId) {
+        setStatusHint(`Select an object first to apply ${toolId}`);
+        return;
+      }
+      setStatusHint(`${toolId}: ask the Copilot, e.g. "round corners"`);
+      return;
+    }
+    if (toolId === 'pointer') {
+      setStatusHint('Select tool — click an object in the outliner');
     }
   };
 
-  useEffect(() => { void load(); }, []);
-  useChefOSSync('inventory', () => { void load(true); });
-
-  // Handle Copilot workspace commands at the always-mounted SceneClient level
-  // so spawn_shape is captured even when SimulationWorkspace is not yet mounted.
   useWorkspaceCommand((cmd) => {
-    if (cmd.type === 'switch_lab') {
-      setTab('simulation');
-      setSimTab('lab');
-    } else if (cmd.type === 'spawn_shape') {
-      setSpawnedShapes((prev) => [
-        ...prev,
-        {
-          id: `${cmd.shape}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-          shape: cmd.shape,
-          label: cmd.label,
-          color: cmd.color ?? '#38bdf8',
-        },
-      ]);
+    if (cmd.type === 'spawn_shape') {
+      const newShape: SpawnedShape = {
+        id: `${cmd.shape}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+        shape: cmd.shape,
+        label: cmd.label,
+        color: cmd.color ?? SHAPE_COLOR[cmd.shape] ?? '#38bdf8',
+      };
+      if ((cmd.mode ?? 'replace') === 'append') {
+        setSpawnedShapes((prev) => [...prev, newShape]);
+      } else {
+        setPendingGeoOps([]);
+        setSpawnedShapes([newShape]);
+      }
+      setSelectedId(newShape.id);
+      setStatusHint(`Spawned ${newShape.label} via Copilot`);
     } else if (cmd.type === 'clear_shapes') {
       setSpawnedShapes([]);
+      setPendingGeoOps([]);
+      setSelectedId(null);
+      setStatusHint('Scene cleared');
+    } else if (cmd.type === 'geometry_op') {
+      if ((cmd.mode ?? 'replace') === 'append') {
+        setPendingGeoOps((prev) => [...prev, cmd.op]);
+      } else {
+        setSpawnedShapes([]);
+        setPendingGeoOps([cmd.op]);
+      }
+      setStatusHint(`Geometry op: ${cmd.op.operation}`);
     }
   });
 
-  const safeItems = items ?? [];
+  const isEmpty = spawnedShapes.length === 0 && pendingGeoOps.length === 0;
+  const totalObjects = spawnedShapes.length + pendingGeoOps.length;
+  const selectedShape = spawnedShapes.find((s) => s.id === selectedId) ?? null;
 
   return (
-    <div className={cn(
-      'flex h-full w-full overflow-hidden bg-[#070707]',
-      fullscreen && 'fixed inset-0 z-50',
-    )}>
-      {/* ── Left tab rail ── */}
-      <div className="flex w-14 flex-shrink-0 flex-col items-center gap-1 border-r border-white/8 bg-[#0a0a0a] py-4">
-
-        {/* Visual */}
-        <button
-          type="button"
-          onClick={() => setTab('visual')}
-          title="Visual"
-          className={cn(
-            'flex h-10 w-10 flex-col items-center justify-center gap-0.5 rounded-xl text-[9px] font-semibold uppercase tracking-wider transition-colors',
-            tab === 'visual'
-              ? 'bg-white/15 text-white'
-              : 'text-white/30 hover:bg-white/8 hover:text-white/60',
+    <div
+      className={cn(
+        'flex h-full w-full flex-col overflow-hidden bg-[#050505]',
+        fullscreen && 'fixed inset-0 z-50',
+      )}
+    >
+      <div className="flex h-10 flex-shrink-0 items-center justify-between border-b border-white/6 bg-[#0a0a0a] px-4">
+        <div className="flex items-center gap-3">
+          <span className="flex h-5 w-5 items-center justify-center rounded bg-sky-500/20">
+            <Hexagon className="h-3 w-3 text-sky-400" />
+          </span>
+          <span className="font-mono text-[11px] font-semibold uppercase tracking-widest text-white/60">
+            Lab
+          </span>
+          {!isEmpty && (
+            <span className="rounded-full bg-sky-500/15 px-2 py-0.5 font-mono text-[9px] text-sky-400">
+              {totalObjects} object{totalObjects > 1 ? 's' : ''}
+            </span>
           )}
-        >
-          <Boxes className="h-4 w-4" />
-          <span>VIS</span>
-        </button>
-
-        {/* Simulation */}
-        <button
-          type="button"
-          onClick={() => setTab('simulation')}
-          title="Simulation"
-          className={cn(
-            'flex h-10 w-10 flex-col items-center justify-center gap-0.5 rounded-xl text-[9px] font-semibold uppercase tracking-wider transition-colors',
-            tab === 'simulation' && simTab !== 'lab'
-              ? 'bg-white/15 text-white'
-              : tab === 'simulation' && simTab === 'lab'
-                ? 'text-white/50'
-                : 'text-white/30 hover:bg-white/8 hover:text-white/60',
-          )}
-        >
-          <TrendingUp className="h-4 w-4" />
-          <span>SIM</span>
-        </button>
-
-        {/* Forecast / Lab sub-tabs — only when simulation is active */}
-        {tab === 'simulation' && (
-          <>
-            <div className="my-1 w-8 border-t border-white/10" />
+        </div>
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={() => setOutlinerOpen((v) => !v)}
+            title={outlinerOpen ? 'Hide outliner' : 'Show outliner'}
+            className="flex h-7 w-7 items-center justify-center rounded-lg border border-white/8 text-white/30 transition-colors hover:border-white/20 hover:text-white/70"
+          >
+            {outlinerOpen ? (
+              <PanelRightClose className="h-3.5 w-3.5" />
+            ) : (
+              <PanelRightOpen className="h-3.5 w-3.5" />
+            )}
+          </button>
+          {!isEmpty && (
             <button
               type="button"
-              onClick={() => setSimTab('forecast')}
-              title="Forecast"
-              className={cn(
-                'flex h-10 w-10 flex-col items-center justify-center gap-0.5 rounded-xl text-[9px] font-semibold uppercase tracking-wider transition-colors',
-                simTab === 'forecast'
-                  ? 'bg-sky-500/20 text-sky-300'
-                  : 'text-white/30 hover:bg-white/8 hover:text-white/60',
-              )}
+              onClick={() => {
+                setSpawnedShapes([]);
+                setPendingGeoOps([]);
+                setSelectedId(null);
+                setStatusHint('Scene cleared');
+              }}
+              title="Clear scene"
+              className="flex items-center gap-1.5 rounded-lg border border-rose-500/20 bg-rose-500/8 px-2.5 py-1 font-mono text-[10px] text-rose-400/60 transition-colors hover:border-rose-500/40 hover:text-rose-400"
             >
-              <TrendingUp className="h-3.5 w-3.5" />
-              <span>FCT</span>
+              <Trash2 className="h-3 w-3" /> Clear
             </button>
-            <button
-              type="button"
-              onClick={() => setSimTab('lab')}
-              title="Lab"
-              className={cn(
-                'flex h-10 w-10 flex-col items-center justify-center gap-0.5 rounded-xl text-[9px] font-semibold uppercase tracking-wider transition-colors',
-                simTab === 'lab'
-                  ? 'bg-sky-500/20 text-sky-300'
-                  : 'text-white/30 hover:bg-white/8 hover:text-white/60',
-              )}
-            >
-              <FlaskConical className="h-3.5 w-3.5" />
-              <span>LAB</span>
-            </button>
-          </>
-        )}
-
-        {/* spacer */}
-        <div className="flex-1" />
-
-        {/* refresh */}
-        <button
-          type="button"
-          onClick={() => load(true)}
-          disabled={refreshing}
-          title="Refresh"
-          className="flex h-10 w-10 items-center justify-center rounded-xl text-white/30 transition-colors hover:bg-white/8 hover:text-white/60 disabled:opacity-30"
-        >
-          <RefreshCw className={cn('h-4 w-4', refreshing && 'animate-spin')} />
-        </button>
-
-        {/* fullscreen toggle */}
-        <button
-          type="button"
-          onClick={() => setFullscreen(v => !v)}
-          title={fullscreen ? 'Exit fullscreen' : 'Fullscreen'}
-          className="flex h-10 w-10 items-center justify-center rounded-xl text-white/30 transition-colors hover:bg-white/8 hover:text-white/60"
-        >
-          {fullscreen
-            ? <Minimize2 className="h-4 w-4" />
-            : <Maximize2 className="h-4 w-4" />
-          }
-        </button>
+          )}
+          <button
+            type="button"
+            onClick={() => setFullscreen((v) => !v)}
+            title={fullscreen ? 'Exit fullscreen' : 'Fullscreen'}
+            className="flex h-7 w-7 items-center justify-center rounded-lg border border-white/8 text-white/30 transition-colors hover:border-white/20 hover:text-white/70"
+          >
+            {fullscreen ? (
+              <Minimize2 className="h-3.5 w-3.5" />
+            ) : (
+              <Maximize2 className="h-3.5 w-3.5" />
+            )}
+          </button>
+        </div>
       </div>
 
-      {/* ── 3D scene area ── */}
-      <div className="relative flex flex-1 flex-col overflow-hidden">
-        {items === null ? (
-          <div className="flex flex-1 items-center justify-center text-sm text-white/30">
-            Loading…
+      <div className="relative flex flex-1 overflow-hidden">
+        <div className="flex w-14 flex-shrink-0 flex-col items-center gap-1 overflow-y-auto border-r border-white/6 bg-[#080808] py-2">
+          {PALETTE.map((group, gi) => (
+            <div key={group.id} className="flex w-full flex-col items-center gap-1">
+              {gi > 0 && <div className="my-1 h-px w-7 bg-white/8" />}
+              <span className="font-mono text-[7px] uppercase tracking-widest text-white/20">
+                {group.label}
+              </span>
+              {group.tools.map((tool) => {
+                const disabled = tool.needsSelection && !selectedId;
+                const active = activeTool === tool.id;
+                return (
+                  <button
+                    key={tool.id}
+                    type="button"
+                    title={`${tool.label}${tool.hotkey ? ` (${tool.hotkey})` : ''}`}
+                    onClick={() => handleToolClick(tool.id)}
+                    disabled={disabled}
+                    className={cn(
+                      'group relative flex h-9 w-9 items-center justify-center rounded-lg transition-colors',
+                      active && 'bg-sky-500/15 ring-1 ring-sky-500/40',
+                      !active && !disabled && 'hover:bg-white/8',
+                      disabled && 'cursor-not-allowed opacity-25',
+                    )}
+                  >
+                    <tool.Icon
+                      className="h-4 w-4 transition-colors group-hover:text-white"
+                      style={tool.color ? { color: tool.color } : undefined}
+                    />
+                    <span className="pointer-events-none absolute left-full z-50 ml-2 whitespace-nowrap rounded-md border border-white/10 bg-[#111] px-2 py-0.5 font-mono text-[9px] text-white/70 opacity-0 shadow-lg transition-opacity group-hover:opacity-100">
+                      {tool.label}
+                      {tool.hotkey ? (
+                        <span className="ml-1 text-white/30">[{tool.hotkey}]</span>
+                      ) : null}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+
+        <div className="relative flex flex-1 overflow-hidden">
+          {isEmpty ? (
+            <EmptyState onSpawn={spawnPrimitive} />
+          ) : (
+            <SimulationWorkspace
+              items={[]}
+              activeTab="lab"
+              spawnedShapes={spawnedShapes}
+              onSetSpawnedShapes={setSpawnedShapes}
+              pendingGeoOps={pendingGeoOps}
+            />
+          )}
+        </div>
+
+        {outlinerOpen && (
+          <div className="flex w-60 flex-shrink-0 flex-col border-l border-white/6 bg-[#080808]">
+            <Outliner
+              shapes={spawnedShapes}
+              pendingOps={pendingGeoOps}
+              selectedId={selectedId}
+              onSelect={(id) => {
+                setSelectedId(id);
+                setStatusHint(id ? 'Object selected' : 'Cleared selection');
+              }}
+              onRemove={(id) => {
+                setSpawnedShapes((prev) => prev.filter((s) => s.id !== id));
+                if (selectedId === id) setSelectedId(null);
+                setStatusHint('Removed object');
+              }}
+            />
+            <div className="flex-1 overflow-y-auto border-t border-white/6 p-3">
+              <div className="mb-2 flex items-center gap-1.5">
+                <Layers className="h-3 w-3 text-white/30" />
+                <span className="font-mono text-[9px] uppercase tracking-widest text-white/40">
+                  Properties
+                </span>
+              </div>
+              {selectedShape ? (
+                <PropertiesPanel shape={selectedShape} />
+              ) : (
+                <p className="font-mono text-[10px] leading-relaxed text-white/25">
+                  Select an object to inspect.
+                  <br />
+                  <span className="text-white/15">No selection.</span>
+                </p>
+              )}
+            </div>
           </div>
-        ) : tab === 'visual' ? (
-          <InventoryVisualWorkspace
-            items={safeItems}
-            headerActions={null}
-            onSelectItem={() => {}}
-            onAskCopilot={(item, intent) => {
-              if (intent === 'writeoff') {
-                void copilotSend(`Write off ${item.remaining_quantity} ${item.product.base_unit} of ${item.product.name}`);
-              } else {
-                void copilotSend(`Tell me about ${item.product.name} in my inventory`);
-              }
-            }}
-          />
-        ) : (
-          <SimulationWorkspace items={safeItems} activeTab={simTab} spawnedShapes={spawnedShapes} onSetSpawnedShapes={setSpawnedShapes} />
         )}
       </div>
+
+      <div className="flex h-7 flex-shrink-0 items-center justify-between border-t border-white/6 bg-[#0a0a0a] px-4 font-mono text-[10px]">
+        <div className="flex items-center gap-3">
+          <span className="text-white/30">
+            <span className="text-white/15">Cmd:</span>{' '}
+            <span className="text-sky-400/60">{activeTool}</span>
+          </span>
+          <span className="text-white/15">·</span>
+          <span className="text-white/30">{statusHint}</span>
+        </div>
+        <div className="flex items-center gap-3 text-white/30">
+          <span>{totalObjects} obj</span>
+          {selectedShape && (
+            <>
+              <span className="text-white/15">·</span>
+              <span style={{ color: selectedShape.color }}>{selectedShape.label}</span>
+            </>
+          )}
+          <span className="text-white/15">·</span>
+          <span className="text-emerald-500/40">● ready</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function EmptyState({ onSpawn }: { onSpawn: (s: SpawnShape) => void }) {
+  return (
+    <div className="relative flex h-full w-full flex-col items-center justify-center gap-6">
+      <svg
+        className="pointer-events-none absolute inset-0 h-full w-full opacity-[0.04]"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <defs>
+          <pattern id="lab-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" strokeWidth="0.5" />
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#lab-grid)" />
+      </svg>
+
+      <div className="relative flex flex-col items-center gap-4">
+        <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-white/8 bg-white/4">
+          <Plus className="h-7 w-7 text-white/20" />
+        </div>
+        <div className="flex flex-col items-center gap-1 text-center">
+          <p className="font-mono text-[13px] font-semibold text-white/30">Empty scene</p>
+          <p className="font-mono text-[10px] text-white/15">
+            Pick a tool from the left,
+            <br />
+            or ask the Copilot: <em className="text-sky-500/50">create a cube</em>
+          </p>
+        </div>
+
+        <div className="mt-2 flex flex-wrap justify-center gap-2">
+          {(['cube', 'cylinder', 'cone', 'torus', 'sphere'] as SpawnShape[]).map((shape) => {
+            const Icon = SHAPE_ICON[shape];
+            const color = SHAPE_COLOR[shape];
+            return (
+              <button
+                key={shape}
+                type="button"
+                onClick={() => onSpawn(shape)}
+                className="flex flex-col items-center gap-1.5 rounded-xl border px-3 py-2.5 transition-colors hover:bg-white/5"
+                style={{ borderColor: `${color}25`, color: `${color}80` }}
+              >
+                <Icon className="h-5 w-5" style={{ color }} />
+                <span className="font-mono text-[8px] uppercase tracking-widest">
+                  {SHAPE_LABEL[shape]}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Outliner({
+  shapes,
+  pendingOps,
+  selectedId,
+  onSelect,
+  onRemove,
+}: {
+  shapes: SpawnedShape[];
+  pendingOps: GeometryOpCommand[];
+  selectedId: string | null;
+  onSelect: (id: string | null) => void;
+  onRemove: (id: string) => void;
+}) {
+  const [expanded, setExpanded] = useState(true);
+  return (
+    <div className="flex flex-col">
+      <button
+        type="button"
+        onClick={() => setExpanded((v) => !v)}
+        className="flex items-center gap-1 px-3 py-2 hover:bg-white/4"
+      >
+        {expanded ? (
+          <ChevronDown className="h-3 w-3 text-white/40" />
+        ) : (
+          <ChevronRight className="h-3 w-3 text-white/40" />
+        )}
+        <span className="font-mono text-[9px] uppercase tracking-widest text-white/40">Scene</span>
+        <span className="ml-auto font-mono text-[9px] text-white/20">
+          {shapes.length + pendingOps.length}
+        </span>
+      </button>
+
+      {expanded && (
+        <div className="flex flex-col gap-0.5 px-1 pb-2">
+          {shapes.length === 0 && pendingOps.length === 0 && (
+            <p className="px-3 py-2 font-mono text-[10px] text-white/20">Scene is empty.</p>
+          )}
+          {shapes.map((s) => {
+            const active = s.id === selectedId;
+            return (
+              <div
+                key={s.id}
+                className={cn(
+                  'group flex items-center gap-2 rounded-md px-2 py-1.5 transition-colors',
+                  active ? 'bg-sky-500/12 ring-1 ring-sky-500/30' : 'hover:bg-white/4',
+                )}
+              >
+                <button
+                  type="button"
+                  onClick={() => onSelect(active ? null : s.id)}
+                  className="flex flex-1 items-center gap-2 text-left"
+                >
+                  <span
+                    className="h-2 w-2 flex-shrink-0 rounded-sm"
+                    style={{
+                      backgroundColor: s.color,
+                      boxShadow: active ? `0 0 6px ${s.color}` : 'none',
+                    }}
+                  />
+                  <span className="truncate font-mono text-[10px] text-white/70">{s.label}</span>
+                  <span className="font-mono text-[8px] text-white/20">{s.shape}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onRemove(s.id)}
+                  title="Remove"
+                  className="opacity-0 transition-opacity hover:text-rose-400 group-hover:opacity-100"
+                >
+                  <Trash2 className="h-3 w-3 text-white/30" />
+                </button>
+              </div>
+            );
+          })}
+          {pendingOps.map((op, i) => (
+            <div key={i} className="flex items-center gap-2 rounded-md px-2 py-1.5">
+              <span className="h-2 w-2 flex-shrink-0 rounded-sm bg-amber-400" />
+              <span className="truncate font-mono text-[10px] text-white/70">
+                {op.label ?? `${op.operation}`}
+              </span>
+              <span className="ml-auto font-mono text-[8px] text-amber-400/60">CSG</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function PropertiesPanel({ shape }: { shape: SpawnedShape }) {
+  return (
+    <div className="space-y-2">
+      <Row label="Type">
+        <span className="font-mono text-[10px] text-white/70">{shape.shape}</span>
+      </Row>
+      <Row label="Name">
+        <span className="font-mono text-[10px] text-white/70">{shape.label}</span>
+      </Row>
+      <Row label="Color">
+        <span className="flex items-center gap-1.5">
+          <span className="h-3 w-3 rounded-sm" style={{ backgroundColor: shape.color }} />
+          <span className="font-mono text-[9px] uppercase text-white/50">{shape.color}</span>
+        </span>
+      </Row>
+      <Row label="ID">
+        <span className="truncate font-mono text-[8px] text-white/30">{shape.id}</span>
+      </Row>
+      <div className="mt-3 rounded-md border border-white/6 bg-white/2 p-2">
+        <p className="font-mono text-[9px] leading-relaxed text-white/30">
+          Mesh density and color are edited directly on the viewport toolbar
+          under the model.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function Row({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="flex items-center justify-between gap-2">
+      <span className="font-mono text-[8px] uppercase tracking-widest text-white/30">{label}</span>
+      <span className="min-w-0">{children}</span>
     </div>
   );
 }

@@ -20,7 +20,9 @@ import { buildInventoryScene } from '@/components/visual/builders/inventoryScene
 import type { SceneState } from '@/components/visual/sceneTypes';
 import {
   type SpawnShape,
+  type GeometryOpCommand,
 } from '@/components/workspace/WorkspaceCommands';
+import { useGeometryOrchestrator } from '@/hooks/useGeometryOrchestrator';
 
 const VisualSceneRenderer = dynamic(
   () => import('@/components/visual/VisualSceneRenderer').then((m) => m.VisualSceneRenderer),
@@ -46,12 +48,10 @@ const ModelViewer = dynamic(
   },
 );
 
-// GLB URLs — localhost in dev, Koyeb in production
+// GLB URLs — use env override or Koyeb production URL
 const KOYEB_GLB_URL = 'https://ministerial-yetta-fodi999-c58d8823.koyeb.app/api/laboratory/debug-glb';
 const BASE_URL =
-  typeof window !== 'undefined' && window.location.hostname === 'localhost'
-    ? 'http://localhost:8000/api/laboratory/debug-glb'
-    : KOYEB_GLB_URL;
+  `${process.env.NEXT_PUBLIC_BACKEND_URL ?? 'https://ministerial-yetta-fodi999-c58d8823.koyeb.app'}/api/laboratory/debug-glb`;
 
 type SurfaceType = 'sci_fi_card' | 'organic_sphere';
 
@@ -163,9 +163,11 @@ interface Props {
   /** Lifted state from parent so shapes survive tab switches */
   spawnedShapes?: SpawnedShape[];
   onSetSpawnedShapes?: Dispatch<SetStateAction<SpawnedShape[]>>;
+  /** CSG geometry operations dispatched by Gemini */
+  pendingGeoOps?: GeometryOpCommand[];
 }
 
-export function SimulationWorkspace({ items, activeTab, spawnedShapes: externalShapes, onSetSpawnedShapes }: Props) {
+export function SimulationWorkspace({ items, activeTab, spawnedShapes: externalShapes, onSetSpawnedShapes, pendingGeoOps = [] }: Props) {
   const { day, playing, speed, setSpeed, play, pause, jump } = useSimClock(SIM_DAYS);
   const [internalTab, setInternalTab] = useState<'forecast' | 'lab'>('forecast');
   const tab = activeTab ?? internalTab;
@@ -222,7 +224,7 @@ export function SimulationWorkspace({ items, activeTab, spawnedShapes: externalS
 
           {/* ── Main viewport — objects come from Copilot only ── */}
           <div className="relative flex flex-1 flex-col overflow-hidden">
-            {spawnedShapes.length === 0 ? (
+            {spawnedShapes.length === 0 && pendingGeoOps.length === 0 ? (
               /* Empty scene — Blender-style hint */
               <div className="flex h-full flex-col items-center justify-center gap-3">
                 <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-white/8 bg-white/4">
@@ -270,6 +272,29 @@ export function SimulationWorkspace({ items, activeTab, spawnedShapes: externalS
                   </div>
                 ))}
               </div>
+            )}
+
+            {/* ── CSG Geometry ops from Gemini ── */}
+            {pendingGeoOps.length > 0 && spawnedShapes.length === 0 && (
+              pendingGeoOps.length === 1 ? (
+                <div className="absolute inset-0">
+                  <GeoOpCard op={pendingGeoOps[0]} fullscreen />
+                </div>
+              ) : (
+                <div
+                  className="grid h-full w-full"
+                  style={{
+                    gridTemplateColumns: pendingGeoOps.length <= 2 ? `repeat(${pendingGeoOps.length}, 1fr)` : 'repeat(2, 1fr)',
+                    gridTemplateRows: pendingGeoOps.length <= 2 ? '1fr' : `repeat(${Math.ceil(pendingGeoOps.length / 2)}, 1fr)`,
+                  }}
+                >
+                  {pendingGeoOps.map((op, i) => (
+                    <div key={i} className="relative min-h-0 border border-white/5">
+                      <GeoOpCard op={op} fullscreen />
+                    </div>
+                  ))}
+                </div>
+              )
             )}
 
             {/* Object count badge + clear — bottom-left */}
@@ -418,9 +443,8 @@ function SimBtn({
 // ── Lab shape card — real 3D GLB from backend ────────────────────────────────
 
 const BACKEND_BASE =
-  typeof window !== 'undefined' && window.location.hostname === 'localhost'
-    ? 'http://localhost:8000'
-    : 'https://ministerial-yetta-fodi999-c58d8823.koyeb.app';
+  process.env.NEXT_PUBLIC_BACKEND_URL ??
+  'https://ministerial-yetta-fodi999-c58d8823.koyeb.app';
 
 /** Map frontend SpawnShape → backend dispatcher slug */
 const SHAPE_SLUG: Record<SpawnShape, string> = {
@@ -431,7 +455,46 @@ const SHAPE_SLUG: Record<SpawnShape, string> = {
   cube:      'shape_cube',
   sphere:    'shape_sphere',
   line:      'shape_line',
+  cylinder:  'shape_cylinder',
+  cone:      'shape_cone',
+  torus:     'shape_torus',
 };
+
+/**
+ * Semi-transparent grid overlay that visually communicates mesh topology.
+ * Renders an SVG grid scaled to the viewport — a quick stand-in for real
+ * Three.js wireframe (which would require a custom R3F child component).
+ * Color matches the active shape accent.
+ */
+function WireframeOverlay({ color }: { color: string }) {
+  return (
+    <div
+      className="pointer-events-none absolute inset-0"
+      style={{ zIndex: 10 }}
+    >
+      <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="wf-grid" width="20" height="20" patternUnits="userSpaceOnUse">
+            <path d="M 20 0 L 0 0 0 20" fill="none" stroke={color} strokeWidth="0.4" strokeOpacity="0.35" />
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#wf-grid)" />
+        {/* diagonal accent lines (Plasticity-style construction lines) */}
+        <line x1="0" y1="0" x2="100%" y2="100%" stroke={color} strokeWidth="0.3" strokeOpacity="0.12" />
+        <line x1="100%" y1="0" x2="0" y2="100%" stroke={color} strokeWidth="0.3" strokeOpacity="0.12" />
+      </svg>
+      {/* top badge */}
+      <div className="absolute left-1/2 top-2 -translate-x-1/2">
+        <span
+          className="rounded-full border px-2 py-0.5 font-mono text-[8px] font-bold uppercase tracking-widest backdrop-blur-sm"
+          style={{ color, borderColor: `${color}40`, background: `${color}12` }}
+        >
+          wireframe
+        </span>
+      </div>
+    </div>
+  );
+}
 
 function LabShapeCard({
   shape,
@@ -447,75 +510,511 @@ function LabShapeCard({
   fullscreen?: boolean;
   onRemove: () => void;
 }) {
-  const glbUrl = `${BACKEND_BASE}/api/laboratory/debug-glb/${SHAPE_SLUG[shape]}`;
+  const [rotating, setRotating] = useState(true);
+  // ── Mesh density controls (cube only) ─────────────────────────────────────
+  // Subdivisions map:  1=draft(12 tris)  2=standard(48)  3=high(108)
+  //                    4=dense(192)       5=ultra(300)
+  const SUB_MIN = 1;
+  const SUB_MAX = 5;
+  const SUB_LABELS: Record<number, string> = { 1: 'Draft', 2: 'Std', 3: 'High', 4: 'Dense', 5: 'Ultra' };
+  const SUB_TRIS:  Record<number, number>  = { 1: 12, 2: 48, 3: 108, 4: 192, 5: 300 };
+  const [subdivisions, setSubdivisions] = useState(2);
+  const [wireframe, setWireframe] = useState(false);
+
+  // ── Parasolid primitive parameters (cylinder / cone / torus) ──────────────
+  // Stored as numbers in metres. Steppers below clamp & round to nice values.
+  const [cylRadius,   setCylRadius]   = useState(0.5);
+  const [cylHeight,   setCylHeight]   = useState(1.0);
+  const [coneR0,      setConeR0]      = useState(0.5);
+  const [coneR1,      setConeR1]      = useState(0.0);
+  const [coneHeight,  setConeHeight]  = useState(1.0);
+  const [torusMajor,  setTorusMajor]  = useState(0.5);
+  const [torusMinor,  setTorusMinor]  = useState(0.15);
+
+  // Build GLB URL with shape-specific query params.
+  const glbUrl = useMemo(() => {
+    const slug = SHAPE_SLUG[shape];
+    const base = `${BACKEND_BASE}/api/laboratory/debug-glb/${slug}`;
+    if (shape === 'cube')     return `${base}?subdivisions=${subdivisions}`;
+    if (shape === 'cylinder') return `${base}?radius=${cylRadius.toFixed(3)}&height=${cylHeight.toFixed(3)}`;
+    if (shape === 'cone')     return `${base}?radius=${coneR0.toFixed(3)}&radius_top=${coneR1.toFixed(3)}&height=${coneHeight.toFixed(3)}`;
+    if (shape === 'torus')    return `${base}?major_radius=${torusMajor.toFixed(3)}&minor_radius=${torusMinor.toFixed(3)}`;
+    return base;
+  }, [shape, subdivisions, cylRadius, cylHeight, coneR0, coneR1, coneHeight, torusMajor, torusMinor]);
+
+  // ── Mesh density toolbar (cube only) ──────────────────────────────────────
+  const MeshControls = () => (
+    <div className="flex items-center gap-1">
+      {/* − button */}
+      <button
+        type="button"
+        disabled={subdivisions <= SUB_MIN}
+        onClick={() => setSubdivisions((s) => Math.max(SUB_MIN, s - 1))}
+        title="Decrease mesh density"
+        className="flex h-6 w-6 items-center justify-center rounded-md border border-white/10 bg-white/4 font-mono text-[13px] text-white/50 transition-colors hover:border-white/20 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
+      >−</button>
+
+      {/* density badge */}
+      <button
+        type="button"
+        onClick={() => setWireframe((w) => !w)}
+        title={wireframe ? 'Hide wireframe' : 'Show wireframe'}
+        className={`flex h-6 min-w-[64px] items-center justify-center gap-1 rounded-md border px-2 font-mono text-[9px] font-semibold uppercase tracking-wider transition-colors ${
+          wireframe
+            ? 'border-sky-500/50 bg-sky-500/15 text-sky-300'
+            : 'border-white/10 bg-white/4 text-white/45 hover:text-white/70'
+        }`}
+      >
+        <span className="text-[10px]">⬡</span>
+        {SUB_LABELS[subdivisions]} · {SUB_TRIS[subdivisions]}▲
+      </button>
+
+      {/* + button */}
+      <button
+        type="button"
+        disabled={subdivisions >= SUB_MAX}
+        onClick={() => setSubdivisions((s) => Math.min(SUB_MAX, s + 1))}
+        title="Increase mesh density"
+        className="flex h-6 w-6 items-center justify-center rounded-md border border-white/10 bg-white/4 font-mono text-[13px] text-white/50 transition-colors hover:border-white/20 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
+      >+</button>
+    </div>
+  );
+
+  // ── Parametric stepper for cylinder/cone/torus dimensions ─────────────────
+  const NumStepper = ({
+    label, value, min, max, step, fmt = (v: number) => v.toFixed(2), onChange,
+  }: {
+    label: string;
+    value: number;
+    min: number;
+    max: number;
+    step: number;
+    fmt?: (v: number) => string;
+    onChange: (v: number) => void;
+  }) => (
+    <div className="flex items-center gap-0.5">
+      <button
+        type="button"
+        disabled={value <= min + 1e-6}
+        onClick={() => onChange(Math.max(min, +(value - step).toFixed(3)))}
+        className="flex h-6 w-5 items-center justify-center rounded-l-md border border-white/10 bg-white/4 font-mono text-[12px] text-white/50 transition-colors hover:border-white/20 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
+      >−</button>
+      <span className="flex h-6 min-w-[58px] items-center justify-center gap-1 border-y border-white/10 bg-white/4 px-1 font-mono text-[9px] font-semibold uppercase tracking-wider text-white/55">
+        <span className="text-white/35">{label}</span>
+        <span style={{ color }}>{fmt(value)}</span>
+      </span>
+      <button
+        type="button"
+        disabled={value >= max - 1e-6}
+        onClick={() => onChange(Math.min(max, +(value + step).toFixed(3)))}
+        className="flex h-6 w-5 items-center justify-center rounded-r-md border border-white/10 bg-white/4 font-mono text-[12px] text-white/50 transition-colors hover:border-white/20 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
+      >+</button>
+    </div>
+  );
+
+  // Per-shape inspector (renders nothing for shapes without params).
+  const ShapeControls = () => {
+    if (shape === 'cube') return <MeshControls />;
+    if (shape === 'cylinder') {
+      return (
+        <div className="flex items-center gap-1">
+          <NumStepper label="R" value={cylRadius} min={0.1} max={1.0} step={0.05} onChange={setCylRadius} />
+          <NumStepper label="H" value={cylHeight} min={0.2} max={2.0} step={0.1}  onChange={setCylHeight} />
+        </div>
+      );
+    }
+    if (shape === 'cone') {
+      return (
+        <div className="flex items-center gap-1">
+          <NumStepper label="R0" value={coneR0}     min={0.1} max={1.0} step={0.05} onChange={setConeR0} />
+          <NumStepper label="R1" value={coneR1}     min={0.0} max={1.0} step={0.05} onChange={setConeR1} />
+          <NumStepper label="H"  value={coneHeight} min={0.2} max={2.0} step={0.1}  onChange={setConeHeight} />
+        </div>
+      );
+    }
+    if (shape === 'torus') {
+      // minor must stay strictly less than major.
+      const maxMinor = Math.max(0.05, torusMajor - 0.05);
+      return (
+        <div className="flex items-center gap-1">
+          <NumStepper label="R" value={torusMajor} min={0.2} max={1.0} step={0.05} onChange={(v) => {
+            setTorusMajor(v);
+            if (torusMinor >= v - 0.05) setTorusMinor(Math.max(0.05, v - 0.1));
+          }} />
+          <NumStepper label="r" value={torusMinor} min={0.05} max={maxMinor} step={0.025} onChange={setTorusMinor} />
+        </div>
+      );
+    }
+    return null;
+  };
+
+  const hasShapeControls = ['cube', 'cylinder', 'cone', 'torus'].includes(shape);
 
   if (fullscreen) {
     return (
-      <div className="group relative h-full w-full">
-        <ModelViewer
-          modelUrl={glbUrl}
-          className="h-full w-full"
-          displayMode="clean"
-          lightingPreset="cleanProduct"
-          autoRotate
-          renderQuality="hd"
-        />
-        {/* Label bottom-left */}
-        <div className="pointer-events-none absolute bottom-4 left-4 flex items-center gap-2">
-          <span
-            className="rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-widest backdrop-blur-sm"
-            style={{ color, background: `${color}18`, border: `1px solid ${color}30` }}
-          >
-            {label}
-          </span>
+      <div className="flex h-full w-full flex-col">
+        {/* 3D viewport fills remaining space */}
+        <div className="relative flex-1 overflow-hidden">
+          <ModelViewer
+            modelUrl={glbUrl}
+            className="h-full w-full"
+            displayMode={wireframe ? 'grid' : 'grid'}
+            lightingPreset="cleanProduct"
+            autoRotate={rotating}
+            renderQuality="hd"
+            snapToFloor
+          />
+          {/* Wireframe overlay via SVG CSS on Canvas — simple approach */}
+          {wireframe && <WireframeOverlay color={color} />}
+          {/* Label bottom-left overlay */}
+          <div className="pointer-events-none absolute bottom-3 left-3">
+            <span
+              className="rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-widest backdrop-blur-sm"
+              style={{ color, background: `${color}18`, border: `1px solid ${color}30` }}
+            >
+              {label}
+            </span>
+          </div>
         </div>
-        {/* Remove top-right */}
-        <button
-          type="button"
-          onClick={onRemove}
-          className="absolute right-3 top-3 flex h-6 w-6 items-center justify-center rounded-full border border-white/10 bg-black/60 text-white/30 opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100 hover:text-white"
-          title="Remove"
-        >
-          ×
-        </button>
+
+        {/* ── Fixed bottom toolbar ── */}
+        <div className="shrink-0 flex items-center justify-between border-t border-white/8 bg-[#0a0a0a] px-4 py-2">
+          {/* Left: object name */}
+          <span className="font-mono text-[10px] uppercase tracking-widest text-white/25">{label}</span>
+
+          {/* Center: shape parameters + rotate controls */}
+          <div className="flex items-center gap-2">
+            {hasShapeControls && <ShapeControls />}
+            <div className="flex items-center gap-1 rounded-lg border border-white/8 bg-white/4 p-1">
+              <button
+                type="button"
+                onClick={() => setRotating(true)}
+                title="Auto-rotate"
+                className={`flex items-center gap-1.5 rounded-md px-3 py-1 text-[11px] font-medium transition-colors ${rotating ? 'bg-white/15 text-white' : 'text-white/35 hover:text-white/70'}`}
+              >
+                <span>↻</span> Rotate
+              </button>
+              <button
+                type="button"
+                onClick={() => setRotating(false)}
+                title="Freeze"
+                className={`flex items-center gap-1.5 rounded-md px-3 py-1 text-[11px] font-medium transition-colors ${!rotating ? 'bg-white/15 text-white' : 'text-white/35 hover:text-white/70'}`}
+              >
+                <span>⏹</span> Static
+              </button>
+            </div>
+          </div>
+
+          {/* Right: remove */}
+          <button
+            type="button"
+            onClick={onRemove}
+            className="rounded-md px-2 py-1 text-[11px] text-rose-400/40 transition-colors hover:text-rose-400"
+            title="Remove"
+          >
+            Remove
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
     <div
-      className="group relative flex flex-col items-center gap-2"
+      className="group relative flex flex-col items-center gap-0"
       style={{ filter: `drop-shadow(0 0 20px ${color}44)` }}
     >
+      {/* 3D viewport */}
       <div
-        className="overflow-hidden rounded-2xl border bg-black/60 backdrop-blur-sm transition-all group-hover:scale-105"
-        style={{ borderColor: `${color}40`, width: 200, height: 200 }}
+        className="relative overflow-hidden rounded-t-2xl border-x border-t bg-black/60"
+        style={{ borderColor: `${color}40`, width: 200, height: 180 }}
       >
         <ModelViewer
           modelUrl={glbUrl}
           className="h-full w-full"
-          displayMode="clean"
+          displayMode="grid"
           lightingPreset="cleanProduct"
-          autoRotate
+          autoRotate={rotating}
           renderQuality="hd"
+          snapToFloor
         />
+        {wireframe && <WireframeOverlay color={color} />}
       </div>
-      <span
-        className="rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-widest"
-        style={{ color, background: `${color}18` }}
+
+      {/* ── Toolbar panel ── */}
+      <div
+        className="flex w-full flex-col gap-1 rounded-b-2xl border border-t-0 bg-[#0d0d0d] px-2 py-1.5"
+        style={{ width: 200, borderColor: `${color}40` }}
       >
-        {label}
-      </span>
-      <button
-        type="button"
-        onClick={onRemove}
-        className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full border border-white/15 bg-black/80 text-white/30 opacity-0 transition-opacity group-hover:opacity-100 hover:text-white"
-        title="Remove shape"
-      >
-        ×
-      </button>
+        {/* Top row: label + rotate + remove */}
+        <div className="flex items-center justify-between">
+          <span
+            className="truncate text-[9px] font-semibold uppercase tracking-widest"
+            style={{ color }}
+          >
+            {label}
+          </span>
+          <div className="flex items-center gap-0.5 rounded-md border border-white/8 bg-white/4 p-0.5">
+            <button
+              type="button"
+              onClick={() => setRotating(true)}
+              title="Auto-rotate"
+              className={`rounded px-1.5 py-0.5 text-[10px] font-medium transition-colors ${rotating ? 'bg-white/15 text-white' : 'text-white/30 hover:text-white/60'}`}
+            >↻</button>
+            <button
+              type="button"
+              onClick={() => setRotating(false)}
+              title="Static"
+              className={`rounded px-1.5 py-0.5 text-[10px] font-medium transition-colors ${!rotating ? 'bg-white/15 text-white' : 'text-white/30 hover:text-white/60'}`}
+            >⏹</button>
+          </div>
+          <button
+            type="button"
+            onClick={onRemove}
+            className="text-[10px] text-rose-400/30 transition-colors hover:text-rose-400"
+            title="Remove"
+          >✕</button>
+        </div>
+        {/* Bottom row: shape parameters (cube/cylinder/cone/torus) */}
+        {hasShapeControls && (
+          <div className="flex justify-center">
+            <ShapeControls />
+          </div>
+        )}
+      </div>
     </div>
   );
 }
 
+// ── GeoOpCard — CSG model from geometry-op endpoint ─────────────────────────
 
+function GeoOpCard({ op, fullscreen = false }: { op: GeometryOpCommand; fullscreen?: boolean }) {
+  const { state, executeOp, registerScreenshot } = useGeometryOrchestrator();
+  const [rotating, setRotating] = useState(true);
+
+  useEffect(() => {
+    void executeOp({
+      operation: op.operation,
+      target: op.target,
+      cutter: op.cutter,
+      quality: op.quality,
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const label = op.label ?? `${op.operation}(${op.target.type}, ${op.cutter.type})`;
+  const color = op.target.color ?? '#38BDF8';
+
+  if (state.status === 'building') {
+    return (
+      <div className={`flex items-center justify-center bg-[#0a0a0a] ${fullscreen ? 'h-full w-full' : ''}`}
+        style={fullscreen ? undefined : { width: 200, height: 200 }}>
+        <div className="flex flex-col items-center gap-3">
+          <div className="relative flex h-12 w-12 items-center justify-center">
+            <div className="absolute inset-0 animate-spin rounded-full border-2 border-white/5 border-t-sky-500/60" />
+            <div className="absolute inset-2 animate-spin rounded-full border border-white/5 border-t-sky-400/40" style={{ animationDirection: 'reverse', animationDuration: '1.4s' }} />
+            <span className="text-[18px]">⬡</span>
+          </div>
+          <div className="flex flex-col items-center gap-0.5">
+            <span className="font-mono text-[10px] font-semibold text-white/50">Building geometry</span>
+            <span className="font-mono text-[9px] text-white/20">{op.operation} · {op.target.type} − {op.cutter.type}</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (state.status === 'error') {
+    return (
+      <div className={`flex items-center justify-center bg-[#0a0a0a] ${fullscreen ? 'h-full w-full' : ''}`}
+        style={fullscreen ? undefined : { width: 200, height: 200 }}>
+        <div className="flex flex-col items-center gap-2">
+          <span className="text-2xl">⚠</span>
+          <span className="font-mono text-[9px] text-rose-400/60">{state.message}</span>
+        </div>
+      </div>
+    );
+  }
+
+  const glbUrl = state.status === 'ready' || state.status === 'reviewing'
+    ? (state as { glbUrl: string }).glbUrl
+    : null;
+
+  const isReviewing = state.status === 'reviewing';
+  const feedback = (state as { feedback?: string }).feedback;
+
+  if (!glbUrl) return null;
+
+  // ── AI Vision overlay (shared between fullscreen and card modes) ──────────
+  const VisionOverlay = () => (
+    <div
+      className="pointer-events-none absolute inset-0 z-20"
+      style={{
+        background: 'linear-gradient(135deg, rgba(251,191,36,0.06) 0%, transparent 50%, rgba(251,191,36,0.04) 100%)',
+      }}
+    >
+      {/* Corner scan brackets */}
+      {(['tl','tr','bl','br'] as const).map((corner) => (
+        <div
+          key={corner}
+          className="absolute h-5 w-5"
+          style={{
+            top: corner.startsWith('t') ? 10 : undefined,
+            bottom: corner.startsWith('b') ? 10 : undefined,
+            left: corner.endsWith('l') ? 10 : undefined,
+            right: corner.endsWith('r') ? 10 : undefined,
+            borderTop: corner.startsWith('t') ? '2px solid rgba(251,191,36,0.7)' : undefined,
+            borderBottom: corner.startsWith('b') ? '2px solid rgba(251,191,36,0.7)' : undefined,
+            borderLeft: corner.endsWith('l') ? '2px solid rgba(251,191,36,0.7)' : undefined,
+            borderRight: corner.endsWith('r') ? '2px solid rgba(251,191,36,0.7)' : undefined,
+          }}
+        />
+      ))}
+
+      {/* Horizontal scan line */}
+      <div
+        className="absolute left-0 right-0 h-px"
+        style={{
+          background: 'linear-gradient(90deg, transparent 0%, rgba(251,191,36,0.6) 20%, rgba(255,255,255,0.9) 50%, rgba(251,191,36,0.6) 80%, transparent 100%)',
+          animation: 'geoScanLine 2.2s ease-in-out infinite',
+          top: '10%',
+          boxShadow: '0 0 8px 1px rgba(251,191,36,0.4)',
+        }}
+      />
+
+      {/* Top-right: eye + label */}
+      <div className="absolute right-3 top-3 flex items-center gap-1.5 rounded-full border border-amber-400/30 bg-black/60 px-2.5 py-1 backdrop-blur-sm">
+        <span className="relative flex h-2 w-2">
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-400 opacity-60" />
+          <span className="relative inline-flex h-2 w-2 rounded-full bg-amber-400" />
+        </span>
+        <span className="font-mono text-[9px] font-semibold uppercase tracking-widest text-amber-300">
+          Gemini Vision
+        </span>
+      </div>
+
+      {/* Feedback text (if Gemini returned a comment) */}
+      {feedback && (
+        <div className="absolute bottom-12 left-3 right-3 rounded-lg border border-amber-400/20 bg-black/70 px-3 py-2 backdrop-blur-sm">
+          <div className="mb-1 flex items-center gap-1">
+            <span className="font-mono text-[8px] font-bold uppercase tracking-widest text-amber-400/60">AI feedback</span>
+          </div>
+          <p className="font-mono text-[9px] leading-relaxed text-white/60 line-clamp-3">{feedback}</p>
+        </div>
+      )}
+
+      {/* Bottom center: "analysing" status */}
+      <div className="absolute bottom-3 left-1/2 -translate-x-1/2">
+        <div className="flex items-center gap-1.5 rounded-full border border-amber-400/20 bg-black/50 px-2.5 py-0.5 backdrop-blur-sm">
+          <span className="font-mono text-[8px] text-amber-300/50">analysing scene</span>
+          <span className="flex gap-0.5">
+            {[0, 1, 2].map((i) => (
+              <span
+                key={i}
+                className="inline-block h-1 w-1 rounded-full bg-amber-400/60"
+                style={{ animation: `geoDot 1.2s ${i * 0.2}s ease-in-out infinite` }}
+              />
+            ))}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+
+  if (fullscreen) {
+    return (
+      <div className="flex h-full w-full flex-col">
+        <div className="relative flex-1 overflow-hidden">
+          <ModelViewer
+            modelUrl={glbUrl}
+            className="h-full w-full"
+            displayMode="grid"
+            lightingPreset="cleanProduct"
+            autoRotate={rotating}
+            renderQuality="hd"
+            snapToFloor
+            onReady={(api) => { registerScreenshot(() => api.takeScreenshot()); }}
+          />
+          {isReviewing && <VisionOverlay />}
+          <div className="pointer-events-none absolute bottom-3 left-3">
+            <span
+              className="rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-widest backdrop-blur-sm"
+              style={{ color, background: `${color}18`, border: `1px solid ${color}30` }}
+            >
+              {label}
+            </span>
+          </div>
+        </div>
+        <div className="shrink-0 flex items-center justify-between border-t border-white/8 bg-[#0a0a0a] px-4 py-2">
+          <span className="font-mono text-[10px] uppercase tracking-widest text-white/25">{label}</span>
+          {/* AI status badge in toolbar */}
+          {isReviewing ? (
+            <div className="flex items-center gap-1.5 rounded-lg border border-amber-400/25 bg-amber-400/8 px-3 py-1">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-400 opacity-75" />
+                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-amber-400" />
+              </span>
+              <span className="font-mono text-[10px] font-medium text-amber-300">AI reviewing geometry</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-1 rounded-lg border border-white/8 bg-white/4 p-1">
+              <button type="button" onClick={() => setRotating(true)}
+                className={`flex items-center gap-1.5 rounded-md px-3 py-1 text-[11px] font-medium transition-colors ${rotating ? 'bg-white/15 text-white' : 'text-white/35 hover:text-white/70'}`}>
+                <span>↻</span> Rotate
+              </button>
+              <button type="button" onClick={() => setRotating(false)}
+                className={`flex items-center gap-1.5 rounded-md px-3 py-1 text-[11px] font-medium transition-colors ${!rotating ? 'bg-white/15 text-white' : 'text-white/35 hover:text-white/70'}`}>
+                <span>⏹</span> Static
+              </button>
+            </div>
+          )}
+          <span className="font-mono text-[9px] text-sky-400/40">CSG · {op.operation}</span>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="group relative flex flex-col items-center gap-0"
+      style={{ filter: `drop-shadow(0 0 20px ${color}44)` }}>
+      <div className="relative overflow-hidden rounded-t-2xl border-x border-t bg-black/60"
+        style={{ borderColor: isReviewing ? 'rgba(251,191,36,0.5)' : `${color}40`, width: 200, height: 180, transition: 'border-color 0.4s' }}>
+        <ModelViewer
+          modelUrl={glbUrl}
+          className="h-full w-full"
+          displayMode="grid"
+          lightingPreset="cleanProduct"
+          autoRotate={rotating}
+          renderQuality="hd"
+          snapToFloor
+          onReady={(api) => { registerScreenshot(() => api.takeScreenshot()); }}
+        />
+        {isReviewing && <VisionOverlay />}
+      </div>
+      <div className="flex w-full items-center justify-between rounded-b-2xl border border-t-0 bg-[#0d0d0d] px-2 py-1.5"
+        style={{ width: 200, borderColor: isReviewing ? 'rgba(251,191,36,0.4)' : `${color}40`, transition: 'border-color 0.4s' }}>
+        {isReviewing ? (
+          <div className="flex w-full items-center justify-center gap-1">
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-400 opacity-75" />
+              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-amber-400" />
+            </span>
+            <span className="font-mono text-[9px] font-semibold text-amber-300">AI looking…</span>
+          </div>
+        ) : (
+          <>
+            <span className="truncate text-[9px] font-semibold uppercase tracking-widest" style={{ color }}>
+              {label}
+            </span>
+            <div className="flex items-center gap-0.5 rounded-md border border-white/8 bg-white/4 p-0.5">
+              <button type="button" onClick={() => setRotating(true)}
+                className={`rounded px-1.5 py-0.5 text-[10px] font-medium transition-colors ${rotating ? 'bg-white/15 text-white' : 'text-white/30 hover:text-white/60'}`}>↻</button>
+              <button type="button" onClick={() => setRotating(false)}
+                className={`rounded px-1.5 py-0.5 text-[10px] font-medium transition-colors ${!rotating ? 'bg-white/15 text-white' : 'text-white/30 hover:text-white/60'}`}>⏹</button>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}

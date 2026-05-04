@@ -18,15 +18,52 @@
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef } from 'react';
 
-export type SpawnShape = 'square' | 'circle' | 'triangle' | 'cube' | 'sphere' | 'rectangle' | 'line';
+export type SpawnShape =
+  | 'square'
+  | 'circle'
+  | 'triangle'
+  | 'cube'
+  | 'sphere'
+  | 'rectangle'
+  | 'line'
+  | 'cylinder'
+  | 'cone'
+  | 'torus';
+
+export type GeometryOpCommand = {
+  operation: 'subtract' | 'union';
+  target: {
+    type: string;
+    color?: string;
+    /** Grid subdivisions per face axis (1..5). Higher = smoother bevel. */
+    subdivisions?: number;
+    /** Corner bevel 0.0 (sharp) … 1.0 (sphere). */
+    bevel?: number;
+  };
+  cutter: {
+    type: 'cylinder' | 'box' | 'sphere' | string;
+    radius?: number;
+    height?: number;
+    half_extents?: [number, number, number];
+    center?: [number, number, number];
+    cap_color?: string;
+  };
+  quality?: 'draft' | 'standard' | 'high' | 'ultra';
+  label?: string;
+};
 
 export type WorkspaceCommand =
   | { type: 'highlight_risks' }
   | { type: 'focus_item'; itemId: string }
   | { type: 'clear_focus' }
   | { type: 'set_view'; view: 'data' | 'visual' | 'simulation' }
-  /** Spawn a geometric shape in the Lab canvas. */
-  | { type: 'spawn_shape'; shape: SpawnShape; label: string; color?: string }
+  /** Spawn a geometric shape in the Lab canvas.
+   *  `mode` controls whether the new shape REPLACES the current one (default,
+   *  single-object Lab) or APPENDS alongside existing shapes (multi-object scene). */
+  | { type: 'spawn_shape'; shape: SpawnShape; label: string; color?: string; mode?: 'replace' | 'append' }
+  /** Spawn a CSG geometry operation result (Gemini-controlled).
+   *  `mode` works the same as for `spawn_shape`. */
+  | { type: 'geometry_op'; op: GeometryOpCommand; mode?: 'replace' | 'append' }
   /** Clear all spawned shapes from the Lab canvas. */
   | { type: 'clear_shapes' }
   /** Switch the active scene to SIM → Lab tab. */
