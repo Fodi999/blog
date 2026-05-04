@@ -31,6 +31,8 @@ import {
 
 import { cn } from '@/lib/utils';
 import { SimulationWorkspace } from '@/components/workspace/scenes/SimulationWorkspace';
+import { StudioProvider } from '@/components/studio/engine/StudioProvider';
+import { StudioSelectionBar } from '@/components/studio/panels/StudioSelectionBar';
 import {
   useWorkspaceCommand,
   createSceneObject,
@@ -461,46 +463,10 @@ export function SceneClient({ locale: _locale }: { locale: string }) {
         </div>
 
         <div className="relative flex flex-1 flex-col overflow-hidden">
-          {/* ── Plasticity-style selection-mode bar ── */}
-          {!isEmpty && (
-            <div className="pointer-events-auto absolute left-1/2 top-2 z-20 flex -translate-x-1/2 items-center gap-0.5 rounded-lg border border-white/10 bg-black/60 p-1 backdrop-blur-md">
-              {([
-                { id: 'object', label: 'Object', hotkey: '1' },
-                { id: 'face',   label: 'Face',   hotkey: '2' },
-                { id: 'edge',   label: 'Edge',   hotkey: '3' },
-                { id: 'vertex', label: 'Vertex', hotkey: '4' },
-              ] as const).map((m) => {
-                const active = selectionMode === m.id;
-                const disabled = m.id !== 'object'; // face/edge/vertex picking lands in follow-up
-                return (
-                  <button
-                    key={m.id}
-                    type="button"
-                    onClick={() => {
-                      setSelectionMode(m.id);
-                      if (disabled) {
-                        setStatusHint(`Mode · ${m.label} (cube only — coming soon)`);
-                      } else {
-                        setStatusHint(`Mode · ${m.label}`);
-                      }
-                    }}
-                    title={`${m.label} mode (${m.hotkey})`}
-                    className={cn(
-                      'flex items-center gap-1.5 rounded-md px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-wider transition-colors',
-                      active && 'bg-sky-500/20 text-sky-300 ring-1 ring-sky-500/40',
-                      !active && !disabled && 'text-white/55 hover:text-white',
-                      !active && disabled && 'text-white/30 hover:text-white/55',
-                    )}
-                  >
-                    <span>{m.label}</span>
-                    <span className={cn('text-[9px]', active ? 'text-sky-400/70' : 'text-white/25')}>
-                      {m.hotkey}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          )}
+          {/* ── Plasticity-style selection-mode bar (studio layer) ── */}
+          <StudioProvider>
+            {!isEmpty && <StudioSelectionBar />}
+          </StudioProvider>
 
           {isEmpty ? (
             <EmptyState onSpawn={spawnPrimitive} />
