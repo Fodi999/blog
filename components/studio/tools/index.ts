@@ -1,34 +1,18 @@
 /**
  * studio/tools/index.ts
  *
- * Tool registry — maps hotkeys and names to tool ids.
- * Each tool has a dedicated file with its logic.
+ * Public surface of the tools module.
+ * Import from here, not from tools.ts or registry.ts directly.
  */
 
-export type ToolId =
-  | 'select'
-  | 'move'
-  | 'rotate'
-  | 'scale'
-  | 'measure'
-  | 'delete';
-
-export type ToolDef = {
-  id: ToolId;
-  label: string;
-  hotkey: string;
-  icon: string;
-};
-
-export const TOOLS: ToolDef[] = [
-  { id: 'select',  label: 'Select',  hotkey: 'Q', icon: '▣' },
-  { id: 'move',    label: 'Move',    hotkey: 'W', icon: '↔' },
-  { id: 'rotate',  label: 'Rotate',  hotkey: 'E', icon: '↻' },
-  { id: 'scale',   label: 'Scale',   hotkey: 'R', icon: '⤢' },
-  { id: 'measure', label: 'Measure', hotkey: 'M', icon: '⊣⊢' },
-  { id: 'delete',  label: 'Delete',  hotkey: 'Del', icon: '✕' },
-];
-
-export const HOTKEY_MAP: Record<string, ToolId> = Object.fromEntries(
-  TOOLS.map((t) => [t.hotkey.toLowerCase(), t.id]),
-);
+export type { ToolId, ToolDef } from './registry';
+export type { ToolBehaviour } from './tools';
+export {
+  TOOLS,
+  TOOL_REGISTRY,
+  HOTKEY_MAP,
+  getToolDef,
+  getToolBehaviour,
+  resolveHotkey,
+  getToolGroup,
+} from './registry';

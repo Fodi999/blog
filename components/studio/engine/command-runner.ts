@@ -51,6 +51,9 @@ export class CommandRunner {
   canUndo(): boolean { return this.undoStack.length > 0; }
   canRedo(): boolean { return this.redoStack.length > 0; }
 
+  /** Read-only access to the current scene state. */
+  getState() { return this.store.getState(); }
+
   clear(): void {
     this.undoStack = [];
     this.redoStack = [];
