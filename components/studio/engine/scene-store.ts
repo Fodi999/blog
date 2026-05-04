@@ -30,12 +30,25 @@ import { createSceneObject, patchSceneObject } from './object-factory';
 export type SceneState = {
   objects: SceneObject[];
   selection: SelectionState;
+  /**
+   * `transformMode` kept at top level for backward-compat with GizmoLayer /
+   * StudioToolbar that read it directly. Always mirrors `tool.transformMode`.
+   */
   transformMode: TransformMode;
   viewMode: ViewMode;
   snap: SnapSettings;
   unit: 'm' | 'cm' | 'mm';
-  /** Complete tool configuration — selection mode, active view, grid, snap. */
-  toolState: StudioToolState;
+  /**
+   * Complete tool configuration.
+   * This is the canonical source of truth for tool state.
+   *
+   * tool.selectionMode — what you select (object / face / edge / vertex)
+   * tool.transformMode — what you do with it (select / move / rotate / scale / extrude / …)
+   * tool.snapEnabled   — grid snap on/off
+   * tool.gridSize      — snap grid size in metres
+   * tool.activeView    — camera view (perspective / top / front / right / left)
+   */
+  tool: StudioToolState;
 };
 
 export type SceneActions = {
@@ -55,6 +68,8 @@ export type SceneActions = {
   // Tools
   setTransformMode: (mode: TransformMode) => void;
   setViewMode: (mode: ViewMode) => void;
+  setSnapEnabled: (enabled: boolean) => void;
+  setActiveView: (view: StudioToolState['activeView']) => void;
   patchToolState: (patch: Partial<StudioToolState>) => void;
 
   // Snap
@@ -79,7 +94,7 @@ export function createSceneStore(initial?: Partial<SceneState>) {
       viewMode: 'solid' as ViewMode,
       snap: DEFAULT_SNAP,
       unit: 'm' as const,
-      toolState: DEFAULT_TOOL_STATE,
+      tool: DEFAULT_TOOL_STATE,
       ...initial,
 
       // ── Object actions ──
@@ -146,7 +161,7 @@ export function createSceneStore(initial?: Partial<SceneState>) {
       setSelectionMode(mode) {
         set((s) => {
           s.selection.mode = mode;
-          s.toolState.selectionMode = mode;
+          s.tool.selectionMode = mode;
           if (mode === 'object') s.selection.sub = null;
         });
       },
@@ -155,7 +170,7 @@ export function createSceneStore(initial?: Partial<SceneState>) {
       setTransformMode(mode) {
         set((s) => {
           s.transformMode = mode;
-          s.toolState.transformMode = mode;
+          s.tool.transformMode = mode;
         });
       },
 
@@ -163,8 +178,16 @@ export function createSceneStore(initial?: Partial<SceneState>) {
         set((s) => { s.viewMode = mode; });
       },
 
+      setSnapEnabled(enabled) {
+        set((s) => { s.tool.snapEnabled = enabled; });
+      },
+
+      setActiveView(view) {
+        set((s) => { s.tool.activeView = view; });
+      },
+
       patchToolState(patch) {
-        set((s) => { s.toolState = { ...s.toolState, ...patch }; });
+        set((s) => { s.tool = { ...s.tool, ...patch }; });
       },
 
       // ── Snap ──
