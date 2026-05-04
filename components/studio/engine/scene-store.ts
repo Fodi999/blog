@@ -17,10 +17,12 @@ import type {
   SpawnShape,
   ShapeParams,
   Material,
+  StudioToolState,
 } from '../core/types';
 import { EMPTY_SELECTION, type SelectionState } from '../core/selection';
 import { DEFAULT_SNAP, type SnapSettings } from '../core/snapping';
 import { cloneTransform } from '../core/transform';
+import { DEFAULT_TOOL_STATE } from '../core/types';
 import { createSceneObject, patchSceneObject } from './object-factory';
 
 // ── State shape ───────────────────────────────────────────────────────────────
@@ -32,6 +34,8 @@ export type SceneState = {
   viewMode: ViewMode;
   snap: SnapSettings;
   unit: 'm' | 'cm' | 'mm';
+  /** Complete tool configuration — selection mode, active view, grid, snap. */
+  toolState: StudioToolState;
 };
 
 export type SceneActions = {
@@ -51,6 +55,7 @@ export type SceneActions = {
   // Tools
   setTransformMode: (mode: TransformMode) => void;
   setViewMode: (mode: ViewMode) => void;
+  patchToolState: (patch: Partial<StudioToolState>) => void;
 
   // Snap
   setSnapSettings: (patch: Partial<SnapSettings>) => void;
@@ -70,10 +75,11 @@ export function createSceneStore(initial?: Partial<SceneState>) {
       // ── Initial state ──
       objects: [],
       selection: EMPTY_SELECTION,
-      transformMode: 'select',
-      viewMode: 'solid',
+      transformMode: 'select' as TransformMode,
+      viewMode: 'solid' as ViewMode,
       snap: DEFAULT_SNAP,
-      unit: 'm',
+      unit: 'm' as const,
+      toolState: DEFAULT_TOOL_STATE,
       ...initial,
 
       // ── Object actions ──
@@ -140,17 +146,25 @@ export function createSceneStore(initial?: Partial<SceneState>) {
       setSelectionMode(mode) {
         set((s) => {
           s.selection.mode = mode;
+          s.toolState.selectionMode = mode;
           if (mode === 'object') s.selection.sub = null;
         });
       },
 
       // ── Tool actions ──
       setTransformMode(mode) {
-        set((s) => { s.transformMode = mode; });
+        set((s) => {
+          s.transformMode = mode;
+          s.toolState.transformMode = mode;
+        });
       },
 
       setViewMode(mode) {
         set((s) => { s.viewMode = mode; });
+      },
+
+      patchToolState(patch) {
+        set((s) => { s.toolState = { ...s.toolState, ...patch }; });
       },
 
       // ── Snap ──

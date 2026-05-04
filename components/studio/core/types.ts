@@ -75,9 +75,6 @@ export type SceneObject = {
 
 // ── Selection ────────────────────────────────────────────────────────────────
 
-/** Plasticity-style sub-element picking mode */
-export type SelectionMode = 'object' | 'face' | 'edge' | 'vertex';
-
 export type FaceSelection = {
   objectId: string;
   normalKey: string;            // e.g. "1,0,0"
@@ -102,7 +99,55 @@ export type SubSelection =
 
 // ── Transform tools ──────────────────────────────────────────────────────────
 
-export type TransformMode = 'select' | 'translate' | 'rotate' | 'scale';
+/**
+ * SelectionMode — WHAT you are selecting.
+ *   object  → whole object (default)
+ *   face    → a polygon face (Plasticity-style)
+ *   edge    → an edge between faces
+ *   vertex  → a single vertex point
+ */
+export type SelectionMode = 'object' | 'face' | 'edge' | 'vertex';
+
+/**
+ * TransformMode — WHAT you do with the selection.
+ *   select    → pick / inspect only
+ *   move      → translate gizmo
+ *   rotate    → rotation gizmo
+ *   scale     → scale gizmo
+ *   extrude   → push/pull a face (backend geometry-op)
+ *   measure   → ruler between two points (view-only, no command)
+ *   draw_wall → place wall segments on the grid
+ */
+export type TransformMode =
+  | 'select'
+  | 'move'
+  | 'rotate'
+  | 'scale'
+  | 'extrude'
+  | 'measure'
+  | 'draw_wall';
+
+/**
+ * StudioToolState — complete snapshot of the active tool configuration.
+ * Stored in scene-store; serialised into SceneDocument.view.
+ */
+export type ActiveView = 'perspective' | 'top' | 'front' | 'right' | 'left';
+
+export type StudioToolState = {
+  selectionMode: SelectionMode;
+  transformMode: TransformMode;
+  snapEnabled: boolean;
+  gridSize: number;           // metres
+  activeView: ActiveView;
+};
+
+export const DEFAULT_TOOL_STATE: StudioToolState = {
+  selectionMode: 'object',
+  transformMode: 'select',
+  snapEnabled: true,
+  gridSize: 0.25,
+  activeView: 'perspective',
+};
 
 // ── Viewport ─────────────────────────────────────────────────────────────────
 
@@ -122,6 +167,7 @@ export type SceneDocument = {
   view?: {
     mode: ViewMode;
     gridSize: number;
+    toolState?: Partial<StudioToolState>;
   };
   updatedAt: string; // ISO-8601
 };

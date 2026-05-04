@@ -13,9 +13,12 @@ import type { TransformMode, SelectionMode, ViewMode } from '../core/types';
 
 const T_ICONS: Record<TransformMode, string> = {
   select:    '▣',
-  translate: '↔',
+  move:      '↔',
   rotate:    '↻',
   scale:     '⤢',
+  extrude:   '⬆',
+  measure:   '⊣⊢',
+  draw_wall: '▭',
 };
 
 const SEL_ICONS: Record<SelectionMode, string> = {
@@ -67,11 +70,11 @@ export function StudioToolbar({
 
       {/* Transform modes */}
       <div className="flex items-center gap-0.5 rounded-lg border border-white/8 bg-white/3 p-0.5">
-        {(['select', 'translate', 'rotate', 'scale'] as TransformMode[]).map((m) => (
+        {(['select', 'move', 'rotate', 'scale'] as TransformMode[]).map((m) => (
           <button
             key={m}
             type="button"
-            title={`${m} (${m === 'select' ? 'Q' : m === 'translate' ? 'W' : m === 'rotate' ? 'E' : 'R'})`}
+            title={`${m} (${m === 'select' ? 'Q' : m === 'move' ? 'W' : m === 'rotate' ? 'E' : 'R'})`}
             onClick={() => onTransformMode(m)}
             className={`flex items-center gap-1 rounded-md px-2.5 py-1 text-[11px] font-medium transition-colors ${
               transformMode === m
