@@ -40,6 +40,7 @@ import {
   type SpawnShape,
   type SceneObject,
   type GeometryOpCommand,
+  type SelectionMode,
 } from '@/components/workspace/WorkspaceCommands';
 
 /** Backwards-compat alias for callers/legacy code. */
@@ -155,6 +156,8 @@ export function SceneClient({ locale: _locale }: { locale: string }) {
   const [outlinerOpen, setOutlinerOpen] = useState(true);
   const [activeTool, setActiveTool] = useState<string>('pointer');
   const [statusHint, setStatusHint] = useState<string>('Ready');
+  /** Plasticity-style selection granularity. */
+  const [selectionMode, setSelectionMode] = useState<SelectionMode>('object');
   /** Timestamp of last successful auto-save, or null if unsaved changes are pending. */
   const [savedAt, setSavedAt] = useState<Date | null>(null);
   /** Ref to the debounce timer so we can cancel it on unmount. */
@@ -205,9 +208,12 @@ export function SceneClient({ locale: _locale }: { locale: string }) {
     };
   }, [spawnedShapes, selectedId]);
 
-  /** `pointer` ↔ `select`, `translate|rotate|scale` ↔ gizmo modes. */
+  /** `pointer` ↔ `select`, `translate|rotate|scale` ↔ gizmo modes.
+   *  Whole-object gizmo only applies in `object` selection mode — the
+   *  face/edge/vertex modes will get their own per-element handles later. */
   const transformMode: 'select' | 'translate' | 'rotate' | 'scale' =
-    activeTool === 'translate' || activeTool === 'rotate' || activeTool === 'scale'
+    selectionMode === 'object' &&
+    (activeTool === 'translate' || activeTool === 'rotate' || activeTool === 'scale')
       ? activeTool
       : 'select';
 
@@ -279,10 +285,17 @@ export function SceneClient({ locale: _locale }: { locale: string }) {
       else if (k === 'w')     { handleToolClick('translate'); e.preventDefault(); }
       else if (k === 'e')     { handleToolClick('rotate');    e.preventDefault(); }
       else if (k === 'r')     { handleToolClick('scale');     e.preventDefault(); }
+      else if (k === '1')     { setSelectionMode('object'); setStatusHint('Mode · Object'); e.preventDefault(); }
+      else if (k === '2')     { setSelectionMode('face');   setStatusHint('Mode · Face (cube only — coming soon)'); e.preventDefault(); }
+      else if (k === '3')     { setSelectionMode('edge');   setStatusHint('Mode · Edge (coming soon)');  e.preventDefault(); }
+      else if (k === '4')     { setSelectionMode('vertex'); setStatusHint('Mode · Vertex (coming soon)'); e.preventDefault(); }
       else if (k === 'escape') {
         if (transformMode !== 'select') {
           setActiveTool('pointer');
           setStatusHint('Exit transform mode');
+        } else if (selectionMode !== 'object') {
+          setSelectionMode('object');
+          setStatusHint('Mode · Object');
         } else if (selectedId) {
           setSelectedId(null);
           setStatusHint('Cleared selection');
@@ -301,7 +314,7 @@ export function SceneClient({ locale: _locale }: { locale: string }) {
     // handleToolClick closes over fresh state via React's render — but we want
     // the latest `selectedId`/`transformMode`/`spawnedShapes`, so depend on them.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedId, transformMode, spawnedShapes]);
+  }, [selectedId, transformMode, spawnedShapes, selectionMode]);
 
   useWorkspaceCommand((cmd) => {
     if (cmd.type === 'spawn_shape') {
@@ -447,7 +460,48 @@ export function SceneClient({ locale: _locale }: { locale: string }) {
           ))}
         </div>
 
-        <div className="relative flex flex-1 overflow-hidden">
+        <div className="relative flex flex-1 flex-col overflow-hidden">
+          {/* ── Plasticity-style selection-mode bar ── */}
+          {!isEmpty && (
+            <div className="pointer-events-auto absolute left-1/2 top-2 z-20 flex -translate-x-1/2 items-center gap-0.5 rounded-lg border border-white/10 bg-black/60 p-1 backdrop-blur-md">
+              {([
+                { id: 'object', label: 'Object', hotkey: '1' },
+                { id: 'face',   label: 'Face',   hotkey: '2' },
+                { id: 'edge',   label: 'Edge',   hotkey: '3' },
+                { id: 'vertex', label: 'Vertex', hotkey: '4' },
+              ] as const).map((m) => {
+                const active = selectionMode === m.id;
+                const disabled = m.id !== 'object'; // face/edge/vertex picking lands in follow-up
+                return (
+                  <button
+                    key={m.id}
+                    type="button"
+                    onClick={() => {
+                      setSelectionMode(m.id);
+                      if (disabled) {
+                        setStatusHint(`Mode · ${m.label} (cube only — coming soon)`);
+                      } else {
+                        setStatusHint(`Mode · ${m.label}`);
+                      }
+                    }}
+                    title={`${m.label} mode (${m.hotkey})`}
+                    className={cn(
+                      'flex items-center gap-1.5 rounded-md px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-wider transition-colors',
+                      active && 'bg-sky-500/20 text-sky-300 ring-1 ring-sky-500/40',
+                      !active && !disabled && 'text-white/55 hover:text-white',
+                      !active && disabled && 'text-white/30 hover:text-white/55',
+                    )}
+                  >
+                    <span>{m.label}</span>
+                    <span className={cn('text-[9px]', active ? 'text-sky-400/70' : 'text-white/25')}>
+                      {m.hotkey}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
           {isEmpty ? (
             <EmptyState onSpawn={spawnPrimitive} />
           ) : (
@@ -508,6 +562,11 @@ export function SceneClient({ locale: _locale }: { locale: string }) {
 
       <div className="flex h-7 flex-shrink-0 items-center justify-between border-t border-white/6 bg-[#0a0a0a] px-4 font-mono text-[10px]">
         <div className="flex items-center gap-3">
+          <span className="text-white/30">
+            <span className="text-white/15">Mode:</span>{' '}
+            <span className="text-fuchsia-400/70">{selectionMode}</span>
+          </span>
+          <span className="text-white/15">·</span>
           <span className="text-white/30">
             <span className="text-white/15">Cmd:</span>{' '}
             <span className="text-sky-400/60">{activeTool}</span>

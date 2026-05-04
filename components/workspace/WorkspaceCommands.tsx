@@ -77,6 +77,11 @@ export type SceneObject = {
 
 export const SCENE_STORAGE_KEY = 'chef-lab-scene-v1';
 
+/** Direct-modeling sub-element under the cursor. `object` = whole-shape
+ *  Blender-style transform. `face`/`edge`/`vertex` = Plasticity-style
+ *  per-element editing. */
+export type SelectionMode = 'object' | 'face' | 'edge' | 'vertex';
+
 export type SceneDocument = {
   version: 1;
   unit: 'm' | 'cm' | 'mm';
