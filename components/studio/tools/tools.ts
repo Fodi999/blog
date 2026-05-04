@@ -8,7 +8,7 @@
 import type { SceneObject, Transform } from '../core/types';
 import type { CommandRunner } from '../engine/command-runner';
 import { makeRemoveCommand, makeMoveCommand, makeAddCommand } from '../core/commands';
-import { createSceneObject } from '../engine/geometry-client';
+import { createSceneObject } from '../engine/object-factory';
 import type { SpawnShape } from '../core/types';
 
 // ── Tool behaviour interface ──────────────────────────────────────────────────

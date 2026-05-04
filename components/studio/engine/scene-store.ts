@@ -21,7 +21,7 @@ import type {
 import { EMPTY_SELECTION, type SelectionState } from '../core/selection';
 import { DEFAULT_SNAP, type SnapSettings } from '../core/snapping';
 import { cloneTransform } from '../core/transform';
-import { createSceneObject, patchSceneObject } from './geometry-client';
+import { createSceneObject, patchSceneObject } from './object-factory';
 
 // ── State shape ───────────────────────────────────────────────────────────────
 

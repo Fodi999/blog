@@ -1,12 +1,19 @@
 /**
  * studio/engine/geometry-client.ts
  *
- * API calls to the Rust backend for GLB generation and CSG operations.
- * All URL building lives here — no hardcoded URLs in components.
+ * Single gateway to the Rust backend for all 3D geometry operations.
+ * No other file may call fetch() for geometry — route everything here.
+ *
+ * Exports:
+ *   buildShapeUrl(obj)                    — URL for debug-glb (parametric)
+ *   buildSlugUrl(slug)                    — URL for debug-glb by slug
+ *   buildProductGlbUrl(productId)         — URL for v2 product GLB
+ *   createBackendStudioObject(kind, opts) — async: fetch GLB → create SceneObject
+ *   submitGeometryOp(op)                  — POST geometry-op → GLB URL
  */
 
-import type { SceneObject, SpawnShape, ShapeParams, GeometryOpCommand } from '../core/types';
-import { defaultShapeParams } from './mesh-builder';
+import type { SceneObject, SpawnShape, GeometryOpCommand } from '../core/types';
+import { createSceneObject } from './object-factory';
 
 // ── Backend base URL ──────────────────────────────────────────────────────────
 
@@ -32,8 +39,8 @@ const SHAPE_SLUG: Record<SpawnShape, string> = {
 // ── URL builders ──────────────────────────────────────────────────────────────
 
 /**
- * Build the GLB debug endpoint URL for a given SceneObject.
- * Parametric: cube subdivisions, cylinder radius/height, etc.
+ * Build the parametric debug-glb URL for a SceneObject.
+ * Called by GlbObject when glbUrl is not pre-set on the object.
  */
 export function buildShapeUrl(obj: SceneObject): string {
   const base = `${BACKEND_BASE}/api/laboratory/debug-glb/${SHAPE_SLUG[obj.kind]}`;
@@ -52,47 +59,67 @@ export function buildShapeUrl(obj: SceneObject): string {
   }
 }
 
-/** Build a debug-glb URL directly from slug (for previews, assets panel). */
+/** Build a debug-glb URL directly from slug (asset panel previews). */
 export function buildSlugUrl(slug: string): string {
   return `${BACKEND_BASE}/api/laboratory/debug-glb/${slug}`;
 }
 
-// ── Scene object factory ──────────────────────────────────────────────────────
-
-export function createSceneObject(
-  kind: SpawnShape,
-  opts: { label?: string; color?: string } = {},
-): SceneObject {
-  return {
-    id: `${kind}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-    kind,
-    label: opts.label ?? kind,
-    transform: {
-      position: [0, 0, 0],
-      rotation: [0, 0, 0],
-      scale: [1, 1, 1],
-    },
-    shape: defaultShapeParams(kind),
-    material: { color_hex: opts.color ?? '#b0b8c8' },
-    visible: true,
-    locked: false,
-  };
+/** Build the v2 product GLB endpoint URL. */
+export function buildProductGlbUrl(productId: string): string {
+  return `${BACKEND_BASE}/api/laboratory/v2/products/${productId}/glb`;
 }
 
-/** Shallow merge utility — handles nested transform/shape/material. */
-export function patchSceneObject(obj: SceneObject, patch: Partial<SceneObject>): SceneObject {
-  return {
-    ...obj,
-    ...patch,
-    transform: patch.transform ? { ...obj.transform, ...patch.transform } : obj.transform,
-    shape:     patch.shape     ? ({ ...obj.shape, ...patch.shape } as ShapeParams) : obj.shape,
-    material:  patch.material  ? { ...obj.material, ...patch.material } : obj.material,
-  };
+// ── Async: create a SceneObject backed by a Rust-generated GLB ────────────────
+
+export interface BackendObjectOpts {
+  label?: string;
+  color?: string;
+  /** Pass a custom slug if different from the default SpawnShape slug. */
+  slug?: string;
+}
+
+/**
+ * Full flow:
+ *   1. Build the GLB URL for this shape kind (or custom slug)
+ *   2. Optionally verify it is reachable (HEAD request; skipped in SSR)
+ *   3. Return a SceneObject with glbUrl pre-set
+ *
+ * The returned object is ready to pass to:
+ *   commandRunner.run(makeAddCommand(obj))
+ *
+ * The store NEVER calls this. It stays pure.
+ */
+export async function createBackendStudioObject(
+  kind: SpawnShape,
+  opts: BackendObjectOpts = {},
+): Promise<SceneObject> {
+  const slug = opts.slug ?? SHAPE_SLUG[kind];
+  const glbUrl = `${BACKEND_BASE}/api/laboratory/debug-glb/${slug}`;
+
+  // Probe reachability on the client only (non-fatal)
+  if (typeof window !== 'undefined') {
+    const probe = await fetch(glbUrl, { method: 'HEAD' }).catch(() => null);
+    if (probe && !probe.ok) {
+      console.warn(`[geometry-client] GLB not found for slug "${slug}" (${probe.status})`);
+    }
+  }
+
+  return createSceneObject(kind, { label: opts.label, color: opts.color, glbUrl });
 }
 
 // ── Geometry operations (CSG) ─────────────────────────────────────────────────
 
-/** Submit a CSG operation to the backend and return the resulting GLB URL. */
+/**
+ * POST /api/laboratory/geometry-op
+ *
+ * Submits a CSG operation (subtract / union) to the Rust backend
+ * and returns the resulting GLB URL.
+ *
+ * Caller flow:
+ *   const glbUrl = await submitGeometryOp(op);
+ *   const obj = createSceneObject(kind, { glbUrl });
+ *   commandRunner.run(makeAddCommand(obj));
+ */
 export async function submitGeometryOp(op: GeometryOpCommand): Promise<string> {
   const res = await fetch(`${BACKEND_BASE}/api/laboratory/geometry-op`, {
     method: 'POST',

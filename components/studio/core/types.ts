@@ -65,6 +65,12 @@ export type SceneObject = {
   locked?: boolean;
   /** Optional: hidden objects are invisible and unselectable */
   visible?: boolean;
+  /**
+   * Pre-resolved GLB URL returned by the Rust backend.
+   * Set by geometry-client BEFORE the object enters the store.
+   * If absent, GlbObject builds the URL via buildShapeUrl().
+   */
+  glbUrl?: string;
 };
 
 // ── Selection ────────────────────────────────────────────────────────────────

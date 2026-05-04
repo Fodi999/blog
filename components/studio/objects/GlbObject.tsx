@@ -38,8 +38,15 @@ export function GlbObject({
   onPointerOver,
   onPointerOut,
 }: GlbObjectProps) {
-  // ── URL from geometry-client (single source of truth) ──
-  const url = useMemo(() => buildShapeUrl(obj), [obj.kind, obj.shape]);
+  // ── URL resolution: prefer pre-set glbUrl, fallback to parametric builder ──
+  // glbUrl is set by geometry-client.createBackendStudioObject() before the
+  // object ever reaches the store. buildShapeUrl is the fallback for objects
+  // added synchronously (e.g. via undo/redo replay).
+  const url = useMemo(
+    () => obj.glbUrl ?? buildShapeUrl(obj),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [obj.glbUrl, obj.kind, obj.shape],
+  );
 
   const gltf = useLoader(GLTFLoader, url);
   const groupRef = useRef<THREE.Group>(null);
