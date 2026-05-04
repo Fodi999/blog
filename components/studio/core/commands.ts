@@ -6,7 +6,7 @@
  * pushes the inverse onto the undo stack.
  */
 
-import type { SceneObject, Transform, Material, ShapeParams, SpawnShape } from './types';
+import type { SceneObject, Transform, Material, ShapeParams, SpawnShape, FaceId } from './types';
 
 // ── Command union ─────────────────────────────────────────────────────────────
 
@@ -18,6 +18,7 @@ export type StudioCommand =
   | PatchMaterialCommand
   | PatchShapeCommand
   | SelectObjectCommand
+  | ExtrudeBoxCommand
   | BatchCommand;
 
 export type AddObjectCommand = {
@@ -67,6 +68,18 @@ export type SelectObjectCommand = {
   previous: string | null;
 };
 
+export type ExtrudeBoxCommand = {
+  type: 'extrude_box';
+  id: string;
+  faceId: FaceId;
+  distance: number;
+  /** Snapshot of transform.scale + transform.position before extrude — for undo. */
+  before: {
+    scale: [number, number, number];
+    position: [number, number, number];
+  };
+};
+
 /** Runs multiple commands as one undo unit. */
 export type BatchCommand = {
   type: 'batch';
@@ -98,4 +111,13 @@ export function makeShapeCommand(id: string, before: Partial<ShapeParams>, patch
 
 export function batch(label: string, ...commands: StudioCommand[]): BatchCommand {
   return { type: 'batch', label, commands };
+}
+
+export function makeExtrudeBoxCommand(
+  id: string,
+  faceId: FaceId,
+  distance: number,
+  before: ExtrudeBoxCommand['before'],
+): ExtrudeBoxCommand {
+  return { type: 'extrude_box', id, faceId, distance, before };
 }

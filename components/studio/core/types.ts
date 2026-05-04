@@ -30,7 +30,7 @@ export type SpawnShape =
 
 /** Discriminated union — each kind carries only its own parameters. */
 export type ShapeParams =
-  | { kind: 'cube';      subdivisions: number }
+  | { kind: 'cube';      subdivisions: number; dimensions?: { w: number; h: number; d: number } }
   | { kind: 'sphere' }
   | { kind: 'cylinder';  radius: number; height: number }
   | { kind: 'cone';      radius: number; radius_top: number; height: number }
@@ -75,10 +75,15 @@ export type SceneObject = {
 
 // ── Selection ────────────────────────────────────────────────────────────────
 
+/**
+ * Axis-aligned face IDs for primitives.
+ * Derived from the hit face normal — no backend topology needed.
+ */
+export type FaceId = 'top' | 'bottom' | 'front' | 'back' | 'left' | 'right';
+
 export type FaceSelection = {
   objectId: string;
-  normalKey: string;            // e.g. "1,0,0"
-  centerLocal: Vec3;
+  faceId: FaceId;
 };
 
 export type EdgeSelection = {
@@ -98,6 +103,55 @@ export type SubSelection =
   | { mode: 'vertex'; data: VertexSelection };
 
 // ── Transform tools ──────────────────────────────────────────────────────────
+
+/**
+ * StudioTool — the active tool in the studio.
+ * Extends TransformMode with modelling tools (fillet, chamfer, measure, …).
+ */
+export type StudioTool =
+  | 'pointer'
+  | 'move'
+  | 'rotate'
+  | 'scale'
+  | 'fillet'
+  | 'chamfer'
+  | 'extrude'
+  | 'measure'
+  | 'draw_wall';
+
+// ── Tool draft (temporary live state while a tool is being used) ─────────────
+
+export type FilletDraft = {
+  kind: 'fillet';
+  objectId: string;
+  targetType: 'edge' | 'face' | 'vertex';
+  targetId: string;        // edge key / faceId / vertex key
+  /** World-space anchor point where the handle is placed. */
+  anchorWorld: Vec3;
+  radius: number;
+  previewOnly: boolean;
+};
+
+export type ExtrudeDraft = {
+  kind: 'extrude';
+  objectId: string;
+  faceId: FaceId;
+  anchorWorld: Vec3;
+  distance: number;
+  previewOnly: boolean;
+};
+
+export type MeasureDraft = {
+  kind: 'measure';
+  from: Vec3 | null;
+  to:   Vec3 | null;
+};
+
+export type StudioDraft =
+  | FilletDraft
+  | ExtrudeDraft
+  | MeasureDraft
+  | null;
 
 /**
  * SelectionMode — WHAT you are selecting.

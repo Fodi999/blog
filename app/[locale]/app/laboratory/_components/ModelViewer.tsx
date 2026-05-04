@@ -651,6 +651,8 @@ function GltfModel({
   shapeColor?: string;
   /** Sub-object picking mode. */
   selectionMode?: import('@/components/workspace/WorkspaceCommands').SelectionMode;
+  /** Extra R3F elements to render inside the Canvas (e.g. GizmoLayer). */
+  canvasChildren?: React.ReactNode;
 }) {
   const gltf = useLoader(GLTFLoader, url);
   const root = gltf.scene;
@@ -1433,6 +1435,8 @@ interface ModelViewerProps {
   shapeColor?: string;
   /** Sub-object picking mode — object / face / edge / vertex. */
   selectionMode?: import('@/components/workspace/WorkspaceCommands').SelectionMode;
+  /** Extra R3F elements to render inside the Canvas (e.g. GizmoLayer). */
+  canvasChildren?: React.ReactNode;
 }
 
 export function ModelViewer({
@@ -1457,13 +1461,30 @@ export function ModelViewer({
   onCommitTransform,
   shapeColor,
   selectionMode = 'object',
+  canvasChildren,
 }: ModelViewerProps) {
   const ref = useRef<HTMLDivElement>(null);
   const glRef = useRef<THREE.WebGLRenderer | null>(null);
   const controlsRef = useRef<React.ComponentRef<typeof OrbitControls> | null>(null);
   const cameraAnimTargetRef = useRef<THREE.Vector3 | null>(null);
 
-  // ── Grid unit switcher (Plasticity-style: mm / cm / m) ──────────────────
+  // ── Listen for CameraViewWidget events (studio:set-camera-view) ──────────
+  // Maps the 4 widget views onto the existing CAMERA_PRESETS vectors.
+  useEffect(() => {
+    const VIEW_MAP: Record<string, THREE.Vector3> = {
+      top:         new THREE.Vector3(0, 3.5, 0.01),
+      front:       new THREE.Vector3(0, 0.1, 3.2),
+      right:       new THREE.Vector3(3.2, 0.1, 0),
+      perspective: new THREE.Vector3(2.0, 1.5, 2.5),
+    };
+    const handler = (e: Event) => {
+      const view = (e as CustomEvent<string>).detail;
+      const target = VIEW_MAP[view];
+      if (target) cameraAnimTargetRef.current = target.clone();
+    };
+    window.addEventListener('studio:set-camera-view', handler);
+    return () => window.removeEventListener('studio:set-camera-view', handler);
+  }, []);
   type GridUnit = 'mm' | 'cm' | 'm';
   const GRID_UNIT_PARAMS: Record<GridUnit, {
     cellSize: number; sectionSize: number; fadeDistance: number;
@@ -1725,6 +1746,7 @@ export function ModelViewer({
           enableDamping
           dampingFactor={0.08}
         />
+        {canvasChildren}
       </Canvas>
 
       {/* Plasticity-style unit switcher — only in grid mode, right side */}

@@ -32,7 +32,11 @@ import {
 import { cn } from '@/lib/utils';
 import { SimulationWorkspace } from '@/components/workspace/scenes/SimulationWorkspace';
 import { StudioProvider } from '@/components/studio/engine/StudioProvider';
-import { StudioSelectionBar } from '@/components/studio/panels/StudioSelectionBar';
+import { StudioSelectionBar, SelectionModeSync } from '@/components/studio/panels/StudioSelectionBar';
+import { StudioToolBarLeft } from '@/components/studio/panels/StudioToolBarLeft';
+import { ExtrudePanel } from '@/components/studio/panels/ExtrudePanel';
+import { StudioBottomBar } from '@/components/studio/panels/StudioBottomBar';
+import { CameraViewWidget } from '@/components/studio/viewport/CameraViewWidget';
 import {
   useWorkspaceCommand,
   createSceneObject,
@@ -287,16 +291,17 @@ export function SceneClient({ locale: _locale }: { locale: string }) {
       else if (k === 'w')     { handleToolClick('translate'); e.preventDefault(); }
       else if (k === 'e')     { handleToolClick('rotate');    e.preventDefault(); }
       else if (k === 'r')     { handleToolClick('scale');     e.preventDefault(); }
-      else if (k === '1')     { setSelectionMode('object'); setStatusHint('Mode · Object'); e.preventDefault(); }
-      else if (k === '2')     { setSelectionMode('face');   setStatusHint('Mode · Face — hover to highlight, click to select'); e.preventDefault(); }
-      else if (k === '3')     { setSelectionMode('edge');   setStatusHint('Mode · Edge — hover to highlight, click to select');  e.preventDefault(); }
-      else if (k === '4')     { setSelectionMode('vertex'); setStatusHint('Mode · Vertex — hover to highlight, click to select'); e.preventDefault(); }
+      else if (k === '1')     { window.dispatchEvent(new CustomEvent('studio:set-selection-mode', { detail: 'object' }));  setStatusHint('Mode · Object'); e.preventDefault(); }
+      else if (k === '2')     { window.dispatchEvent(new CustomEvent('studio:set-selection-mode', { detail: 'face' }));    setStatusHint('Mode · Face — hover to highlight, click to select'); e.preventDefault(); }
+      else if (k === '3')     { window.dispatchEvent(new CustomEvent('studio:set-selection-mode', { detail: 'edge' }));    setStatusHint('Mode · Edge — hover to highlight, click to select');  e.preventDefault(); }
+      else if (k === '4')     { window.dispatchEvent(new CustomEvent('studio:set-selection-mode', { detail: 'vertex' }));  setStatusHint('Mode · Vertex — hover to highlight, click to select'); e.preventDefault(); }
       else if (k === 'escape') {
         if (transformMode !== 'select') {
           setActiveTool('pointer');
           setStatusHint('Exit transform mode');
         } else if (selectionMode !== 'object') {
           setSelectionMode('object');
+          window.dispatchEvent(new CustomEvent('studio:set-selection-mode', { detail: 'object' }));
           setStatusHint('Mode · Object');
         } else if (selectedId) {
           setSelectedId(null);
@@ -462,11 +467,14 @@ export function SceneClient({ locale: _locale }: { locale: string }) {
           ))}
         </div>
 
+        <StudioProvider>
+        <SelectionModeSync />
         <div className="relative flex flex-1 flex-col overflow-hidden">
           {/* ── Plasticity-style selection-mode bar (studio layer) ── */}
-          <StudioProvider>
-            {!isEmpty && <StudioSelectionBar />}
-          </StudioProvider>
+          {!isEmpty && <StudioSelectionBar />}
+          {!isEmpty && <StudioToolBarLeft />}
+          {!isEmpty && <ExtrudePanel />}
+          {!isEmpty && <CameraViewWidget />}
 
           {isEmpty ? (
             <EmptyState onSpawn={spawnPrimitive} />
@@ -488,7 +496,11 @@ export function SceneClient({ locale: _locale }: { locale: string }) {
               selectionMode={selectionMode}
             />
           )}
+
+          {/* ── Bottom action bar ── */}
+          <StudioBottomBar />
         </div>
+        </StudioProvider>
 
         {outlinerOpen && (
           <div className="flex w-60 flex-shrink-0 flex-col border-l border-white/6 bg-[#080808]">

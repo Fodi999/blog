@@ -20,10 +20,13 @@ import * as THREE from 'three';
 import type { SceneObject } from '../core/types';
 import { buildShapeUrl } from '../engine/geometry-client';
 import { fitToView, upgradeMaterials, applyShapeColor } from '../engine/mesh-builder';
+import { useStudioStore } from '../engine/StudioProvider';
 
 export interface GlbObjectProps {
   obj: SceneObject;
+  /** Legacy — ignored, store-driven state takes priority. */
   selected?: boolean;
+  /** Legacy — ignored, store-driven state takes priority. */
   hovered?: boolean;
   onClick?: () => void;
   onPointerOver?: () => void;
@@ -32,12 +35,19 @@ export interface GlbObjectProps {
 
 export function GlbObject({
   obj,
-  selected = false,
-  hovered = false,
   onClick,
   onPointerOver,
   onPointerOut,
 }: GlbObjectProps) {
+  // ── Store-driven highlight state ──
+  const selectedId        = useStudioStore((s) => s.selection.objectId);
+  const hoveredId         = useStudioStore((s) => s.hoveredId);
+  const selectObject      = useStudioStore((s) => s.selectObject);
+  const setHoveredId      = useStudioStore((s) => s.setHoveredId);
+  const registerObjectRef = useStudioStore((s) => s.registerObjectRef);
+
+  const isSelected = selectedId === obj.id;
+  const isHovered  = hoveredId  === obj.id;
   // ── URL resolution: prefer pre-set glbUrl, fallback to parametric builder ──
   // glbUrl is set by geometry-client.createBackendStudioObject() before the
   // object ever reaches the store. buildShapeUrl is the fallback for objects
@@ -50,6 +60,12 @@ export function GlbObject({
 
   const gltf = useLoader(GLTFLoader, url);
   const groupRef = useRef<THREE.Group>(null);
+
+  // ── Register / unregister in store so GizmoLayer can attach ──
+  useEffect(() => {
+    if (groupRef.current) registerObjectRef(obj.id, groupRef.current);
+    return () => registerObjectRef(obj.id, null);
+  }, [obj.id, registerObjectRef]);
 
   // ── Upgrade materials once on load ──
   useEffect(() => {
@@ -78,9 +94,21 @@ export function GlbObject({
       position={position}
       rotation={rotation}
       scale={obj.transform.scale}
-      onClick={(e) => { e.stopPropagation(); onClick?.(); }}
-      onPointerOver={(e) => { e.stopPropagation(); onPointerOver?.(); }}
-      onPointerOut={(e) => { e.stopPropagation(); onPointerOut?.(); }}
+      onClick={(e) => {
+        e.stopPropagation();
+        selectObject(obj.id);
+        onClick?.();
+      }}
+      onPointerOver={(e) => {
+        e.stopPropagation();
+        setHoveredId(obj.id);
+        onPointerOver?.();
+      }}
+      onPointerOut={(e) => {
+        e.stopPropagation();
+        setHoveredId(null);
+        onPointerOut?.();
+      }}
       visible={obj.visible}
     >
       {/* Centering pivot */}
@@ -88,15 +116,15 @@ export function GlbObject({
         <primitive object={gltf.scene.clone(true)} />
       </group>
 
-      {/* Selection outline — cheap emissive shell */}
-      {(selected || hovered) && (
+      {/* Plasticity-style highlight shell — yellow=selected, lime=hovered */}
+      {(isSelected || isHovered) && (
         <mesh scale={[1.04, 1.04, 1.04]}>
           <sphereGeometry args={[0.82, 16, 16]} />
           <meshBasicMaterial
-            color={selected ? '#38BDF8' : '#f97316'}
+            color={isSelected ? '#facc15' : '#d9f99d'}
             wireframe
             transparent
-            opacity={0.18}
+            opacity={isSelected ? 0.22 : 0.14}
           />
         </mesh>
       )}

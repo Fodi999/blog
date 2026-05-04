@@ -27,6 +27,9 @@ import {
   buildShapeUrl,
 } from '@/components/workspace/WorkspaceCommands';
 import { useGeometryOrchestrator } from '@/hooks/useGeometryOrchestrator';
+import { GizmoLayer } from '@/components/studio/viewport/GizmoLayer';
+import { ToolHandleLayer } from '@/components/studio/handles/ToolHandleLayer';
+import { useStudioStore } from '@/components/studio/engine/StudioProvider';
 
 const VisualSceneRenderer = dynamic(
   () => import('@/components/visual/VisualSceneRenderer').then((m) => m.VisualSceneRenderer),
@@ -202,6 +205,12 @@ export function SimulationWorkspace({
   const setTab = (t: 'forecast' | 'lab') => { if (!activeTab) setInternalTab(t); };
   const [surfaceType, setSurfaceType] = useState<SurfaceType>('sci_fi_card');
 
+  // ── Read selectionMode from store (overrides stale prop from parent) ──────
+  // StudioSelectionBar writes to the store; we must read from the same source.
+  // Falls back to the prop value if the store isn't mounted.
+  const storeSelectionMode = useStudioStore((s) => s.tool.selectionMode);
+  const activeSelectionMode = storeSelectionMode ?? selectionMode;
+
   // Use lifted state if provided, otherwise own local state
   const [localShapes, setLocalShapes] = useState<SpawnedShape[]>([]);
   const spawnedShapes = externalShapes ?? localShapes;
@@ -276,7 +285,7 @@ export function SimulationWorkspace({
                   onUpdate={(patch) => onUpdateObject?.(spawnedShapes[0].id, patch)}
                   transformMode={selectedId === spawnedShapes[0].id ? transformMode : 'select'}
                   onCommitTransform={(t) => onCommitTransform?.(spawnedShapes[0].id, t)}
-                  selectionMode={selectionMode}
+                  selectionMode={activeSelectionMode}
                   fullscreen
                   onRemove={() => setSpawnedShapes([])}
                 />
@@ -298,7 +307,7 @@ export function SimulationWorkspace({
                       onSelect={() => onSelectObject?.(s.id)}
                       onUpdate={(patch) => onUpdateObject?.(s.id, patch)}
                       fullscreen
-                      selectionMode={selectionMode}
+                      selectionMode={activeSelectionMode}
                       onRemove={() =>
                         setSpawnedShapes((prev) => prev.filter((x) => x.id !== s.id))
                       }
@@ -517,6 +526,10 @@ function LabShapeCard({
   /** Solid / wireframe / both — display mode for the viewport. */
   const [viewMode, setViewMode] = useState<'solid' | 'wire' | 'solid-wire'>('solid');
 
+  // ── Read selectionMode from store so LabShapeCard always reflects live tool state ──
+  const storeSelectionMode = useStudioStore((s) => s.tool.selectionMode);
+  const activeSelectionMode = storeSelectionMode ?? selectionMode;
+
   // ── Mesh density labels (cube only) ───────────────────────────────────────
   const SUB_MIN = 1;
   const SUB_MAX = 5;
@@ -672,7 +685,8 @@ function LabShapeCard({
             transformMode={transformMode}
             onCommitTransform={onCommitTransform}
             shapeColor={color}
-            selectionMode={selectionMode}
+            selectionMode={activeSelectionMode}
+            canvasChildren={<><ToolHandleLayer /><GizmoLayer /></>}
           />
           {/* Label bottom-left overlay */}
           <div className="pointer-events-none absolute bottom-3 left-3">
@@ -768,7 +782,7 @@ function LabShapeCard({
           transformMode={transformMode}
           onCommitTransform={onCommitTransform}
           shapeColor={color}
-          selectionMode={selectionMode}
+          selectionMode={activeSelectionMode}
         />
       </div>
 

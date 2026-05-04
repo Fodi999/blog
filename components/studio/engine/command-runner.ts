@@ -7,6 +7,7 @@
 
 import type { StudioCommand } from '../core/commands';
 import type { SceneStoreInstance } from './scene-store';
+import { extrudeBoxFace } from '../core/extrude';
 
 export type CommandRunnerOptions = {
   /** Max undo steps to keep in memory */
@@ -85,6 +86,17 @@ export class CommandRunner {
       case 'select_object':
         s.selectObject(cmd.id);
         break;
+      case 'extrude_box': {
+        const obj = s.getObject(cmd.id);
+        if (!obj) break;
+        const result = extrudeBoxFace(obj, cmd.faceId, cmd.distance);
+        s.commitTransform(cmd.id, {
+          ...obj.transform,
+          scale:    result.scale,
+          position: result.position,
+        });
+        break;
+      }
       case 'batch':
         for (const sub of cmd.commands) this.apply(sub);
         break;
@@ -116,6 +128,13 @@ export class CommandRunner {
         break;
       case 'select_object':
         s.selectObject(cmd.previous);
+        break;
+      case 'extrude_box':
+        s.commitTransform(cmd.id, {
+          ...s.getObject(cmd.id)?.transform ?? { rotation: [0,0,0] as [number,number,number] },
+          scale:    cmd.before.scale,
+          position: cmd.before.position,
+        });
         break;
       case 'batch':
         for (const sub of [...cmd.commands].reverse()) this.revert(sub);

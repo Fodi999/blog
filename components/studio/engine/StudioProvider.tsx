@@ -2,53 +2,77 @@
 /**
  * studio/engine/StudioProvider.tsx
  *
- * React context that holds one SceneStore + CommandRunner per Studio mount.
- * No global singleton — each <StudioProvider> is independent.
- *
- * Usage:
- *   <StudioProvider>
- *     <YourStudioUI />
- *   </StudioProvider>
+ * React context: one SceneStore + CommandRunner + RefRegistry per mount.
  *
  * Hooks:
  *   useStudioStore(selector) — subscribe to scene state
- *   useRunner()              — get the CommandRunner for dispatching commands
+ *   useRunner()              — CommandRunner for undoable commands
+ *   useRefRegistry()         — register/get Three.js Object3D refs
  */
 
 import { createContext, useContext, useRef } from 'react';
 import { useStore } from 'zustand';
+import * as THREE from 'three';
 import { createSceneStore, type SceneStore, type SceneStoreInstance } from './scene-store';
 import { CommandRunner } from './command-runner';
+
+// ── RefRegistry ───────────────────────────────────────────────────────────────
+//
+// Three.js Object3D instances must NOT live inside Zustand/Immer.
+// They are mutable, non-serialisable. We keep them in a plain Map.
+
+export class RefRegistry {
+  private refs = new Map<string, THREE.Object3D>();
+
+  register(id: string, obj: THREE.Object3D): void {
+    this.refs.set(id, obj);
+  }
+
+  unregister(id: string): void {
+    this.refs.delete(id);
+  }
+
+  get(id: string): THREE.Object3D | undefined {
+    return this.refs.get(id);
+  }
+}
 
 // ── Context ───────────────────────────────────────────────────────────────────
 
 type StudioCtx = {
   store: SceneStoreInstance;
   runner: CommandRunner;
+  registry: RefRegistry;
 };
 
 const StudioContext = createContext<StudioCtx | null>(null);
 
 function useStudioContext(): StudioCtx {
   const ctx = useContext(StudioContext);
-  if (!ctx) throw new Error('[studio] useStudioStore must be used inside <StudioProvider>');
+  if (!ctx) throw new Error('[studio] Hook must be used inside <StudioProvider>');
   return ctx;
 }
 
 // ── Provider ──────────────────────────────────────────────────────────────────
 
 export function StudioProvider({ children }: { children: React.ReactNode }) {
-  const storeRef = useRef<SceneStoreInstance | null>(null);
-  const runnerRef = useRef<CommandRunner | null>(null);
+  const storeRef    = useRef<SceneStoreInstance | null>(null);
+  const runnerRef   = useRef<CommandRunner | null>(null);
+  const registryRef = useRef<RefRegistry | null>(null);
 
   if (!storeRef.current) {
-    storeRef.current = createSceneStore();
-    runnerRef.current = new CommandRunner(storeRef.current);
+    storeRef.current    = createSceneStore();
+    runnerRef.current   = new CommandRunner(storeRef.current);
+    registryRef.current = new RefRegistry();
   }
 
   return (
     <StudioContext.Provider
-      value={{ store: storeRef.current, runner: runnerRef.current! }}
+      value={{
+        store:    storeRef.current,
+        runner:   runnerRef.current!,
+        registry: registryRef.current!,
+      }}
     >
       {children}
     </StudioContext.Provider>
@@ -57,26 +81,15 @@ export function StudioProvider({ children }: { children: React.ReactNode }) {
 
 // ── Hooks ─────────────────────────────────────────────────────────────────────
 
-/**
- * Subscribe to the scene store with a selector.
- *
- * @example
- *   const objects = useStudioStore(s => s.objects);
- *   const selectionMode = useStudioStore(s => s.tool.selectionMode);
- */
 export function useStudioStore<T>(selector: (state: SceneStore) => T): T {
   const { store } = useStudioContext();
   return useStore(store, selector);
 }
 
-/**
- * Get the CommandRunner for the current Studio instance.
- * Use this to dispatch commands (add, remove, move, undo, redo…).
- *
- * @example
- *   const runner = useRunner();
- *   runner.run(makeAddCommand(obj));
- */
 export function useRunner(): CommandRunner {
   return useStudioContext().runner;
+}
+
+export function useRefRegistry(): RefRegistry {
+  return useStudioContext().registry;
 }

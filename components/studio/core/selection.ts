@@ -5,7 +5,7 @@
  * No React, no Three.js — just data transformations.
  */
 
-import type { SceneObject, SelectionMode, SubSelection, Vec3 } from './types';
+import type { SceneObject, SelectionMode, SubSelection, Vec3, FaceId } from './types';
 
 // ── Selection state ───────────────────────────────────────────────────────────
 
@@ -36,11 +36,11 @@ export function setMode(state: SelectionState, mode: SelectionMode): SelectionSt
   return { ...state, mode };
 }
 
-export function selectFace(state: SelectionState, objectId: string, normalKey: string, centerLocal: Vec3): SelectionState {
+export function selectFace(state: SelectionState, objectId: string, faceId: FaceId): SelectionState {
   if (state.mode !== 'face') return state;
-  const next: SubSelection = { mode: 'face', data: { objectId, normalKey, centerLocal } };
+  const next: SubSelection = { mode: 'face', data: { objectId, faceId } };
   // Toggle off if clicking the same face.
-  if (state.sub?.mode === 'face' && state.sub.data.normalKey === normalKey) {
+  if (state.sub?.mode === 'face' && state.sub.data.objectId === objectId && state.sub.data.faceId === faceId) {
     return { ...state, sub: null };
   }
   return { ...state, objectId, sub: next };

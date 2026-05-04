@@ -8,6 +8,7 @@
 
 import { createStore } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
+import * as THREE from 'three';
 import type {
   SceneObject,
   SelectionMode,
@@ -18,8 +19,21 @@ import type {
   ShapeParams,
   Material,
   StudioToolState,
+  StudioTool,
+  StudioDraft,
+  FilletDraft,
+  ExtrudeDraft,
+  MeasureDraft,
+  Vec3,
+  FaceId,
 } from '../core/types';
-import { EMPTY_SELECTION, type SelectionState } from '../core/selection';
+import {
+  EMPTY_SELECTION,
+  type SelectionState,
+  selectFace as selFace,
+  selectEdge as selEdge,
+  selectVertex as selVertex,
+} from '../core/selection';
 import { DEFAULT_SNAP, type SnapSettings } from '../core/snapping';
 import { cloneTransform } from '../core/transform';
 import { DEFAULT_TOOL_STATE } from '../core/types';
@@ -49,6 +63,24 @@ export type SceneState = {
    * tool.activeView    — camera view (perspective / top / front / right / left)
    */
   tool: StudioToolState;
+  /**
+   * Runtime-only Object3D refs — NOT persisted, NOT tracked by Immer.
+   * Populated via registerObjectRef() from GlbObject / PrimitiveObject.
+   * Read by GizmoLayer to attach TransformControls.
+   */
+  objectRefs: Record<string, THREE.Object3D>;
+  /** ID of the currently hovered object — drives outline highlight. null = none. */
+  hoveredId: string | null;
+  /**
+   * Active tool — what the user is currently doing.
+   * Separate from `tool.transformMode` because it includes modelling tools.
+   */
+  activeTool: StudioTool;
+  /**
+   * Live draft for the active tool (fillet radius, extrude distance, …).
+   * null when no tool is in progress.
+   */
+  draft: StudioDraft;
 };
 
 export type SceneActions = {
@@ -64,6 +96,14 @@ export type SceneActions = {
   // Selection
   selectObject: (id: string | null) => void;
   setSelectionMode: (mode: SelectionMode) => void;
+  /** Face sub-selection — faceId is one of top/bottom/front/back/left/right. */
+  selectSubFace: (objectId: string, faceId: FaceId) => void;
+  /** Edge sub-selection — a + b are local-space endpoints. */
+  selectSubEdge: (objectId: string, a: Vec3, b: Vec3) => void;
+  /** Vertex sub-selection — local-space position. */
+  selectSubVertex: (objectId: string, position: Vec3) => void;
+  /** Clear sub-selection only (keep object selected). */
+  clearSubSelection: () => void;
 
   // Tools
   setTransformMode: (mode: TransformMode) => void;
@@ -74,6 +114,22 @@ export type SceneActions = {
 
   // Snap
   setSnapSettings: (patch: Partial<SnapSettings>) => void;
+
+  // Runtime refs (Object3D — bypasses Immer, never persisted)
+  registerObjectRef: (id: string, ref: THREE.Object3D | null) => void;
+
+  // Hover
+  setHoveredId: (id: string | null) => void;
+
+  // Active tool + draft
+  setActiveTool: (tool: StudioTool) => void;
+  startFilletDraft: (input: FilletDraft) => void;
+  startExtrudeDraft: (input: ExtrudeDraft) => void;
+  startMeasureDraft: (input: MeasureDraft) => void;
+  updateDraftRadius: (radius: number) => void;
+  updateDraftDistance: (distance: number) => void;
+  cancelDraft: () => void;
+  commitDraft: () => void;
 
   // Queries
   getObject: (id: string) => SceneObject | undefined;
@@ -95,6 +151,10 @@ export function createSceneStore(initial?: Partial<SceneState>) {
       snap: DEFAULT_SNAP,
       unit: 'm' as const,
       tool: DEFAULT_TOOL_STATE,
+      objectRefs: {} as Record<string, THREE.Object3D>,
+      hoveredId: null as string | null,
+      activeTool: 'pointer' as StudioTool,
+      draft: null as StudioDraft,
       ...initial,
 
       // ── Object actions ──
@@ -166,6 +226,27 @@ export function createSceneStore(initial?: Partial<SceneState>) {
         });
       },
 
+      // Sub-selection — use pure reducers from selection.ts, then write back.
+      // Plain-object `set` avoids Immer proxying Vec3 tuples.
+      selectSubFace(objectId, faceId) {
+        const next = selFace(get().selection, objectId, faceId);
+        set((s) => { s.selection = next; });
+      },
+
+      selectSubEdge(objectId, a, b) {
+        const next = selEdge(get().selection, objectId, a, b);
+        set((s) => { s.selection = next; });
+      },
+
+      selectSubVertex(objectId, position) {
+        const next = selVertex(get().selection, objectId, position);
+        set((s) => { s.selection = next; });
+      },
+
+      clearSubSelection() {
+        set((s) => { s.selection.sub = null; });
+      },
+
       // ── Tool actions ──
       setTransformMode(mode) {
         set((s) => {
@@ -193,6 +274,61 @@ export function createSceneStore(initial?: Partial<SceneState>) {
       // ── Snap ──
       setSnapSettings(patch) {
         set((s) => { s.snap = { ...s.snap, ...patch }; });
+      },
+
+      // ── Runtime Object3D refs ──
+      // Plain-object `set` bypasses Immer so THREE.Object3D is never proxied/frozen.
+      registerObjectRef(id, ref) {
+        const prev = get().objectRefs;
+        if (ref) {
+          set({ objectRefs: { ...prev, [id]: ref } });
+        } else {
+          const { [id]: _removed, ...rest } = prev;
+          set({ objectRefs: rest });
+        }
+      },
+
+      // ── Hover ──
+      setHoveredId(id) {
+        set({ hoveredId: id });
+      },
+
+      // ── Active tool + draft ──
+      setActiveTool(tool) {
+        set((s) => { s.activeTool = tool; s.draft = null; });
+      },
+
+      startFilletDraft(input) {
+        set((s) => { s.draft = input; s.activeTool = 'fillet'; });
+      },
+
+      startExtrudeDraft(input) {
+        set((s) => { s.draft = input; s.activeTool = 'extrude'; });
+      },
+
+      startMeasureDraft(input) {
+        set((s) => { s.draft = input; s.activeTool = 'measure'; });
+      },
+
+      updateDraftRadius(radius) {
+        const d = get().draft;
+        if (d?.kind === 'fillet') set({ draft: { ...d, radius } });
+      },
+
+      updateDraftDistance(distance) {
+        const d = get().draft;
+        if (d?.kind === 'extrude') set({ draft: { ...d, distance } });
+      },
+
+      cancelDraft() {
+        set({ draft: null });
+      },
+
+      commitDraft() {
+        // Consumers (FilletHandle, ExtrudeHandle) read draft from store,
+        // build a command and dispatch it, then call cancelDraft().
+        // The store itself just clears draft here as a safety net.
+        set({ draft: null });
       },
 
       // ── Queries ──
