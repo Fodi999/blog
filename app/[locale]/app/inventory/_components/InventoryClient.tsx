@@ -244,7 +244,6 @@ export function InventoryClient({ locale }: { locale: string }) {
   }, [view]);
   const [visualSelected, setVisualSelected] = useState<InventoryItem | null>(null);
   const [sceneFullscreen, setSceneFullscreen] = useState(false);
-  const [simFullscreen, setSimFullscreen] = useState(false);
   const { sendMessage: copilotSend } = useCopilot();
 
   const load = useCallback(
@@ -501,15 +500,6 @@ export function InventoryClient({ locale }: { locale: string }) {
         t={t}
         right={
           <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => load(true)}
-              disabled={refreshing}
-            >
-              <RefreshCw className={cn('mr-2 h-4 w-4', refreshing && 'animate-spin')} />
-              {t('refresh')}
-            </Button>
             <Button size="sm" onClick={() => setAddOpen(true)}>
               <Plus className="mr-2 h-4 w-4" />
               {t('addProduct')}
@@ -521,20 +511,10 @@ export function InventoryClient({ locale }: { locale: string }) {
       {/* ── Workspace area ───────────────────────────────────────────────── */}
       <div className="relative">
 
-        {/* ── Floating Data / Visual / Simulation pill — top-centre ──────── */}
-        <div className="pointer-events-none absolute inset-x-0 top-0 z-20 flex justify-center pt-3">
-          <div className="pointer-events-auto">
-            <WorkspaceModeToggle
-              value={view}
-              onChange={setView}
-              available={['data', 'visual', 'simulation']}
-            />
-          </div>
-        </div>
       {/* KPI strip — only shown in Data mode. In Visual mode the scene
           renders its own HUD with the same numbers, so we don't duplicate. */}
       {view === 'data' && (
-        <section className="grid grid-cols-2 gap-3 pt-14 lg:grid-cols-4">
+        <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
           {tiles.map(({ icon: Icon, label, value, accent }) => (
             <Card key={label} className="border-border/60">
               <CardContent className="p-4">
@@ -584,85 +564,95 @@ export function InventoryClient({ locale }: { locale: string }) {
       </Card>
       )}
 
-      {/* Visual Workspace — card по центру, кнопка ⛶ разворачивает на весь экран */}
-      {view === 'visual' && (
-        <div className={sceneFullscreen ? 'fixed inset-0 z-50 bg-[#03070f]' : 'h-[calc(100vh-180px)] min-h-[640px] overflow-hidden rounded-2xl border border-border/60'}>
-          <InventoryVisualWorkspace
-            items={items ?? []}
-            stats={{
-              totalValueLabel: formatCurrencyPLN(locale, stats.totalValuePLN),
-              itemsCount: stats.itemsCount,
-              expiringCount: stats.expiringCount,
-              lowCount: stats.lowCount,
-            }}
-            headerActions={
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => load(true)}
-                  disabled={refreshing}
-                  className="h-7 border border-white/15 bg-white/5 px-2.5 text-white/60 hover:bg-white/10 hover:text-white"
-                >
-                  <RefreshCw className={cn('mr-1.5 h-3.5 w-3.5', refreshing && 'animate-spin')} />
-                  {t('refresh')}
-                </Button>
-                <button
-                  type="button"
-                  title={sceneFullscreen ? 'Свернуть' : 'Развернуть на весь экран'}
-                  onClick={() => setSceneFullscreen((v) => !v)}
-                  className="flex h-7 w-7 items-center justify-center rounded-lg border border-white/15 bg-white/5 text-white/50 transition-colors hover:bg-white/15 hover:text-white"
-                >
-                  {sceneFullscreen ? (
-                    /* Minimize icon */
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M8 3v3a2 2 0 0 1-2 2H3"/><path d="M21 8h-3a2 2 0 0 1-2-2V3"/><path d="M3 16h3a2 2 0 0 1 2 2v3"/><path d="M16 21v-3a2 2 0 0 1 2-2h3"/>
-                    </svg>
-                  ) : (
-                    /* Maximize icon */
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/>
-                    </svg>
-                  )}
-                </button>
-              </div>
-            }
-            onSelectItem={setVisualSelected}
-            onAskCopilot={(item, intent) => {
-              if (intent === 'writeoff') {
-                void copilotSend(`Write off ${item.remaining_quantity} ${item.product.base_unit} of ${item.product.name}`);
-              } else {
-                void copilotSend(`Tell me about ${item.product.name} in my inventory`);
-              }
-            }}
-          />
-        </div>
-      )}
-
-      {/* Simulation — Blender-style timeline forecast */}
-      {view === 'simulation' && (
-        <div className={simFullscreen
-          ? 'fixed inset-0 z-50 bg-[#03070f] pt-12'
-          : 'relative h-[calc(100vh-180px)] min-h-[640px] overflow-hidden rounded-2xl border border-border/60 pt-12'
+      {/* ── 3D Workspace — Visual + Simulation в одном контейнере ─────── */}
+      {(view === 'visual' || view === 'simulation') && (
+        <div className={sceneFullscreen
+          ? 'fixed inset-0 z-50 bg-[#03070f]'
+          : 'relative h-[calc(100vh-180px)] min-h-[640px] overflow-hidden rounded-2xl border border-border/60'
         }>
-          {/* Expand / collapse button — top-right corner */}
+          {/* Visual */}
+          {view === 'visual' && (
+            <InventoryVisualWorkspace
+              items={items ?? []}
+              stats={{
+                totalValueLabel: formatCurrencyPLN(locale, stats.totalValuePLN),
+                itemsCount: stats.itemsCount,
+                expiringCount: stats.expiringCount,
+                lowCount: stats.lowCount,
+              }}
+              headerActions={null}
+              navActions={
+                <div className="flex items-center gap-2">
+                  <WorkspaceModeToggle value={view} onChange={setView} available={['data', 'visual', 'simulation']} />
+                  <button
+                    type="button"
+                    title={sceneFullscreen ? 'Свернуть' : 'Развернуть'}
+                    onClick={() => setSceneFullscreen((v) => !v)}
+                    className="flex h-7 w-7 items-center justify-center rounded-lg border border-white/15 bg-black/40 text-white/50 backdrop-blur-sm transition-colors hover:bg-white/15 hover:text-white"
+                  >
+                    {sceneFullscreen ? (
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M8 3v3a2 2 0 0 1-2 2H3"/><path d="M21 8h-3a2 2 0 0 1-2-2V3"/><path d="M3 16h3a2 2 0 0 1 2 2v3"/><path d="M16 21v-3a2 2 0 0 1 2-2h3"/>
+                      </svg>
+                    ) : (
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/>
+                      </svg>
+                    )}
+                  </button>
+                </div>
+              }
+              onSelectItem={setVisualSelected}
+              onAskCopilot={(item, intent) => {
+                if (intent === 'writeoff') {
+                  void copilotSend(`Write off ${item.remaining_quantity} ${item.product.base_unit} of ${item.product.name}`);
+                } else {
+                  void copilotSend(`Tell me about ${item.product.name} in my inventory`);
+                }
+              }}
+            />
+          )}
+
+          {/* Simulation */}
+          {view === 'simulation' && (
+            <SimulationWorkspace items={items ?? []} />
+          )}
+
+          {/* Для Simulation — floating top-bar с pill + expand */}
+          {view === 'simulation' && (
+            <div className="pointer-events-none absolute inset-x-0 top-0 z-20 flex h-12 items-center justify-between px-3">
+              <div className="pointer-events-auto">
+                <WorkspaceModeToggle value={view} onChange={setView} available={['data', 'visual', 'simulation']} />
+              </div>
+              <button
+                type="button"
+                title={sceneFullscreen ? 'Свернуть' : 'Развернуть'}
+                onClick={() => setSceneFullscreen((v) => !v)}
+                className="pointer-events-auto flex h-7 w-7 items-center justify-center rounded-lg border border-white/15 bg-black/40 text-white/50 backdrop-blur-sm transition-colors hover:bg-white/15 hover:text-white"
+              >
+                {sceneFullscreen ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M8 3v3a2 2 0 0 1-2 2H3"/><path d="M21 8h-3a2 2 0 0 1-2-2V3"/><path d="M3 16h3a2 2 0 0 1 2 2v3"/><path d="M16 21v-3a2 2 0 0 1 2-2h3"/>
+                  </svg>
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/>
+                  </svg>
+                )}
+              </button>
+            </div>
+          )}
+
+          {/* Refresh — bottom-right corner */}
           <button
             type="button"
-            title={simFullscreen ? 'Свернуть' : 'Развернуть на весь экран'}
-            onClick={() => setSimFullscreen((v) => !v)}
-            className="absolute right-3 top-3 z-30 flex h-7 w-7 items-center justify-center rounded-lg border border-white/15 bg-black/40 text-white/50 backdrop-blur-sm transition-colors hover:bg-white/15 hover:text-white"
+            onClick={() => load(true)}
+            disabled={refreshing}
+            className="pointer-events-auto absolute bottom-4 right-4 z-20 flex items-center gap-1.5 rounded-lg border border-white/15 bg-black/40 px-3 py-1.5 text-xs text-white/50 backdrop-blur-sm transition-colors hover:bg-white/15 hover:text-white disabled:opacity-40"
           >
-            {simFullscreen ? (
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M8 3v3a2 2 0 0 1-2 2H3"/><path d="M21 8h-3a2 2 0 0 1-2-2V3"/><path d="M3 16h3a2 2 0 0 1 2 2v3"/><path d="M16 21v-3a2 2 0 0 1 2-2h3"/>
-              </svg>
-            ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/>
-              </svg>
-            )}
+            <RefreshCw className={cn('h-3 w-3', refreshing && 'animate-spin')} />
+            {t('refresh')}
           </button>
-          <SimulationWorkspace items={items ?? []} />
         </div>
       )}
 

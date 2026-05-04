@@ -18,11 +18,19 @@
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef } from 'react';
 
+export type SpawnShape = 'square' | 'circle' | 'triangle' | 'cube' | 'sphere' | 'rectangle' | 'line';
+
 export type WorkspaceCommand =
   | { type: 'highlight_risks' }
   | { type: 'focus_item'; itemId: string }
   | { type: 'clear_focus' }
-  | { type: 'set_view'; view: 'data' | 'visual' | 'simulation' };
+  | { type: 'set_view'; view: 'data' | 'visual' | 'simulation' }
+  /** Spawn a geometric shape in the Lab canvas. */
+  | { type: 'spawn_shape'; shape: SpawnShape; label: string; color?: string }
+  /** Clear all spawned shapes from the Lab canvas. */
+  | { type: 'clear_shapes' }
+  /** Switch the active scene to SIM → Lab tab. */
+  | { type: 'switch_lab' };
 
 type Listener = (cmd: WorkspaceCommand) => void;
 

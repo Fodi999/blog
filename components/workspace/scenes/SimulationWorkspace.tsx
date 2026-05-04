@@ -9,7 +9,7 @@
  */
 
 import dynamic from 'next/dynamic';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from 'react';
 import {
   Play, Pause, SkipBack, SkipForward, ChevronFirst, ChevronLast,
   FlaskConical, TrendingUp,
@@ -18,6 +18,9 @@ import {
 import type { InventoryItem } from '@/lib/chefos-types';
 import { buildInventoryScene } from '@/components/visual/builders/inventorySceneBuilder';
 import type { SceneState } from '@/components/visual/sceneTypes';
+import {
+  type SpawnShape,
+} from '@/components/workspace/WorkspaceCommands';
 
 const VisualSceneRenderer = dynamic(
   () => import('@/components/visual/VisualSceneRenderer').then((m) => m.VisualSceneRenderer),
@@ -146,14 +149,35 @@ function useSimClock(totalDays: number) {
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
+type SpawnedShape = {
+  id: string;
+  shape: SpawnShape;
+  label: string;
+  color: string;
+};
+
 interface Props {
   items: InventoryItem[];
+  /** Controlled tab — if provided, header is hidden and parent controls tabs */
+  activeTab?: 'forecast' | 'lab';
+  /** Lifted state from parent so shapes survive tab switches */
+  spawnedShapes?: SpawnedShape[];
+  onSetSpawnedShapes?: Dispatch<SetStateAction<SpawnedShape[]>>;
 }
 
-export function SimulationWorkspace({ items }: Props) {
+export function SimulationWorkspace({ items, activeTab, spawnedShapes: externalShapes, onSetSpawnedShapes }: Props) {
   const { day, playing, speed, setSpeed, play, pause, jump } = useSimClock(SIM_DAYS);
-  const [tab, setTab] = useState<'forecast' | 'lab'>('forecast');
+  const [internalTab, setInternalTab] = useState<'forecast' | 'lab'>('forecast');
+  const tab = activeTab ?? internalTab;
+  const setTab = (t: 'forecast' | 'lab') => { if (!activeTab) setInternalTab(t); };
   const [surfaceType, setSurfaceType] = useState<SurfaceType>('sci_fi_card');
+
+  // Use lifted state if provided, otherwise own local state
+  const [localShapes, setLocalShapes] = useState<SpawnedShape[]>([
+    { id: 'default-cube', shape: 'cube', label: 'Cube', color: '#a0a8b8' },
+  ]);
+  const spawnedShapes = externalShapes ?? localShapes;
+  const setSpawnedShapes = onSetSpawnedShapes ?? setLocalShapes;
 
   const labGlbUrl = `${BASE_URL}/${surfaceType}`;
 
@@ -164,121 +188,102 @@ export function SimulationWorkspace({ items }: Props) {
     [simItems],
   );
 
-  // Compute delta stats for HUD overlay
-  const expiredCount = simItems.filter((i) => i.severity === 'expired').length;
-  const criticalCount = simItems.filter((i) => i.severity === 'critical').length;
-  const warningCount = simItems.filter((i) => i.severity === 'warning').length;
-
   return (
     <div className="flex h-full w-full flex-col overflow-hidden bg-[#070707]">
-      {/* ── Header ── */}
-      <div className="flex shrink-0 items-center justify-between gap-4 border-b border-white/8 px-5 py-3">
-        <div>
-          <p className="text-[10px] uppercase tracking-[0.2em] text-white/40">
-            ChefOS · Simulation
-          </p>
-          <h2 className="text-sm font-semibold text-white">
-            {tab === 'forecast' ? (
-              <>
-                Inventory Forecast · Day{' '}
-                <span className={day === 0 ? 'text-white/60' : day >= 10 ? 'text-rose-400' : day >= 5 ? 'text-amber-400' : 'text-emerald-400'}>
-                  +{day}
-                </span>
-              </>
-            ) : (
-              'Lab · Photo → 3D'
-            )}
-          </h2>
-        </div>
-
-        {/* Tab switcher */}
-        <div className="flex items-center gap-1 rounded-lg border border-white/10 bg-white/5 p-1">
-          <button
-            type="button"
-            onClick={() => setTab('forecast')}
-            className={`flex items-center gap-1.5 rounded-md px-3 py-1 text-xs font-medium transition-colors ${
-              tab === 'forecast'
-                ? 'bg-white/15 text-white'
-                : 'text-white/40 hover:text-white/70'
-            }`}
-          >
-            <TrendingUp className="h-3 w-3" />
-            Forecast
-          </button>
-          <button
-            type="button"
-            onClick={() => setTab('lab')}
-            className={`flex items-center gap-1.5 rounded-md px-3 py-1 text-xs font-medium transition-colors ${
-              tab === 'lab'
-                ? 'bg-white/15 text-white'
-                : 'text-white/40 hover:text-white/70'
-            }`}
-          >
-            <FlaskConical className="h-3 w-3" />
-            Lab
-          </button>
-        </div>
-
-        {/* Status badges (forecast only) */}
-        {tab === 'forecast' && (
-          <div className="flex items-center gap-3 text-xs text-white/60">
-            {expiredCount > 0 && (
-              <span className="rounded-full bg-rose-500/15 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.18em] text-rose-400">
-                {expiredCount} expired
-              </span>
-            )}
-            {criticalCount > 0 && (
-              <span className="rounded-full bg-orange-500/15 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.18em] text-orange-400">
-                {criticalCount} critical
-              </span>
-            )}
-            {warningCount > 0 && (
-              <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.18em] text-amber-300">
-                {warningCount} expiring
-              </span>
-            )}
-            {expiredCount === 0 && criticalCount === 0 && warningCount === 0 && (
-              <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.18em] text-emerald-400">
-                all ok
-              </span>
-            )}
+      {/* ── Header (only when not controlled externally) ── */}
+      {!activeTab && (
+        <div className="flex shrink-0 items-center gap-4 border-b border-white/8 px-5 py-3">
+          <div className="flex items-center gap-1 rounded-lg border border-white/10 bg-white/5 p-1">
+            <button
+              type="button"
+              onClick={() => setTab('forecast')}
+              className={`flex items-center gap-1.5 rounded-md px-3 py-1 text-xs font-medium transition-colors ${
+                tab === 'forecast' ? 'bg-white/15 text-white' : 'text-white/40 hover:text-white/70'
+              }`}
+            >
+              <TrendingUp className="h-3 w-3" />
+              Forecast
+            </button>
+            <button
+              type="button"
+              onClick={() => setTab('lab')}
+              className={`flex items-center gap-1.5 rounded-md px-3 py-1 text-xs font-medium transition-colors ${
+                tab === 'lab' ? 'bg-white/15 text-white' : 'text-white/40 hover:text-white/70'
+              }`}
+            >
+              <FlaskConical className="h-3 w-3" />
+              Lab
+            </button>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* ── Tab content ── */}
       {tab === 'lab' ? (
-        <div className="relative flex-1 overflow-hidden bg-[#070707]">
-          {/* Surface type selector */}
-          <div className="absolute left-4 top-4 z-10 flex flex-col gap-2">
-            {SURFACE_TYPES.map((s) => (
-              <button
-                key={s.key}
-                type="button"
-                onClick={() => setSurfaceType(s.key)}
-                className={`flex items-center gap-2.5 rounded-xl border px-3 py-2 text-left transition-all ${
-                  surfaceType === s.key
-                    ? 'border-sky-500/50 bg-sky-500/10 text-white'
-                    : 'border-white/10 bg-black/40 text-white/50 hover:border-white/25 hover:text-white/80'
-                }`}
-              >
-                <span className="text-lg leading-none">{s.icon}</span>
-                <div>
-                  <p className="text-xs font-semibold leading-tight">{s.label}</p>
-                  <p className="text-[10px] text-white/40">{s.sub}</p>
-                </div>
-              </button>
-            ))}
-          </div>
+        <div className="relative flex h-full w-full overflow-hidden bg-[#070707]">
 
-          <ModelViewer
-              modelUrl={labGlbUrl}
-              className="h-full w-full"
-              displayMode="grid"
-              lightingPreset="cleanProduct"
-              autoRotate={false}
-              renderQuality="hd"
-            />
+          {/* ── Main viewport — objects come from Copilot only ── */}
+          <div className="relative flex flex-1 flex-col overflow-hidden">
+            {spawnedShapes.length === 0 ? (
+              /* Empty scene — Blender-style hint */
+              <div className="flex h-full flex-col items-center justify-center gap-3">
+                <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-white/8 bg-white/4">
+                  <FlaskConical className="h-7 w-7 text-white/15" />
+                </div>
+                <p className="text-xs text-white/20">
+                  Ask Copilot to create a shape
+                </p>
+                <p className="font-mono text-[10px] text-white/10">
+                  "создай куб" · "нарисуй круг" · "create triangle"
+                </p>
+              </div>
+            ) : spawnedShapes.length === 1 ? (
+              /* Single object — full viewport, like Blender default cube */
+              <div className="relative flex-1">
+                <LabShapeCard
+                  key={spawnedShapes[0].id}
+                  shape={spawnedShapes[0].shape}
+                  label={spawnedShapes[0].label}
+                  color={spawnedShapes[0].color}
+                  fullscreen
+                  onRemove={() => setSpawnedShapes([])}
+                />
+              </div>
+            ) : (
+              /* Multi-object grid */
+              <div className="flex flex-1 flex-wrap content-start items-start gap-3 overflow-y-auto p-4">
+                {spawnedShapes.map((s) => (
+                  <LabShapeCard
+                    key={s.id}
+                    shape={s.shape}
+                    label={s.label}
+                    color={s.color}
+                    fullscreen={false}
+                    onRemove={() =>
+                      setSpawnedShapes((prev) => prev.filter((x) => x.id !== s.id))
+                    }
+                  />
+                ))}
+              </div>
+            )}
+
+            {/* Object count badge + clear — bottom-left */}
+            {spawnedShapes.length > 0 && (
+              <div className="pointer-events-none absolute bottom-3 left-3 flex items-center gap-2">
+                <span className="rounded-full border border-white/10 bg-black/60 px-2 py-0.5 font-mono text-[9px] text-white/25 backdrop-blur-sm">
+                  {spawnedShapes.length} object{spawnedShapes.length !== 1 ? 's' : ''}
+                </span>
+                <button
+                  type="button"
+                  title="Clear scene"
+                  onClick={() => setSpawnedShapes([])}
+                  className="pointer-events-auto rounded-full border border-white/10 bg-black/60 px-2 py-0.5 font-mono text-[9px] text-rose-400/50 backdrop-blur-sm transition-colors hover:text-rose-400"
+                >
+                  clear
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       ) : (
         <>
@@ -404,3 +409,108 @@ function SimBtn({
     </button>
   );
 }
+
+// ── Lab shape card — real 3D GLB from backend ────────────────────────────────
+
+const BACKEND_BASE =
+  typeof window !== 'undefined' && window.location.hostname === 'localhost'
+    ? 'http://localhost:8000'
+    : 'https://ministerial-yetta-fodi999-c58d8823.koyeb.app';
+
+/** Map frontend SpawnShape → backend dispatcher slug */
+const SHAPE_SLUG: Record<SpawnShape, string> = {
+  square:    'shape_square',
+  rectangle: 'shape_rectangle',
+  circle:    'shape_circle',
+  triangle:  'shape_triangle',
+  cube:      'shape_cube',
+  sphere:    'shape_sphere',
+  line:      'shape_line',
+};
+
+function LabShapeCard({
+  shape,
+  label,
+  color,
+  fullscreen = false,
+  onRemove,
+}: {
+  shape: SpawnShape;
+  label: string;
+  color: string;
+  /** Fill the parent container (single-object viewport mode). */
+  fullscreen?: boolean;
+  onRemove: () => void;
+}) {
+  const glbUrl = `${BACKEND_BASE}/api/laboratory/debug-glb/${SHAPE_SLUG[shape]}`;
+
+  if (fullscreen) {
+    return (
+      <div className="group relative h-full w-full">
+        <ModelViewer
+          modelUrl={glbUrl}
+          className="h-full w-full"
+          displayMode="clean"
+          lightingPreset="cleanProduct"
+          autoRotate
+          renderQuality="hd"
+        />
+        {/* Label bottom-left */}
+        <div className="pointer-events-none absolute bottom-4 left-4 flex items-center gap-2">
+          <span
+            className="rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-widest backdrop-blur-sm"
+            style={{ color, background: `${color}18`, border: `1px solid ${color}30` }}
+          >
+            {label}
+          </span>
+        </div>
+        {/* Remove top-right */}
+        <button
+          type="button"
+          onClick={onRemove}
+          className="absolute right-3 top-3 flex h-6 w-6 items-center justify-center rounded-full border border-white/10 bg-black/60 text-white/30 opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100 hover:text-white"
+          title="Remove"
+        >
+          ×
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className="group relative flex flex-col items-center gap-2"
+      style={{ filter: `drop-shadow(0 0 20px ${color}44)` }}
+    >
+      <div
+        className="overflow-hidden rounded-2xl border bg-black/60 backdrop-blur-sm transition-all group-hover:scale-105"
+        style={{ borderColor: `${color}40`, width: 200, height: 200 }}
+      >
+        <ModelViewer
+          modelUrl={glbUrl}
+          className="h-full w-full"
+          displayMode="clean"
+          lightingPreset="cleanProduct"
+          autoRotate
+          renderQuality="hd"
+        />
+      </div>
+      <span
+        className="rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-widest"
+        style={{ color, background: `${color}18` }}
+      >
+        {label}
+      </span>
+      <button
+        type="button"
+        onClick={onRemove}
+        className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full border border-white/15 bg-black/80 text-white/30 opacity-0 transition-opacity group-hover:opacity-100 hover:text-white"
+        title="Remove shape"
+      >
+        ×
+      </button>
+    </div>
+  );
+}
+
+

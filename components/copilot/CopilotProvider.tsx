@@ -34,6 +34,7 @@ import {
 import {
   useWorkspaceCommands,
   type WorkspaceCommand,
+  type SpawnShape,
 } from '@/components/workspace/WorkspaceCommands';
 
 export type CopilotMessage =
@@ -149,9 +150,35 @@ const RISK_PLAN_TYPES = new Set([
   'create_purchase_draft',
 ]);
 
+// ── Shape spawn detection ─────────────────────────────────────────────────────
+// Detect when user (or assistant) mentions creating / drawing a shape.
+// We match both English and Russian keywords so the feature works
+// regardless of the user's locale.
+
+const SHAPE_PATTERNS: Array<{ pattern: RegExp; shape: SpawnShape; label: string; color: string }> = [
+  { pattern: /\b(square|квадрат)\b/i,                shape: 'square',    label: 'Square',    color: '#38bdf8' },
+  { pattern: /\b(rectangle|прямоугольник)\b/i,        shape: 'rectangle', label: 'Rectangle', color: '#a78bfa' },
+  { pattern: /\b(circle|круг|окружность|кружок)\b/i,  shape: 'circle',    label: 'Circle',    color: '#34d399' },
+  { pattern: /\b(triangle|треугольник)\b/i,           shape: 'triangle',  label: 'Triangle',  color: '#fb923c' },
+  { pattern: /\b(cube|куб)\b/i,                       shape: 'cube',      label: 'Cube',      color: '#f472b6' },
+  { pattern: /\b(sphere|шар|сфера)\b/i,               shape: 'sphere',    label: 'Sphere',    color: '#facc15' },
+  { pattern: /\b(line|линия|линию|линии)\b/i,         shape: 'line',      label: 'Line',      color: '#94a3b8' },
+];
+
+// Trigger phrase patterns — must appear alongside a shape keyword.
+// "create", "draw", "add", "make", "show", "нарисуй", "создай", etc.
+const SPAWN_TRIGGER = /\b(creat|draw|add|make|show|spawn|render|нарисуй|создай|покажи|добавь|сделай)\w*/i;
+
+/** Return the list of shapes explicitly requested in the user's message or copilot answer. */
+function detectShapes(text: string): Array<{ shape: SpawnShape; label: string; color: string }> {
+  if (!SPAWN_TRIGGER.test(text)) return [];
+  return SHAPE_PATTERNS.filter(({ pattern }) => pattern.test(text));
+}
+
 function inferSceneCommands(
   res: CopilotResponse,
   selected: CopilotSelectedEntity | null,
+  userMessage: string,
 ): WorkspaceCommand[] {
   const cmds: WorkspaceCommand[] = [];
 
@@ -164,12 +191,32 @@ function inferSceneCommands(
     cmds.push({ type: 'highlight_risks' });
   }
 
-  // If the user already has an entity selected and the answer looks like
-  // it refers to it, re-focus so the camera/highlight tracks attention.
+  // Focus re-pan when entity selected and answer references it by name.
   if (selected?.type === 'inventory_item' && selected.id) {
     const name = selected.name?.toLowerCase();
     if (name && res.answer.toLowerCase().includes(name)) {
       cmds.push({ type: 'focus_item', itemId: selected.id });
+    }
+  }
+
+  // ── Shape spawn detection ────────────────────────────────────────────────
+  // Check both the user's original message and the assistant answer so the
+  // command fires even when the LLM paraphrases the intent.
+  const shapesFromUser = detectShapes(userMessage);
+  const shapesFromAnswer = detectShapes(res.answer);
+  // Merge — deduplicate by shape key.
+  const seen = new Set<string>();
+  const allShapes = [...shapesFromUser, ...shapesFromAnswer].filter(({ shape }) => {
+    if (seen.has(shape)) return false;
+    seen.add(shape);
+    return true;
+  });
+
+  if (allShapes.length > 0) {
+    // Switch the scene to LAB before spawning so the shape is visible.
+    cmds.push({ type: 'switch_lab' });
+    for (const { shape, label, color } of allShapes) {
+      cmds.push({ type: 'spawn_shape', shape, label, color });
     }
   }
 
@@ -263,7 +310,7 @@ export function CopilotProvider({ children }: { children: React.ReactNode }) {
         // PR3 — drive the active visual scene from the Copilot response.
         // Pure inference for now (no backend changes); explicit
         // `scene_command` field can be added later.
-        for (const cmd of inferSceneCommands(res, selectedEntity)) {
+        for (const cmd of inferSceneCommands(res, selectedEntity, trimmed)) {
           dispatchWorkspace(cmd);
         }
       } catch (err) {

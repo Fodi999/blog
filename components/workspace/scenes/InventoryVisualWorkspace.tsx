@@ -71,6 +71,8 @@ interface Props {
   onAskCopilot?: (item: InventoryItem, intent: 'writeoff' | 'general') => void;
   /** Extra controls rendered on the right side of the header (e.g. mode toggle) */
   headerActions?: React.ReactNode;
+  /** Nav pill + expand button rendered LEFT of the HUD stats */
+  navActions?: React.ReactNode;
 }
 
 // ── Theme helpers ─────────────────────────────────────────────────────────────
@@ -464,7 +466,7 @@ function AssetInspectorPanel({
 
 // ── Main component ────────────────────────────────────────────────────────────
 
-export function InventoryVisualWorkspace({ items, onSelectItem, onAskCopilot, headerActions }: Props) {
+export function InventoryVisualWorkspace({ items, onSelectItem, onAskCopilot, headerActions, navActions }: Props) {
   const [selectedEntityId, setSelectedEntityId] = useState<string | null>(null);
   const [showLegend, setShowLegend] = useState(false);
   const [focusRisks, setFocusRisks] = useState(false);
@@ -550,12 +552,17 @@ export function InventoryVisualWorkspace({ items, onSelectItem, onAskCopilot, he
     <div className="flex h-full w-full flex-col overflow-hidden bg-[#070707]">
       {/* ── Header HUD ── */}
       <div className="flex shrink-0 items-center justify-between gap-4 border-b border-white/8 px-5 py-3">
-        <div>
-          <p className="text-[10px] uppercase tracking-[0.2em] text-white/40">
-            ChefOS · Workspace
-          </p>
-          <h2 className="text-sm font-semibold text-white">Inventory · Spatial view</h2>
-        </div>
+        {/* left: nav pill (if provided) or title */}
+        {navActions ? (
+          <div className="flex items-center gap-2">{navActions}</div>
+        ) : (
+          <div>
+            <p className="text-[10px] uppercase tracking-[0.2em] text-white/40">
+              ChefOS · Workspace
+            </p>
+            <h2 className="text-sm font-semibold text-white">Inventory · Spatial view</h2>
+          </div>
+        )}
         <div className="flex items-center gap-3 text-xs text-white/60">
           <span
             className={`rounded-full px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.18em] ${
