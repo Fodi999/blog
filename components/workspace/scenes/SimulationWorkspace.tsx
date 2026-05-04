@@ -20,7 +20,10 @@ import { buildInventoryScene } from '@/components/visual/builders/inventoryScene
 import type { SceneState } from '@/components/visual/sceneTypes';
 import {
   type SpawnShape,
+  type SceneObject,
+  type ShapeParams,
   type GeometryOpCommand,
+  buildShapeUrl,
 } from '@/components/workspace/WorkspaceCommands';
 import { useGeometryOrchestrator } from '@/hooks/useGeometryOrchestrator';
 
@@ -149,12 +152,9 @@ function useSimClock(totalDays: number) {
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-type SpawnedShape = {
-  id: string;
-  shape: SpawnShape;
-  label: string;
-  color: string;
-};
+/** Alias kept for prop-name backwards compatibility. The viewport now operates
+ *  on full `SceneObject`s with transform / shape params / material. */
+type SpawnedShape = SceneObject;
 
 interface Props {
   items: InventoryItem[];
@@ -163,11 +163,26 @@ interface Props {
   /** Lifted state from parent so shapes survive tab switches */
   spawnedShapes?: SpawnedShape[];
   onSetSpawnedShapes?: Dispatch<SetStateAction<SpawnedShape[]>>;
+  /** Per-object patch dispatcher (inspector / future AI commands). */
+  onUpdateObject?: (id: string, patch: Partial<SceneObject>) => void;
+  /** Currently-selected scene object id (drives selection outline). */
+  selectedId?: string | null;
+  /** Click on a viewport card → notify parent. */
+  onSelectObject?: (id: string | null) => void;
   /** CSG geometry operations dispatched by Gemini */
   pendingGeoOps?: GeometryOpCommand[];
 }
 
-export function SimulationWorkspace({ items, activeTab, spawnedShapes: externalShapes, onSetSpawnedShapes, pendingGeoOps = [] }: Props) {
+export function SimulationWorkspace({
+  items,
+  activeTab,
+  spawnedShapes: externalShapes,
+  onSetSpawnedShapes,
+  onUpdateObject,
+  selectedId,
+  onSelectObject,
+  pendingGeoOps = [],
+}: Props) {
   const { day, playing, speed, setSpeed, play, pause, jump } = useSimClock(SIM_DAYS);
   const [internalTab, setInternalTab] = useState<'forecast' | 'lab'>('forecast');
   const tab = activeTab ?? internalTab;
@@ -242,9 +257,10 @@ export function SimulationWorkspace({ items, activeTab, spawnedShapes: externalS
               <div className="absolute inset-0">
                 <LabShapeCard
                   key={spawnedShapes[0].id}
-                  shape={spawnedShapes[0].shape}
-                  label={spawnedShapes[0].label}
-                  color={spawnedShapes[0].color}
+                  obj={spawnedShapes[0]}
+                  selected={selectedId === spawnedShapes[0].id}
+                  onSelect={() => onSelectObject?.(spawnedShapes[0].id)}
+                  onUpdate={(patch) => onUpdateObject?.(spawnedShapes[0].id, patch)}
                   fullscreen
                   onRemove={() => setSpawnedShapes([])}
                 />
@@ -261,9 +277,10 @@ export function SimulationWorkspace({ items, activeTab, spawnedShapes: externalS
                 {spawnedShapes.map((s) => (
                   <div key={s.id} className="relative min-h-0 border border-white/5">
                     <LabShapeCard
-                      shape={s.shape}
-                      label={s.label}
-                      color={s.color}
+                      obj={s}
+                      selected={selectedId === s.id}
+                      onSelect={() => onSelectObject?.(s.id)}
+                      onUpdate={(patch) => onUpdateObject?.(s.id, patch)}
                       fullscreen
                       onRemove={() =>
                         setSpawnedShapes((prev) => prev.filter((x) => x.id !== s.id))
@@ -441,148 +458,93 @@ function SimBtn({
 }
 
 // ── Lab shape card — real 3D GLB from backend ────────────────────────────────
-
-const BACKEND_BASE =
-  process.env.NEXT_PUBLIC_BACKEND_URL ??
-  'https://ministerial-yetta-fodi999-c58d8823.koyeb.app';
-
-/** Map frontend SpawnShape → backend dispatcher slug */
-const SHAPE_SLUG: Record<SpawnShape, string> = {
-  square:    'shape_square',
-  rectangle: 'shape_rectangle',
-  circle:    'shape_circle',
-  triangle:  'shape_triangle',
-  cube:      'shape_cube',
-  sphere:    'shape_sphere',
-  line:      'shape_line',
-  cylinder:  'shape_cylinder',
-  cone:      'shape_cone',
-  torus:     'shape_torus',
-};
-
-/**
- * Semi-transparent grid overlay that visually communicates mesh topology.
- * Renders an SVG grid scaled to the viewport — a quick stand-in for real
- * Three.js wireframe (which would require a custom R3F child component).
- * Color matches the active shape accent.
- */
-function WireframeOverlay({ color }: { color: string }) {
-  return (
-    <div
-      className="pointer-events-none absolute inset-0"
-      style={{ zIndex: 10 }}
-    >
-      <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <pattern id="wf-grid" width="20" height="20" patternUnits="userSpaceOnUse">
-            <path d="M 20 0 L 0 0 0 20" fill="none" stroke={color} strokeWidth="0.4" strokeOpacity="0.35" />
-          </pattern>
-        </defs>
-        <rect width="100%" height="100%" fill="url(#wf-grid)" />
-        {/* diagonal accent lines (Plasticity-style construction lines) */}
-        <line x1="0" y1="0" x2="100%" y2="100%" stroke={color} strokeWidth="0.3" strokeOpacity="0.12" />
-        <line x1="100%" y1="0" x2="0" y2="100%" stroke={color} strokeWidth="0.3" strokeOpacity="0.12" />
-      </svg>
-      {/* top badge */}
-      <div className="absolute left-1/2 top-2 -translate-x-1/2">
-        <span
-          className="rounded-full border px-2 py-0.5 font-mono text-[8px] font-bold uppercase tracking-widest backdrop-blur-sm"
-          style={{ color, borderColor: `${color}40`, background: `${color}12` }}
-        >
-          wireframe
-        </span>
-      </div>
-    </div>
-  );
-}
+//
+// URL building + slug map now live in WorkspaceCommands (`buildShapeUrl`).
+// LabShapeCard reads everything from the SceneObject passed in via props.
+// Wire / selection / hover overlays are rendered inside the GLB scene graph
+// by `<ModelViewer>` itself (real THREE.EdgesGeometry, not a CSS stand-in).
 
 function LabShapeCard({
-  shape,
-  label,
-  color,
+  obj,
   fullscreen = false,
   onRemove,
+  onUpdate,
+  selected = false,
+  onSelect,
 }: {
-  shape: SpawnShape;
-  label: string;
-  color: string;
+  /** Full parametric scene object — single source of truth for params. */
+  obj: SceneObject;
   /** Fill the parent container (single-object viewport mode). */
   fullscreen?: boolean;
   onRemove: () => void;
+  /** Patch dispatcher — emits partial SceneObject changes upward. */
+  onUpdate?: (patch: Partial<SceneObject>) => void;
+  /** Selection outline state. */
+  selected?: boolean;
+  /** Click on the viewport notifies the parent which object was picked. */
+  onSelect?: () => void;
 }) {
+  const { kind: shape, label, shape: shapeParams, material } = obj;
+  const color = material.color_hex;
   const [rotating, setRotating] = useState(true);
-  // ── Mesh density controls (cube only) ─────────────────────────────────────
-  // Subdivisions map:  1=draft(12 tris)  2=standard(48)  3=high(108)
-  //                    4=dense(192)       5=ultra(300)
+  const [hovered, setHovered] = useState(false);
+  /** Solid / wireframe / both — display mode for the viewport. */
+  const [viewMode, setViewMode] = useState<'solid' | 'wire' | 'solid-wire'>('solid');
+
+  // ── Mesh density labels (cube only) ───────────────────────────────────────
   const SUB_MIN = 1;
   const SUB_MAX = 5;
   const SUB_LABELS: Record<number, string> = { 1: 'Draft', 2: 'Std', 3: 'High', 4: 'Dense', 5: 'Ultra' };
   const SUB_TRIS:  Record<number, number>  = { 1: 12, 2: 48, 3: 108, 4: 192, 5: 300 };
-  const [subdivisions, setSubdivisions] = useState(2);
-  const [wireframe, setWireframe] = useState(false);
 
-  // ── Parasolid primitive parameters (cylinder / cone / torus) ──────────────
-  // Stored as numbers in metres. Steppers below clamp & round to nice values.
-  const [cylRadius,   setCylRadius]   = useState(0.5);
-  const [cylHeight,   setCylHeight]   = useState(1.0);
-  const [coneR0,      setConeR0]      = useState(0.5);
-  const [coneR1,      setConeR1]      = useState(0.0);
-  const [coneHeight,  setConeHeight]  = useState(1.0);
-  const [torusMajor,  setTorusMajor]  = useState(0.5);
-  const [torusMinor,  setTorusMinor]  = useState(0.15);
+  /** Patch the shape-params slice. Caller spreads onto existing shape. */
+  const patchShape = useCallback(
+    (next: Partial<ShapeParams>) => {
+      if (!onUpdate) return;
+      // The discriminated-union spread is safe because we only ever patch
+      // fields that exist on the current `obj.shape.kind`.
+      onUpdate({ shape: { ...obj.shape, ...next } as ShapeParams });
+    },
+    [obj.shape, onUpdate],
+  );
 
-  // Build GLB URL with shape-specific query params.
-  const glbUrl = useMemo(() => {
-    const slug = SHAPE_SLUG[shape];
-    const base = `${BACKEND_BASE}/api/laboratory/debug-glb/${slug}`;
-    if (shape === 'cube')     return `${base}?subdivisions=${subdivisions}`;
-    if (shape === 'cylinder') return `${base}?radius=${cylRadius.toFixed(3)}&height=${cylHeight.toFixed(3)}`;
-    if (shape === 'cone')     return `${base}?radius=${coneR0.toFixed(3)}&radius_top=${coneR1.toFixed(3)}&height=${coneHeight.toFixed(3)}`;
-    if (shape === 'torus')    return `${base}?major_radius=${torusMajor.toFixed(3)}&minor_radius=${torusMinor.toFixed(3)}`;
-    return base;
-  }, [shape, subdivisions, cylRadius, cylHeight, coneR0, coneR1, coneHeight, torusMajor, torusMinor]);
+  // Build GLB URL from the scene object — pure, deterministic.
+  const glbUrl = useMemo(() => buildShapeUrl(obj), [obj]);
 
   // ── Mesh density toolbar (cube only) ──────────────────────────────────────
-  const MeshControls = () => (
-    <div className="flex items-center gap-1">
-      {/* − button */}
-      <button
-        type="button"
-        disabled={subdivisions <= SUB_MIN}
-        onClick={() => setSubdivisions((s) => Math.max(SUB_MIN, s - 1))}
-        title="Decrease mesh density"
-        className="flex h-6 w-6 items-center justify-center rounded-md border border-white/10 bg-white/4 font-mono text-[13px] text-white/50 transition-colors hover:border-white/20 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
-      >−</button>
-
-      {/* density badge */}
-      <button
-        type="button"
-        onClick={() => setWireframe((w) => !w)}
-        title={wireframe ? 'Hide wireframe' : 'Show wireframe'}
-        className={`flex h-6 min-w-[64px] items-center justify-center gap-1 rounded-md border px-2 font-mono text-[9px] font-semibold uppercase tracking-wider transition-colors ${
-          wireframe
-            ? 'border-sky-500/50 bg-sky-500/15 text-sky-300'
-            : 'border-white/10 bg-white/4 text-white/45 hover:text-white/70'
-        }`}
-      >
-        <span className="text-[10px]">⬡</span>
-        {SUB_LABELS[subdivisions]} · {SUB_TRIS[subdivisions]}▲
-      </button>
-
-      {/* + button */}
-      <button
-        type="button"
-        disabled={subdivisions >= SUB_MAX}
-        onClick={() => setSubdivisions((s) => Math.min(SUB_MAX, s + 1))}
-        title="Increase mesh density"
-        className="flex h-6 w-6 items-center justify-center rounded-md border border-white/10 bg-white/4 font-mono text-[13px] text-white/50 transition-colors hover:border-white/20 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
-      >+</button>
-    </div>
-  );
+  const MeshControls = () => {
+    if (shapeParams.kind !== 'cube') return null;
+    const subdivisions = shapeParams.subdivisions;
+    return (
+      <div className="flex items-center gap-1">
+        <button
+          type="button"
+          disabled={subdivisions <= SUB_MIN}
+          onClick={() => patchShape({ subdivisions: Math.max(SUB_MIN, subdivisions - 1) })}
+          title="Decrease mesh density"
+          className="flex h-6 w-6 items-center justify-center rounded-md border border-white/10 bg-white/4 font-mono text-[13px] text-white/50 transition-colors hover:border-white/20 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
+        >−</button>
+        <div
+          title="Mesh density"
+          className="flex h-6 min-w-[64px] items-center justify-center gap-1 rounded-md border border-white/10 bg-white/4 px-2 font-mono text-[9px] font-semibold uppercase tracking-wider text-white/45"
+        >
+          <span className="text-[10px]">⬡</span>
+          {SUB_LABELS[subdivisions]} · {SUB_TRIS[subdivisions]}▲
+        </div>
+        <button
+          type="button"
+          disabled={subdivisions >= SUB_MAX}
+          onClick={() => patchShape({ subdivisions: Math.min(SUB_MAX, subdivisions + 1) })}
+          title="Increase mesh density"
+          className="flex h-6 w-6 items-center justify-center rounded-md border border-white/10 bg-white/4 font-mono text-[13px] text-white/50 transition-colors hover:border-white/20 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
+        >+</button>
+      </div>
+    );
+  };
 
   // ── Parametric stepper for cylinder/cone/torus dimensions ─────────────────
   const NumStepper = ({
-    label, value, min, max, step, fmt = (v: number) => v.toFixed(2), onChange,
+    label: stepLabel, value, min, max, step, fmt = (v: number) => v.toFixed(2), onChange,
   }: {
     label: string;
     value: number;
@@ -600,7 +562,7 @@ function LabShapeCard({
         className="flex h-6 w-5 items-center justify-center rounded-l-md border border-white/10 bg-white/4 font-mono text-[12px] text-white/50 transition-colors hover:border-white/20 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
       >−</button>
       <span className="flex h-6 min-w-[58px] items-center justify-center gap-1 border-y border-white/10 bg-white/4 px-1 font-mono text-[9px] font-semibold uppercase tracking-wider text-white/55">
-        <span className="text-white/35">{label}</span>
+        <span className="text-white/35">{stepLabel}</span>
         <span style={{ color }}>{fmt(value)}</span>
       </span>
       <button
@@ -612,36 +574,45 @@ function LabShapeCard({
     </div>
   );
 
-  // Per-shape inspector (renders nothing for shapes without params).
+  // Per-shape inspector — reads params straight from `obj.shape`.
   const ShapeControls = () => {
-    if (shape === 'cube') return <MeshControls />;
-    if (shape === 'cylinder') {
+    if (shapeParams.kind === 'cube') return <MeshControls />;
+    if (shapeParams.kind === 'cylinder') {
       return (
         <div className="flex items-center gap-1">
-          <NumStepper label="R" value={cylRadius} min={0.1} max={1.0} step={0.05} onChange={setCylRadius} />
-          <NumStepper label="H" value={cylHeight} min={0.2} max={2.0} step={0.1}  onChange={setCylHeight} />
+          <NumStepper label="R" value={shapeParams.radius} min={0.1} max={1.0} step={0.05}
+            onChange={(v) => patchShape({ radius: v })} />
+          <NumStepper label="H" value={shapeParams.height} min={0.2} max={2.0} step={0.1}
+            onChange={(v) => patchShape({ height: v })} />
         </div>
       );
     }
-    if (shape === 'cone') {
+    if (shapeParams.kind === 'cone') {
       return (
         <div className="flex items-center gap-1">
-          <NumStepper label="R0" value={coneR0}     min={0.1} max={1.0} step={0.05} onChange={setConeR0} />
-          <NumStepper label="R1" value={coneR1}     min={0.0} max={1.0} step={0.05} onChange={setConeR1} />
-          <NumStepper label="H"  value={coneHeight} min={0.2} max={2.0} step={0.1}  onChange={setConeHeight} />
+          <NumStepper label="R0" value={shapeParams.radius}     min={0.1} max={1.0} step={0.05}
+            onChange={(v) => patchShape({ radius: v })} />
+          <NumStepper label="R1" value={shapeParams.radius_top} min={0.0} max={1.0} step={0.05}
+            onChange={(v) => patchShape({ radius_top: v })} />
+          <NumStepper label="H"  value={shapeParams.height}     min={0.2} max={2.0} step={0.1}
+            onChange={(v) => patchShape({ height: v })} />
         </div>
       );
     }
-    if (shape === 'torus') {
+    if (shapeParams.kind === 'torus') {
       // minor must stay strictly less than major.
-      const maxMinor = Math.max(0.05, torusMajor - 0.05);
+      const maxMinor = Math.max(0.05, shapeParams.major_radius - 0.05);
       return (
         <div className="flex items-center gap-1">
-          <NumStepper label="R" value={torusMajor} min={0.2} max={1.0} step={0.05} onChange={(v) => {
-            setTorusMajor(v);
-            if (torusMinor >= v - 0.05) setTorusMinor(Math.max(0.05, v - 0.1));
-          }} />
-          <NumStepper label="r" value={torusMinor} min={0.05} max={maxMinor} step={0.025} onChange={setTorusMinor} />
+          <NumStepper label="R" value={shapeParams.major_radius} min={0.2} max={1.0} step={0.05}
+            onChange={(v) => {
+              const nextMinor = shapeParams.minor_radius >= v - 0.05
+                ? Math.max(0.05, v - 0.1)
+                : shapeParams.minor_radius;
+              patchShape({ major_radius: v, minor_radius: nextMinor });
+            }} />
+          <NumStepper label="r" value={shapeParams.minor_radius} min={0.05} max={maxMinor} step={0.025}
+            onChange={(v) => patchShape({ minor_radius: v })} />
         </div>
       );
     }
@@ -654,18 +625,24 @@ function LabShapeCard({
     return (
       <div className="flex h-full w-full flex-col">
         {/* 3D viewport fills remaining space */}
-        <div className="relative flex-1 overflow-hidden">
+        <div
+          className="relative flex-1 overflow-hidden"
+          onClick={onSelect}
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+        >
           <ModelViewer
             modelUrl={glbUrl}
             className="h-full w-full"
-            displayMode={wireframe ? 'grid' : 'grid'}
+            displayMode="grid"
             lightingPreset="cleanProduct"
             autoRotate={rotating}
             renderQuality="hd"
             snapToFloor
+            viewMode={viewMode}
+            selected={selected}
+            hovered={hovered}
           />
-          {/* Wireframe overlay via SVG CSS on Canvas — simple approach */}
-          {wireframe && <WireframeOverlay color={color} />}
           {/* Label bottom-left overlay */}
           <div className="pointer-events-none absolute bottom-3 left-3">
             <span
@@ -682,7 +659,7 @@ function LabShapeCard({
           {/* Left: object name */}
           <span className="font-mono text-[10px] uppercase tracking-widest text-white/25">{label}</span>
 
-          {/* Center: shape parameters + rotate controls */}
+          {/* Center: shape parameters + rotate + view mode */}
           <div className="flex items-center gap-2">
             {hasShapeControls && <ShapeControls />}
             <div className="flex items-center gap-1 rounded-lg border border-white/8 bg-white/4 p-1">
@@ -702,6 +679,19 @@ function LabShapeCard({
               >
                 <span>⏹</span> Static
               </button>
+            </div>
+            <div className="flex items-center gap-1 rounded-lg border border-white/8 bg-white/4 p-1">
+              {(['solid', 'solid-wire', 'wire'] as const).map((m) => (
+                <button
+                  key={m}
+                  type="button"
+                  onClick={() => setViewMode(m)}
+                  title={m === 'solid' ? 'Solid' : m === 'wire' ? 'Wireframe' : 'Solid + wire'}
+                  className={`flex items-center gap-1 rounded-md px-2 py-1 font-mono text-[10px] font-semibold uppercase tracking-wider transition-colors ${viewMode === m ? 'bg-white/15 text-white' : 'text-white/35 hover:text-white/70'}`}
+                >
+                  {m === 'solid' ? 'S' : m === 'wire' ? 'W' : 'S+W'}
+                </button>
+              ))}
             </div>
           </div>
 
@@ -728,6 +718,9 @@ function LabShapeCard({
       <div
         className="relative overflow-hidden rounded-t-2xl border-x border-t bg-black/60"
         style={{ borderColor: `${color}40`, width: 200, height: 180 }}
+        onClick={onSelect}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
       >
         <ModelViewer
           modelUrl={glbUrl}
@@ -737,8 +730,10 @@ function LabShapeCard({
           autoRotate={rotating}
           renderQuality="hd"
           snapToFloor
+          viewMode={viewMode}
+          selected={selected}
+          hovered={hovered}
         />
-        {wireframe && <WireframeOverlay color={color} />}
       </div>
 
       {/* ── Toolbar panel ── */}

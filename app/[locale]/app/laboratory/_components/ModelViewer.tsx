@@ -290,8 +290,18 @@ export const LIGHT_PRESETS: Record<LightingPreset, LightConfig> = {
 // ─────────────────────────────────────────────────────────────────────────────
 
 function isGlb(url: string): boolean {
-  // Match explicit .glb extension OR our backend's extensionless debug-glb endpoint.
-  return /\.glb(\?.*)?$/i.test(url) || /\/debug-glb\//i.test(url);
+  // Match:
+  //  • explicit .glb extension                (`/foo/bar.glb` or `?…`)
+  //  • backend's extensionless debug-glb route (`/api/.../debug-glb/...`)
+  //  • blob: object URLs created from a GLB Blob via URL.createObjectURL
+  //    (used by useGeometryOrchestrator for in-memory CSG results)
+  //  • data:model/gltf-binary URIs
+  return (
+    /\.glb(\?.*)?$/i.test(url) ||
+    /\/debug-glb\//i.test(url) ||
+    /^blob:/i.test(url) ||
+    /^data:model\/gltf-binary/i.test(url)
+  );
 }
 
 function deriveMtlUrl(objUrl: string): string {
@@ -566,7 +576,61 @@ class GltfErrorBoundary extends React.Component<GltfErrorBoundaryProps, GltfErro
   }
 }
 
-function GltfModel({ url, onScene }: { url: string; onScene?: (root: THREE.Object3D) => void }) {
+/** Y-coordinate of the floor plane (must match ContactShadows + Grid position). */
+const FLOOR_Y = -0.78;
+
+/**
+ * Blender-style origin cross — X and Z axes spanning the full floor grid.
+ * +X / −X  red,  +Z / −Z  green (Blender convention).
+ * length should match grid fadeDistance so lines reach the horizon.
+ */
+function OriginCross({ y = FLOOR_Y, length = 50, opacity = 0.55 }: { y?: number; length?: number; opacity?: number }) {
+  const matRed   = React.useMemo(() => new THREE.LineBasicMaterial({ color: '#E8503A', transparent: true, opacity, depthTest: false }), [opacity]);
+  const matGreen = React.useMemo(() => new THREE.LineBasicMaterial({ color: '#6DBF67', transparent: true, opacity, depthTest: false }), [opacity]);
+
+  const gXPos = React.useMemo(() => new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, y, 0), new THREE.Vector3( length, y, 0)]), [y, length]);
+  const gXNeg = React.useMemo(() => new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, y, 0), new THREE.Vector3(-length, y, 0)]), [y, length]);
+  const gZPos = React.useMemo(() => new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, y, 0), new THREE.Vector3(0, y,  length)]), [y, length]);
+  const gZNeg = React.useMemo(() => new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, y, 0), new THREE.Vector3(0, y, -length)]), [y, length]);
+
+  const lineXPos = React.useMemo(() => new THREE.Line(gXPos, matRed),   [gXPos, matRed]);
+  const lineXNeg = React.useMemo(() => new THREE.Line(gXNeg, matRed),   [gXNeg, matRed]);
+  const lineZPos = React.useMemo(() => new THREE.Line(gZPos, matGreen), [gZPos, matGreen]);
+  const lineZNeg = React.useMemo(() => new THREE.Line(gZNeg, matGreen), [gZNeg, matGreen]);
+
+  return (
+    <group renderOrder={999}>
+      <primitive object={lineXPos} />
+      <primitive object={lineXNeg} />
+      <primitive object={lineZPos} />
+      <primitive object={lineZNeg} />
+      {/* Small dot at origin */}
+      <mesh position={[0, y + 0.002, 0]} renderOrder={999} rotation={[-Math.PI / 2, 0, 0]}>
+        <circleGeometry args={[0.012, 16]} />
+        <meshBasicMaterial color="#ffffff" transparent opacity={0.7} depthTest={false} side={THREE.DoubleSide} />
+      </mesh>
+    </group>
+  );
+}
+
+function GltfModel({
+  url,
+  onScene,
+  snapToFloor = false,
+  viewMode = 'solid',
+  selected = false,
+  hovered = false,
+}: {
+  url: string;
+  onScene?: (root: THREE.Object3D) => void;
+  snapToFloor?: boolean;
+  /** Solid / wireframe / both. */
+  viewMode?: 'solid' | 'wire' | 'solid-wire';
+  /** Render a cyan edge overlay slightly inflated above the mesh. */
+  selected?: boolean;
+  /** Render a faint white edge overlay (hover feedback). */
+  hovered?: boolean;
+}) {
   const gltf = useLoader(GLTFLoader, url);
   const root = gltf.scene;
 
@@ -577,6 +641,111 @@ function GltfModel({ url, onScene }: { url: string; onScene?: (root: THREE.Objec
   useEffect(() => {
     onScene?.(root);
   }, [root, onScene]);
+
+  // ── Wire / outline overlays ─────────────────────────────────────────────
+  //
+  // For every Mesh in the GLB we maintain three sibling LineSegments:
+  //   • topology wire        — dim white, shows triangulation
+  //   • selection outline    — cyan, slightly inflated
+  //   • hover outline        — faint white, slightly inflated
+  // They are attached as `userData.__overlay*` on the parent and added/removed
+  // from the scene graph based on props. The Three.js objects themselves are
+  // re-used across renders to avoid re-uploading geometry.
+  useEffect(() => {
+    type OverlayBag = {
+      wire?: THREE.LineSegments;
+      sel?: THREE.LineSegments;
+      hov?: THREE.LineSegments;
+    };
+    const bags: { mesh: THREE.Mesh; bag: OverlayBag }[] = [];
+
+    root.traverse((child) => {
+      const mesh = child as THREE.Mesh;
+      if (!mesh.isMesh || !mesh.geometry) return;
+      const bag: OverlayBag = (mesh.userData.__overlays ??= {}) as OverlayBag;
+
+      // Lazily build EdgesGeometry once per mesh — feature-edge angle 1° to
+      // get every triangle edge in wire mode (so subdivisions are visible),
+      // and reuse the same geometry for outlines.
+      const ensureWire = () => {
+        if (!bag.wire) {
+          const eg = new THREE.EdgesGeometry(mesh.geometry, 1);
+          bag.wire = new THREE.LineSegments(
+            eg,
+            new THREE.LineBasicMaterial({
+              color: 0xffffff,
+              transparent: true,
+              opacity: 0.18,
+              depthTest: true,
+            }),
+          );
+          bag.wire.userData.__overlay = true;
+          bag.wire.frustumCulled = false;
+          bag.wire.renderOrder = 1;
+        }
+      };
+      const ensureOutline = (key: 'sel' | 'hov', color: number, opacity: number) => {
+        if (!bag[key]) {
+          const eg = new THREE.EdgesGeometry(mesh.geometry, 30);
+          const seg = new THREE.LineSegments(
+            eg,
+            new THREE.LineBasicMaterial({
+              color,
+              transparent: true,
+              opacity,
+              depthTest: false, // x-ray so the outline reads even behind faces
+            }),
+          );
+          seg.userData.__overlay = true;
+          seg.frustumCulled = false;
+          seg.renderOrder = 999;
+          // Tiny inflation so edges sit just above the surface.
+          seg.scale.setScalar(1.003);
+          bag[key] = seg;
+        }
+      };
+
+      ensureWire();
+      ensureOutline('sel', 0x38bdf8, 0.95);
+      ensureOutline('hov', 0xffffff, 0.55);
+      bags.push({ mesh, bag });
+    });
+
+    const wantWire = viewMode === 'wire' || viewMode === 'solid-wire';
+    const wantSolid = viewMode === 'solid' || viewMode === 'solid-wire';
+
+    for (const { mesh, bag } of bags) {
+      // Toggle solid surface via material.visible so child overlays
+      // (LineSegments) stay rendered even in wire-only mode.
+      const mat = mesh.material as THREE.Material | THREE.Material[];
+      if (Array.isArray(mat)) {
+        for (const m of mat) m.visible = wantSolid;
+      } else if (mat) {
+        mat.visible = wantSolid;
+      }
+
+      const attach = (seg: THREE.LineSegments | undefined, on: boolean) => {
+        if (!seg) return;
+        if (on) {
+          if (seg.parent !== mesh) mesh.add(seg);
+        } else if (seg.parent) {
+          seg.parent.remove(seg);
+        }
+      };
+      attach(bag.wire, wantWire);
+      attach(bag.sel,  selected);
+      attach(bag.hov,  hovered && !selected);
+    }
+
+    return () => {
+      // Detach (but don't dispose — geometry is reused on next prop change).
+      for (const { bag } of bags) {
+        for (const seg of [bag.wire, bag.sel, bag.hov]) {
+          if (seg?.parent) seg.parent.remove(seg);
+        }
+      }
+    };
+  }, [root, viewMode, selected, hovered]);
 
   // PR #18 — once the gltf is mounted, lazily load the TSL sauce shader and
   // re-upgrade any liquid material to its node-based version. Only runs on
@@ -593,13 +762,18 @@ function GltfModel({ url, onScene }: { url: string; onScene?: (root: THREE.Objec
   }, [root]);
 
   // Centre + normalise so the model fits the camera frame.
-  const { scale, offset } = fitToView(root);
+  const { scale, offset, boxMin } = fitToView(root);
+
+  // snapToFloor: shift Y so the bottom face sits exactly on FLOOR_Y.
+  // Formula: yPos = FLOOR_Y - boxMin.y * scale
+  // (derived from: bottomWorld = (boxMin.y - offset.y)*scale + yPos = FLOOR_Y)
+  const yPos = snapToFloor ? FLOOR_Y - boxMin.y * scale : -offset.y * scale;
 
   return (
     <primitive
       object={root}
       scale={scale}
-      position={[-offset.x * scale, -offset.y * scale, -offset.z * scale]}
+      position={[-offset.x * scale, yPos, -offset.z * scale]}
     />
   );
 }
@@ -657,17 +831,34 @@ function ObjModel({ url }: { url: string }) {
 function fitToView(obj: THREE.Object3D): {
   scale: number;
   offset: THREE.Vector3;
+  boxMin: THREE.Vector3;
 } {
+  // Save & reset the root transform so bbox is in the object's LOCAL space,
+  // not world space (which would include position/scale set by a previous render).
+  const savedPos   = obj.position.clone();
+  const savedScale = obj.scale.clone();
+  const savedRot   = obj.rotation.clone();
+  obj.position.set(0, 0, 0);
+  obj.scale.set(1, 1, 1);
+  obj.rotation.set(0, 0, 0);
+  obj.updateWorldMatrix(false, true);
+
   const box = new THREE.Box3().setFromObject(obj);
+
+  // Restore
+  obj.position.copy(savedPos);
+  obj.scale.copy(savedScale);
+  obj.rotation.copy(savedRot);
+  obj.updateWorldMatrix(false, true);
+
   const size = new THREE.Vector3();
   box.getSize(size);
   const maxDim = Math.max(size.x, size.y, size.z);
-  // Target: model fits in a 1.0 unit sphere — camera at [2,1.5,2.5] then
-  // sees the full object with comfortable margin regardless of shape.
   const scale = maxDim > 0 ? 1.0 / maxDim : 1;
   const offset = new THREE.Vector3();
   box.getCenter(offset);
-  return { scale, offset };
+  const boxMin = box.min.clone();
+  return { scale, offset, boxMin };
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -817,6 +1008,14 @@ interface ModelViewerProps {
   onReady?: (api: ModelViewerApi) => void;
   /** PR #32 — called when the GLB file returns 404 (ephemeral storage wipe). */
   onModelError?: (e: Error) => void;
+  /** Snap the model's bottom face to the floor plane (like Blender default cube). */
+  snapToFloor?: boolean;
+  /** Solid / wireframe / both. Default `"solid"`. */
+  viewMode?: 'solid' | 'wire' | 'solid-wire';
+  /** Show cyan selection outline around the loaded model. */
+  selected?: boolean;
+  /** Show faint hover outline around the loaded model. */
+  hovered?: boolean;
 }
 
 export function ModelViewer({
@@ -832,6 +1031,10 @@ export function ModelViewer({
   exposure,
   onReady,
   onModelError,
+  snapToFloor = false,
+  viewMode = 'solid',
+  selected = false,
+  hovered = false,
 }: ModelViewerProps) {
   const ref = useRef<HTMLDivElement>(null);
   const glRef = useRef<THREE.WebGLRenderer | null>(null);
@@ -1015,6 +1218,10 @@ export function ModelViewer({
             <GltfErrorBoundary onError={(e) => onModelError?.(e)}>
             <GltfModel
               url={modelUrl}
+              snapToFloor={snapToFloor}
+              viewMode={viewMode}
+              selected={selected}
+              hovered={hovered}
               onScene={(r) => {
                 sceneRef.current = r;
                 // Classify meshes once on load — food vs bowl/everything else.
@@ -1074,6 +1281,7 @@ export function ModelViewer({
             followCamera
           />
         )}
+        {displayMode === "grid" && <OriginCross />}
 
         <CameraAnimator targetRef={cameraAnimTargetRef} />
 

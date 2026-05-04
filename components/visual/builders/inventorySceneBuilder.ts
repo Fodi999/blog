@@ -105,13 +105,10 @@ function emissiveForTheme(theme: MaterialTheme): number {
 }
 
 // ── Dev GLB override ─────────────────────────────────────────────────────────
-// When running locally against the Rust backend on :8000, inject sci_fi_card.glb
-// so every product card renders as the Plasticity-style hard-surface card.
-// In production this is null and the backend supplies the real model_url.
-const DEV_GLB_URL: string | null =
-  typeof window !== 'undefined' && window.location.hostname === 'localhost'
-    ? 'http://localhost:8000/api/laboratory/debug-glb/sci_fi_card'
-    : null;
+// Inject sci_fi_card.glb for every product card when no real model_url is provided.
+// Uses env override or falls back to the Koyeb production backend.
+const BACKEND_BASE = process.env.NEXT_PUBLIC_BACKEND_URL ?? 'https://ministerial-yetta-fodi999-c58d8823.koyeb.app';
+const DEV_GLB_URL: string | null = `${BACKEND_BASE}/api/laboratory/debug-glb/sci_fi_card`;
 
 // ── Public API ───────────────────────────────────────────────────────────────
 

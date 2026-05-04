@@ -11,6 +11,7 @@
  * looking at inventory, a dish, a recipe or a lab experiment.
  */
 import { api } from './chefos-api';
+import type { WorkspaceCommand } from '@/components/workspace/WorkspaceCommands';
 
 // ── Screen / Context ─────────────────────────────────────────────────────────
 
@@ -77,6 +78,8 @@ export type CopilotResponse = {
   actions_left: number;
   risk_level: RiskLevel;
   billing_warning: string | null;
+  /** Immediate workspace/scene commands from the AI planner. */
+  workspace_commands?: WorkspaceCommand[];
 };
 
 // ── Requests ─────────────────────────────────────────────────────────────────

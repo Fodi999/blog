@@ -178,9 +178,27 @@ const SPAWN_TRIGGER = new RegExp(
   'i',
 );
 
+// Modifier keywords that imply a CSG / bevel operation — when present we MUST
+// skip the local short-circuit and let the backend planner build a proper
+// `geometry_op` command (with bevel / hole / subtract).
+const MODIFIER_PATTERN = new RegExp(
+  [
+    'скругл', 'округл', 'фаск',          // round corners / bevel (RU)
+    'дырк', 'дыр[оы]', 'отверст',        // hole (RU)
+    'вырез', 'выреза',                    // cut out (RU)
+    'round(ed)?', 'bevel', 'fillet', 'chamfer', 'smooth\\s*corner',
+    'hole', 'cutout', 'cut\\s*out', 'subtract', 'drill',
+    'union', 'intersect',
+  ].join('|'),
+  'i',
+);
+
 /** Return the list of shapes explicitly requested in the user's message or copilot answer. */
 function detectShapes(text: string): Array<{ shape: SpawnShape; label: string; color: string }> {
   if (!SPAWN_TRIGGER.test(text)) return [];
+  // Bail out — message contains a CSG / bevel modifier; backend planner must
+  // handle it so it can return a proper `geometry_op` workspace command.
+  if (MODIFIER_PATTERN.test(text)) return [];
   return SHAPE_PATTERNS.filter(({ pattern }) => pattern.test(text));
 }
 
@@ -302,9 +320,17 @@ export function CopilotProvider({ children }: { children: React.ReactNode }) {
         };
         setMessages((prev) => [...prev, assistantEarly]);
         dispatchWorkspace({ type: 'switch_lab' });
-        for (const { shape, label, color } of shapesEarly) {
-          dispatchWorkspace({ type: 'spawn_shape', shape, label, color });
-        }
+        // First detected shape REPLACES the current scene (single-object Lab),
+        // any additional shapes in the same message are appended alongside it.
+        shapesEarly.forEach(({ shape, label, color }, idx) => {
+          dispatchWorkspace({
+            type: 'spawn_shape',
+            shape,
+            label,
+            color,
+            mode: idx === 0 ? 'replace' : 'append',
+          });
+        });
         setPending(false);
         return;
       }
@@ -342,6 +368,13 @@ export function CopilotProvider({ children }: { children: React.ReactNode }) {
         // `scene_command` field can be added later.
         for (const cmd of inferSceneCommands(res, selectedEntity, trimmed)) {
           dispatchWorkspace(cmd);
+        }
+
+        // Explicit workspace_commands from the AI planner (geometry_op, spawn_shape, …).
+        if (res.workspace_commands?.length) {
+          for (const cmd of res.workspace_commands) {
+            dispatchWorkspace(cmd as WorkspaceCommand);
+          }
         }
       } catch (err) {
         if (ctrl.signal.aborted) return;

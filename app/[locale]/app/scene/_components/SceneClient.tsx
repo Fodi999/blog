@@ -30,16 +30,15 @@ import { cn } from '@/lib/utils';
 import { SimulationWorkspace } from '@/components/workspace/scenes/SimulationWorkspace';
 import {
   useWorkspaceCommand,
+  createSceneObject,
+  patchSceneObject,
   type SpawnShape,
+  type SceneObject,
   type GeometryOpCommand,
 } from '@/components/workspace/WorkspaceCommands';
 
-export type SpawnedShape = {
-  id: string;
-  shape: SpawnShape;
-  label: string;
-  color: string;
-};
+/** Backwards-compat alias for callers/legacy code. */
+export type SpawnedShape = SceneObject;
 
 type PaletteTool = {
   id: string;
@@ -148,17 +147,21 @@ export function SceneClient({ locale: _locale }: { locale: string }) {
   const [statusHint, setStatusHint] = useState<string>('Ready');
 
   const spawnPrimitive = (shape: SpawnShape) => {
-    const id = `${shape}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
-    const newShape: SpawnedShape = {
-      id,
-      shape,
+    const obj = createSceneObject(shape, {
       label: SHAPE_LABEL[shape],
       color: SHAPE_COLOR[shape],
-    };
+    });
     setPendingGeoOps([]);
-    setSpawnedShapes([newShape]);
-    setSelectedId(id);
+    setSpawnedShapes([obj]);
+    setSelectedId(obj.id);
     setStatusHint(`Created ${SHAPE_LABEL[shape]}`);
+  };
+
+  /** Apply a partial patch to one scene object — used by inspector + Copilot. */
+  const updateSceneObject = (id: string, patch: Partial<SceneObject>) => {
+    setSpawnedShapes((prev) =>
+      prev.map((o) => (o.id === id ? patchSceneObject(o, patch) : o)),
+    );
   };
 
   const handleToolClick = (toolId: string) => {
@@ -182,20 +185,18 @@ export function SceneClient({ locale: _locale }: { locale: string }) {
 
   useWorkspaceCommand((cmd) => {
     if (cmd.type === 'spawn_shape') {
-      const newShape: SpawnedShape = {
-        id: `${cmd.shape}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-        shape: cmd.shape,
+      const obj = createSceneObject(cmd.shape, {
         label: cmd.label,
         color: cmd.color ?? SHAPE_COLOR[cmd.shape] ?? '#38bdf8',
-      };
+      });
       if ((cmd.mode ?? 'replace') === 'append') {
-        setSpawnedShapes((prev) => [...prev, newShape]);
+        setSpawnedShapes((prev) => [...prev, obj]);
       } else {
         setPendingGeoOps([]);
-        setSpawnedShapes([newShape]);
+        setSpawnedShapes([obj]);
       }
-      setSelectedId(newShape.id);
-      setStatusHint(`Spawned ${newShape.label} via Copilot`);
+      setSelectedId(obj.id);
+      setStatusHint(`Spawned ${obj.label} via Copilot`);
     } else if (cmd.type === 'clear_shapes') {
       setSpawnedShapes([]);
       setPendingGeoOps([]);
@@ -331,7 +332,13 @@ export function SceneClient({ locale: _locale }: { locale: string }) {
               activeTab="lab"
               spawnedShapes={spawnedShapes}
               onSetSpawnedShapes={setSpawnedShapes}
+              onUpdateObject={updateSceneObject}
               pendingGeoOps={pendingGeoOps}
+              selectedId={selectedId}
+              onSelectObject={(id) => {
+                setSelectedId(id);
+                setStatusHint(id ? 'Object selected' : 'Cleared selection');
+              }}
             />
           )}
         </div>
@@ -360,7 +367,7 @@ export function SceneClient({ locale: _locale }: { locale: string }) {
                 </span>
               </div>
               {selectedShape ? (
-                <PropertiesPanel shape={selectedShape} />
+                <PropertiesPanel obj={selectedShape} onUpdate={updateSceneObject} />
               ) : (
                 <p className="font-mono text-[10px] leading-relaxed text-white/25">
                   Select an object to inspect.
@@ -387,7 +394,7 @@ export function SceneClient({ locale: _locale }: { locale: string }) {
           {selectedShape && (
             <>
               <span className="text-white/15">·</span>
-              <span style={{ color: selectedShape.color }}>{selectedShape.label}</span>
+              <span style={{ color: selectedShape.material.color_hex }}>{selectedShape.label}</span>
             </>
           )}
           <span className="text-white/15">·</span>
@@ -506,12 +513,12 @@ function Outliner({
                   <span
                     className="h-2 w-2 flex-shrink-0 rounded-sm"
                     style={{
-                      backgroundColor: s.color,
-                      boxShadow: active ? `0 0 6px ${s.color}` : 'none',
+                      backgroundColor: s.material.color_hex,
+                      boxShadow: active ? `0 0 6px ${s.material.color_hex}` : 'none',
                     }}
                   />
                   <span className="truncate font-mono text-[10px] text-white/70">{s.label}</span>
-                  <span className="font-mono text-[8px] text-white/20">{s.shape}</span>
+                  <span className="font-mono text-[8px] text-white/20">{s.kind}</span>
                 </button>
                 <button
                   type="button"
@@ -539,29 +546,165 @@ function Outliner({
   );
 }
 
-function PropertiesPanel({ shape }: { shape: SpawnedShape }) {
+function PropertiesPanel({
+  obj,
+  onUpdate,
+}: {
+  obj: SceneObject;
+  onUpdate: (id: string, patch: Partial<SceneObject>) => void;
+}) {
+  const color = obj.material.color_hex;
+
+  /** Patch the shape-params slice with type-narrowed safety. */
+  const patchShape = (next: Record<string, number>) => {
+    onUpdate(obj.id, { shape: { ...obj.shape, ...next } as SceneObject['shape'] });
+  };
+
+  /** Patch one transform component. */
+  const patchTransform = (
+    axis: 'position' | 'rotation' | 'scale',
+    idx: 0 | 1 | 2,
+    value: number,
+  ) => {
+    const next: [number, number, number] = [...obj.transform[axis]] as [number, number, number];
+    next[idx] = value;
+    onUpdate(obj.id, { transform: { ...obj.transform, [axis]: next } });
+  };
+
   return (
-    <div className="space-y-2">
-      <Row label="Type">
-        <span className="font-mono text-[10px] text-white/70">{shape.shape}</span>
-      </Row>
-      <Row label="Name">
-        <span className="font-mono text-[10px] text-white/70">{shape.label}</span>
-      </Row>
-      <Row label="Color">
-        <span className="flex items-center gap-1.5">
-          <span className="h-3 w-3 rounded-sm" style={{ backgroundColor: shape.color }} />
-          <span className="font-mono text-[9px] uppercase text-white/50">{shape.color}</span>
-        </span>
-      </Row>
-      <Row label="ID">
-        <span className="truncate font-mono text-[8px] text-white/30">{shape.id}</span>
-      </Row>
-      <div className="mt-3 rounded-md border border-white/6 bg-white/2 p-2">
-        <p className="font-mono text-[9px] leading-relaxed text-white/30">
-          Mesh density and color are edited directly on the viewport toolbar
-          under the model.
+    <div className="space-y-3">
+      {/* ── Identity ─────────────────────────────────────────────────────── */}
+      <div className="space-y-1.5">
+        <Row label="Type">
+          <span className="font-mono text-[10px] text-white/70">{obj.kind}</span>
+        </Row>
+        <Row label="Name">
+          <span className="font-mono text-[10px] text-white/70">{obj.label}</span>
+        </Row>
+        <Row label="Color">
+          <span className="flex items-center gap-1.5">
+            <span className="h-3 w-3 rounded-sm" style={{ backgroundColor: color }} />
+            <span className="font-mono text-[9px] uppercase text-white/50">{color}</span>
+          </span>
+        </Row>
+        <Row label="ID">
+          <span className="truncate font-mono text-[8px] text-white/30">{obj.id}</span>
+        </Row>
+      </div>
+
+      {/* ── Shape parameters ─────────────────────────────────────────────── */}
+      {hasEditableShape(obj.shape) && (
+        <div className="rounded-md border border-white/6 bg-white/2 p-2">
+          <p className="mb-1.5 font-mono text-[8px] uppercase tracking-widest text-white/35">
+            Shape
+          </p>
+          <div className="space-y-1.5">
+            {obj.shape.kind === 'cube' && (
+              <NumField
+                label="Subdivisions"
+                value={obj.shape.subdivisions}
+                min={1}
+                max={5}
+                step={1}
+                onChange={(v) => patchShape({ subdivisions: v })}
+              />
+            )}
+            {obj.shape.kind === 'cylinder' && (
+              <>
+                <NumField label="Radius" value={obj.shape.radius} min={0.1} max={1.0} step={0.05}
+                  onChange={(v) => patchShape({ radius: v })} />
+                <NumField label="Height" value={obj.shape.height} min={0.2} max={2.0} step={0.1}
+                  onChange={(v) => patchShape({ height: v })} />
+              </>
+            )}
+            {obj.shape.kind === 'cone' && (
+              <>
+                <NumField label="Radius bot" value={obj.shape.radius} min={0.1} max={1.0} step={0.05}
+                  onChange={(v) => patchShape({ radius: v })} />
+                <NumField label="Radius top" value={obj.shape.radius_top} min={0.0} max={1.0} step={0.05}
+                  onChange={(v) => patchShape({ radius_top: v })} />
+                <NumField label="Height" value={obj.shape.height} min={0.2} max={2.0} step={0.1}
+                  onChange={(v) => patchShape({ height: v })} />
+              </>
+            )}
+            {obj.shape.kind === 'torus' && (
+              <>
+                <NumField label="Major R" value={obj.shape.major_radius} min={0.2} max={1.0} step={0.05}
+                  onChange={(v) => patchShape({ major_radius: v })} />
+                <NumField label="Minor r" value={obj.shape.minor_radius} min={0.05}
+                  max={Math.max(0.05, obj.shape.major_radius - 0.05)} step={0.025}
+                  onChange={(v) => patchShape({ minor_radius: v })} />
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ── Transform (read-only display + sliders for position) ─────────── */}
+      <div className="rounded-md border border-white/6 bg-white/2 p-2">
+        <p className="mb-1.5 font-mono text-[8px] uppercase tracking-widest text-white/35">
+          Transform
         </p>
+        <div className="space-y-1.5">
+          {(['position', 'rotation', 'scale'] as const).map((axis) => (
+            <div key={axis} className="flex items-center justify-between gap-1">
+              <span className="font-mono text-[8px] uppercase text-white/30">{axis}</span>
+              <div className="flex gap-1">
+                {([0, 1, 2] as const).map((i) => (
+                  <input
+                    key={i}
+                    type="number"
+                    step={axis === 'rotation' ? 0.1 : 0.05}
+                    value={obj.transform[axis][i]}
+                    onChange={(e) => patchTransform(axis, i, Number(e.target.value))}
+                    className="h-5 w-12 rounded border border-white/8 bg-white/4 px-1 font-mono text-[9px] text-white/70 outline-none focus:border-sky-500/40"
+                  />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** Discriminator: which shape kinds expose editable params? */
+function hasEditableShape(s: SceneObject['shape']): boolean {
+  return s.kind === 'cube' || s.kind === 'cylinder' || s.kind === 'cone' || s.kind === 'torus';
+}
+
+/** Compact ± stepper input for the Properties panel. */
+function NumField({
+  label, value, min, max, step, onChange,
+}: {
+  label: string;
+  value: number;
+  min: number;
+  max: number;
+  step: number;
+  onChange: (v: number) => void;
+}) {
+  const clamp = (v: number) => Math.max(min, Math.min(max, v));
+  return (
+    <div className="flex items-center justify-between gap-1">
+      <span className="font-mono text-[9px] uppercase tracking-wider text-white/40">{label}</span>
+      <div className="flex items-center gap-0.5">
+        <button
+          type="button"
+          onClick={() => onChange(clamp(+(value - step).toFixed(3)))}
+          disabled={value <= min + 1e-6}
+          className="flex h-5 w-5 items-center justify-center rounded-l border border-white/10 bg-white/4 font-mono text-[10px] text-white/50 hover:text-white disabled:opacity-30"
+        >−</button>
+        <span className="flex h-5 min-w-[42px] items-center justify-center border-y border-white/10 bg-white/4 px-1 font-mono text-[9px] text-white/70">
+          {value.toFixed(step < 1 ? 2 : 0)}
+        </span>
+        <button
+          type="button"
+          onClick={() => onChange(clamp(+(value + step).toFixed(3)))}
+          disabled={value >= max - 1e-6}
+          className="flex h-5 w-5 items-center justify-center rounded-r border border-white/10 bg-white/4 font-mono text-[10px] text-white/50 hover:text-white disabled:opacity-30"
+        >+</button>
       </div>
     </div>
   );
