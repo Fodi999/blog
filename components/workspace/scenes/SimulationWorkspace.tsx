@@ -27,9 +27,11 @@ import {
   buildShapeUrl,
 } from '@/components/workspace/WorkspaceCommands';
 import { useGeometryOrchestrator } from '@/hooks/useGeometryOrchestrator';
-import { GizmoLayer } from '@/components/studio/viewport/GizmoLayer';
-import { ToolHandleLayer } from '@/components/studio/handles/ToolHandleLayer';
-import { useStudioStore } from '@/components/studio/engine/StudioProvider';
+// NOTE: studio CAD overlay (GizmoLayer / ToolHandleLayer / useStudioStore)
+// has been removed along with /app/scene. SimulationWorkspace now ships
+// without a Plasticity-style sub-element gizmo layer.
+const GizmoLayer = () => null;
+const ToolHandleLayer = () => null;
 
 const VisualSceneRenderer = dynamic(
   () => import('@/components/visual/VisualSceneRenderer').then((m) => m.VisualSceneRenderer),
@@ -208,8 +210,7 @@ export function SimulationWorkspace({
   // ── Read selectionMode from store (overrides stale prop from parent) ──────
   // StudioSelectionBar writes to the store; we must read from the same source.
   // Falls back to the prop value if the store isn't mounted.
-  const storeSelectionMode = useStudioStore((s) => s.tool.selectionMode);
-  const activeSelectionMode = storeSelectionMode ?? selectionMode;
+  const activeSelectionMode = selectionMode;
 
   // Use lifted state if provided, otherwise own local state
   const [localShapes, setLocalShapes] = useState<SpawnedShape[]>([]);
@@ -527,8 +528,7 @@ function LabShapeCard({
   const [viewMode, setViewMode] = useState<'solid' | 'wire' | 'solid-wire'>('solid');
 
   // ── Read selectionMode from store so LabShapeCard always reflects live tool state ──
-  const storeSelectionMode = useStudioStore((s) => s.tool.selectionMode);
-  const activeSelectionMode = storeSelectionMode ?? selectionMode;
+  const activeSelectionMode = selectionMode;
 
   // ── Mesh density labels (cube only) ───────────────────────────────────────
   const SUB_MIN = 1;

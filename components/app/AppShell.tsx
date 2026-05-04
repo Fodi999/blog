@@ -31,6 +31,7 @@ import {
 } from '@/components/copilot/CopilotProvider';
 import { WorkspaceCommandsProvider } from '@/components/workspace/WorkspaceCommands';
 import { CopilotPanel } from '@/components/copilot/CopilotPanel';
+import { usePathname } from '@/i18n/routing';
 
 const SIDEBAR_W = 260;
 const SIDEBAR_W_COLLAPSED = 72;
@@ -47,6 +48,10 @@ function ShellGrid({
   const { sidebarCollapsed, collapsed: copilotCollapsed } = useCopilot();
   const sidebarW = sidebarCollapsed ? SIDEBAR_W_COLLAPSED : SIDEBAR_W;
   const copilotW = copilotCollapsed ? COPILOT_W_COLLAPSED : COPILOT_W;
+  const pathname = usePathname();
+  // Routes that take over the whole main area: no Copilot column,
+  // no main padding. The page renders its own chrome.
+  const fullscreenGame = pathname.startsWith('/app/kitchen-tycoon');
 
   return (
     <div
@@ -68,14 +73,18 @@ function ShellGrid({
             .chefos-shell-grid { grid-template-columns: ${sidebarW}px minmax(0,1fr); }
           }
           @media (min-width: 1280px) {
-            .chefos-shell-grid { grid-template-columns: ${sidebarW}px minmax(0,1fr) ${copilotW}px; }
+            .chefos-shell-grid { grid-template-columns: ${sidebarW}px minmax(0,1fr)${fullscreenGame ? '' : ` ${copilotW}px`}; }
           }
         `}</style>
         <Sidebar locale={locale} className="hidden lg:flex" />
         <main className="min-w-0 overflow-y-auto">
-          <div className="h-full px-4 py-4 pb-24 lg:px-6 lg:pb-6">{children}</div>
+          {fullscreenGame ? (
+            <div className="h-full">{children}</div>
+          ) : (
+            <div className="h-full px-4 py-4 pb-24 lg:px-6 lg:pb-6">{children}</div>
+          )}
         </main>
-        <CopilotPanel className="hidden xl:flex" />
+        {!fullscreenGame && <CopilotPanel className="hidden xl:flex" />}
       </div>
 
       <MobileAppNav locale={locale} />

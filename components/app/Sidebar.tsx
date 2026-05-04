@@ -15,7 +15,7 @@ import {
   Sparkles,
   PanelLeftClose,
   PanelLeftOpen,
-  Boxes,
+  Gamepad2,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -43,7 +43,7 @@ type NavItem = { href: string; labelKey: string; icon: LucideIcon };
 export const NAV_ITEMS: NavItem[] = [
   { href: '/app/dashboard', labelKey: 'dashboard', icon: LayoutDashboard },
   { href: '/app/inventory', labelKey: 'inventory', icon: Package },
-  { href: '/app/scene', labelKey: 'scene', icon: Boxes },
+  { href: '/app/kitchen-tycoon', labelKey: 'tycoon', icon: Gamepad2 },
   { href: '/app/cook-now', labelKey: 'cookNow', icon: Sparkles },
   { href: '/app/my-dishes', labelKey: 'myDishes', icon: Heart },
   { href: '/app/plan', labelKey: 'plan', icon: Calendar },
