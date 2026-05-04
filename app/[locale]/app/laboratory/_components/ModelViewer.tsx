@@ -627,6 +627,7 @@ function GltfModel({
   transformMode = 'select',
   onCommitTransform,
   orbitRef,
+  shapeColor,
 }: {
   url: string;
   onScene?: (root: THREE.Object3D) => void;
@@ -645,12 +646,44 @@ function GltfModel({
   onCommitTransform?: (t: { position: [number, number, number]; rotation: [number, number, number]; scale: [number, number, number] }) => void;
   /** OrbitControls ref so we can disable camera while the user drags the gizmo. */
   orbitRef?: React.RefObject<React.ComponentRef<typeof OrbitControls> | null>;
+  /** Override the mesh surface colour + force a metallic look. Pass `SceneObject.material.color_hex`. */
+  shapeColor?: string;
 }) {
   const gltf = useLoader(GLTFLoader, url);
   const root = gltf.scene;
 
   // Upgrade materials by name (PR #9) — idempotent, safe to call on cached gltf.
   upgradeMaterials(root);
+
+  // ── Shape-color + metallic override ─────────────────────────────────────
+  // Applied after `upgradeMaterials` so that food/glass/label meshes keep
+  // their specialised materials while opaque primitive meshes get the
+  // SceneObject colour with a brushed-steel look.
+  useEffect(() => {
+    if (!shapeColor) return;
+    root.traverse((child) => {
+      const mesh = child as THREE.Mesh;
+      if (!mesh.isMesh) return;
+      // Skip overlay linSegments and meshes that were upgraded to glass/liquid/label.
+      if (mesh.userData.__overlay) return;
+      const applyToMat = (src: THREE.Material) => {
+        if (src instanceof THREE.MeshPhysicalMaterial && (src as THREE.MeshPhysicalMaterial).transmission > 0) return; // keep glass
+        if (src instanceof THREE.MeshStandardMaterial || src instanceof THREE.MeshPhongMaterial) {
+          const std = src as THREE.MeshStandardMaterial;
+          std.color.set(shapeColor);
+          std.metalness = 0.75;
+          std.roughness = 0.22;
+          std.envMapIntensity = 1.5;
+          std.needsUpdate = true;
+        }
+      };
+      if (Array.isArray(mesh.material)) {
+        for (const m of mesh.material) applyToMat(m);
+      } else {
+        applyToMat(mesh.material);
+      }
+    });
+  }, [root, shapeColor]);
 
   // PR #31 — publish root so the parent can walk it for real-time roughness edits.
   useEffect(() => {
@@ -1097,6 +1130,8 @@ interface ModelViewerProps {
   transform?: { position: [number, number, number]; rotation: [number, number, number]; scale: [number, number, number] };
   /** Called on gizmo drag-end with the new transform values. */
   onCommitTransform?: (t: { position: [number, number, number]; rotation: [number, number, number]; scale: [number, number, number] }) => void;
+  /** Override the mesh surface colour + force metallic look. Pass `SceneObject.material.color_hex`. */
+  shapeColor?: string;
 }
 
 export function ModelViewer({
@@ -1119,6 +1154,7 @@ export function ModelViewer({
   transformMode = 'select',
   transform,
   onCommitTransform,
+  shapeColor,
 }: ModelViewerProps) {
   const ref = useRef<HTMLDivElement>(null);
   const glRef = useRef<THREE.WebGLRenderer | null>(null);
@@ -1310,6 +1346,7 @@ export function ModelViewer({
               transformMode={transformMode}
               onCommitTransform={onCommitTransform}
               orbitRef={controlsRef}
+              shapeColor={shapeColor}
               onScene={(r) => {
                 sceneRef.current = r;
                 // Classify meshes once on load — food vs bowl/everything else.

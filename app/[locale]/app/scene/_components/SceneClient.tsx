@@ -123,16 +123,16 @@ const SHAPE_LABEL: Record<SpawnShape, string> = {
 };
 
 const SHAPE_COLOR: Record<SpawnShape, string> = {
-  cube: '#38bdf8',
-  sphere: '#facc15',
-  cylinder: '#22d3ee',
-  cone: '#fb923c',
-  torus: '#a78bfa',
-  square: '#a78bfa',
-  rectangle: '#a78bfa',
-  circle: '#34d399',
-  triangle: '#fb923c',
-  line: '#94a3b8',
+  cube:      '#b0b8c8', // cool steel
+  sphere:    '#c8c0b0', // warm steel
+  cylinder:  '#a8b4c0', // steel blue
+  cone:      '#bab0a8', // steel warm
+  torus:     '#b8b0c4', // steel violet
+  square:    '#a0acb8',
+  rectangle: '#a0acb8',
+  circle:    '#a8b8ac', // steel green
+  triangle:  '#b8aca0',
+  line:      '#94a3b8',
 };
 
 const SHAPE_ICON: Record<SpawnShape, LucideIcon> = {

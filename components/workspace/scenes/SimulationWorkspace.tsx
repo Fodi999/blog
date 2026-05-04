@@ -662,6 +662,7 @@ function LabShapeCard({
             transform={obj.transform}
             transformMode={transformMode}
             onCommitTransform={onCommitTransform}
+            shapeColor={color}
           />
           {/* Label bottom-left overlay */}
           <div className="pointer-events-none absolute bottom-3 left-3">
@@ -756,6 +757,7 @@ function LabShapeCard({
           transform={obj.transform}
           transformMode={transformMode}
           onCommitTransform={onCommitTransform}
+          shapeColor={color}
         />
       </div>
 
