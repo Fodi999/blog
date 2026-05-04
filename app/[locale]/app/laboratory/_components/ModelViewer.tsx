@@ -336,6 +336,7 @@ function classify(
   // PR #28: authoritative class from GLB extras (set by Rust material_class field).
   const cls = extras?.material_class;
   if (typeof cls === "string") {
+    if (cls === "opaque") return null;   // keep GLB material as-is — color already correct
     if (cls === "glass") return "glass";
     if (cls === "ceramic") return "ceramic";
     if (cls === "metal") return "metal";
@@ -661,7 +662,9 @@ function fitToView(obj: THREE.Object3D): {
   const size = new THREE.Vector3();
   box.getSize(size);
   const maxDim = Math.max(size.x, size.y, size.z);
-  const scale = maxDim > 0 ? 1.5 / maxDim : 1;
+  // Target: model fits in a 1.0 unit sphere — camera at [2,1.5,2.5] then
+  // sees the full object with comfortable margin regardless of shape.
+  const scale = maxDim > 0 ? 1.0 / maxDim : 1;
   const offset = new THREE.Vector3();
   box.getCenter(offset);
   return { scale, offset };
@@ -671,13 +674,13 @@ function fitToView(obj: THREE.Object3D): {
 // Camera animation helper (PR #19 — camera presets)
 // ─────────────────────────────────────────────────────────────────────────────
 
-/** Camera positions for the standard preset views (model is fit to ~1.5 units). */
+/** Camera positions for the standard preset views (model is fit to ~1.0 units). */
 const CAMERA_PRESETS = {
-  default: new THREE.Vector3(1.2, 0.8, 1.5),
-  front:   new THREE.Vector3(0,   0.1, 2.4),
-  side:    new THREE.Vector3(2.4, 0.1, 0),
-  top:     new THREE.Vector3(0,   2.6, 0.01),
-  iso:     new THREE.Vector3(1.5, 1.3, 1.5),
+  default: new THREE.Vector3(2.0, 1.5, 2.5),
+  front:   new THREE.Vector3(0,   0.1, 3.2),
+  side:    new THREE.Vector3(3.2, 0.1, 0),
+  top:     new THREE.Vector3(0,   3.5, 0.01),
+  iso:     new THREE.Vector3(2.0, 1.8, 2.0),
 } as const;
 
 export type CameraPresetKey = keyof typeof CAMERA_PRESETS;
@@ -966,7 +969,7 @@ export function ModelViewer({
         // PR #16 — product-shot camera. Narrow FOV (35°) reduces perspective
         // distortion on tall bottles; the slight downward angle from
         // (1.8, 1.2, 2.2) shows the rim highlights and the foot at once.
-        camera={{ position: [1.2, 0.8, 1.5], fov: 40, near: 0.01, far: 50 }}
+        camera={{ position: [2.0, 1.5, 2.5], fov: 45, near: 0.01, far: 100 }}
         dpr={rq.dpr}
         // PR #17 — WebGPU progressive enhancement. `gl` may be a factory
         // function returning a Renderer (sync or async). We try
