@@ -779,16 +779,25 @@ function GltfModel({
   // Centre + normalise so the model fits the camera frame.
   const { scale, offset, boxMin } = fitToView(root);
 
-  // snapToFloor: shift Y so the bottom face sits exactly on FLOOR_Y.
-  // Formula: yPos = FLOOR_Y - boxMin.y * scale
-  // (derived from: bottomWorld = (boxMin.y - offset.y)*scale + yPos = FLOOR_Y)
-  const yPos = snapToFloor ? FLOOR_Y - boxMin.y * scale : -offset.y * scale;
+  // ── Pivot strategy ──────────────────────────────────────────────────────
+  // The visible mesh's bbox center sits at *local origin* of the gizmo group,
+  // so the TransformControls always pin to the geometric centre of the
+  // object. Snap-to-floor is applied on a separate ancestor wrapper so it
+  // doesn't pollute the user-facing transform values.
+  //
+  //   <wrapper position.y = snapAdjust>      ← visual snap offset only
+  //     <gizmoTarget position = transform.position>
+  //       <primitive position = -offset*scale>  ← centred at local origin
+  //
+  // For the legacy laboratory caller (no `transform` prop) we keep the
+  // single-group flow with snap-to-floor baked into the inner primitive.
+  const innerPos: [number, number, number] = transform
+    ? [-offset.x * scale, -offset.y * scale, -offset.z * scale]
+    : [-offset.x * scale, snapToFloor ? FLOOR_Y - boxMin.y * scale : -offset.y * scale, -offset.z * scale];
+  const snapAdjust =
+    transform && snapToFloor ? FLOOR_Y + (offset.y - boxMin.y) * scale : 0;
 
   // ── Transform gizmo target ─────────────────────────────────────────────
-  // The outer <group> applies the SceneObject.transform (user-edited values).
-  // The inner <primitive> still applies fit-to-view normalisation. Composing
-  // them means the gizmo always operates in the object's *user* coord space,
-  // never on the fit-to-view scale.
   const [gizmoTarget, setGizmoTarget] = useState<THREE.Group | null>(null);
 
   // Sync external transform → the group whenever the prop changes
@@ -806,17 +815,19 @@ function GltfModel({
 
   return (
     <>
-      <group
-        ref={setGizmoTarget}
-        position={transform?.position ?? [0, 0, 0]}
-        rotation={transform?.rotation ?? [0, 0, 0]}
-        scale={transform?.scale ?? [1, 1, 1]}
-      >
-        <primitive
-          object={root}
-          scale={scale}
-          position={[-offset.x * scale, yPos, -offset.z * scale]}
-        />
+      <group position={[0, snapAdjust, 0]}>
+        <group
+          ref={setGizmoTarget}
+          position={transform?.position ?? [0, 0, 0]}
+          rotation={transform?.rotation ?? [0, 0, 0]}
+          scale={transform?.scale ?? [1, 1, 1]}
+        >
+          <primitive
+            object={root}
+            scale={scale}
+            position={innerPos}
+          />
+        </group>
       </group>
       {showGizmo && (
         <TransformControls
