@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   Box,
   ChevronDown,
@@ -35,6 +35,8 @@ import {
   useWorkspaceCommand,
   createSceneObject,
   patchSceneObject,
+  isSceneDocument,
+  SCENE_STORAGE_KEY,
   type SpawnShape,
   type SceneObject,
   type GeometryOpCommand,
@@ -153,6 +155,55 @@ export function SceneClient({ locale: _locale }: { locale: string }) {
   const [outlinerOpen, setOutlinerOpen] = useState(true);
   const [activeTool, setActiveTool] = useState<string>('pointer');
   const [statusHint, setStatusHint] = useState<string>('Ready');
+  /** Timestamp of last successful auto-save, or null if unsaved changes are pending. */
+  const [savedAt, setSavedAt] = useState<Date | null>(null);
+  /** Ref to the debounce timer so we can cancel it on unmount. */
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // ── Load from localStorage on first mount ──────────────────────────────
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(SCENE_STORAGE_KEY);
+      if (!raw) return;
+      const parsed: unknown = JSON.parse(raw);
+      if (!isSceneDocument(parsed)) {
+        console.warn('[SceneClient] Ignoring invalid scene document in localStorage.');
+        return;
+      }
+      if (parsed.objects.length > 0) {
+        setSpawnedShapes(parsed.objects as SpawnedShape[]);
+        setSelectedId(parsed.selectedId ?? null);
+        setSavedAt(new Date(parsed.updatedAt));
+        setStatusHint(`Restored ${parsed.objects.length} object${parsed.objects.length > 1 ? 's' : ''}`);
+      }
+    } catch {
+      // Corrupt JSON — ignore silently, start fresh.
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // ── Debounced auto-save whenever the scene changes ──────────────────────
+  useEffect(() => {
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = setTimeout(() => {
+      try {
+        const doc = {
+          version: 1 as const,
+          unit: 'm' as const,
+          objects: spawnedShapes,
+          selectedId,
+          updatedAt: new Date().toISOString(),
+        };
+        localStorage.setItem(SCENE_STORAGE_KEY, JSON.stringify(doc));
+        setSavedAt(new Date());
+      } catch {
+        // localStorage full or unavailable — silently skip.
+      }
+    }, 400);
+    return () => {
+      if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    };
+  }, [spawnedShapes, selectedId]);
 
   /** `pointer` ↔ `select`, `translate|rotate|scale` ↔ gizmo modes. */
   const transformMode: 'select' | 'translate' | 'rotate' | 'scale' =
@@ -270,6 +321,8 @@ export function SceneClient({ locale: _locale }: { locale: string }) {
       setSpawnedShapes([]);
       setPendingGeoOps([]);
       setSelectedId(null);
+      setSavedAt(null);
+      try { localStorage.removeItem(SCENE_STORAGE_KEY); } catch { /* ok */ }
       setStatusHint('Scene cleared');
     } else if (cmd.type === 'geometry_op') {
       if ((cmd.mode ?? 'replace') === 'append') {
@@ -327,6 +380,8 @@ export function SceneClient({ locale: _locale }: { locale: string }) {
                 setSpawnedShapes([]);
                 setPendingGeoOps([]);
                 setSelectedId(null);
+                setSavedAt(null);
+                try { localStorage.removeItem(SCENE_STORAGE_KEY); } catch { /* ok */ }
                 setStatusHint('Scene cleared');
               }}
               title="Clear scene"
@@ -469,7 +524,16 @@ export function SceneClient({ locale: _locale }: { locale: string }) {
             </>
           )}
           <span className="text-white/15">·</span>
-          <span className="text-emerald-500/40">● ready</span>
+          {savedAt && !isEmpty ? (
+            <span
+              className="text-emerald-500/50"
+              title={`Last saved ${savedAt.toLocaleTimeString()}`}
+            >
+              ● auto-saved
+            </span>
+          ) : (
+            <span className="text-emerald-500/40">● ready</span>
+          )}
         </div>
       </div>
     </div>

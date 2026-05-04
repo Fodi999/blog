@@ -73,6 +73,37 @@ export type SceneObject = {
   material: Material;
 };
 
+// ── Persistable scene document ──────────────────────────────────────────────
+
+export const SCENE_STORAGE_KEY = 'chef-lab-scene-v1';
+
+export type SceneDocument = {
+  version: 1;
+  unit: 'm' | 'cm' | 'mm';
+  objects: SceneObject[];
+  selectedId?: string | null;
+  view?: {
+    mode: 'solid' | 'solid-wire' | 'wire';
+    gridSize: number;
+  };
+  updatedAt: string; // ISO-8601
+};
+
+/** Minimal runtime validation — guards against stale/corrupt localStorage data. */
+export function isSceneDocument(value: unknown): value is SceneDocument {
+  if (!value || typeof value !== 'object') return false;
+  const v = value as Record<string, unknown>;
+  if (v.version !== 1) return false;
+  if (!Array.isArray(v.objects)) return false;
+  for (const obj of v.objects as unknown[]) {
+    if (!obj || typeof obj !== 'object') return false;
+    const o = obj as Record<string, unknown>;
+    if (typeof o.id !== 'string' || typeof o.kind !== 'string') return false;
+    if (!o.transform || !o.shape || !o.material) return false;
+  }
+  return true;
+}
+
 export const IDENTITY_TRANSFORM: Transform = {
   position: [0, 0, 0],
   rotation: [0, 0, 0],
