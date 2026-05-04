@@ -23,6 +23,7 @@ import {
   type SceneObject,
   type ShapeParams,
   type GeometryOpCommand,
+  type SelectionMode,
   buildShapeUrl,
 } from '@/components/workspace/WorkspaceCommands';
 import { useGeometryOrchestrator } from '@/hooks/useGeometryOrchestrator';
@@ -178,6 +179,8 @@ interface Props {
   ) => void;
   /** CSG geometry operations dispatched by Gemini */
   pendingGeoOps?: GeometryOpCommand[];
+  /** Sub-object selection mode (object / face / edge / vertex). */
+  selectionMode?: SelectionMode;
 }
 
 export function SimulationWorkspace({
@@ -191,6 +194,7 @@ export function SimulationWorkspace({
   transformMode = 'select',
   onCommitTransform,
   pendingGeoOps = [],
+  selectionMode = 'object',
 }: Props) {
   const { day, playing, speed, setSpeed, play, pause, jump } = useSimClock(SIM_DAYS);
   const [internalTab, setInternalTab] = useState<'forecast' | 'lab'>('forecast');
@@ -272,6 +276,7 @@ export function SimulationWorkspace({
                   onUpdate={(patch) => onUpdateObject?.(spawnedShapes[0].id, patch)}
                   transformMode={selectedId === spawnedShapes[0].id ? transformMode : 'select'}
                   onCommitTransform={(t) => onCommitTransform?.(spawnedShapes[0].id, t)}
+                  selectionMode={selectionMode}
                   fullscreen
                   onRemove={() => setSpawnedShapes([])}
                 />
@@ -293,6 +298,7 @@ export function SimulationWorkspace({
                       onSelect={() => onSelectObject?.(s.id)}
                       onUpdate={(patch) => onUpdateObject?.(s.id, patch)}
                       fullscreen
+                      selectionMode={selectionMode}
                       onRemove={() =>
                         setSpawnedShapes((prev) => prev.filter((x) => x.id !== s.id))
                       }
@@ -484,6 +490,7 @@ function LabShapeCard({
   onSelect,
   transformMode = 'select',
   onCommitTransform,
+  selectionMode = 'object',
 }: {
   /** Full parametric scene object — single source of truth for params. */
   obj: SceneObject;
@@ -500,6 +507,8 @@ function LabShapeCard({
   transformMode?: 'select' | 'translate' | 'rotate' | 'scale';
   /** Gizmo drag-end → write back to obj.transform. */
   onCommitTransform?: (t: { position: [number, number, number]; rotation: [number, number, number]; scale: [number, number, number] }) => void;
+  /** Sub-object picking mode. */
+  selectionMode?: SelectionMode;
 }) {
   const { kind: shape, label, shape: shapeParams, material } = obj;
   const color = material.color_hex;
@@ -663,6 +672,7 @@ function LabShapeCard({
             transformMode={transformMode}
             onCommitTransform={onCommitTransform}
             shapeColor={color}
+            selectionMode={selectionMode}
           />
           {/* Label bottom-left overlay */}
           <div className="pointer-events-none absolute bottom-3 left-3">
@@ -758,6 +768,7 @@ function LabShapeCard({
           transformMode={transformMode}
           onCommitTransform={onCommitTransform}
           shapeColor={color}
+          selectionMode={selectionMode}
         />
       </div>
 

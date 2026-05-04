@@ -628,6 +628,7 @@ function GltfModel({
   onCommitTransform,
   orbitRef,
   shapeColor,
+  selectionMode = 'object',
 }: {
   url: string;
   onScene?: (root: THREE.Object3D) => void;
@@ -648,6 +649,8 @@ function GltfModel({
   orbitRef?: React.RefObject<React.ComponentRef<typeof OrbitControls> | null>;
   /** Override the mesh surface colour + force a metallic look. Pass `SceneObject.material.color_hex`. */
   shapeColor?: string;
+  /** Sub-object picking mode. */
+  selectionMode?: import('@/components/workspace/WorkspaceCommands').SelectionMode;
 }) {
   const gltf = useLoader(GLTFLoader, url);
   const root = gltf.scene;
@@ -812,6 +815,268 @@ function GltfModel({
   // Centre + normalise so the model fits the camera frame.
   const { scale, offset, boxMin } = fitToView(root);
 
+  // ── Sub-object picking (face / edge / vertex) ────────────────────────────
+  //
+  // Strategy: pre-compute "face groups" for each Mesh in the GLB by grouping
+  // triangles that share the same snapped normal (±X/Y/Z). This works great
+  // for hard-surface primitives (cube, cylinder caps, etc.).
+  // Highlights are THREE.js objects added as children of the hit Mesh so they
+  // share its local transform — no coordinate-space juggling needed.
+  // We update them imperatively on pointer events to avoid React re-renders.
+
+  type FaceGroupData = {
+    mesh: THREE.Mesh;
+    triGeo: THREE.BufferGeometry;
+    edgeGeo: THREE.BufferGeometry;
+    corners: THREE.Vector3[];
+    center: THREE.Vector3;
+  };
+
+  const faceMapRef = useRef<Map<string, FaceGroupData>>(new Map());
+  // Highlight objects currently attached to scene meshes.
+  const hovHighlightRef  = useRef<{ obj: THREE.Object3D; mesh: THREE.Mesh } | null>(null);
+  const selHighlightRef  = useRef<{ obj: THREE.Object3D; mesh: THREE.Mesh } | null>(null);
+  const selectionModeRef = useRef(selectionMode);
+  useEffect(() => { selectionModeRef.current = selectionMode; }, [selectionMode]);
+
+  // Pre-compute face groups whenever the model or mode changes.
+  useEffect(() => {
+    // Dispose old highlights first.
+    if (hovHighlightRef.current) {
+      hovHighlightRef.current.mesh.remove(hovHighlightRef.current.obj);
+      hovHighlightRef.current = null;
+    }
+    if (selHighlightRef.current) {
+      selHighlightRef.current.mesh.remove(selHighlightRef.current.obj);
+      selHighlightRef.current = null;
+    }
+    // Dispose old geometries.
+    for (const fg of faceMapRef.current.values()) {
+      fg.triGeo.dispose();
+      fg.edgeGeo.dispose();
+    }
+    faceMapRef.current.clear();
+
+    if (selectionMode === 'object') return;
+
+    const map = new Map<string, FaceGroupData>();
+
+    root.traverse((child) => {
+      const mesh = child as THREE.Mesh;
+      if (!mesh.isMesh || !mesh.geometry || mesh.userData.__overlay) return;
+
+      const geo  = mesh.geometry;
+      const posAttr = geo.attributes.position as THREE.BufferAttribute;
+      const idxAttr = geo.index;
+      const triCount = idxAttr ? idxAttr.count / 3 : posAttr.count / 3;
+
+      // Snap a vector to nearest cardinal ±X/Y/Z and return a string key.
+      const snapKey = (nx: number, ny: number, nz: number): string => {
+        const ax = Math.abs(nx), ay = Math.abs(ny), az = Math.abs(nz);
+        if (ax >= ay && ax >= az) return nx >= 0 ? '1,0,0' : '-1,0,0';
+        if (ay >= ax && ay >= az) return ny >= 0 ? '0,1,0' : '0,-1,0';
+        return nz >= 0 ? '0,0,1' : '0,0,-1';
+      };
+
+      // Group triangle indices by snapped normal.
+      const groups = new Map<string, number[]>(); // key → [i0,i1,i2, ...]
+      const vA = new THREE.Vector3(), vB = new THREE.Vector3(), vC = new THREE.Vector3();
+      const edge1 = new THREE.Vector3(), edge2 = new THREE.Vector3(), fn = new THREE.Vector3();
+
+      for (let t = 0; t < triCount; t++) {
+        const ia = idxAttr ? idxAttr.getX(t * 3)     : t * 3;
+        const ib = idxAttr ? idxAttr.getX(t * 3 + 1) : t * 3 + 1;
+        const ic = idxAttr ? idxAttr.getX(t * 3 + 2) : t * 3 + 2;
+        vA.fromBufferAttribute(posAttr, ia);
+        vB.fromBufferAttribute(posAttr, ib);
+        vC.fromBufferAttribute(posAttr, ic);
+        edge1.subVectors(vB, vA);
+        edge2.subVectors(vC, vA);
+        fn.crossVectors(edge1, edge2).normalize();
+        const key = snapKey(fn.x, fn.y, fn.z);
+        let arr = groups.get(key);
+        if (!arr) { arr = []; groups.set(key, arr); }
+        arr.push(ia, ib, ic);
+      }
+
+      // Build BufferGeometry for each group.
+      for (const [nkey, indices] of groups) {
+        const triPositions = new Float32Array(indices.length * 3);
+        for (let i = 0; i < indices.length; i++) {
+          const vi = indices[i];
+          triPositions[i * 3]     = posAttr.getX(vi);
+          triPositions[i * 3 + 1] = posAttr.getY(vi);
+          triPositions[i * 3 + 2] = posAttr.getZ(vi);
+        }
+        const triGeo = new THREE.BufferGeometry();
+        triGeo.setAttribute('position', new THREE.BufferAttribute(triPositions, 3));
+
+        // Boundary edges: edges appearing exactly once.
+        const edgeHits = new Map<string, [THREE.Vector3, THREE.Vector3]>();
+        for (let i = 0; i < indices.length; i += 3) {
+          const verts = [indices[i], indices[i + 1], indices[i + 2]].map((vi) => {
+            const v = new THREE.Vector3();
+            v.fromBufferAttribute(posAttr, vi);
+            return v;
+          });
+          const pairs: [THREE.Vector3, THREE.Vector3][] = [
+            [verts[0], verts[1]], [verts[1], verts[2]], [verts[2], verts[0]],
+          ];
+          for (const [ea, eb] of pairs) {
+            const ka = `${ea.x.toFixed(5)},${ea.y.toFixed(5)},${ea.z.toFixed(5)}`;
+            const kb = `${eb.x.toFixed(5)},${eb.y.toFixed(5)},${eb.z.toFixed(5)}`;
+            const ek = ka < kb ? `${ka}|${kb}` : `${kb}|${ka}`;
+            if (edgeHits.has(ek)) edgeHits.delete(ek);
+            else edgeHits.set(ek, [ea.clone(), eb.clone()]);
+          }
+        }
+        const edgeArr = [...edgeHits.values()];
+        const edgePositions = new Float32Array(edgeArr.length * 6);
+        for (let i = 0; i < edgeArr.length; i++) {
+          const [ea, eb] = edgeArr[i];
+          edgePositions[i * 6]     = ea.x; edgePositions[i * 6 + 1] = ea.y; edgePositions[i * 6 + 2] = ea.z;
+          edgePositions[i * 6 + 3] = eb.x; edgePositions[i * 6 + 4] = eb.y; edgePositions[i * 6 + 5] = eb.z;
+        }
+        const edgeGeo = new THREE.BufferGeometry();
+        edgeGeo.setAttribute('position', new THREE.BufferAttribute(edgePositions, 3));
+
+        // Center and unique corners.
+        let cx = 0, cy = 0, cz = 0;
+        for (let i = 0; i < triPositions.length; i += 3) {
+          cx += triPositions[i]; cy += triPositions[i + 1]; cz += triPositions[i + 2];
+        }
+        const n = triPositions.length / 3;
+        const center = new THREE.Vector3(cx / n, cy / n, cz / n);
+
+        const seen = new Set<string>();
+        const corners: THREE.Vector3[] = [];
+        for (const [ea, eb] of edgeArr) {
+          for (const v of [ea, eb]) {
+            const vk = `${v.x.toFixed(5)},${v.y.toFixed(5)},${v.z.toFixed(5)}`;
+            if (!seen.has(vk)) { seen.add(vk); corners.push(v.clone()); }
+          }
+        }
+
+        map.set(`${mesh.uuid}::${nkey}`, { mesh, triGeo, edgeGeo, corners, center });
+      }
+    });
+
+    faceMapRef.current = map;
+
+    return () => {
+      if (hovHighlightRef.current) {
+        hovHighlightRef.current.mesh.remove(hovHighlightRef.current.obj);
+        hovHighlightRef.current = null;
+      }
+      if (selHighlightRef.current) {
+        selHighlightRef.current.mesh.remove(selHighlightRef.current.obj);
+        selHighlightRef.current = null;
+      }
+      for (const fg of map.values()) {
+        fg.triGeo.dispose();
+        fg.edgeGeo.dispose();
+      }
+    };
+  }, [root, selectionMode]);  // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Snap a hit-face normal (in object local space) to cardinal key.
+  const snapFaceKey = (mesh: THREE.Mesh, faceNormal: THREE.Vector3): string => {
+    // Transform normal from geometry local space to mesh local space.
+    // For un-skinned static meshes this is a no-op since geometry IS mesh space.
+    const ax = Math.abs(faceNormal.x), ay = Math.abs(faceNormal.y), az = Math.abs(faceNormal.z);
+    let nx = 0, ny = 0, nz = 0;
+    if (ax >= ay && ax >= az)      nx = faceNormal.x >= 0 ? 1 : -1;
+    else if (ay >= ax && ay >= az) ny = faceNormal.y >= 0 ? 1 : -1;
+    else                           nz = faceNormal.z >= 0 ? 1 : -1;
+    return `${mesh.uuid}::${nx},${ny},${nz}`;
+  };
+
+  // Build a highlight THREE.Object3D for the given face group and mode.
+  const buildHighlight = (fg: FaceGroupData, mode: typeof selectionMode, isSelected: boolean): THREE.Object3D => {
+    const color = isSelected ? 0x00d4ff : 0xff8c00;
+    if (mode === 'face') {
+      const mat = new THREE.MeshBasicMaterial({
+        color,
+        transparent: true,
+        opacity: isSelected ? 0.45 : 0.32,
+        depthTest: false,
+        side: THREE.DoubleSide,
+      });
+      const m = new THREE.Mesh(fg.triGeo, mat);
+      m.userData.__overlay = true;
+      m.renderOrder = 997;
+      return m;
+    }
+    if (mode === 'edge') {
+      const mat = new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.9, depthTest: false });
+      const ls = new THREE.LineSegments(fg.edgeGeo, mat);
+      ls.userData.__overlay = true;
+      ls.renderOrder = 998;
+      ls.scale.setScalar(1.001);
+      return ls;
+    }
+    // vertex mode — small spheres at corners
+    const group = new THREE.Group();
+    group.userData.__overlay = true;
+    group.renderOrder = 998;
+    const sphereGeo = new THREE.SphereGeometry(0.025, 8, 6);
+    const mat = new THREE.MeshBasicMaterial({ color, depthTest: false });
+    for (const c of fg.corners) {
+      const s = new THREE.Mesh(sphereGeo, mat);
+      s.position.copy(c);
+      s.renderOrder = 998;
+      group.add(s);
+    }
+    return group;
+  };
+
+  const applyHovHighlight = (groupKey: string | null) => {
+    // Remove previous hover highlight.
+    if (hovHighlightRef.current) {
+      hovHighlightRef.current.mesh.remove(hovHighlightRef.current.obj);
+      hovHighlightRef.current = null;
+    }
+    if (!groupKey) return;
+    const fg = faceMapRef.current.get(groupKey);
+    if (!fg) return;
+    const obj = buildHighlight(fg, selectionModeRef.current, false);
+    fg.mesh.add(obj);
+    hovHighlightRef.current = { obj, mesh: fg.mesh };
+  };
+
+  const applySelHighlight = (groupKey: string | null) => {
+    if (selHighlightRef.current) {
+      selHighlightRef.current.mesh.remove(selHighlightRef.current.obj);
+      selHighlightRef.current = null;
+    }
+    if (!groupKey) return;
+    const fg = faceMapRef.current.get(groupKey);
+    if (!fg) return;
+    const obj = buildHighlight(fg, selectionModeRef.current, true);
+    fg.mesh.add(obj);
+    selHighlightRef.current = { obj, mesh: fg.mesh };
+  };
+
+  // Track current hover key to avoid re-building on same face.
+  const hovKeyRef = useRef<string | null>(null);
+  const selKeyRef = useRef<string | null>(null);
+
+  // Clear sub-object highlights when switching back to object mode.
+  useEffect(() => {
+    if (selectionMode === 'object') {
+      if (hovHighlightRef.current) {
+        hovHighlightRef.current.mesh.remove(hovHighlightRef.current.obj);
+        hovHighlightRef.current = null;
+        hovKeyRef.current = null;
+      }
+      if (selHighlightRef.current) {
+        selHighlightRef.current.mesh.remove(selHighlightRef.current.obj);
+        selHighlightRef.current = null;
+        selKeyRef.current = null;
+      }
+    }
+  }, [selectionMode]);
+
   // ── Pivot strategy ──────────────────────────────────────────────────────
   // The visible mesh's bbox center sits at *local origin* of the gizmo group,
   // so the TransformControls always pin to the geometric centre of the
@@ -848,7 +1113,41 @@ function GltfModel({
 
   return (
     <>
-      <group position={[0, snapAdjust, 0]}>
+      <group
+        position={[0, snapAdjust, 0]}
+        onPointerMove={(e) => {
+          if (selectionModeRef.current === 'object') return;
+          e.stopPropagation();
+          const face = e.face;
+          const hitMesh = e.object as THREE.Mesh;
+          if (!face || !hitMesh.isMesh) return;
+          const key = snapFaceKey(hitMesh, face.normal);
+          if (key === hovKeyRef.current) return; // same face — no re-build
+          hovKeyRef.current = key;
+          applyHovHighlight(key);
+        }}
+        onPointerLeave={() => {
+          if (selectionModeRef.current === 'object') return;
+          hovKeyRef.current = null;
+          applyHovHighlight(null);
+        }}
+        onPointerDown={(e) => {
+          if (selectionModeRef.current === 'object') return;
+          e.stopPropagation();
+          const face = e.face;
+          const hitMesh = e.object as THREE.Mesh;
+          if (!face || !hitMesh.isMesh) return;
+          const key = snapFaceKey(hitMesh, face.normal);
+          if (key === selKeyRef.current) {
+            // Deselect on second click.
+            selKeyRef.current = null;
+            applySelHighlight(null);
+          } else {
+            selKeyRef.current = key;
+            applySelHighlight(key);
+          }
+        }}
+      >
         <group
           ref={setGizmoTarget}
           position={transform?.position ?? [0, 0, 0]}
@@ -1132,6 +1431,8 @@ interface ModelViewerProps {
   onCommitTransform?: (t: { position: [number, number, number]; rotation: [number, number, number]; scale: [number, number, number] }) => void;
   /** Override the mesh surface colour + force metallic look. Pass `SceneObject.material.color_hex`. */
   shapeColor?: string;
+  /** Sub-object picking mode — object / face / edge / vertex. */
+  selectionMode?: import('@/components/workspace/WorkspaceCommands').SelectionMode;
 }
 
 export function ModelViewer({
@@ -1155,6 +1456,7 @@ export function ModelViewer({
   transform,
   onCommitTransform,
   shapeColor,
+  selectionMode = 'object',
 }: ModelViewerProps) {
   const ref = useRef<HTMLDivElement>(null);
   const glRef = useRef<THREE.WebGLRenderer | null>(null);
@@ -1347,6 +1649,7 @@ export function ModelViewer({
               onCommitTransform={onCommitTransform}
               orbitRef={controlsRef}
               shapeColor={shapeColor}
+              selectionMode={selectionMode}
               onScene={(r) => {
                 sceneRef.current = r;
                 // Classify meshes once on load — food vs bowl/everything else.

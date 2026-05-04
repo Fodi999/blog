@@ -286,9 +286,9 @@ export function SceneClient({ locale: _locale }: { locale: string }) {
       else if (k === 'e')     { handleToolClick('rotate');    e.preventDefault(); }
       else if (k === 'r')     { handleToolClick('scale');     e.preventDefault(); }
       else if (k === '1')     { setSelectionMode('object'); setStatusHint('Mode · Object'); e.preventDefault(); }
-      else if (k === '2')     { setSelectionMode('face');   setStatusHint('Mode · Face (cube only — coming soon)'); e.preventDefault(); }
-      else if (k === '3')     { setSelectionMode('edge');   setStatusHint('Mode · Edge (coming soon)');  e.preventDefault(); }
-      else if (k === '4')     { setSelectionMode('vertex'); setStatusHint('Mode · Vertex (coming soon)'); e.preventDefault(); }
+      else if (k === '2')     { setSelectionMode('face');   setStatusHint('Mode · Face — hover to highlight, click to select'); e.preventDefault(); }
+      else if (k === '3')     { setSelectionMode('edge');   setStatusHint('Mode · Edge — hover to highlight, click to select');  e.preventDefault(); }
+      else if (k === '4')     { setSelectionMode('vertex'); setStatusHint('Mode · Vertex — hover to highlight, click to select'); e.preventDefault(); }
       else if (k === 'escape') {
         if (transformMode !== 'select') {
           setActiveTool('pointer');
@@ -519,6 +519,7 @@ export function SceneClient({ locale: _locale }: { locale: string }) {
               }}
               transformMode={transformMode}
               onCommitTransform={commitTransform}
+              selectionMode={selectionMode}
             />
           )}
         </div>
