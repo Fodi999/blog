@@ -21,6 +21,7 @@ import { CityBuildPanel } from './panels/CityBuildPanel';
 import { CityInfoPanel } from './panels/CityInfoPanel';
 import { CityCommandBar } from './panels/CityCommandBar';
 import { CityMiniMap } from './panels/CityMiniMap';
+import { CityScaleHUD } from './CityScaleHUD';
 import { DISTRICTS } from '../world/city-map';
 import type { DistrictId } from '../world/city-map';
 
@@ -155,6 +156,9 @@ export function CityGameScreen({ onEnterKitchen, onClose, restaurantName, backen
           <div className="absolute bottom-16 left-3 z-20">
             <CityMiniMap />
           </div>
+
+          {/* Bottom-right: scale HUD */}
+          <CityScaleHUD />
 
           {/* WASD hint */}
           <div className="pointer-events-none absolute top-3 left-1/2 z-10 -translate-x-1/2">
