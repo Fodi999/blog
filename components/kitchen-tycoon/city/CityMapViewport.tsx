@@ -68,7 +68,7 @@ export function CityMapViewport({
     <Canvas
       camera={{ position: [60, 55, 60], fov: 55, near: 0.5, far: 600 }}
       dpr={[1, 2]}
-      gl={{ antialias: true, alpha: true }}
+      gl={{ antialias: true, alpha: true, toneMapping: 4 /* ACESFilmic */, toneMappingExposure: 0.9 }}
       shadows="basic"
       style={{ background: 'transparent' }}
       onCreated={({ scene, gl }) => {
@@ -82,10 +82,12 @@ export function CityMapViewport({
 
       <Suspense fallback={null}>
         {/* ── Lighting ─────────────────────────────────────────────────── */}
-        <ambientLight intensity={2.2} color="#ccdcff" />
+        {/* Ambient: soft fill, no colour cast */}
+        <ambientLight intensity={0.55} color="#d8e8f0" />
+        {/* Main sun — warm, from upper-right */}
         <directionalLight
           position={[60, 90, 40]}
-          intensity={3.5}
+          intensity={1.6}
           castShadow
           shadow-mapSize={[2048, 2048]}
           shadow-camera-near={0.5}
@@ -96,9 +98,12 @@ export function CityMapViewport({
           shadow-camera-bottom={-120}
           color="#fff4d6"
         />
-        <directionalLight position={[-25, 20, -25]} intensity={1.4} color="#a8c8ff" />
-        <directionalLight position={[0, 15, 40]} intensity={1.0} color="#e8f0ff" />
-        <hemisphereLight args={['#b8d4ff', '#e8c88a', 1.2]} />
+        {/* Sky fill — cool blue from opposite side */}
+        <directionalLight position={[-25, 20, -25]} intensity={0.4} color="#a8c8ff" />
+        {/* Back rim — very subtle */}
+        <directionalLight position={[0, 15, 40]} intensity={0.25} color="#e8f0ff" />
+        {/* Hemisphere: sky blue top, warm sand bottom */}
+        <hemisphereLight args={['#b8d4ff', '#c8b87a', 0.5]} />
 
         {/* Sky backdrop */}
         <CitySkyBackdrop />
