@@ -51,7 +51,21 @@ export function CityMapViewport({
   playerLevel,
   onSelectDistrict,
 }: Props) {
-  const { map, loading } = useCityMap();
+  const { map } = useCityMap();
+
+  // Backend ships real metres. Wrap the city in a scaled group so the camera
+  // sees a manageable extent (default 0.05 → 1 km city ≈ 50 world units).
+  const renderScale = map?.units?.renderScaleHint ?? 0.05;
+
+  // Fog distances ship in real metres — scale to post-scale world units.
+  const fogColor = map?.ground.fogColor ?? '#7ab0e8';
+  const fogNear  = (map?.ground.fogNear ?? 400)  * renderScale;
+  const fogFar   = (map?.ground.fogFar  ?? 1500) * renderScale;
+
+  // Auto-offset terrain so its peaks sit just below y=0 (where districts/roads live).
+  const terrainOffsetY = map?.terrain
+    ? -(map.terrain.maxHeight) - 0.2
+    : -1.6;
 
   return (
     <Canvas
@@ -62,14 +76,13 @@ export function CityMapViewport({
       style={{ background: 'transparent' }}
       onCreated={({ scene, gl }) => {
         scene.background = null;
-        const fogColor = map?.ground.fogColor ?? '#7ab0e8';
-        const fogNear  = map?.ground.fogNear  ?? 140;
-        const fogFar   = map?.ground.fogFar   ?? 420;
-        scene.fog = new THREE.Fog(fogColor, fogNear, fogFar);
         gl.shadowMap.type = THREE.PCFShadowMap;
         gl.setClearAlpha(0);
       }}
     >
+      {/* Declarative fog reacts to map data without remounting the Canvas. */}
+      <fog attach="fog" args={[fogColor, fogNear, fogFar]} />
+
       <Suspense fallback={null}>
         {/* ── Lighting ─────────────────────────────────────────────────── */}
         <ambientLight intensity={2.2} color="#ccdcff" />
@@ -93,41 +106,39 @@ export function CityMapViewport({
         {/* Sky backdrop */}
         <CitySkyBackdrop />
 
-        {/* ── Terrain & ground ───────────────────────────────────────── */}
-        {map?.terrain ? (
+        {/* ── World group — backend uses real metres, we scale here ───── */}
+        <group scale={renderScale}>
+          {/* Terrain & build-mode grid (in real-metre coordinates). */}
+          {map?.terrain ? (
+            <>
+              <TerrainMesh terrain={map.terrain} offsetY={terrainOffsetY} />
+              {showGrid && (() => {
+                const gridSize = Math.ceil(Math.max(map.bounds.width, map.bounds.depth) + 40);
+                const divisions = Math.min(120, Math.max(20, Math.round(gridSize / 16)));
+                return (
+                  <gridHelper
+                    args={[gridSize, divisions, '#1a2a1a', '#0f1a0f']}
+                    position={[0, 0.1, 0]}
+                  />
+                );
+              })()}
+            </>
+          ) : null}
+
+          {/* City geometry — districts, roads, buildings (real metres). */}
+          {map ? (
+            <CityRenderer
+              map={map}
+              selectedDistrictId={selectedDistrictId}
+              onSelectDistrict={(id) => onSelectDistrict(id as DistrictId)}
+            />
+          ) : null}
+        </group>
+
+        {/* ── Fallback layers (when map not yet loaded) ──────────────── */}
+        {!map && (
           <>
-            {/* Pre-baked landscape from backend (BufferGeometry). */}
-            {/* Offset down slightly so y=0 districts/roads stay clearly above the rolling terrain. */}
-            <TerrainMesh terrain={map.terrain} offsetY={-1.6} />
-            {/* Grid is now a build-mode overlay — only when explicitly toggled. */}
-            {showGrid && (() => {
-              const gridSize = Math.ceil(Math.max(map.bounds.width, map.bounds.depth) + 20);
-              return (
-                <gridHelper
-                  args={[gridSize, gridSize, '#1a2a1a', '#0f1a0f']}
-                  position={[0, 0.05, 0]}
-                />
-              );
-            })()}
-          </>
-        ) : (
-          <CityGround
-            showGrid={showGrid}
-            size={90}
-            color={map?.ground.color}
-          />
-        )}
-        {/* ── City geometry ──────────────────────────────────────────── */}
-        {map ? (
-          // Backend-driven renderer — real polygon/polyline geometry
-          <CityRenderer
-            map={map}
-            selectedDistrictId={selectedDistrictId}
-            onSelectDistrict={(id) => onSelectDistrict(id as DistrictId)}
-          />
-        ) : (
-          // Fallback: static procedural layers while loading / offline
-          <>
+            <CityGround showGrid={showGrid} size={90} />
             <CityBlocksLayer playerLevel={playerLevel} selectedId={selectedDistrictId} />
             <CityDistrictsLayer
               selectedId={selectedDistrictId}

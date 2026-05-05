@@ -144,6 +144,17 @@ export interface CityTerrain {
   color: string;
 }
 
+// ── Units — backend ships real metres; frontend may rescale ─────────────────
+
+export interface CityUnits {
+  /** Always "meter" in this build. */
+  lengthUnit: string;
+  /** Always 1.0 in this build. */
+  metersPerUnit: number;
+  /** Suggested `<group scale={...}>` factor (e.g. 0.05 for a ~1 km city). */
+  renderScaleHint: number;
+}
+
 // ── Top-level map ────────────────────────────────────────────────────────────
 
 export interface CityMap {
@@ -155,4 +166,6 @@ export interface CityMap {
   ground: CityGround;
   /** Optional pre-baked terrain mesh. When present, render via BufferGeometry. */
   terrain?: CityTerrain;
+  /** Length-unit metadata. Multiply scene by `units.renderScaleHint`. */
+  units: CityUnits;
 }
