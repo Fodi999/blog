@@ -20,6 +20,7 @@ import * as THREE from 'three';
 import { useKitchen } from '../engine/StoreProvider';
 import { ASSET_CATALOG } from '../core/catalog';
 import type { KitchenAsset, KitchenAssetType } from '../core/types';
+import { KitchenLocation, ROOM } from './KitchenLocation';
 
 // ── World units ──────────────────────────────────────────────────────────────
 const TILE = 1;          // world units per grid tile
@@ -332,8 +333,9 @@ function AssetMesh({
 
 // ── Scene root ───────────────────────────────────────────────────────────────
 function Scene() {
-  const gridW           = useKitchen((s) => s.gridW);
-  const gridH           = useKitchen((s) => s.gridH);
+  // Use ROOM dimensions so grid aligns with backend-built walls
+  const gridW           = ROOM.W;
+  const gridH           = ROOM.D;
   const assets          = useKitchen((s) => s.assets);
   const tool            = useKitchen((s) => s.tool);
   const buildType       = useKitchen((s) => s.buildType);
@@ -386,13 +388,15 @@ function Scene() {
       />
 
       <Floor
-        gridW={gridW}
-        gridH={gridH}
+        gridW={ROOM.W}
+        gridH={ROOM.D}
         onTileClick={handleTileClick}
         onTileHover={setHover}
         occ={occ}
       />
-      <Walls gridW={gridW} gridH={gridH} />
+      <Suspense fallback={null}>
+        <KitchenLocation />
+      </Suspense>
 
       {hover && tool === 'build' && buildType && (
         <Ghost
