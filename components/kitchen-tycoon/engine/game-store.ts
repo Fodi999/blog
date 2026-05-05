@@ -17,6 +17,21 @@ import type {
 import { ASSET_CATALOG, RECIPES, recipeFoodCost } from '../core/catalog';
 import { DISTRICTS, type DistrictId } from '../world/city-map';
 
+// ── City UI state ──────────────────────────────────────────────────────────────
+export type CityToolMode = 'select' | 'build' | 'move' | 'rotate' | 'demolish';
+export type CityCameraDirection = 0 | 90 | 180 | 270;
+
+export interface CityUiState {
+  toolMode: CityToolMode;
+  selectedBuildItemId: string | null;
+  selectedEntityId: string | null;
+  selectedDistrictId: DistrictId | null;
+  cameraDirection: CityCameraDirection;
+  zoom: number;
+  showGrid: boolean;
+  showDistrictOverlay: boolean;
+}
+
 export interface KitchenState {
   // ── World ──
   game: GameState;
@@ -29,6 +44,19 @@ export interface KitchenState {
   // ── District ──
   selectedDistrictId: DistrictId;
   setSelectedDistrict: (id: DistrictId) => void;
+
+  // ── City RTS UI ──
+  cityUi: CityUiState;
+  setCityTool: (mode: CityToolMode) => void;
+  selectCityBuildItem: (id: string | null) => void;
+  selectCityEntity: (id: string | null) => void;
+  selectCityDistrict: (id: DistrictId | null) => void;
+  rotateCameraLeft: () => void;
+  rotateCameraRight: () => void;
+  zoomIn: () => void;
+  zoomOut: () => void;
+  toggleGrid: () => void;
+  toggleDistrictOverlay: () => void;
 
   // ── UI ──
   tool: ToolMode;
@@ -59,6 +87,16 @@ export interface KitchenState {
   tick: () => void;
   togglePause: () => void;
   setSpeed: (s: 1 | 2 | 4) => void;
+  /**
+   * Hydrate game stock from backend inventory.
+   * Merges real quantities with defaults — only overwrites if backend has data.
+   */
+  hydrateStock: (stockMap: Record<string, number>) => void;
+  /**
+   * Set restaurant name from backend (shown in game UI).
+   */
+  restaurantName: string;
+  setRestaurantName: (name: string) => void;
 }
 
 const STARTING_CASH = 1000;
@@ -129,10 +167,56 @@ export function createKitchenStore() {
       selectedAssetId: null,
       gridW: GRID_W,
       gridH: GRID_H,
+      restaurantName: 'Food Empire',
 
       selectedDistrictId: 'industrial_zone' as DistrictId,
       setSelectedDistrict(id) {
         set((s) => { s.selectedDistrictId = id; });
+      },
+
+      cityUi: {
+        toolMode: 'select',
+        selectedBuildItemId: null,
+        selectedEntityId: null,
+        selectedDistrictId: null,
+        cameraDirection: 0,
+        zoom: 16,
+        showGrid: true,
+        showDistrictOverlay: true,
+      } as CityUiState,
+      setCityTool(mode) {
+        set((s) => { s.cityUi.toolMode = mode; });
+      },
+      selectCityBuildItem(id) {
+        set((s) => { s.cityUi.selectedBuildItemId = id; });
+      },
+      selectCityEntity(id) {
+        set((s) => { s.cityUi.selectedEntityId = id; });
+      },
+      selectCityDistrict(id) {
+        set((s) => { s.cityUi.selectedDistrictId = id; });
+      },
+      rotateCameraLeft() {
+        set((s) => {
+          s.cityUi.cameraDirection = ((s.cityUi.cameraDirection - 90 + 360) % 360) as CityCameraDirection;
+        });
+      },
+      rotateCameraRight() {
+        set((s) => {
+          s.cityUi.cameraDirection = ((s.cityUi.cameraDirection + 90) % 360) as CityCameraDirection;
+        });
+      },
+      zoomIn() {
+        set((s) => { s.cityUi.zoom = Math.max(8, s.cityUi.zoom - 2); });
+      },
+      zoomOut() {
+        set((s) => { s.cityUi.zoom = Math.min(28, s.cityUi.zoom + 2); });
+      },
+      toggleGrid() {
+        set((s) => { s.cityUi.showGrid = !s.cityUi.showGrid; });
+      },
+      toggleDistrictOverlay() {
+        set((s) => { s.cityUi.showDistrictOverlay = !s.cityUi.showDistrictOverlay; });
       },
 
       setTool(t) {
@@ -301,6 +385,29 @@ export function createKitchenStore() {
       },
       setSpeed(speed) {
         set((s) => { s.game.speed = speed; });
+      },
+
+      setRestaurantName(name) {
+        set((s) => { s.restaurantName = name; });
+      },
+      hydrateStock(stockMap) {
+        set((s) => {
+          // Merge backend quantities into existing stock keys
+          for (const [key, qty] of Object.entries(stockMap)) {
+            if (qty > 0) {
+              // Map to existing game stock keys by substring match
+              const gameKey = Object.keys(s.stock).find(
+                (k) => key.includes(k) || k.includes(key)
+              );
+              if (gameKey) {
+                s.stock[gameKey] = qty;
+              } else {
+                // Add new key from backend
+                s.stock[key] = qty;
+              }
+            }
+          }
+        });
       },
     })),
   );

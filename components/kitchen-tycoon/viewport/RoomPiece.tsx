@@ -76,5 +76,7 @@ export function RoomPiece({
   );
 }
 
-// Preload once for all room pieces
-useGLTF.preload(roomUrl('shape_cube'));
+// Preload once — only in browser (SSR guard)
+if (typeof window !== 'undefined') {
+  useGLTF.preload(roomUrl('shape_cube'));
+}
