@@ -1,22 +1,12 @@
 /**
  * kitchen-tycoon/viewport/KitchenLocation.tsx
  *
- * Self-contained "кухня" — стены, пол, потолок и плитка
- * собраны из GLB-примитивов, загруженных напрямую с Rust-бэкенда.
+ * Industrial dark kitchen — стены/пол/плитка из GLB (Rust backend).
+ * Без потолка (tycoon-камера). Вместо него:
+ *   – верхний бортик стен
+ *   – точечные лампы вдоль северной стены
  *
- * Структура:
- *   Floor       — деревянный пол (1 плоский куб)
- *   Tiles       — плитка (тонкий куб поверх пола, 4×4 блоки)
- *   Wall_N      — северная стена (позади игрока)
- *   Wall_S      — южная стена (у камеры — полупрозрачная, чтобы видеть внутрь)
- *   Wall_W      — западная стена
- *   Wall_E      — восточная стена
- *   Ceiling     — потолок
- *   BaseBoardN/W/E — плинтусы
- *   Skirting    — тёмная полоса у пола на стенах
- *
- * Все геометрии = один shape_cube с разными scale/position.
- * Нет Three.js-only BoxGeometry здесь — только GLB с бэкенда.
+ * Цвета: industrial dark (#2b-#3a palette), не домашняя бежевая.
  */
 'use client';
 
@@ -24,48 +14,46 @@ import { Suspense, type ReactElement } from 'react';
 import { RoomPiece } from './RoomPiece';
 
 // ── Размеры комнаты ───────────────────────────────────────────────────────────
-const W  = 10;   // ширина (X)
-const D  = 8;    // глубина (Z)
-const H  = 2.8;  // высота (Y)
-const WT = 0.15; // толщина стены
+const W  = 10;
+const D  = 8;
+const H  = 2.8;
+const WT = 0.15;
 
-// Цвета
+// ── Industrial dark palette ───────────────────────────────────────────────────
 const CLR = {
-  floor:        '#5c3d1e',   // тёмное дерево
-  floorEdge:    '#3b2512',
-  tile:         '#d4c9a8',   // светлая плитка
-  tileGrout:    '#9e9480',
-  wallMain:     '#c8b99a',   // кремовая штукатурка
-  wallDark:     '#b5a48a',
-  wallSouth:    '#b0a48e',   // чуть темнее (видна у камеры)
-  ceiling:      '#ede7d9',   // белёный потолок
-  skirting:     '#4a3a28',   // тёмный плинтус
+  floor:     '#2b2a27',
+  tileA:     '#2f2d2a',
+  tileB:     '#383530',
+  wallMain:  '#4a423a',
+  wallSide:  '#3a342f',
+  wallSouth: '#3a342f',
+  skirting:  '#171717',
+  topBorder: '#1a1815',
+  lampBody:  '#9ca3af',
+  lampLight: '#facc15',
 };
 
-// ── Небольшая решётка тайлов на полу ─────────────────────────────────────────
+// ── Плитка пола (тёмная шахматка) ────────────────────────────────────────────
 function FloorTiles() {
-  const tileW  = 1.0;
-  const tileD  = 1.0;
-  const thick  = 0.012;
-  const gap    = 0.04;
-  const cols   = Math.floor(W / tileW);
-  const rows   = Math.floor(D / tileD);
+  const tileW = 1.0;
+  const tileD = 1.0;
+  const thick = 0.014;
+  const gap   = 0.045;
+  const cols  = Math.floor(W / tileW);
+  const rows  = Math.floor(D / tileD);
   const tiles: ReactElement[] = [];
-
   for (let c = 0; c < cols; c++) {
     for (let r = 0; r < rows; r++) {
       const px = -W / 2 + (c + 0.5) * tileW;
       const pz = -D / 2 + (r + 0.5) * tileD;
-      // alternate darker tile every other diagonal
-      const dark = (c + r) % 2 === 1;
       tiles.push(
         <RoomPiece
-          key={`tile_${c}_${r}`}
-          slug="shape_cube"
+          key={`t_${c}_${r}`}
           position={[px, thick / 2 + 0.002, pz]}
           scale={[tileW - gap, thick, tileD - gap]}
-          color={dark ? CLR.tileGrout : CLR.tile}
-          roughness={0.6}
+          color={(c + r) % 2 === 0 ? CLR.tileA : CLR.tileB}
+          roughness={0.55}
+          metalness={0.08}
           receiveShadow
         />
       );
@@ -74,110 +62,138 @@ function FloorTiles() {
   return <>{tiles}</>;
 }
 
-// ── Плинтус по периметру ──────────────────────────────────────────────────────
+// ── Плинтусы ──────────────────────────────────────────────────────────────────
 function Skirtings() {
-  const sh = 0.12;  // высота плинтуса
-  const sd = 0.06;  // толщина
+  const sh = 0.1;
+  const sd = 0.055;
   return (
     <>
-      {/* North */}
-      <RoomPiece slug="shape_cube" position={[0, sh / 2, -D / 2 + sd / 2]}
-        scale={[W, sh, sd]} color={CLR.skirting} roughness={0.9} receiveShadow />
-      {/* South */}
-      <RoomPiece slug="shape_cube" position={[0, sh / 2, D / 2 - sd / 2]}
-        scale={[W, sh, sd]} color={CLR.skirting} roughness={0.9} receiveShadow />
-      {/* West */}
-      <RoomPiece slug="shape_cube" position={[-W / 2 + sd / 2, sh / 2, 0]}
-        scale={[sd, sh, D]} color={CLR.skirting} roughness={0.9} receiveShadow />
-      {/* East */}
-      <RoomPiece slug="shape_cube" position={[W / 2 - sd / 2, sh / 2, 0]}
-        scale={[sd, sh, D]} color={CLR.skirting} roughness={0.9} receiveShadow />
+      <RoomPiece position={[0, sh / 2, -D / 2 + sd / 2]}       scale={[W, sh, sd]}  color={CLR.skirting} roughness={0.95} receiveShadow />
+      <RoomPiece position={[0, sh / 2,  D / 2 - sd / 2]}       scale={[W, sh, sd]}  color={CLR.skirting} roughness={0.95} receiveShadow />
+      <RoomPiece position={[-W / 2 + sd / 2, sh / 2, 0]}       scale={[sd, sh, D]}  color={CLR.skirting} roughness={0.95} receiveShadow />
+      <RoomPiece position={[ W / 2 - sd / 2, sh / 2, 0]}       scale={[sd, sh, D]}  color={CLR.skirting} roughness={0.95} receiveShadow />
     </>
   );
 }
 
-// ── Главный компонент локации ─────────────────────────────────────────────────
+// ── Верхний бортик стен (вместо потолка) ──────────────────────────────────────
+function TopBorders() {
+  const bh = 0.18;  // высота бортика
+  const bd = WT;
+  return (
+    <>
+      {/* North */}
+      <RoomPiece position={[0, H - bh / 2, -D / 2 - bd / 2]}     scale={[W + bd * 2, bh, bd]}  color={CLR.topBorder} roughness={0.9} castShadow />
+      {/* West */}
+      <RoomPiece position={[-W / 2 - bd / 2, H - bh / 2, 0]}     scale={[bd, bh, D]}            color={CLR.topBorder} roughness={0.9} castShadow />
+      {/* East */}
+      <RoomPiece position={[ W / 2 + bd / 2, H - bh / 2, 0]}     scale={[bd, bh, D]}            color={CLR.topBorder} roughness={0.9} castShadow />
+    </>
+  );
+}
+
+// ── Потолочные лампы (3 вдоль северной стены, тянутся вперёд) ─────────────────
+function CeilingLamps() {
+  const positions: [number, number, number][] = [
+    [-3.2, H - 0.06, -2.5],
+    [ 0.0, H - 0.06, -2.5],
+    [ 3.2, H - 0.06, -2.5],
+  ];
+  return (
+    <>
+      {positions.map(([x, y, z], i) => (
+        <group key={i} position={[x, y, z]}>
+          {/* корпус лампы */}
+          <RoomPiece position={[0, 0, 0]}       scale={[0.28, 0.06, 0.28]} color={CLR.lampBody}  roughness={0.3} metalness={0.7} />
+          {/* рассеиватель (жёлтый) */}
+          <RoomPiece position={[0, -0.045, 0]}  scale={[0.22, 0.02, 0.22]} color={CLR.lampLight} roughness={0.2} metalness={0.1} />
+          {/* штанга к потолку */}
+          <RoomPiece position={[0, 0.12, 0]}    scale={[0.03, 0.24, 0.03]} color={CLR.skirting}  roughness={0.9} />
+          {/* R3F pointLight — не GLB, чистый Three.js */}
+          <pointLight
+            position={[0, -0.15, 0]}
+            intensity={1.8}
+            distance={4.5}
+            color="#ffe8a0"
+            castShadow={false}
+          />
+        </group>
+      ))}
+    </>
+  );
+}
+
+// ── Главный компонент ─────────────────────────────────────────────────────────
 export function KitchenLocation() {
   return (
     <group name="kitchen-location">
 
-      {/* ── Пол ── */}
+      {/* Пол */}
       <RoomPiece
-        slug="shape_cube"
         position={[0, -0.05, 0]}
         scale={[W, 0.1, D]}
         color={CLR.floor}
-        roughness={0.92}
-        receiveShadow
-      />
-
-      {/* ── Плитка поверх пола ── */}
-      <Suspense fallback={null}>
-        <FloorTiles />
-      </Suspense>
-
-      {/* ── Потолок ── */}
-      <RoomPiece
-        slug="shape_cube"
-        position={[0, H + 0.05, 0]}
-        scale={[W + WT * 2, 0.1, D + WT * 2]}
-        color={CLR.ceiling}
         roughness={0.95}
         receiveShadow
       />
 
-      {/* ── Северная стена (дальняя) ── */}
+      {/* Плитка */}
+      <Suspense fallback={null}>
+        <FloorTiles />
+      </Suspense>
+
+      {/* Северная стена */}
       <RoomPiece
-        slug="shape_cube"
         position={[0, H / 2, -D / 2 - WT / 2]}
         scale={[W + WT * 2, H, WT]}
         color={CLR.wallMain}
-        roughness={0.85}
-        receiveShadow
-        castShadow
+        roughness={0.88}
+        receiveShadow castShadow
       />
 
-      {/* ── Южная стена (ближняя — полупрозрачная) ── */}
+      {/* Южная стена — полупрозрачная */}
       <RoomPiece
-        slug="shape_cube"
         position={[0, H / 2, D / 2 + WT / 2]}
         scale={[W + WT * 2, H, WT]}
         color={CLR.wallSouth}
-        roughness={0.85}
+        roughness={0.88}
         transparent
-        opacity={0.3}
+        opacity={0.15}
       />
 
-      {/* ── Западная стена ── */}
+      {/* Западная стена */}
       <RoomPiece
-        slug="shape_cube"
         position={[-W / 2 - WT / 2, H / 2, 0]}
         scale={[WT, H, D]}
-        color={CLR.wallDark}
-        roughness={0.85}
-        receiveShadow
-        castShadow
+        color={CLR.wallSide}
+        roughness={0.88}
+        receiveShadow castShadow
       />
 
-      {/* ── Восточная стена ── */}
+      {/* Восточная стена */}
       <RoomPiece
-        slug="shape_cube"
         position={[W / 2 + WT / 2, H / 2, 0]}
         scale={[WT, H, D]}
-        color={CLR.wallDark}
-        roughness={0.85}
-        receiveShadow
-        castShadow
+        color={CLR.wallSide}
+        roughness={0.88}
+        receiveShadow castShadow
       />
 
-      {/* ── Плинтусы ── */}
+      {/* Плинтусы */}
       <Suspense fallback={null}>
         <Skirtings />
       </Suspense>
+
+      {/* Верхний бортик */}
+      <Suspense fallback={null}>
+        <TopBorders />
+      </Suspense>
+
+      {/* Лампы + pointLights */}
+      <CeilingLamps />
 
     </group>
   );
 }
 
-/** Экспорт размеров для других компонентов */
 export const ROOM = { W, D, H, WT } as const;

@@ -15,6 +15,7 @@ import type {
   ToolMode,
 } from '../core/types';
 import { ASSET_CATALOG, RECIPES, recipeFoodCost } from '../core/catalog';
+import { DISTRICTS, type DistrictId } from '../world/city-map';
 
 export interface KitchenState {
   // ── World ──
@@ -24,6 +25,10 @@ export interface KitchenState {
   orders: Order[];
   /** ingredient stock in base unit (g/ml/pcs) */
   stock: Record<string, number>;
+
+  // ── District ──
+  selectedDistrictId: DistrictId;
+  setSelectedDistrict: (id: DistrictId) => void;
 
   // ── UI ──
   tool: ToolMode;
@@ -124,6 +129,11 @@ export function createKitchenStore() {
       selectedAssetId: null,
       gridW: GRID_W,
       gridH: GRID_H,
+
+      selectedDistrictId: 'industrial_zone' as DistrictId,
+      setSelectedDistrict(id) {
+        set((s) => { s.selectedDistrictId = id; });
+      },
 
       setTool(t) {
         set((s) => {
@@ -233,9 +243,13 @@ export function createKitchenStore() {
 
       spawnOrder() {
         set((s) => {
+          const district = DISTRICTS[s.selectedDistrictId];
           const r = RECIPES[Math.floor(Math.random() * RECIPES.length)];
           const qty = 1 + Math.floor(Math.random() * 4);
-          const payout = Math.round(r.basePrice * qty * (0.95 + Math.random() * 0.15));
+          // payout scaled by district price multiplier
+          const payout = Math.round(
+            r.basePrice * qty * (0.95 + Math.random() * 0.15) * district.demand.priceMultiplier,
+          );
           s.orders.push({
             id: uid('ord'),
             recipeId: r.id,
@@ -258,8 +272,14 @@ export function createKitchenStore() {
               (sum, a) => sum + ASSET_CATALOG[a.type].maintenancePerDay,
               0,
             );
-            s.finance.cash -= maintenance;
-            s.finance.costToday += maintenance;
+            // District rent: tiles used × rent per tile per day
+            const usedTiles = s.assets.reduce((sum, a) => {
+              const spec = ASSET_CATALOG[a.type];
+              return sum + spec.size.w * spec.size.h;
+            }, 0);
+            const districtRent = usedTiles * DISTRICTS[s.selectedDistrictId].rent.perTilePerDay;
+            s.finance.cash -= maintenance + districtRent;
+            s.finance.costToday += maintenance + districtRent;
             const rev = s.finance.revenueToday || 1;
             s.finance.foodCostRatio = s.finance.costToday / rev;
             // Expire pending orders past due

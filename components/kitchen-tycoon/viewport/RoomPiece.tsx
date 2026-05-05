@@ -12,7 +12,7 @@ import * as THREE from 'three';
 import { BACKEND_BASE } from '../lab/geometry-client';
 
 export interface RoomPieceProps {
-  slug?: string;
+  slug?: 'shape_cube' | 'shape_cylinder' | 'shape_sphere' | 'shape_cone' | 'shape_torus';
   scale?: [number, number, number];
   position?: [number, number, number];
   rotation?: [number, number, number];

@@ -14,13 +14,15 @@
 
 import { Suspense, useMemo, useRef, useState } from 'react';
 import { Canvas, useFrame, type ThreeEvent } from '@react-three/fiber';
-import { Environment, Html, OrbitControls } from '@react-three/drei';
+import { Environment, Html } from '@react-three/drei';
+import { TycoonCamera } from './TycoonCamera';
 import * as THREE from 'three';
 
 import { useKitchen } from '../engine/StoreProvider';
 import { ASSET_CATALOG } from '../core/catalog';
 import type { KitchenAsset, KitchenAssetType } from '../core/types';
 import { KitchenLocation, ROOM } from './KitchenLocation';
+import { DefaultScene3D } from './equipment/DefaultScene3D';
 
 // ── World units ──────────────────────────────────────────────────────────────
 const TILE = 1;          // world units per grid tile
@@ -131,11 +133,10 @@ function Floor({
         <meshStandardMaterial color="#1a140d" roughness={1} />
       </mesh>
 
-      {/* Kitchen wooden floor */}
+      {/* Invisible raycasting plane — tiles from KitchenLocation handle visuals */}
       <mesh
         rotation={[-Math.PI / 2, 0, 0]}
-        position={[0, 0, 0]}
-        receiveShadow
+        position={[0, 0.001, 0]}
         onPointerMove={(e) => {
           e.stopPropagation();
           onTileHover(pick(e));
@@ -150,18 +151,8 @@ function Floor({
         }}
       >
         <planeGeometry args={[gridW * TILE, gridH * TILE]} />
-        <meshStandardMaterial color="#4a3826" roughness={0.9} />
+        <meshStandardMaterial transparent opacity={0} depthWrite={false} />
       </mesh>
-
-      {/* Tile grid lines (decorative) */}
-      <gridHelper
-        args={[Math.max(gridW, gridH) * TILE, Math.max(gridW, gridH), '#806040', '#5a3f25']}
-        position={[
-          gridW % 2 === 0 ? 0 : 0,
-          0.005,
-          gridH % 2 === 0 ? 0 : 0,
-        ]}
-      />
 
       {/* Floor edge */}
       <mesh position={[0, 0.025, halfH + 0.01]}>
@@ -397,6 +388,9 @@ function Scene() {
       <Suspense fallback={null}>
         <KitchenLocation />
       </Suspense>
+      <Suspense fallback={null}>
+        <DefaultScene3D />
+      </Suspense>
 
       {hover && tool === 'build' && buildType && (
         <Ghost
@@ -429,9 +423,13 @@ function Scene() {
 export function KitchenRoom3D() {
   return (
     <div className="relative h-full w-full">
+      {/* HUD hint */}
+      <div className="pointer-events-none absolute bottom-3 left-1/2 z-10 -translate-x-1/2 rounded-md bg-black/50 px-3 py-1 text-xs text-white/60 select-none">
+        ЛКМ — поворот &nbsp;|&nbsp; ПКМ — пан &nbsp;|&nbsp; Scroll — зум &nbsp;|&nbsp; WASD — двигаться &nbsp;|&nbsp; Q / E — 90°
+      </div>
       <Canvas
         shadows
-        camera={{ position: [10, 9, 10], fov: 38 }}
+        camera={{ position: [10, 9, 10], fov: 42 }}
         dpr={[1, 2]}
         gl={{ antialias: true }}
       >
@@ -439,17 +437,7 @@ export function KitchenRoom3D() {
           <Scene />
           <Environment preset="sunset" />
         </Suspense>
-        <OrbitControls
-          makeDefault
-          enablePan
-          enableZoom
-          enableRotate
-          minPolarAngle={Math.PI / 6}
-          maxPolarAngle={Math.PI / 2.4}
-          minDistance={6}
-          maxDistance={22}
-          target={[0, 0.5, 0]}
-        />
+        <TycoonCamera target={[0, 0.5, 0]} />
       </Canvas>
     </div>
   );
