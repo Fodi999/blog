@@ -22,9 +22,6 @@ if (typeof window !== 'undefined') {
   };
 }
 import { CityCamera } from './CityCamera';
-import { CityGround } from './CityGround';
-import { CityDistrictsLayer } from './CityDistrictsLayer';
-import { CityBlocksLayer } from './CityBlocksLayer';
 import { CitySkyBackdrop } from './CitySkyBackdrop';
 import { CityRenderer } from './CityRenderer';
 import { TerrainMesh } from './TerrainMesh';
@@ -135,19 +132,8 @@ export function CityMapViewport({
           ) : null}
         </group>
 
-        {/* ── Fallback layers (when map not yet loaded) ──────────────── */}
-        {!map && (
-          <>
-            <CityGround showGrid={showGrid} size={90} />
-            <CityBlocksLayer playerLevel={playerLevel} selectedId={selectedDistrictId} />
-            <CityDistrictsLayer
-              selectedId={selectedDistrictId}
-              playerLevel={playerLevel}
-              showOverlay={showOverlay}
-              onSelect={onSelectDistrict}
-            />
-          </>
-        )}
+        {/* ── Fallback — nothing while map is loading ─────────────────── */}
+        {/* (no procedural fallback — avoids ghost city overlapping backend map) */}
       </Suspense>
 
       {/* Camera — outside Suspense so it always runs */}
