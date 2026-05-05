@@ -84,6 +84,8 @@ export interface CityMesh {
   normals:   number[];  // flat [nx0,ny0,nz0, …]
   uvs:       number[];  // flat [u0,v0, u1,v1, …]
   indices:   number[];  // triangle indices (every 3 = one face)
+  /** Optional flat per-vertex RGB in 0..1 — use vertexColors when present. */
+  colors?:   number[];  // flat [r0,g0,b0, …]
 }
 
 // ── Building — footprint polygon + extrude ───────────────────────────────────

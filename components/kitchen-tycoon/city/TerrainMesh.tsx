@@ -40,6 +40,13 @@ export function TerrainMesh({ terrain, offsetY = 0 }: Props) {
       );
     }
 
+    if (terrain.mesh.colors?.length) {
+      geo.setAttribute(
+        'color',
+        new THREE.Float32BufferAttribute(new Float32Array(terrain.mesh.colors), 3),
+      );
+    }
+
     geo.setIndex(terrain.mesh.indices);
 
     if (!terrain.mesh.normals?.length) {
@@ -51,6 +58,8 @@ export function TerrainMesh({ terrain, offsetY = 0 }: Props) {
     return geo;
   }, [terrain.mesh]);
 
+  const hasVertexColors = Boolean(terrain.mesh.colors?.length);
+
   return (
     <mesh
       geometry={geometry}
@@ -58,9 +67,10 @@ export function TerrainMesh({ terrain, offsetY = 0 }: Props) {
       receiveShadow
     >
       <meshStandardMaterial
-        color={terrain.color}
-        roughness={0.95}
-        metalness={0.02}
+        vertexColors={hasVertexColors}
+        color={hasVertexColors ? undefined : terrain.color}
+        roughness={0.92}
+        metalness={0.0}
       />
     </mesh>
   );
