@@ -23,7 +23,7 @@ interface Props {
   target?: [number, number, number];
 }
 
-export function CityCamera({ direction = 0, zoom = 16, target = [0, 0, 0] }: Props) {
+export function CityCamera({ direction = 0, zoom = 70, target = [0, 0, 0] }: Props) {
   const { camera, gl } = useThree();
   const zoomIn  = useKitchen((s) => s.zoomIn);
   const zoomOut = useKitchen((s) => s.zoomOut);
@@ -34,7 +34,7 @@ export function CityCamera({ direction = 0, zoom = 16, target = [0, 0, 0] }: Pro
 
   // Spherical angles
   const azimuth = useRef(THREE.MathUtils.degToRad(direction + 45));
-  const elev    = useRef(THREE.MathUtils.degToRad(38)); // start: 38° above horizon → sky visible
+  const elev    = useRef(THREE.MathUtils.degToRad(50)); // start: 50° above horizon → strategic top-down view
   const azTarget = useRef(azimuth.current);
   const elTarget = useRef(elev.current);
 

@@ -287,17 +287,42 @@ export const DISTRICTS: Record<DistrictId, District> = {
 
 // ── Вспомогательные функции ───────────────────────────────────────────────────
 
-export function getDistrictById(id: DistrictId): District {
-  const d = DISTRICTS[id];
-  if (!d) throw new Error(`Unknown district: ${id}`);
-  return d;
-}
-
 export const DISTRICT_LIST = Object.values(DISTRICTS).sort(
   (a, b) => a.unlockLevel - b.unlockLevel,
 );
 
 export const STARTER_DISTRICTS = DISTRICT_LIST.filter((d) => d.unlocked);
+
+/**
+ * Map a backend district kind ("player" | "office" | "market" | ...) to a
+ * static District definition for the Info panel. Backend ids look like
+ * `office_-1_0` (kind_col_row); we fall back to a sensible static district
+ * when the exact key is unknown.
+ */
+const KIND_TO_FALLBACK: Record<string, DistrictId> = {
+  player:      'old_town',
+  office:      'office_district',
+  residential: 'residential_west',
+  market:      'shopping_center',
+  shops:       'shopping_center',
+  competitor:  'luxury_hills',
+  park:        'student_area',
+  industrial:  'industrial_zone',
+};
+
+export function getDistrictById(id: string): District {
+  // 1. Direct hit (legacy static ids)
+  const direct = (DISTRICTS as Record<string, District | undefined>)[id];
+  if (direct) return direct;
+
+  // 2. Backend id format: "kind_col_row" → use kind prefix
+  const kind = id.split('_')[0];
+  const fallbackId = KIND_TO_FALLBACK[kind];
+  if (fallbackId) return DISTRICTS[fallbackId];
+
+  // 3. Last resort — first available district
+  return DISTRICT_LIST[0];
+}
 
 export function getNeighbors(id: DistrictId): District[] {
   return DISTRICTS[id].neighbors.map((n) => DISTRICTS[n]);

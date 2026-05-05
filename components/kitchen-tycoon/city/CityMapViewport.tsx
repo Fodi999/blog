@@ -27,6 +27,7 @@ import { CityDistrictsLayer } from './CityDistrictsLayer';
 import { CityBlocksLayer } from './CityBlocksLayer';
 import { CitySkyBackdrop } from './CitySkyBackdrop';
 import { CityRenderer } from './CityRenderer';
+import { TerrainMesh } from './TerrainMesh';
 import { useCityMap } from '@/hooks/useCityMap';
 import type { CityCameraDirection } from '../engine/game-store';
 import type { DistrictId } from '../world/city-map';
@@ -54,7 +55,7 @@ export function CityMapViewport({
 
   return (
     <Canvas
-      camera={{ position: [20, 18, 20], fov: 38 }}
+      camera={{ position: [60, 55, 60], fov: 55, near: 0.5, far: 600 }}
       dpr={[1, 2]}
       gl={{ antialias: true, alpha: true }}
       shadows="basic"
@@ -62,8 +63,8 @@ export function CityMapViewport({
       onCreated={({ scene, gl }) => {
         scene.background = null;
         const fogColor = map?.ground.fogColor ?? '#7ab0e8';
-        const fogNear  = map?.ground.fogNear  ?? 80;
-        const fogFar   = map?.ground.fogFar   ?? 220;
+        const fogNear  = map?.ground.fogNear  ?? 140;
+        const fogFar   = map?.ground.fogFar   ?? 420;
         scene.fog = new THREE.Fog(fogColor, fogNear, fogFar);
         gl.shadowMap.type = THREE.PCFShadowMap;
         gl.setClearAlpha(0);
@@ -73,16 +74,16 @@ export function CityMapViewport({
         {/* ── Lighting ─────────────────────────────────────────────────── */}
         <ambientLight intensity={2.2} color="#ccdcff" />
         <directionalLight
-          position={[30, 50, 20]}
+          position={[60, 90, 40]}
           intensity={3.5}
           castShadow
           shadow-mapSize={[2048, 2048]}
           shadow-camera-near={0.5}
-          shadow-camera-far={150}
-          shadow-camera-left={-70}
-          shadow-camera-right={70}
-          shadow-camera-top={70}
-          shadow-camera-bottom={-70}
+          shadow-camera-far={300}
+          shadow-camera-left={-120}
+          shadow-camera-right={120}
+          shadow-camera-top={120}
+          shadow-camera-bottom={-120}
           color="#fff4d6"
         />
         <directionalLight position={[-25, 20, -25]} intensity={1.4} color="#a8c8ff" />
@@ -92,13 +93,30 @@ export function CityMapViewport({
         {/* Sky backdrop */}
         <CitySkyBackdrop />
 
-        {/* Ground plane */}
-        <CityGround
-          showGrid={showGrid}
-          size={90}
-          color={map?.ground.color}
-        />
-
+        {/* ── Terrain & ground ───────────────────────────────────────── */}
+        {map?.terrain ? (
+          <>
+            {/* Pre-baked landscape from backend (BufferGeometry). */}
+            {/* Offset down slightly so y=0 districts/roads stay clearly above the rolling terrain. */}
+            <TerrainMesh terrain={map.terrain} offsetY={-1.6} />
+            {/* Grid is now a build-mode overlay — only when explicitly toggled. */}
+            {showGrid && (() => {
+              const gridSize = Math.ceil(Math.max(map.bounds.width, map.bounds.depth) + 20);
+              return (
+                <gridHelper
+                  args={[gridSize, gridSize, '#1a2a1a', '#0f1a0f']}
+                  position={[0, 0.05, 0]}
+                />
+              );
+            })()}
+          </>
+        ) : (
+          <CityGround
+            showGrid={showGrid}
+            size={90}
+            color={map?.ground.color}
+          />
+        )}
         {/* ── City geometry ──────────────────────────────────────────── */}
         {map ? (
           // Backend-driven renderer — real polygon/polyline geometry

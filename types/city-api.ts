@@ -132,6 +132,18 @@ export interface CityBounds {
   depth: number;
 }
 
+// ── Terrain — pre-baked landscape mesh from backend ──────────────────────────
+
+export interface CityTerrain {
+  mesh: CityMesh;
+  width: number;
+  depth: number;
+  cellSize: number;
+  minHeight: number;
+  maxHeight: number;
+  color: string;
+}
+
 // ── Top-level map ────────────────────────────────────────────────────────────
 
 export interface CityMap {
@@ -141,4 +153,6 @@ export interface CityMap {
   roads: CityRoad[];
   districts: CityDistrict[];
   ground: CityGround;
+  /** Optional pre-baked terrain mesh. When present, render via BufferGeometry. */
+  terrain?: CityTerrain;
 }

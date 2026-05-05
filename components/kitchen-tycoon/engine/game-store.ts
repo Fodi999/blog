@@ -180,7 +180,7 @@ export function createKitchenStore() {
         selectedEntityId: null,
         selectedDistrictId: null,
         cameraDirection: 0,
-        zoom: 16,
+        zoom: 70,
         showGrid: true,
         showDistrictOverlay: true,
       } as CityUiState,
@@ -207,10 +207,10 @@ export function createKitchenStore() {
         });
       },
       zoomIn() {
-        set((s) => { s.cityUi.zoom = Math.max(8, s.cityUi.zoom - 2); });
+        set((s) => { s.cityUi.zoom = Math.max(10, s.cityUi.zoom - 6); });
       },
       zoomOut() {
-        set((s) => { s.cityUi.zoom = Math.min(28, s.cityUi.zoom + 2); });
+        set((s) => { s.cityUi.zoom = Math.min(160, s.cityUi.zoom + 6); });
       },
       toggleGrid() {
         set((s) => { s.cityUi.showGrid = !s.cityUi.showGrid; });
