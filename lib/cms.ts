@@ -38,6 +38,23 @@ export type Product = {
   updated_at: string;
 };
 
+export type Ingredient = {
+  slug: string;
+  name_pl: string;
+  name_en: string;
+  description_pl?: string | null;
+  description_en?: string | null;
+  image_url?: string | null;
+  category_name_pl?: string | null;
+  category_name_en?: string | null;
+  calories_per_100g?: number | null;
+  protein_per_100g?: number | null;
+  fat_per_100g?: number | null;
+  carbs_per_100g?: number | null;
+  seasons: string[];
+  updated_at: string;
+};
+
 export async function getArticles(): Promise<Article[]> {
   try {
     const response = await fetch(`${API_URL}/public/articles?limit=100`, {
@@ -82,6 +99,32 @@ export async function getProduct(slug: string): Promise<Product | null> {
   } catch {
     return null;
   }
+}
+
+export async function getIngredients(): Promise<Ingredient[]> {
+  try {
+    const response = await fetch(`${API_URL}/public/ingredients-full`, {
+      next: { revalidate: 300 },
+    });
+    if (!response.ok) return [];
+    const payload = await response.json() as { items?: Ingredient[] };
+    return payload.items ?? [];
+  } catch {
+    return [];
+  }
+}
+
+export async function getIngredient(slug: string): Promise<Ingredient | null> {
+  const ingredients = await getIngredients();
+  return ingredients.find((ingredient) => ingredient.slug === slug) ?? null;
+}
+
+export function ingredientName(ingredient: Ingredient): string {
+  return ingredient.name_pl || ingredient.name_en;
+}
+
+export function ingredientDescription(ingredient: Ingredient): string {
+  return ingredient.description_pl || ingredient.description_en || '';
 }
 
 export function articleTitle(article: Article): string {

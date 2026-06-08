@@ -10,6 +10,7 @@ export function Footer() {
       <div className="site-footer__links">
         <Link href="/blog">Blog</Link>
         <Link href="/sklep">Sklep</Link>
+        <Link href="/skladniki">Składniki</Link>
         <Link href="/kontakt">Kontakt</Link>
       </div>
     </footer>

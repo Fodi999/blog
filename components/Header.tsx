@@ -4,6 +4,7 @@ const links = [
   ['/', 'Strona główna'],
   ['/blog', 'Blog'],
   ['/sklep', 'Sklep'],
+  ['/skladniki', 'Składniki'],
   ['/o-mnie', 'O mnie'],
   ['/kontakt', 'Kontakt'],
 ] as const;
