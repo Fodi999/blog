@@ -7,6 +7,11 @@
   --max: 1440px;
 }
 
+.locale--ru,
+.locale--uk {
+  --font-display: var(--font-cyrillic-display);
+}
+
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 body {
@@ -83,6 +88,12 @@ main { min-height: 70vh; }
   color: var(--black);
 }
 
+.locale--ru .site-nav__link,
+.locale--uk .site-nav__link {
+  font-size: clamp(15px, 1.35vw, 23px);
+  letter-spacing: 0;
+}
+
 .hero {
   min-height: calc(100vh - 144px);
   padding: 10vw max(5vw, calc((100vw - var(--max)) / 2));
@@ -110,6 +121,24 @@ main { min-height: 70vh; }
   margin: 0;
   font-size: clamp(19px, 2vw, 31px);
   line-height: 1.35;
+}
+.locale--ru .hero h1,
+.locale--uk .hero h1,
+.locale--ru .page-heading h1,
+.locale--uk .page-heading h1,
+.locale--ru .statement-page h1,
+.locale--uk .statement-page h1,
+.locale--ru .article__heading h1,
+.locale--uk .article__heading h1,
+.locale--ru .product-page h1,
+.locale--uk .product-page h1,
+.locale--ru .ingredient-page header h1,
+.locale--uk .ingredient-page header h1 {
+  max-width: 1320px;
+  font-size: clamp(52px, 8.5vw, 138px);
+  line-height: .98;
+  letter-spacing: -.055em;
+  overflow-wrap: anywhere;
 }
 .hero__actions { display: flex; gap: 12px; margin-top: 45px; flex-wrap: wrap; }
 .eyebrow, .meta {
@@ -161,6 +190,20 @@ main { min-height: 70vh; }
   line-height: .92;
   letter-spacing: -.06em;
   text-transform: uppercase;
+}
+.locale--ru .section-heading h2,
+.locale--uk .section-heading h2,
+.locale--ru .editorial-card h3,
+.locale--uk .editorial-card h3,
+.locale--ru .shop-card h2,
+.locale--uk .shop-card h2,
+.locale--ru .ingredient-card h2,
+.locale--uk .ingredient-card h2,
+.locale--ru .article-row h2,
+.locale--uk .article-row h2 {
+  line-height: 1.02;
+  letter-spacing: -.04em;
+  overflow-wrap: anywhere;
 }
 .section-heading > a { font-weight: 800; text-transform: uppercase; }
 

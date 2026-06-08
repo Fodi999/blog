@@ -90,3 +90,14 @@ const seasonCopy: Record<Locale, Record<string, string>> = {
 export function seasonName(value: string, locale: Locale): string {
   return seasonCopy[locale][value.trim().toLowerCase()] || value;
 }
+
+const categoryCopy: Record<Locale, Record<string, string>> = {
+  pl: { techniques: 'Techniki', ingredients: 'Składniki', recipes: 'Przepisy', products: 'Produkty', equipment: 'Sprzęt', editorial: 'Redakcja', sushi: 'Sushi', 'delivery-food': 'Dostawa jedzenia', 'kitchen-tools': 'Narzędzia kuchenne', tableware: 'Zastawa stołowa', beverages: 'Napoje', other: 'Inne' },
+  en: { techniques: 'Techniques', ingredients: 'Ingredients', recipes: 'Recipes', products: 'Products', equipment: 'Equipment', editorial: 'Editorial', sushi: 'Sushi', 'delivery-food': 'Delivery food', 'kitchen-tools': 'Kitchen tools', tableware: 'Tableware', beverages: 'Beverages', other: 'Other' },
+  ru: { techniques: 'Техники', ingredients: 'Ингредиенты', recipes: 'Рецепты', products: 'Продукты', equipment: 'Оборудование', editorial: 'Редакция', sushi: 'Суши', 'delivery-food': 'Доставка еды', 'kitchen-tools': 'Кухонные инструменты', tableware: 'Посуда', beverages: 'Напитки', other: 'Другое' },
+  uk: { techniques: 'Техніки', ingredients: 'Інгредієнти', recipes: 'Рецепти', products: 'Продукти', equipment: 'Обладнання', editorial: 'Редакція', sushi: 'Суші', 'delivery-food': 'Доставка їжі', 'kitchen-tools': 'Кухонні інструменти', tableware: 'Посуд', beverages: 'Напої', other: 'Інше' },
+};
+
+export function categoryName(value: string, locale: Locale): string {
+  return categoryCopy[locale][value.trim().toLowerCase()] || value;
+}

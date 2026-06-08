@@ -26,7 +26,7 @@ export default async function LocaleLayout({
   if (!isLocale(locale)) notFound();
 
   return (
-    <div lang={locale}>
+    <div className={`locale locale--${locale}`} lang={locale}>
       <Header locale={locale} />
       {children}
       <Footer locale={locale} />

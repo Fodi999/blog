@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { articleTitle, getArticles } from '@/lib/cms';
-import { getCopy, isLocale, localPath } from '@/lib/i18n';
+import { articleDescription, articleTitle, getArticles } from '@/lib/cms';
+import { categoryName, getCopy, isLocale, localPath } from '@/lib/i18n';
 
 export const revalidate = 300;
 
@@ -23,9 +23,9 @@ export default async function BlogPage({ params }: { params: Promise<{ locale: s
           <Link href={localPath(locale, `/blog/${article.slug}`)} className="article-row" key={article.slug}>
             <span className="article-row__number">{String(index + 1).padStart(2, '0')}</span>
             <div>
-              <p className="meta">{article.category}</p>
+              <p className="meta">{categoryName(article.category, locale)}</p>
               <h2>{articleTitle(article, locale)}</h2>
-              <p>{article.seo_description}</p>
+              <p>{articleDescription(article, locale)}</p>
             </div>
             <span className="article-row__arrow">↗</span>
           </Link>

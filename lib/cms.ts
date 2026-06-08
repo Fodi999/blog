@@ -165,6 +165,17 @@ export function articleContent(article: Article, locale: Locale): string {
   return localized({ pl: article.content_pl, en: article.content_en, ru: article.content_ru, uk: article.content_uk }, locale);
 }
 
+export function articleDescription(article: Article, locale: Locale): string {
+  if (locale === 'en' && article.seo_description) return article.seo_description;
+  const content = articleContent(article, locale)
+    .replace(/^#{1,6}\s+/gm, '')
+    .replace(/[*_`>-]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (!content) return article.seo_description;
+  return `${content.slice(0, 180).trim()}${content.length > 180 ? '…' : ''}`;
+}
+
 export function productName(product: Product, locale: Locale): string {
   return localized({ pl: product.name_pl, en: product.name_en, ru: product.name_ru, uk: product.name_uk }, locale);
 }

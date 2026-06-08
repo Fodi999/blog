@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { articleTitle, getArticles, getProducts, productName, productPrice } from '@/lib/cms';
-import { getCopy, isLocale, localPath } from '@/lib/i18n';
+import { articleDescription, articleTitle, getArticles, getProducts, productName, productPrice } from '@/lib/cms';
+import { categoryName, getCopy, isLocale, localPath } from '@/lib/i18n';
 
 export const revalidate = 300;
 
@@ -33,11 +33,11 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           {articles.slice(0, 3).map((article) => (
             <Link className="editorial-card" href={localPath(locale, `/blog/${article.slug}`)} key={article.slug}>
               <div className="media">
-                {article.image_url ? <img src={article.image_url} alt="" /> : <span>{article.category}</span>}
+                {article.image_url ? <img src={article.image_url} alt="" /> : <span>{categoryName(article.category, locale)}</span>}
               </div>
-              <p className="meta">{article.category}</p>
+              <p className="meta">{categoryName(article.category, locale)}</p>
               <h3>{articleTitle(article, locale)}</h3>
-              <p>{article.seo_description}</p>
+              <p>{articleDescription(article, locale)}</p>
             </Link>
           ))}
         </div>
