@@ -152,6 +152,19 @@ export type RichIngredient = {
   } | null;
 };
 
+export type AboutPage = {
+  title_en: string;
+  title_pl: string;
+  title_ru: string;
+  title_uk: string;
+  content_en: string;
+  content_pl: string;
+  content_ru: string;
+  content_uk: string;
+  image_url?: string | null;
+  updated_at: string;
+};
+
 export async function getArticles(): Promise<Article[]> {
   try {
     const response = await fetch(`${API_URL}/public/articles?limit=100`, {
@@ -211,6 +224,15 @@ export async function getIngredients(): Promise<Ingredient[]> {
   }
 }
 
+export async function getAboutPage(): Promise<AboutPage | null> {
+  try {
+    const response = await fetch(`${API_URL}/public/about`, { next: { revalidate: 300 } });
+    return response.ok ? await response.json() as AboutPage : null;
+  } catch {
+    return null;
+  }
+}
+
 export async function getIngredient(slug: string): Promise<Ingredient | null> {
   const ingredients = await getIngredients();
   return ingredients.find((ingredient) => ingredient.slug === slug) ?? null;
@@ -261,6 +283,14 @@ export function localizedName(row: { name_pl?: string | null; name_en?: string |
 
 export function localizedText(row: { notes_pl?: string | null; notes_en?: string | null; notes_ru?: string | null; notes_uk?: string | null }, locale: Locale): string {
   return localized({ pl: row.notes_pl, en: row.notes_en, ru: row.notes_ru, uk: row.notes_uk }, locale);
+}
+
+export function aboutTitle(about: AboutPage, locale: Locale): string {
+  return localized({ pl: about.title_pl, en: about.title_en, ru: about.title_ru, uk: about.title_uk }, locale);
+}
+
+export function aboutContent(about: AboutPage, locale: Locale): string {
+  return localized({ pl: about.content_pl, en: about.content_en, ru: about.content_ru, uk: about.content_uk }, locale);
 }
 
 export function articleTitle(article: Article, locale: Locale): string {
