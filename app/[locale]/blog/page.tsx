@@ -1,32 +1,36 @@
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 import { articleTitle, getArticles } from '@/lib/cms';
+import { getCopy, isLocale, localPath } from '@/lib/i18n';
 
 export const revalidate = 300;
-export const metadata = { title: 'Blog', description: 'Artykuły o kuchni, produktach i technice.' };
 
-export default async function BlogPage() {
+export default async function BlogPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  if (!isLocale(locale)) notFound();
+  const t = getCopy(locale);
   const articles = await getArticles();
 
   return (
     <section className="page">
       <header className="page-heading">
-        <p className="eyebrow">Wiedza z kuchni</p>
-        <h1>Blog</h1>
-        <p>Technika, produkt i proces. Bez dekoracji, tylko rzeczy, które działają.</p>
+        <p className="eyebrow">{t.blog.eyebrow}</p>
+        <h1>{t.nav.blog}</h1>
+        <p>{t.blog.lead}</p>
       </header>
       <div className="article-list">
         {articles.map((article, index) => (
-          <Link href={`/blog/${article.slug}`} className="article-row" key={article.slug}>
+          <Link href={localPath(locale, `/blog/${article.slug}`)} className="article-row" key={article.slug}>
             <span className="article-row__number">{String(index + 1).padStart(2, '0')}</span>
             <div>
               <p className="meta">{article.category}</p>
-              <h2>{articleTitle(article)}</h2>
+              <h2>{articleTitle(article, locale)}</h2>
               <p>{article.seo_description}</p>
             </div>
             <span className="article-row__arrow">↗</span>
           </Link>
         ))}
-        {articles.length === 0 && <p className="empty">Pierwsze artykuły pojawią się tutaj po publikacji w panelu administracyjnym.</p>}
+        {articles.length === 0 && <p className="empty">{t.blog.empty}</p>}
       </div>
     </section>
   );

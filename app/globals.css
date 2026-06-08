@@ -34,6 +34,12 @@ main { min-height: 70vh; }
   justify-content: space-between;
   gap: 32px;
 }
+.site-nav__links {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(20px, 3.4vw, 58px);
+}
 .site-nav__link {
   position: relative;
   font-family: var(--font-display), Arial Black, sans-serif;
@@ -54,6 +60,28 @@ main { min-height: 70vh; }
   transition: right .25s ease;
 }
 .site-nav__link:hover::after { right: 0; }
+.language-switcher {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid #333;
+}
+.language-switcher a {
+  min-width: 34px;
+  padding: 8px 7px;
+  color: #8d8d8d;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1;
+  text-align: center;
+  text-transform: uppercase;
+}
+.language-switcher a:hover,
+.language-switcher a.is-active {
+  background: var(--white);
+  color: var(--black);
+}
 
 .hero {
   min-height: calc(100vh - 144px);
@@ -316,6 +344,7 @@ main { min-height: 70vh; }
 
 @media (max-width: 900px) {
   .site-nav { min-height: auto; padding: 24px 0; flex-wrap: wrap; justify-content: flex-start; gap: 20px 30px; }
+  .site-nav__links { flex-wrap: wrap; justify-content: flex-start; gap: 20px 30px; }
   .site-nav__link { font-size: 15px; }
   .hero { min-height: 75vh; }
   .editorial-grid, .shop-grid, .ingredient-grid, .product-page { grid-template-columns: 1fr; }
@@ -327,6 +356,7 @@ main { min-height: 70vh; }
 }
 @media (max-width: 580px) {
   .site-nav { gap: 16px 22px; }
+  .site-nav__links { gap: 16px 22px; }
   .site-nav__link { font-size: 12px; }
   .hero, .section, .page, .article, .statement-page, .product-page { padding-top: 70px; padding-bottom: 80px; }
   .hero h1, .page-heading h1, .statement-page h1 { font-size: 48px; }

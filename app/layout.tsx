@@ -1,7 +1,5 @@
 import type { Metadata } from 'next';
 import { Archivo_Black, Inter } from 'next/font/google';
-import { Footer } from '@/components/Footer';
-import { Header } from '@/components/Header';
 import './globals.css';
 
 const display = Archivo_Black({ subsets: ['latin'], weight: '400', variable: '--font-display' });
@@ -17,9 +15,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="pl">
       <body className={`${display.variable} ${text.variable}`}>
-        <Header />
         <main>{children}</main>
-        <Footer />
       </body>
     </html>
   );

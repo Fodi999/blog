@@ -1,17 +1,19 @@
 import Link from 'next/link';
+import { getCopy, localPath, type Locale } from '@/lib/i18n';
 
-export function Footer() {
+export function Footer({ locale }: { locale: Locale }) {
+  const t = getCopy(locale);
   return (
     <footer className="site-footer">
       <div>
         <strong>Dima Fomin</strong>
-        <p>Jedzenie, technika i rzeczy stworzone z myślą o kuchni.</p>
+        <p>{t.footer}</p>
       </div>
       <div className="site-footer__links">
-        <Link href="/blog">Blog</Link>
-        <Link href="/sklep">Sklep</Link>
-        <Link href="/skladniki">Składniki</Link>
-        <Link href="/kontakt">Kontakt</Link>
+        <Link href={localPath(locale, '/blog')}>{t.nav.blog}</Link>
+        <Link href={localPath(locale, '/sklep')}>{t.nav.shop}</Link>
+        <Link href={localPath(locale, '/skladniki')}>{t.nav.ingredients}</Link>
+        <Link href={localPath(locale, '/kontakt')}>{t.nav.contact}</Link>
       </div>
     </footer>
   );
