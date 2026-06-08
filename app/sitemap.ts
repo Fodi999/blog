@@ -3,6 +3,7 @@ import { getAllPosts } from '@/lib/posts';
 import { fetchIngredients, fetchIngredientsStatesMap, fetchSitemapCombos } from '@/lib/api';
 import { locales } from '@/i18n';
 import { CATEGORY_MAP } from './[locale]/chef-tools/ingredients/[slug]/category-page';
+import { getShopProducts } from '@/lib/shop';
 
 const BASE_URL = 'https://dima-fomin.pl';
 const API_URL = 'https://ministerial-yetta-fodi999-c58d8823.koyeb.app';
@@ -83,6 +84,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }[] = [
       { path: '', priority: 1.0, changeFrequency: 'weekly' },
       { path: '/blog', priority: 0.9, changeFrequency: 'daily' },
+      { path: '/shop', priority: 0.9, changeFrequency: 'daily' },
       { path: '/about', priority: 0.7, changeFrequency: 'monthly' },
       { path: '/contact', priority: 0.6, changeFrequency: 'monthly' },
       { path: '/pricing', priority: 0.8, changeFrequency: 'monthly' },
@@ -330,5 +332,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   );
 
-  return [...staticUrls, ...postUrls, ...ingredientUrls, ...ingredientProfileUrls, ...howManyUrls, ...ingredientStateUrls, ...dietUrls, ...rankingUrls, ...recipePageUrls];
+  const shopProducts = await getShopProducts();
+  const shopProductUrls: MetadataRoute.Sitemap = shopProducts.flatMap((product) =>
+    multiLocaleEntry(`/shop/${product.slug}`, {
+      lastModified: toDate(product.updated_at),
+      changeFrequency: 'weekly',
+      priority: 0.85,
+      images: product.image_urls,
+    })
+  );
+
+  return [...staticUrls, ...postUrls, ...shopProductUrls, ...ingredientUrls, ...ingredientProfileUrls, ...howManyUrls, ...ingredientStateUrls, ...dietUrls, ...rankingUrls, ...recipePageUrls];
 }

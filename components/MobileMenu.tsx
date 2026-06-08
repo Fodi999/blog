@@ -46,6 +46,7 @@ export function MobileMenu() {
             {[
               { href: '/', label: t('home'), desc: t('homeDesc') },
               { href: '/blog', label: t('blog'), desc: t('blogDesc'), active: pathname.startsWith('/blog') },
+              { href: '/shop', label: t('shop'), desc: t('shopDesc'), active: pathname.startsWith('/shop') },
               { href: '/about', label: t('about'), desc: t('aboutDesc') },
               { href: '/contact', label: t('contact'), desc: t('contactDesc') },
             ].map((item) => {
