@@ -395,6 +395,15 @@ main { min-height: 70vh; }
 .about-public-grid { display: grid; grid-template-columns: minmax(280px, .8fr) minmax(400px, 1.2fr); gap: 7vw; align-items: start; margin-top: 70px; }
 .about-public-photo { width: 100%; height: auto; object-fit: contain; }
 .about-public-grid .statement-page__copy { margin: 0; }
+.about-work-section { margin-top: 140px; padding-top: 28px; border-top: 2px solid #111; }
+.about-work-section > h2 { max-width: 1000px; margin: 12px 0 55px; font-size: clamp(52px, 8vw, 130px); line-height: .88; letter-spacing: -.07em; text-transform: uppercase; }
+.about-work-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 70px 34px; }
+.about-work-card { min-width: 0; }
+.about-work-media { width: 100%; min-height: 360px; display: grid; place-items: center; border: 1px solid #deddd9; background: #fff; }
+.about-work-media img { display: block; width: 100%; height: auto; max-height: 760px; object-fit: contain; }
+.about-work-copy { padding-top: 22px; border-top: 1px solid #111; }
+.about-work-copy h3 { max-width: 90%; margin: 0 0 12px; font-size: clamp(28px, 3vw, 52px); line-height: .94; letter-spacing: -.055em; text-transform: uppercase; }
+.about-work-copy p { max-width: 680px; margin: 0; color: #6f6d68; font-size: 17px; line-height: 1.55; white-space: pre-line; }
 .contact-links { margin-top: 70px; border-top: 2px solid var(--black); }
 .contact-links a {
   display: flex;
@@ -425,6 +434,7 @@ main { min-height: 70vh; }
   .hero { min-height: 75vh; }
   .editorial-grid, .shop-grid, .ingredient-grid, .product-page { grid-template-columns: 1fr; }
   .about-public-grid { grid-template-columns: 1fr; }
+  .about-work-grid { grid-template-columns: 1fr; }
   .nutrition-grid, .ingredient-facts, .data-grid, .pairing-grid { grid-template-columns: repeat(2, 1fr); }
   .state-grid { grid-template-columns: 1fr 1fr; }
   .product-page__info { position: static; }

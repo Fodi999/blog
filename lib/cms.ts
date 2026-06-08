@@ -165,6 +165,25 @@ export type AboutPage = {
   updated_at: string;
 };
 
+export type GalleryItem = {
+  id: string;
+  image_url: string;
+  slug: string;
+  order_index: number;
+  title_en: string;
+  title_pl: string;
+  title_ru: string;
+  title_uk: string;
+  description_en: string;
+  description_pl: string;
+  description_ru: string;
+  description_uk: string;
+  alt_en: string;
+  alt_pl: string;
+  alt_ru: string;
+  alt_uk: string;
+};
+
 export async function getArticles(): Promise<Article[]> {
   try {
     const response = await fetch(`${API_URL}/public/articles?limit=100`, {
@@ -233,6 +252,15 @@ export async function getAboutPage(): Promise<AboutPage | null> {
   }
 }
 
+export async function getGallery(): Promise<GalleryItem[]> {
+  try {
+    const response = await fetch(`${API_URL}/public/gallery`, { next: { revalidate: 300 } });
+    return response.ok ? await response.json() as GalleryItem[] : [];
+  } catch {
+    return [];
+  }
+}
+
 export async function getIngredient(slug: string): Promise<Ingredient | null> {
   const ingredients = await getIngredients();
   return ingredients.find((ingredient) => ingredient.slug === slug) ?? null;
@@ -291,6 +319,18 @@ export function aboutTitle(about: AboutPage, locale: Locale): string {
 
 export function aboutContent(about: AboutPage, locale: Locale): string {
   return localized({ pl: about.content_pl, en: about.content_en, ru: about.content_ru, uk: about.content_uk }, locale);
+}
+
+export function galleryTitle(item: GalleryItem, locale: Locale): string {
+  return localized({ pl: item.title_pl, en: item.title_en, ru: item.title_ru, uk: item.title_uk }, locale);
+}
+
+export function galleryDescription(item: GalleryItem, locale: Locale): string {
+  return localized({ pl: item.description_pl, en: item.description_en, ru: item.description_ru, uk: item.description_uk }, locale);
+}
+
+export function galleryAlt(item: GalleryItem, locale: Locale): string {
+  return localized({ pl: item.alt_pl, en: item.alt_en, ru: item.alt_ru, uk: item.alt_uk }, locale) || galleryTitle(item, locale) || 'Dima Fomin';
 }
 
 export function articleTitle(article: Article, locale: Locale): string {
