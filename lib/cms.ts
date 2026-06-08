@@ -77,6 +77,81 @@ export type Ingredient = {
   updated_at: string;
 };
 
+export type IngredientNutrition = {
+  calories_per_100g?: number | null;
+  protein_per_100g?: number | null;
+  fat_per_100g?: number | null;
+  carbs_per_100g?: number | null;
+};
+
+export type IngredientReference = Ingredient & {
+  description?: string | null;
+  nutrition?: IngredientNutrition;
+  density_g_per_ml?: number | null;
+  measures?: {
+    grams_per_cup?: number | null;
+    grams_per_tbsp?: number | null;
+    grams_per_tsp?: number | null;
+  };
+  localized_seasons?: string[];
+  allergens?: string[];
+  localized_allergens?: string[];
+  seo_title?: string | null;
+  seo_description?: string | null;
+  seo_h1?: string | null;
+  canonical_url?: string | null;
+  og_image?: string | null;
+};
+
+export type IngredientState = {
+  state: string;
+  name_suffix_en?: string | null;
+  name_suffix_pl?: string | null;
+  name_suffix_ru?: string | null;
+  name_suffix_uk?: string | null;
+  calories_per_100g?: number | null;
+  protein_per_100g?: number | null;
+  fat_per_100g?: number | null;
+  carbs_per_100g?: number | null;
+  fiber_per_100g?: number | null;
+  water_percent?: number | null;
+  shelf_life_hours?: number | null;
+  storage_temp_c?: number | null;
+  texture?: string | null;
+  notes_en?: string | null;
+  notes_pl?: string | null;
+  notes_ru?: string | null;
+  notes_uk?: string | null;
+  data_score?: number | null;
+};
+
+export type RichIngredient = {
+  reference: IngredientReference;
+  states: IngredientState[];
+  catalog?: {
+    product_type?: string | null;
+    unit?: string | null;
+    typical_portion_g?: number | null;
+    edible_yield_percent?: number | null;
+    shelf_life_days?: number | null;
+    macros?: Record<string, number | null> | null;
+    vitamins?: Record<string, number | null> | null;
+    minerals?: Record<string, number | null> | null;
+    diet_flags?: Record<string, boolean | null> | null;
+    food_properties?: Record<string, number | null> | null;
+    culinary?: Record<string, number | string | null> | null;
+    pairings?: Array<{
+      slug: string;
+      name_en?: string | null;
+      name_pl?: string | null;
+      name_ru?: string | null;
+      name_uk?: string | null;
+      pair_score?: number | null;
+      image_url?: string | null;
+    }>;
+  } | null;
+};
+
 export async function getArticles(): Promise<Article[]> {
   try {
     const response = await fetch(`${API_URL}/public/articles?limit=100`, {
@@ -141,6 +216,29 @@ export async function getIngredient(slug: string): Promise<Ingredient | null> {
   return ingredients.find((ingredient) => ingredient.slug === slug) ?? null;
 }
 
+export async function getRichIngredient(slug: string, locale: Locale): Promise<RichIngredient | null> {
+  try {
+    const lang = encodeURIComponent(locale);
+    const safeSlug = encodeURIComponent(slug);
+    const [referenceResponse, statesResponse, catalogResponse, nutritionResponse] = await Promise.all([
+      fetch(`${API_URL}/public/ingredients/${safeSlug}?lang=${lang}`, { next: { revalidate: 300 } }),
+      fetch(`${API_URL}/public/ingredients/${safeSlug}/states?lang=${lang}`, { next: { revalidate: 300 } }),
+      fetch(`${API_URL}/public/catalog/ingredients/${safeSlug}`, { next: { revalidate: 300 } }),
+      fetch(`${API_URL}/public/nutrition/${safeSlug}?lang=${lang}`, { next: { revalidate: 300 } }),
+    ]);
+
+    if (!referenceResponse.ok) return null;
+    const reference = await referenceResponse.json() as IngredientReference;
+    const statesPayload = statesResponse.ok ? await statesResponse.json() as { states?: IngredientState[] } : {};
+    const catalog = catalogResponse.ok ? await catalogResponse.json() as RichIngredient['catalog'] : null;
+    const nutrition = nutritionResponse.ok ? await nutritionResponse.json() as { pairings?: NonNullable<RichIngredient['catalog']>['pairings'] } : {};
+    if (catalog && nutrition.pairings) catalog.pairings = nutrition.pairings;
+    return { reference, states: statesPayload.states ?? [], catalog };
+  } catch {
+    return null;
+  }
+}
+
 function localized(values: Partial<Record<Locale, string | null | undefined>>, locale: Locale): string {
   return values[locale] || values.pl || values.en || values.ru || values.uk || '';
 }
@@ -155,6 +253,14 @@ export function ingredientDescription(ingredient: Ingredient, locale: Locale): s
 
 export function ingredientCategory(ingredient: Ingredient, locale: Locale): string {
   return localized({ pl: ingredient.category_name_pl, en: ingredient.category_name_en, ru: ingredient.category_name_ru, uk: ingredient.category_name_uk }, locale);
+}
+
+export function localizedName(row: { name_pl?: string | null; name_en?: string | null; name_ru?: string | null; name_uk?: string | null }, locale: Locale): string {
+  return localized({ pl: row.name_pl, en: row.name_en, ru: row.name_ru, uk: row.name_uk }, locale);
+}
+
+export function localizedText(row: { notes_pl?: string | null; notes_en?: string | null; notes_ru?: string | null; notes_uk?: string | null }, locale: Locale): string {
+  return localized({ pl: row.notes_pl, en: row.notes_en, ru: row.notes_ru, uk: row.notes_uk }, locale);
 }
 
 export function articleTitle(article: Article, locale: Locale): string {

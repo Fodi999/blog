@@ -352,11 +352,41 @@ main { min-height: 70vh; }
   object-position: center;
   background: var(--white);
 }
-.nutrition-grid { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 2px solid var(--black); border-bottom: 2px solid var(--black); }
-.nutrition-grid div { display: flex; flex-direction: column; gap: 10px; padding: 32px; border-right: 1px solid var(--line); }
-.nutrition-grid div:last-child { border: 0; }
-.nutrition-grid span, .nutrition-grid small { font-size: 11px; font-weight: 800; text-transform: uppercase; }
-.nutrition-grid strong { font-family: var(--font-display); font-size: 44px; }
+.nutrition-grid, .ingredient-facts { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 2px solid var(--black); border-bottom: 2px solid var(--black); }
+.nutrition-grid div, .ingredient-facts div { display: flex; flex-direction: column; gap: 10px; padding: 32px; border-right: 1px solid var(--line); }
+.nutrition-grid div:last-child, .ingredient-facts div:last-child { border: 0; }
+.nutrition-grid span, .nutrition-grid small, .ingredient-facts span, .ingredient-facts small { font-size: 11px; font-weight: 800; text-transform: uppercase; }
+.nutrition-grid strong, .ingredient-facts strong { font-family: var(--font-display); font-size: 44px; }
+.ingredient-facts div:nth-child(4n) { border-right: 0; }
+.ingredient-section { margin-top: 90px; }
+.ingredient-section > .eyebrow { margin-bottom: 25px; }
+.data-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-top: 1px solid var(--line);
+}
+.data-grid div {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 8px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--line);
+}
+.data-grid div:not(:nth-child(4n)) { padding-right: 24px; }
+.data-grid span { color: var(--muted); text-transform: capitalize; }
+.data-grid small { color: var(--muted); }
+.ingredient-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.ingredient-tags span { padding: 10px 14px; border: 1px solid var(--line); font-size: 12px; font-weight: 800; text-transform: uppercase; }
+.state-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.state-card { padding: 24px; border: 1px solid var(--line); }
+.state-card h3 { margin: 0 0 14px; font-family: var(--font-display); font-size: 24px; text-transform: uppercase; }
+.state-card p { min-height: 72px; color: var(--muted); line-height: 1.55; }
+.state-card div { display: flex; flex-wrap: wrap; gap: 8px; font-size: 11px; font-weight: 800; text-transform: uppercase; }
+.pairing-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.pairing-card { display: grid; gap: 10px; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+.pairing-card img { aspect-ratio: 4 / 3; padding: 16px; border: 1px solid var(--line); object-fit: contain; }
+.pairing-card strong { font-family: var(--font-display); font-size: 19px; text-transform: uppercase; }
+.pairing-card span { color: var(--muted); font-size: 12px; font-weight: 800; }
 .ingredient-note { margin-top: 80px; }
 .ingredient-note h2 { font-family: var(--font-display); font-size: clamp(35px, 6vw, 80px); text-transform: uppercase; }
 .statement-page h1 { max-width: 1300px; }
@@ -391,7 +421,8 @@ main { min-height: 70vh; }
   .site-nav__link { font-size: 15px; }
   .hero { min-height: 75vh; }
   .editorial-grid, .shop-grid, .ingredient-grid, .product-page { grid-template-columns: 1fr; }
-  .nutrition-grid { grid-template-columns: repeat(2, 1fr); }
+  .nutrition-grid, .ingredient-facts, .data-grid, .pairing-grid { grid-template-columns: repeat(2, 1fr); }
+  .state-grid { grid-template-columns: 1fr 1fr; }
   .product-page__info { position: static; }
   .section-heading { grid-template-columns: 1fr; }
   .article-row { grid-template-columns: 42px 1fr; }
@@ -405,4 +436,6 @@ main { min-height: 70vh; }
   .hero h1, .page-heading h1, .statement-page h1 { font-size: 48px; }
   .site-footer { flex-direction: column; }
   .site-footer__links { flex-direction: column; gap: 14px; }
+  .nutrition-grid, .ingredient-facts, .data-grid, .pairing-grid, .state-grid { grid-template-columns: 1fr; }
+  .ingredient-facts div, .data-grid div { border-right: 0; }
 }
