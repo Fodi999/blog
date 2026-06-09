@@ -16,8 +16,12 @@ export type Article = {
   content_ru: string;
   content_uk: string;
   image_url?: string | null;
+  author_name?: string | null;
+  author_avatar_url?: string | null;
+  author_avatar_position?: string | null;
   seo_description: string;
-  created_at: string;
+  published_at?: string | number[] | null;
+  created_at: string | number[];
   updated_at: string;
 };
 
