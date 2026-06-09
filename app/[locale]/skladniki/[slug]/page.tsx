@@ -89,6 +89,18 @@ export default async function IngredientPage({ params }: { params: Promise<{ loc
           <div className="state-grid">
             {states.map((state) => (
               <div className="state-card" key={state.state}>
+                {state.image_url && (
+                  <img
+                    className="state-card__image"
+                    src={state.image_url}
+                    alt={localizedName({
+                      name_en: state.name_suffix_en,
+                      name_pl: state.name_suffix_pl,
+                      name_ru: state.name_suffix_ru,
+                      name_uk: state.name_suffix_uk,
+                    }, locale) || state.state}
+                  />
+                )}
                 <h3>{localizedName({
                   name_en: state.name_suffix_en,
                   name_pl: state.name_suffix_pl,

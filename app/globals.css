@@ -796,7 +796,7 @@ main { min-height: 70vh; }
 .ingredient-tags { display: flex; flex-wrap: wrap; gap: 8px; }
 .ingredient-tags span { padding: 10px 14px; border: 1px solid var(--line); font-size: 12px; font-weight: 800; text-transform: uppercase; }
 .state-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
-.state-card { padding: 24px; border: 1px solid var(--line); }
+.state-card { overflow: hidden; padding: 24px; border: 1px solid var(--line); background: rgba(255, 255, 255, .58); }
 .state-card,
 .pairing-card,
 .about-work-card {
@@ -806,6 +806,15 @@ main { min-height: 70vh; }
 .pairing-card:hover,
 .about-work-card:hover {
   transform: translateY(-6px);
+}
+.state-card__image {
+  width: calc(100% + 48px);
+  max-width: none;
+  aspect-ratio: 16 / 10;
+  margin: -24px -24px 22px;
+  object-fit: cover;
+  border-bottom: 1px solid var(--line);
+  background: #f5f1e8;
 }
 .state-card h3 { margin: 0 0 14px; font-family: var(--font-display); font-size: 24px; text-transform: uppercase; }
 .state-card p { min-height: 72px; color: var(--muted); line-height: 1.55; }

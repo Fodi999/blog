@@ -118,6 +118,7 @@ export type IngredientReference = Ingredient & {
 
 export type IngredientState = {
   state: string;
+  image_url?: string | null;
   name_suffix_en?: string | null;
   name_suffix_pl?: string | null;
   name_suffix_ru?: string | null;
