@@ -1,9 +1,11 @@
 import { notFound } from 'next/navigation';
 import { ArticleBody } from '@/components/ArticleBody';
-import { articleContent, articleDescription, articleTitle, getArticle } from '@/lib/cms';
-import { categoryName, isLocale, type Locale } from '@/lib/i18n';
+import { articleContent, articleDescription, articleSeoTitle, articleTitle, getArticle } from '@/lib/cms';
+import { categoryName, isLocale, locales, type Locale } from '@/lib/i18n';
 
 export const revalidate = 300;
+
+const SITE_URL = 'https://dima-fomin.pl';
 
 const articleUi = {
   pl: {
@@ -137,7 +139,33 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const { locale, slug } = await params;
   if (!isLocale(locale)) return {};
   const article = await getArticle(slug);
-  return article ? { title: articleTitle(article, locale), description: articleDescription(article, locale) } : {};
+  if (!article) return {};
+  const path = `/blog/${article.slug}`;
+  return {
+    title: articleSeoTitle(article, locale),
+    description: articleDescription(article, locale),
+    alternates: {
+      canonical: `/${locale}${path}`,
+      languages: {
+        ...Object.fromEntries(locales.map((item) => [item, `${SITE_URL}/${item}${path}`])),
+        'x-default': `${SITE_URL}/pl${path}`
+      }
+    },
+    openGraph: {
+      title: articleSeoTitle(article, locale),
+      description: articleDescription(article, locale),
+      url: `${SITE_URL}/${locale}${path}`,
+      type: 'article',
+      locale,
+      images: article.image_url ? [{ url: article.image_url }] : undefined
+    },
+    twitter: {
+      card: article.image_url ? 'summary_large_image' : 'summary',
+      title: articleSeoTitle(article, locale),
+      description: articleDescription(article, locale),
+      images: article.image_url ? [article.image_url] : undefined
+    }
+  };
 }
 
 export default async function ArticlePage({ params }: { params: Promise<{ locale: string; slug: string }> }) {

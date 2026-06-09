@@ -20,6 +20,15 @@ export type Article = {
   author_avatar_url?: string | null;
   author_avatar_position?: string | null;
   seo_description: string;
+  seo_title?: string | null;
+  seo_title_pl?: string | null;
+  seo_title_en?: string | null;
+  seo_title_ru?: string | null;
+  seo_title_uk?: string | null;
+  seo_description_pl?: string | null;
+  seo_description_en?: string | null;
+  seo_description_ru?: string | null;
+  seo_description_uk?: string | null;
   published_at?: string | number[] | null;
   created_at: string | number[];
   updated_at: string;
@@ -341,11 +350,27 @@ export function articleTitle(article: Article, locale: Locale): string {
   return localized({ pl: article.title_pl, en: article.title_en, ru: article.title_ru, uk: article.title_uk }, locale);
 }
 
+export function articleSeoTitle(article: Article, locale: Locale): string {
+  return localized({
+    pl: article.seo_title_pl,
+    en: article.seo_title_en,
+    ru: article.seo_title_ru,
+    uk: article.seo_title_uk
+  }, locale) || article.seo_title || articleTitle(article, locale);
+}
+
 export function articleContent(article: Article, locale: Locale): string {
   return localized({ pl: article.content_pl, en: article.content_en, ru: article.content_ru, uk: article.content_uk }, locale);
 }
 
 export function articleDescription(article: Article, locale: Locale): string {
+  const localizedSeo = localized({
+    pl: article.seo_description_pl,
+    en: article.seo_description_en,
+    ru: article.seo_description_ru,
+    uk: article.seo_description_uk
+  }, locale);
+  if (localizedSeo) return localizedSeo;
   if (locale === 'en' && article.seo_description) return article.seo_description;
   const content = articleContent(article, locale)
     .replace(/^#{1,6}\s+/gm, '')
