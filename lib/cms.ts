@@ -200,7 +200,7 @@ export type GalleryItem = {
 export async function getArticles(): Promise<Article[]> {
   try {
     const response = await fetch(`${API_URL}/public/articles?limit=100`, {
-      next: { revalidate: 300 },
+      next: { revalidate: 300, tags: ['articles'] },
     });
     if (!response.ok) return [];
     const payload = await response.json() as { data?: Article[] };
@@ -213,7 +213,7 @@ export async function getArticles(): Promise<Article[]> {
 export async function getArticle(slug: string): Promise<Article | null> {
   try {
     const response = await fetch(`${API_URL}/public/articles/${encodeURIComponent(slug)}`, {
-      next: { revalidate: 300 },
+      next: { revalidate: 300, tags: ['articles', `article:${slug}`] },
     });
     return response.ok ? await response.json() as Article : null;
   } catch {
@@ -224,7 +224,7 @@ export async function getArticle(slug: string): Promise<Article | null> {
 export async function getProducts(): Promise<Product[]> {
   try {
     const response = await fetch(`${API_URL}/public/shop-products`, {
-      next: { revalidate: 300 },
+      next: { revalidate: 300, tags: ['shop-products'] },
     });
     return response.ok ? await response.json() as Product[] : [];
   } catch {
@@ -235,7 +235,7 @@ export async function getProducts(): Promise<Product[]> {
 export async function getProduct(slug: string): Promise<Product | null> {
   try {
     const response = await fetch(`${API_URL}/public/shop-products/${encodeURIComponent(slug)}`, {
-      next: { revalidate: 300 },
+      next: { revalidate: 300, tags: ['shop-products', `shop-product:${slug}`] },
     });
     return response.ok ? await response.json() as Product : null;
   } catch {
@@ -246,7 +246,7 @@ export async function getProduct(slug: string): Promise<Product | null> {
 export async function getIngredients(): Promise<Ingredient[]> {
   try {
     const response = await fetch(`${API_URL}/public/ingredients-full`, {
-      next: { revalidate: 300 },
+      next: { revalidate: 300, tags: ['ingredients'] },
     });
     if (!response.ok) return [];
     const payload = await response.json() as { items?: Ingredient[] };
@@ -258,7 +258,7 @@ export async function getIngredients(): Promise<Ingredient[]> {
 
 export async function getAboutPage(): Promise<AboutPage | null> {
   try {
-    const response = await fetch(`${API_URL}/public/about`, { next: { revalidate: 300 } });
+    const response = await fetch(`${API_URL}/public/about`, { next: { revalidate: 300, tags: ['about'] } });
     return response.ok ? await response.json() as AboutPage : null;
   } catch {
     return null;
@@ -267,7 +267,7 @@ export async function getAboutPage(): Promise<AboutPage | null> {
 
 export async function getGallery(): Promise<GalleryItem[]> {
   try {
-    const response = await fetch(`${API_URL}/public/gallery`, { next: { revalidate: 300 } });
+    const response = await fetch(`${API_URL}/public/gallery`, { next: { revalidate: 300, tags: ['gallery'] } });
     return response.ok ? await response.json() as GalleryItem[] : [];
   } catch {
     return [];
@@ -284,10 +284,10 @@ export async function getRichIngredient(slug: string, locale: Locale): Promise<R
     const lang = encodeURIComponent(locale);
     const safeSlug = encodeURIComponent(slug);
     const [referenceResponse, statesResponse, catalogResponse, nutritionResponse] = await Promise.all([
-      fetch(`${API_URL}/public/ingredients/${safeSlug}?lang=${lang}`, { next: { revalidate: 300 } }),
-      fetch(`${API_URL}/public/ingredients/${safeSlug}/states?lang=${lang}`, { next: { revalidate: 300 } }),
-      fetch(`${API_URL}/public/catalog/ingredients/${safeSlug}`, { next: { revalidate: 300 } }),
-      fetch(`${API_URL}/public/nutrition/${safeSlug}?lang=${lang}`, { next: { revalidate: 300 } }),
+      fetch(`${API_URL}/public/ingredients/${safeSlug}?lang=${lang}`, { next: { revalidate: 300, tags: ['ingredients', `ingredient:${slug}`] } }),
+      fetch(`${API_URL}/public/ingredients/${safeSlug}/states?lang=${lang}`, { next: { revalidate: 300, tags: ['ingredients', `ingredient:${slug}`] } }),
+      fetch(`${API_URL}/public/catalog/ingredients/${safeSlug}`, { next: { revalidate: 300, tags: ['ingredients', `ingredient:${slug}`] } }),
+      fetch(`${API_URL}/public/nutrition/${safeSlug}?lang=${lang}`, { next: { revalidate: 300, tags: ['ingredients', `ingredient:${slug}`] } }),
     ]);
 
     if (!referenceResponse.ok) return null;
