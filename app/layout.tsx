@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Script from 'next/script';
 import { Archivo_Black, Inter, Montserrat } from 'next/font/google';
+import { AnalyticsClickTracker } from '@/components/AnalyticsEvents';
 import './globals.css';
 
 const display = Archivo_Black({ subsets: ['latin'], weight: '400', variable: '--font-display' });
@@ -20,6 +21,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="pl">
       <body className={`${display.variable} ${text.variable} ${cyrillicDisplay.variable}`}>
         <main>{children}</main>
+        <AnalyticsClickTracker />
         {gaId && (
           <>
             <Script src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`} strategy="afterInteractive" />

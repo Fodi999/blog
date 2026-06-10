@@ -22,7 +22,7 @@ export default async function ShopPage({ params }: { params: Promise<{ locale: s
         {products.map((product) => {
           const name = productName(product, locale);
           return (
-            <Link href={localPath(locale, `/sklep/${product.slug}`)} className="shop-card" key={product.id}>
+            <Link href={localPath(locale, `/sklep/${product.slug}`)} className="shop-card" key={product.id} data-ga-event="select_item" data-ga-item-id={product.slug} data-ga-item-name={name} data-ga-item-category={categoryName(product.category, locale)}>
               <div className="media media--product">
                 {product.image_urls[0] ? <img src={product.image_urls[0]} alt={name} /> : <span>{categoryName(product.category, locale)}</span>}
               </div>

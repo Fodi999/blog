@@ -11,8 +11,8 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
       <p className="eyebrow">{t.nav.contact}</p>
       <h1>{t.contact.title}</h1>
       <div className="contact-links">
-        <a href="mailto:kontakt@dima-fomin.pl">kontakt@dima-fomin.pl <span>↗</span></a>
-        <a href="https://instagram.com" target="_blank" rel="noreferrer">Instagram <span>↗</span></a>
+        <a href="mailto:kontakt@dima-fomin.pl" data-ga-event="email_click" data-ga-label="contact_email">kontakt@dima-fomin.pl <span>↗</span></a>
+        <a href="https://instagram.com" target="_blank" rel="noreferrer" data-ga-event="social_click" data-ga-label="instagram">Instagram <span>↗</span></a>
       </div>
     </section>
   );

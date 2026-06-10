@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import { ViewItemTracker } from '@/components/AnalyticsEvents';
 import { ArticleBody } from '@/components/ArticleBody';
 import { articleContent, articleDescription, articleSeoTitle, articleTitle, getArticle } from '@/lib/cms';
 import { categoryName, isLocale, locales, type Locale } from '@/lib/i18n';
@@ -188,6 +189,12 @@ export default async function ArticlePage({ params }: { params: Promise<{ locale
 
   return (
     <article className="article">
+      <ViewItemTracker item={{
+        item_id: article.slug,
+        item_name: title,
+        item_category: categoryName(article.category, locale),
+        item_type: 'article'
+      }} />
       <header className="article__heading">
         <p className="eyebrow">{categoryName(article.category, locale)}</p>
         <h1>{title}</h1>
