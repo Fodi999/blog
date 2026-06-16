@@ -211,10 +211,19 @@ export async function getArticles(): Promise<Article[]> {
   }
 }
 
-export async function getArticle(slug: string): Promise<Article | null> {
+function normalizeSlug(slug: string): string {
   try {
-    const response = await fetch(`${API_URL}/public/articles/${encodeURIComponent(slug)}`, {
-      next: { revalidate: 300, tags: ['articles', `article:${slug}`] },
+    return decodeURIComponent(slug);
+  } catch {
+    return slug;
+  }
+}
+
+export async function getArticle(slug: string): Promise<Article | null> {
+  const normalizedSlug = normalizeSlug(slug);
+  try {
+    const response = await fetch(`${API_URL}/public/articles/${encodeURIComponent(normalizedSlug)}`, {
+      next: { revalidate: 300, tags: ['articles', `article:${normalizedSlug}`] },
     });
     return response.ok ? await response.json() as Article : null;
   } catch {
