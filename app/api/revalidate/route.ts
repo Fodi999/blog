@@ -20,14 +20,19 @@ const corsHeaders = {
 
 function cleanSlug(slug?: string | null): string | null {
   const value = String(slug || '').trim();
-  return value && /^[a-z0-9][a-z0-9-]*$/i.test(value) ? value : null;
+  if (!value || value.includes('/') || value.includes('\\') || value.includes('..')) return null;
+  return value;
 }
 
 function addLocalizedPaths(paths: Set<string>, segment: string, slug?: string | null) {
   for (const locale of locales) {
     paths.add(`/${locale}`);
     paths.add(`/${locale}/${segment}`);
-    if (slug) paths.add(`/${locale}/${segment}/${slug}`);
+    if (slug) {
+      paths.add(`/${locale}/${segment}/${slug}`);
+      const encodedSlug = encodeURIComponent(slug);
+      if (encodedSlug !== slug) paths.add(`/${locale}/${segment}/${encodedSlug}`);
+    }
   }
 }
 
