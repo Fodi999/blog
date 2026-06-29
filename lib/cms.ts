@@ -448,6 +448,31 @@ export function productName(product: Product, locale: Locale): string {
   return localized({ pl: product.name_pl, en: product.name_en, ru: product.name_ru, uk: product.name_uk }, locale);
 }
 
+export function productCategory(product: Product): string {
+  const category = String(product.category || '').trim().toLowerCase();
+  const text = [
+    category,
+    product.name_pl,
+    product.name_en,
+    product.name_ru,
+    product.name_uk,
+    product.short_description_pl,
+    product.short_description_en,
+    product.short_description_ru,
+    product.short_description_uk,
+  ].join(' ').toLowerCase();
+
+  if (category && category !== 'delivery-food') return category;
+  if (/(roll|ролл|рол|maki|uramaki|futomaki|hosomaki|california|philadelphia|tokyo roll)/.test(text)) return 'sushi-rolls';
+  if (/(set|сет|zestaw|combo|assorted|ассорти|набор)/.test(text)) return 'sushi-sets';
+  if (/nigiri|нигири/.test(text)) return 'nigiri';
+  if (/gunkan|гункан/.test(text)) return 'gunkan';
+  if (/sashimi|сашими/.test(text)) return 'sashimi';
+  if (/(sauce|соус|sos|wasabi|васаби|ginger|имбир)/.test(text)) return 'sauces';
+  if (/(drink|напит|napój|cola|water|вода|tea|чай|coffee|кофе)/.test(text)) return 'beverages';
+  return category || 'other';
+}
+
 export function productShortDescription(product: Product, locale: Locale): string {
   return localized({ pl: product.short_description_pl, en: product.short_description_en, ru: product.short_description_ru, uk: product.short_description_uk }, locale);
 }
