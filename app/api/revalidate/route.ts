@@ -2,7 +2,7 @@ import { revalidatePath, revalidateTag } from 'next/cache';
 import { NextResponse } from 'next/server';
 import { locales } from '@/lib/i18n';
 
-type RevalidateKind = 'article' | 'ingredient' | 'shop' | 'about' | 'gallery' | 'all';
+type RevalidateKind = 'article' | 'ingredient' | 'shop' | 'about' | 'gallery' | 'experience' | 'expertise' | 'all';
 
 type RevalidatePayload = {
   secret?: string;
@@ -54,7 +54,7 @@ function defaultPaths(type?: RevalidateKind, slug?: string | null): string[] {
   if (type === 'article') addLocalizedPaths(paths, 'blog', safeSlug);
   if (type === 'ingredient') addLocalizedPaths(paths, 'skladniki', safeSlug);
   if (type === 'shop') addLocalizedPaths(paths, 'sklep', safeSlug);
-  if (type === 'about' || type === 'gallery') {
+  if (type === 'about' || type === 'gallery' || type === 'experience' || type === 'expertise') {
     for (const locale of locales) {
       paths.add(`/${locale}`);
       paths.add(`/${locale}/o-mnie`);
@@ -76,6 +76,8 @@ function defaultTags(type?: RevalidateKind, slug?: string | null): string[] {
   if (type === 'shop' && safeSlug) tags.add(`shop-product:${safeSlug}`);
   if (type === 'all' || type === 'about') tags.add('about');
   if (type === 'all' || type === 'gallery') tags.add('gallery');
+  if (type === 'all' || type === 'experience') tags.add('experience');
+  if (type === 'all' || type === 'expertise') tags.add('expertise');
 
   return [...tags];
 }

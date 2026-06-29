@@ -183,6 +183,8 @@ export type GalleryItem = {
   id: string;
   image_url: string;
   slug: string;
+  category_slug?: string | null;
+  status?: string | null;
   order_index: number;
   title_en: string;
   title_pl: string;
@@ -196,6 +198,30 @@ export type GalleryItem = {
   alt_pl: string;
   alt_ru: string;
   alt_uk: string;
+};
+
+export type ExpertiseItem = {
+  id: string;
+  icon: string;
+  order_index: number;
+  title_en: string;
+  title_pl: string;
+  title_ru: string;
+  title_uk: string;
+};
+
+export type ExperienceItem = {
+  id: string;
+  restaurant: string;
+  country: string;
+  position: string;
+  start_year?: number | null;
+  end_year?: number | null;
+  order_index: number;
+  description_en: string;
+  description_pl: string;
+  description_ru: string;
+  description_uk: string;
 };
 
 export async function getArticles(): Promise<Article[]> {
@@ -275,10 +301,29 @@ export async function getAboutPage(): Promise<AboutPage | null> {
   }
 }
 
-export async function getGallery(): Promise<GalleryItem[]> {
+export async function getGallery(category = 'kitchen'): Promise<GalleryItem[]> {
   try {
-    const response = await fetch(`${API_URL}/public/gallery`, { next: { revalidate: 300, tags: ['gallery'] } });
+    const query = category ? `?category=${encodeURIComponent(category)}` : '';
+    const response = await fetch(`${API_URL}/public/gallery${query}`, { next: { revalidate: 300, tags: ['gallery'] } });
     return response.ok ? await response.json() as GalleryItem[] : [];
+  } catch {
+    return [];
+  }
+}
+
+export async function getExpertise(): Promise<ExpertiseItem[]> {
+  try {
+    const response = await fetch(`${API_URL}/public/expertise`, { next: { revalidate: 300, tags: ['expertise'] } });
+    return response.ok ? await response.json() as ExpertiseItem[] : [];
+  } catch {
+    return [];
+  }
+}
+
+export async function getExperience(): Promise<ExperienceItem[]> {
+  try {
+    const response = await fetch(`${API_URL}/public/experience`, { next: { revalidate: 300, tags: ['experience'] } });
+    return response.ok ? await response.json() as ExperienceItem[] : [];
   } catch {
     return [];
   }
@@ -354,6 +399,14 @@ export function galleryDescription(item: GalleryItem, locale: Locale): string {
 
 export function galleryAlt(item: GalleryItem, locale: Locale): string {
   return localized({ pl: item.alt_pl, en: item.alt_en, ru: item.alt_ru, uk: item.alt_uk }, locale) || galleryTitle(item, locale) || 'Dima Fomin';
+}
+
+export function expertiseTitle(item: ExpertiseItem, locale: Locale): string {
+  return localized({ pl: item.title_pl, en: item.title_en, ru: item.title_ru, uk: item.title_uk }, locale);
+}
+
+export function experienceDescription(item: ExperienceItem, locale: Locale): string {
+  return localized({ pl: item.description_pl, en: item.description_en, ru: item.description_ru, uk: item.description_uk }, locale);
 }
 
 export function articleTitle(article: Article, locale: Locale): string {
