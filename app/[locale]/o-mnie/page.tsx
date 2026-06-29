@@ -39,7 +39,7 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
         <section className="about-expertise-section" aria-label="Expertise">
           {expertise.map((item) => (
             <article key={item.id}>
-              <span>{item.icon}</span>
+              {/^https?:\/\//i.test(item.icon) ? <img src={item.icon} alt="" /> : <span>{item.icon}</span>}
               <strong>{expertiseTitle(item, locale)}</strong>
             </article>
           ))}

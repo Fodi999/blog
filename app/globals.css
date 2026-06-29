@@ -850,6 +850,13 @@ main { min-height: 70vh; }
   font-size: 28px;
   line-height: 1;
 }
+.about-expertise-section img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  margin-bottom: 18px;
+  border: 1px solid var(--line);
+  object-fit: cover;
+}
 .about-expertise-section strong {
   display: block;
   font-family: var(--font-display), Arial Black, sans-serif;
