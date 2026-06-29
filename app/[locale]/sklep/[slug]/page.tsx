@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { ViewItemTracker } from '@/components/AnalyticsEvents';
+import { ProductPhotoGallery } from '@/components/ProductPhotoGallery';
 import { getProduct, productCategory, productDescription, productName, productPrice, productSeoDescription, productSeoTitle, productShortDescription } from '@/lib/cms';
 import { categoryName, getCopy, isLocale } from '@/lib/i18n';
 
@@ -31,9 +32,7 @@ export default async function ProductPage({ params }: { params: Promise<{ locale
         currency: product.currency,
         value: product.price_cents ? product.price_cents / 100 : undefined
       }} />
-      <div className="product-page__gallery">
-        {product.image_urls.length ? product.image_urls.map((url) => <img src={url} alt={name} key={url} />) : <div className="media"><span>{categoryName(category, locale)}</span></div>}
-      </div>
+      <ProductPhotoGallery images={product.image_urls} name={name} fallbackLabel={categoryName(category, locale)} />
       <div className="product-page__info">
         <p className="eyebrow">{categoryName(category, locale)}</p>
         <h1>{name}</h1>
