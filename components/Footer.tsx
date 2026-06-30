@@ -15,7 +15,7 @@ export function Footer({ locale }: { locale: Locale }) {
         <Link href={localPath(locale, '/sklep')}>{t.nav.shop}</Link>
         <Link href={localPath(locale, '/skladniki')}>{t.nav.ingredients}</Link>
         <Link href={localPath(locale, '/kontakt')}>{t.nav.contact}</Link>
-        <CookieSettingsLink />
+        <CookieSettingsLink locale={locale} />
       </div>
     </footer>
   );

@@ -16,6 +16,8 @@ type StoredConsent = {
   categories: ConsentCategories;
 };
 
+type ConsentLocale = 'pl' | 'en' | 'ru' | 'uk';
+
 const CONSENT_KEY = 'fominChefCookieConsent';
 const CONSENT_VERSION = '2026-06-30-v1';
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
@@ -26,6 +28,114 @@ const defaultCategories: ConsentCategories = {
   marketing: false,
   functional: false,
 };
+
+const cookieCopy: Record<ConsentLocale, {
+  title: string;
+  body: string;
+  privacy: string;
+  acceptAll: string;
+  rejectOptional: string;
+  settings: string;
+  settingsTitle: string;
+  closeSettings: string;
+  saveSettings: string;
+  necessaryTitle: string;
+  necessaryDescription: string;
+  alwaysActive: string;
+  analyticsTitle: string;
+  analyticsDescription: string;
+  marketingTitle: string;
+  marketingDescription: string;
+  functionalTitle: string;
+  functionalDescription: string;
+}> = {
+  pl: {
+    title: 'Cookies',
+    body: 'Używamy plików cookies, aby zapewnić prawidłowe działanie strony, analizować ruch oraz ulepszać treści. Możesz zaakceptować wszystkie pliki cookies, odrzucić opcjonalne lub dostosować ustawienia.',
+    privacy: 'Polityka prywatności',
+    acceptAll: 'AKCEPTUJ WSZYSTKIE',
+    rejectOptional: 'ODRZUĆ OPCJONALNE',
+    settings: 'USTAWIENIA',
+    settingsTitle: 'Ustawienia cookies',
+    closeSettings: 'Zamknij ustawienia cookies',
+    saveSettings: 'ZAPISZ USTAWIENIA',
+    necessaryTitle: 'Niezbędne cookies',
+    necessaryDescription: 'Te pliki są wymagane do prawidłowego działania strony.',
+    alwaysActive: 'Zawsze aktywne',
+    analyticsTitle: 'Analityczne cookies',
+    analyticsDescription: 'Pomagają nam zrozumieć, jak użytkownicy korzystają ze strony.',
+    marketingTitle: 'Marketingowe cookies',
+    marketingDescription: 'Służą do personalizacji treści i działań reklamowych.',
+    functionalTitle: 'Funkcjonalne cookies',
+    functionalDescription: 'Zapamiętują wybrane ustawienia, np. język strony.',
+  },
+  en: {
+    title: 'Cookies',
+    body: 'We use cookies to keep the website working properly, analyze traffic and improve content. You can accept all cookies, reject optional cookies or adjust your settings.',
+    privacy: 'Privacy policy',
+    acceptAll: 'ACCEPT ALL',
+    rejectOptional: 'REJECT OPTIONAL',
+    settings: 'SETTINGS',
+    settingsTitle: 'Cookie settings',
+    closeSettings: 'Close cookie settings',
+    saveSettings: 'SAVE SETTINGS',
+    necessaryTitle: 'Necessary cookies',
+    necessaryDescription: 'These files are required for the website to work properly.',
+    alwaysActive: 'Always active',
+    analyticsTitle: 'Analytics cookies',
+    analyticsDescription: 'They help us understand how visitors use the website.',
+    marketingTitle: 'Marketing cookies',
+    marketingDescription: 'They are used to personalize content and advertising activities.',
+    functionalTitle: 'Functional cookies',
+    functionalDescription: 'They remember selected settings, for example the website language.',
+  },
+  ru: {
+    title: 'Cookies',
+    body: 'Мы используем cookies, чтобы сайт работал корректно, анализировать трафик и улучшать материалы. Вы можете принять все cookies, отклонить необязательные или настроить параметры.',
+    privacy: 'Политика конфиденциальности',
+    acceptAll: 'ПРИНЯТЬ ВСЕ',
+    rejectOptional: 'ОТКЛОНИТЬ НЕОБЯЗАТЕЛЬНЫЕ',
+    settings: 'НАСТРОЙКИ',
+    settingsTitle: 'Настройки cookies',
+    closeSettings: 'Закрыть настройки cookies',
+    saveSettings: 'СОХРАНИТЬ НАСТРОЙКИ',
+    necessaryTitle: 'Необходимые cookies',
+    necessaryDescription: 'Эти файлы нужны для корректной работы сайта.',
+    alwaysActive: 'Всегда активны',
+    analyticsTitle: 'Аналитические cookies',
+    analyticsDescription: 'Помогают понять, как пользователи используют сайт.',
+    marketingTitle: 'Маркетинговые cookies',
+    marketingDescription: 'Используются для персонализации контента и рекламных действий.',
+    functionalTitle: 'Функциональные cookies',
+    functionalDescription: 'Запоминают выбранные настройки, например язык сайта.',
+  },
+  uk: {
+    title: 'Cookies',
+    body: 'Ми використовуємо cookies, щоб сайт працював коректно, аналізувати трафік і покращувати матеріали. Ви можете прийняти всі cookies, відхилити необов’язкові або налаштувати параметри.',
+    privacy: 'Політика конфіденційності',
+    acceptAll: 'ПРИЙНЯТИ ВСІ',
+    rejectOptional: 'ВІДХИЛИТИ НЕОБОВ’ЯЗКОВІ',
+    settings: 'НАЛАШТУВАННЯ',
+    settingsTitle: 'Налаштування cookies',
+    closeSettings: 'Закрити налаштування cookies',
+    saveSettings: 'ЗБЕРЕГТИ НАЛАШТУВАННЯ',
+    necessaryTitle: 'Необхідні cookies',
+    necessaryDescription: 'Ці файли потрібні для коректної роботи сайту.',
+    alwaysActive: 'Завжди активні',
+    analyticsTitle: 'Аналітичні cookies',
+    analyticsDescription: 'Допомагають зрозуміти, як користувачі використовують сайт.',
+    marketingTitle: 'Маркетингові cookies',
+    marketingDescription: 'Використовуються для персоналізації контенту та рекламних дій.',
+    functionalTitle: 'Функціональні cookies',
+    functionalDescription: 'Запам’ятовують вибрані налаштування, наприклад мову сайту.',
+  },
+};
+
+function currentLocale(): ConsentLocale {
+  if (typeof window === 'undefined') return 'pl';
+  const segment = window.location.pathname.split('/').filter(Boolean)[0];
+  return segment === 'en' || segment === 'ru' || segment === 'uk' ? segment : 'pl';
+}
 
 function readStoredConsent(): StoredConsent | null {
   try {
@@ -56,8 +166,11 @@ export function CookieConsent() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [categories, setCategories] = useState<ConsentCategories>(defaultCategories);
   const [analyticsAllowed, setAnalyticsAllowed] = useState(false);
+  const [locale, setLocale] = useState<ConsentLocale>('pl');
+  const copy = cookieCopy[locale];
 
   useEffect(() => {
+    setLocale(currentLocale());
     const stored = readStoredConsent();
     if (stored) {
       setCategories(stored.categories);
@@ -129,17 +242,17 @@ export function CookieConsent() {
       ) : null}
 
       {hydrated && bannerOpen ? (
-        <section className="cookie-consent" role="dialog" aria-live="polite" aria-label="Cookies">
+        <section className="cookie-consent" role="dialog" aria-live="polite" aria-label={copy.title}>
           <div className="cookie-consent__icon" aria-hidden="true">◌</div>
           <div className="cookie-consent__copy">
-            <h2>Cookies</h2>
-            <p>Używamy plików cookies, aby zapewnić prawidłowe działanie strony, analizować ruch oraz ulepszać treści. Możesz zaakceptować wszystkie pliki cookies, odrzucić opcjonalne lub dostosować ustawienia.</p>
-            <a href="/pl/polityka-prywatnosci">Polityka prywatności</a>
+            <h2>{copy.title}</h2>
+            <p>{copy.body}</p>
+            <a href={`/${locale}/polityka-prywatnosci`}>{copy.privacy}</a>
           </div>
           <div className="cookie-consent__actions">
-            <button type="button" className="cookie-button cookie-button--dark" onClick={acceptAll}>AKCEPTUJ WSZYSTKIE</button>
-            <button type="button" className="cookie-button cookie-button--light" onClick={rejectOptional}>ODRZUĆ OPCJONALNE</button>
-            <button type="button" className="cookie-button cookie-button--gold" onClick={openSettingsFromBanner}>USTAWIENIA</button>
+            <button type="button" className="cookie-button cookie-button--dark" onClick={acceptAll}>{copy.acceptAll}</button>
+            <button type="button" className="cookie-button cookie-button--light" onClick={rejectOptional}>{copy.rejectOptional}</button>
+            <button type="button" className="cookie-button cookie-button--gold" onClick={openSettingsFromBanner}>{copy.settings}</button>
           </div>
         </section>
       ) : null}
@@ -150,42 +263,42 @@ export function CookieConsent() {
             <div className="cookie-modal__head">
               <div>
                 <span>FOMIN CHEF</span>
-                <h2 id="cookie-settings-title">Ustawienia cookies</h2>
+                <h2 id="cookie-settings-title">{copy.settingsTitle}</h2>
               </div>
-              <button type="button" className="cookie-modal__close" aria-label="Zamknij ustawienia cookies" onClick={closeSettings}>×</button>
+              <button type="button" className="cookie-modal__close" aria-label={copy.closeSettings} onClick={closeSettings}>×</button>
             </div>
 
             <div className="cookie-category">
               <div>
-                <h3>Niezbędne cookies</h3>
-                <p>Te pliki są wymagane do prawidłowego działania strony.</p>
+                <h3>{copy.necessaryTitle}</h3>
+                <p>{copy.necessaryDescription}</p>
               </div>
-              <strong>Zawsze aktywne</strong>
+              <strong>{copy.alwaysActive}</strong>
             </div>
 
             <CookieToggle
-              title="Analityczne cookies"
-              description="Pomagają nam zrozumieć, jak użytkownicy korzystają ze strony."
+              title={copy.analyticsTitle}
+              description={copy.analyticsDescription}
               checked={categories.analytics}
               onChange={() => updateOptional('analytics')}
             />
             <CookieToggle
-              title="Marketingowe cookies"
-              description="Służą do personalizacji treści i działań reklamowych."
+              title={copy.marketingTitle}
+              description={copy.marketingDescription}
               checked={categories.marketing}
               onChange={() => updateOptional('marketing')}
             />
             <CookieToggle
-              title="Funkcjonalne cookies"
-              description="Zapamiętują wybrane ustawienia, np. język strony."
+              title={copy.functionalTitle}
+              description={copy.functionalDescription}
               checked={categories.functional}
               onChange={() => updateOptional('functional')}
             />
 
             <div className="cookie-modal__actions">
-              <button type="button" className="cookie-button cookie-button--dark" onClick={() => save(categories)}>ZAPISZ USTAWIENIA</button>
-              <button type="button" className="cookie-button cookie-button--light" onClick={acceptAll}>AKCEPTUJ WSZYSTKIE</button>
-              <button type="button" className="cookie-button cookie-button--gold" onClick={rejectOptional}>ODRZUĆ OPCJONALNE</button>
+              <button type="button" className="cookie-button cookie-button--dark" onClick={() => save(categories)}>{copy.saveSettings}</button>
+              <button type="button" className="cookie-button cookie-button--light" onClick={acceptAll}>{copy.acceptAll}</button>
+              <button type="button" className="cookie-button cookie-button--gold" onClick={rejectOptional}>{copy.rejectOptional}</button>
             </div>
           </div>
         </div>
