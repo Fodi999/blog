@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { CookieSettingsLink } from '@/components/CookieSettingsLink';
 import { getCopy, localPath, type Locale } from '@/lib/i18n';
 
 export function Footer({ locale }: { locale: Locale }) {
@@ -14,6 +15,7 @@ export function Footer({ locale }: { locale: Locale }) {
         <Link href={localPath(locale, '/sklep')}>{t.nav.shop}</Link>
         <Link href={localPath(locale, '/skladniki')}>{t.nav.ingredients}</Link>
         <Link href={localPath(locale, '/kontakt')}>{t.nav.contact}</Link>
+        <CookieSettingsLink />
       </div>
     </footer>
   );

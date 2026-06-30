@@ -1430,6 +1430,219 @@ main { min-height: 70vh; }
 .site-footer strong { font-family: var(--font-display); font-size: 24px; text-transform: uppercase; }
 .site-footer p { color: #aaa; }
 .site-footer__links { display: flex; gap: 30px; font-weight: 800; text-transform: uppercase; }
+.site-footer__button {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  padding: 0;
+  font: inherit;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.cookie-consent {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 120;
+  width: min(440px, calc(100vw - 32px));
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 18px;
+  border: 1px solid #ded6c8;
+  border-radius: 8px;
+  background: #f8f5ef;
+  color: #111;
+  padding: 22px;
+  box-shadow: 0 24px 70px rgba(17, 17, 17, .18);
+}
+.cookie-consent__icon {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid #b89445;
+  border-radius: 999px;
+  color: #b89445;
+  font-family: var(--font-display), Arial Black, sans-serif;
+}
+.cookie-consent__copy h2,
+.cookie-modal__head h2,
+.cookie-category h3 {
+  margin: 0;
+  font-family: var(--font-display), Arial Black, sans-serif;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+.cookie-consent__copy h2 { font-size: 28px; }
+.cookie-consent__copy p,
+.cookie-category p {
+  margin: 10px 0 0;
+  color: #46413a;
+  font-size: 14px;
+  line-height: 1.55;
+}
+.cookie-consent__copy a {
+  display: inline-block;
+  margin-top: 12px;
+  border-bottom: 1px solid #b89445;
+  color: #111;
+  font-size: 13px;
+  font-weight: 800;
+}
+.cookie-consent__actions {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.cookie-consent__actions .cookie-button:last-child { grid-column: 1 / -1; }
+.cookie-button {
+  min-height: 46px;
+  border-radius: 0;
+  padding: 0 14px;
+  font-family: var(--font-display), Arial Black, sans-serif;
+  font-size: 11px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform .25s var(--ease-premium), box-shadow .25s var(--ease-premium), border-color .25s var(--ease-premium);
+}
+.cookie-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px rgba(17, 17, 17, .12);
+}
+.cookie-button--dark {
+  border: 1px solid #111;
+  background: #111;
+  color: #fff;
+}
+.cookie-button--light {
+  border: 1px solid #111;
+  background: #fffaf0;
+  color: #111;
+}
+.cookie-button--gold {
+  border: 1px solid #b89445;
+  background: #fffaf0;
+  color: #111;
+}
+.cookie-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 130;
+  display: grid;
+  place-items: center;
+  padding: 22px;
+  background: rgba(17, 17, 17, .32);
+}
+.cookie-modal__panel {
+  width: min(720px, 100%);
+  max-height: min(760px, calc(100vh - 44px));
+  overflow: auto;
+  border: 1px solid #ded6c8;
+  border-radius: 8px;
+  background: #f8f5ef;
+  color: #111;
+  padding: clamp(22px, 3vw, 34px);
+  box-shadow: 0 36px 100px rgba(17, 17, 17, .26);
+}
+.cookie-modal__head {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 22px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #ded6c8;
+}
+.cookie-modal__head span {
+  color: #b89445;
+  font-family: var(--font-display), Arial Black, sans-serif;
+  font-size: 11px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+.cookie-modal__head h2 { margin-top: 6px; font-size: clamp(30px, 4vw, 46px); }
+.cookie-modal__close {
+  width: 38px;
+  height: 38px;
+  border: 1px solid #ded6c8;
+  background: #fffaf0;
+  color: #111;
+  font-size: 25px;
+  cursor: pointer;
+}
+.cookie-category {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 20px;
+  align-items: center;
+  padding: 18px 0;
+  border-bottom: 1px solid #ded6c8;
+}
+.cookie-category h3 { font-size: 18px; }
+.cookie-category > strong {
+  color: #b89445;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.cookie-toggle {
+  position: relative;
+  width: 58px;
+  height: 32px;
+  border: 1px solid #111;
+  border-radius: 999px;
+  background: #fffaf0;
+  padding: 3px;
+  cursor: pointer;
+}
+.cookie-toggle span {
+  display: block;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: #111;
+  transition: transform .25s var(--ease-premium), background .25s var(--ease-premium);
+}
+.cookie-toggle.active {
+  border-color: #b89445;
+  background: rgba(184, 148, 69, .18);
+}
+.cookie-toggle.active span {
+  transform: translateX(25px);
+  background: #b89445;
+}
+.cookie-modal__actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 24px;
+}
+.privacy-content {
+  display: grid;
+  gap: 30px;
+  max-width: 860px;
+  margin-top: 60px;
+}
+.privacy-content section {
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+}
+.privacy-content h2 {
+  margin: 0 0 12px;
+  font-family: var(--font-display), Arial Black, sans-serif;
+  font-size: 28px;
+  text-transform: uppercase;
+}
+.privacy-content p {
+  color: var(--muted);
+  font-size: 18px;
+  line-height: 1.7;
+}
+.privacy-content a { border-bottom: 1px solid var(--gold); }
 
 @keyframes premium-rise {
   from {
@@ -1607,6 +1820,29 @@ main { min-height: 70vh; }
   }
   .site-footer { flex-direction: column; }
   .site-footer__links { flex-direction: column; gap: 14px; }
+  .cookie-consent {
+    right: 12px;
+    bottom: 12px;
+    width: calc(100vw - 24px);
+    grid-template-columns: 1fr;
+    gap: 14px;
+    padding: 18px;
+  }
+  .cookie-consent__icon { display: none; }
+  .cookie-consent__actions,
+  .cookie-modal__actions {
+    grid-template-columns: 1fr;
+  }
+  .cookie-consent__actions .cookie-button:last-child { grid-column: auto; }
+  .cookie-modal { align-items: end; padding: 12px; }
+  .cookie-modal__panel {
+    max-height: calc(100vh - 24px);
+    padding: 20px;
+  }
+  .cookie-category {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
   .nutrition-grid, .ingredient-facts, .data-grid, .pairing-grid, .state-grid { grid-template-columns: 1fr; }
   .ingredient-facts div, .data-grid div { border-right: 0; }
 }
