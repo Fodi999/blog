@@ -13,8 +13,12 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   if (!isLocale(locale)) return {};
   const t = getCopy(locale);
   return {
-    title: { default: 'Dima Fomin', template: '%s | Dima Fomin' },
+    title: {
+      default: locale === 'pl' ? 'Dima Fomin | Blog o Trójmieście' : 'Dima Fomin',
+      template: '%s | Dima Fomin'
+    },
     description: t.home.lead,
+    keywords: locale === 'pl' ? ['Trójmiasto', 'Gdańsk', 'Sopot', 'Gdynia', 'blog Trójmiasto'] : undefined,
   };
 }
 

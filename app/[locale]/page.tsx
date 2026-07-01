@@ -1,15 +1,27 @@
 import Link from 'next/link';
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { articleDescription, articleTitle, getArticles, getProducts, productName, productPrice } from '@/lib/cms';
+import { articleDescription, articleTitle, getArticles } from '@/lib/cms';
 import { categoryName, getCopy, isLocale, localPath } from '@/lib/i18n';
 
 export const revalidate = 300;
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  if (!isLocale(locale)) return {};
+  const t = getCopy(locale);
+  return {
+    title: t.home.title,
+    description: t.home.lead,
+    alternates: { canonical: localPath(locale, '') },
+  };
+}
 
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   const t = getCopy(locale);
-  const [articles, products] = await Promise.all([getArticles(), getProducts()]);
+  const articles = await getArticles();
 
   return (
     <>
@@ -19,7 +31,24 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         <p className="hero__lead">{t.home.lead}</p>
         <div className="hero__actions">
           <Link className="button button--dark" href={localPath(locale, '/blog')}>{t.home.readBlog}</Link>
-          <Link className="button button--line" href={localPath(locale, '/sklep')}>{t.home.seeShop}</Link>
+          <Link className="button button--line" href={localPath(locale, '/kontakt')}>{t.nav.contact}</Link>
+        </div>
+      </section>
+
+      <section className="section local-seo-section">
+        <div className="section-heading">
+          <p className="eyebrow">Trójmiasto</p>
+          <h2>{t.home.localTitle}</h2>
+          <p>{t.home.localLead}</p>
+        </div>
+        <div className="local-place-grid">
+          {t.home.localPlaces.map((place) => (
+            <article className="local-place-card" key={place.title}>
+              <span>{place.title.slice(0, 2).toUpperCase()}</span>
+              <h3>{place.title}</h3>
+              <p>{place.text}</p>
+            </article>
+          ))}
         </div>
       </section>
 
@@ -42,24 +71,6 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           ))}
         </div>
       </section>
-
-      {products.length > 0 && (
-        <section className="section section--dark">
-          <div className="section-heading">
-            <p className="eyebrow">{t.home.shop}</p>
-            <h2>{t.home.products}</h2>
-            <Link href={localPath(locale, '/sklep')}>{t.home.allShop} →</Link>
-          </div>
-          <div className="product-strip">
-            {products.slice(0, 3).map((product) => (
-              <Link href={localPath(locale, `/sklep/${product.slug}`)} key={product.id}>
-                <strong>{productName(product, locale)}</strong>
-                <span>{productPrice(product, locale, t.shop.priceOnRequest)}</span>
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
     </>
   );
 }

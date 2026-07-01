@@ -7,8 +7,6 @@ export function Header({ locale }: { locale: Locale }) {
   const links = [
     ['', labels.home],
     ['/blog', labels.blog],
-    ['/sklep', labels.shop],
-    ['/skladniki', labels.ingredients],
     ['/o-mnie', labels.about],
     ['/kontakt', labels.contact],
   ] as const;

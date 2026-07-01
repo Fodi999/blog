@@ -3,6 +3,12 @@ import type { Locale } from '@/lib/i18n';
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL ??
   'https://ministerial-yetta-fodi999-c58d8823.koyeb.app';
+const SITE_KEY = process.env.NEXT_PUBLIC_SITE_KEY ?? 'kitchen';
+
+function publicCmsUrl(path: string): string {
+  const separator = path.includes('?') ? '&' : '?';
+  return `${API_URL}${path}${separator}site=${encodeURIComponent(SITE_KEY)}`;
+}
 
 export type Article = {
   slug: string;
@@ -226,7 +232,7 @@ export type ExperienceItem = {
 
 export async function getArticles(): Promise<Article[]> {
   try {
-    const response = await fetch(`${API_URL}/public/articles?limit=100`, {
+    const response = await fetch(publicCmsUrl('/public/articles?limit=100'), {
       next: { revalidate: 300, tags: ['articles'] },
     });
     if (!response.ok) return [];
@@ -248,7 +254,7 @@ function normalizeSlug(slug: string): string {
 export async function getArticle(slug: string): Promise<Article | null> {
   const normalizedSlug = normalizeSlug(slug);
   try {
-    const response = await fetch(`${API_URL}/public/articles/${encodeURIComponent(normalizedSlug)}`, {
+    const response = await fetch(publicCmsUrl(`/public/articles/${encodeURIComponent(normalizedSlug)}`), {
       next: { revalidate: 300, tags: ['articles', `article:${normalizedSlug}`] },
     });
     return response.ok ? await response.json() as Article : null;
@@ -259,7 +265,7 @@ export async function getArticle(slug: string): Promise<Article | null> {
 
 export async function getProducts(): Promise<Product[]> {
   try {
-    const response = await fetch(`${API_URL}/public/shop-products`, {
+    const response = await fetch(publicCmsUrl('/public/shop-products'), {
       next: { revalidate: 300, tags: ['shop-products'] },
     });
     return response.ok ? await response.json() as Product[] : [];
@@ -270,7 +276,7 @@ export async function getProducts(): Promise<Product[]> {
 
 export async function getProduct(slug: string): Promise<Product | null> {
   try {
-    const response = await fetch(`${API_URL}/public/shop-products/${encodeURIComponent(slug)}`, {
+    const response = await fetch(publicCmsUrl(`/public/shop-products/${encodeURIComponent(slug)}`), {
       next: { revalidate: 300, tags: ['shop-products', `shop-product:${slug}`] },
     });
     return response.ok ? await response.json() as Product : null;

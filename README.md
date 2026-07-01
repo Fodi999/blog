@@ -26,3 +26,15 @@ npm install
 npm run dev
 npm run build
 ```
+
+## Konfiguracja CRM
+
+`blog` jest publicznym frontendem dla site `kitchen` w Admin CRM.
+
+```bash
+cp .env.example .env.local
+```
+
+- `NEXT_PUBLIC_API_URL` — adres Rust API.
+- `NEXT_PUBLIC_SITE_KEY=kitchen` — jawna izolacja danych CMS/sklepu dla bloga.
+- `REVALIDATE_SECRET` — sekret dla `POST /api/revalidate` po publikacji treści z panelu.

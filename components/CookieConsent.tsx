@@ -170,18 +170,20 @@ export function CookieConsent() {
   const copy = cookieCopy[locale];
 
   useEffect(() => {
-    setLocale(currentLocale());
-    const stored = readStoredConsent();
-    if (stored) {
-      setCategories(stored.categories);
-      setAnalyticsAllowed(stored.categories.analytics);
-      setBannerOpen(false);
-    } else {
-      setCategories(defaultCategories);
-      setAnalyticsAllowed(false);
-      setBannerOpen(true);
-    }
-    setHydrated(true);
+    const frame = window.requestAnimationFrame(() => {
+      setLocale(currentLocale());
+      const stored = readStoredConsent();
+      if (stored) {
+        setCategories(stored.categories);
+        setAnalyticsAllowed(stored.categories.analytics);
+        setBannerOpen(false);
+      } else {
+        setCategories(defaultCategories);
+        setAnalyticsAllowed(false);
+        setBannerOpen(true);
+      }
+      setHydrated(true);
+    });
 
     function openSettings() {
       const current = readStoredConsent();
@@ -191,7 +193,10 @@ export function CookieConsent() {
     }
 
     window.addEventListener('fominchef:open-cookie-settings', openSettings);
-    return () => window.removeEventListener('fominchef:open-cookie-settings', openSettings);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener('fominchef:open-cookie-settings', openSettings);
+    };
   }, []);
 
   function save(nextCategories: ConsentCategories) {

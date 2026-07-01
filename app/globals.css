@@ -294,6 +294,64 @@ main { min-height: 70vh; }
 }
 .section-heading > a { font-weight: 800; text-transform: uppercase; }
 
+.local-seo-section {
+  padding-top: 92px;
+  padding-bottom: 92px;
+}
+
+.local-seo-section .section-heading {
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 980px;
+}
+
+.local-seo-section .section-heading p:not(.eyebrow) {
+  max-width: 820px;
+  margin: 0;
+  color: var(--muted);
+  font-size: clamp(17px, 1.45vw, 22px);
+  line-height: 1.45;
+}
+
+.local-place-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.local-place-card {
+  min-height: 260px;
+  padding: clamp(22px, 3vw, 38px);
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, .62);
+}
+
+.local-place-card span {
+  display: inline-grid;
+  width: 46px;
+  height: 46px;
+  place-items: center;
+  margin-bottom: 34px;
+  background: var(--black);
+  color: var(--white);
+  font-family: var(--font-display), Arial Black, sans-serif;
+  font-size: 13px;
+}
+
+.local-place-card h3 {
+  margin: 0 0 14px;
+  font-family: var(--font-display), Arial Black, sans-serif;
+  font-size: clamp(26px, 3vw, 46px);
+  line-height: .95;
+  letter-spacing: -.03em;
+  text-transform: uppercase;
+}
+
+.local-place-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
 .editorial-grid, .shop-grid, .ingredient-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1737,7 +1795,7 @@ main { min-height: 70vh; }
   .site-nav__links { flex-wrap: wrap; justify-content: flex-start; gap: 20px 30px; }
   .site-nav__link { font-size: 15px; }
   .hero { min-height: 75vh; }
-  .editorial-grid, .shop-grid, .ingredient-grid, .product-page { grid-template-columns: 1fr; }
+  .editorial-grid, .shop-grid, .ingredient-grid, .local-place-grid, .product-page { grid-template-columns: 1fr; }
   .shop-heading,
   .shop-featured { grid-template-columns: 1fr; }
   .shop-heading__meta { width: max-content; min-width: 0; }

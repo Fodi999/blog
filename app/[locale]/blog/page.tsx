@@ -1,9 +1,21 @@
 import Link from 'next/link';
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { articleDescription, articleTitle, getArticles } from '@/lib/cms';
 import { categoryName, getCopy, isLocale, localPath } from '@/lib/i18n';
 
 export const revalidate = 300;
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  if (!isLocale(locale)) return {};
+  const t = getCopy(locale);
+  return {
+    title: locale === 'pl' ? 'Blog Trójmiasto: Gdańsk, Sopot, Gdynia' : t.nav.blog,
+    description: t.blog.lead,
+    alternates: { canonical: localPath(locale, '/blog') },
+  };
+}
 
 export default async function BlogPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;

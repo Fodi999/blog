@@ -29,6 +29,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return {
     title: ingredient.reference.seo_title || ingredientName(ingredient.reference, locale),
     description: ingredient.reference.seo_description || ingredientDescription(ingredient.reference, locale),
+    robots: { index: false, follow: true },
   };
 }
 

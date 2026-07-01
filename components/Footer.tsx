@@ -12,8 +12,6 @@ export function Footer({ locale }: { locale: Locale }) {
       </div>
       <div className="site-footer__links">
         <Link href={localPath(locale, '/blog')}>{t.nav.blog}</Link>
-        <Link href={localPath(locale, '/sklep')}>{t.nav.shop}</Link>
-        <Link href={localPath(locale, '/skladniki')}>{t.nav.ingredients}</Link>
         <Link href={localPath(locale, '/kontakt')}>{t.nav.contact}</Link>
         <CookieSettingsLink locale={locale} />
       </div>
