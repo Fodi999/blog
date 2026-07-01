@@ -6,7 +6,10 @@ export function Header({ locale }: { locale: Locale }) {
   const labels = getCopy(locale).nav;
   const links = [
     ['', labels.home],
+    ['/catering-trojmiasto', labels.catering],
     ['/blog', labels.blog],
+    ['/sklep', labels.shop],
+    ['/skladniki', labels.ingredients],
     ['/o-mnie', labels.about],
     ['/kontakt', labels.contact],
   ] as const;

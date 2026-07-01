@@ -11,15 +11,15 @@ const cyrillicDisplay = Montserrat({ subsets: ['latin', 'cyrillic'], weight: '90
 export const metadata: Metadata = {
   metadataBase: new URL('https://dima-fomin.pl'),
   title: { default: 'Dima Fomin | Blog o Trójmieście', template: '%s | Dima Fomin' },
-  description: 'Autorski blog z Gdańska o Trójmieście: Gdańsk, Sopot, Gdynia, lokalne życie, miejsca, jedzenie i praca z produktem.',
-  keywords: ['Trójmiasto', 'Gdańsk', 'Sopot', 'Gdynia', 'blog Gdańsk', 'blog Trójmiasto'],
+  description: 'Autorski blog i oferta cateringu z Gdańska dla Trójmiasta: Gdańsk, Sopot, Gdynia, lokalne życie, miejsca, jedzenie i praca z produktem.',
+  keywords: ['Trójmiasto', 'Gdańsk', 'Sopot', 'Gdynia', 'blog Gdańsk', 'blog Trójmiasto', 'catering Trójmiasto', 'catering Gdańsk'],
   openGraph: {
     type: 'website',
     locale: 'pl_PL',
     url: 'https://dima-fomin.pl',
     siteName: 'Dima Fomin',
-    title: 'Dima Fomin | Blog o Trójmieście',
-    description: 'Lokalny blog z Gdańska o Trójmieście, jedzeniu, miejscach i codziennym życiu nad morzem.'
+    title: 'Dima Fomin | Blog i catering w Trójmieście',
+    description: 'Lokalny blog z Gdańska oraz oferta cateringu dla Gdańska, Sopotu i Gdyni.'
   },
 };
 

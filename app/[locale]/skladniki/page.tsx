@@ -1,14 +1,9 @@
 import Link from 'next/link';
-import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getIngredients, ingredientCategory, ingredientDescription, ingredientName } from '@/lib/cms';
 import { getCopy, isLocale, localPath } from '@/lib/i18n';
 
 export const revalidate = 300;
-
-export const metadata: Metadata = {
-  robots: { index: false, follow: true },
-};
 
 export default async function IngredientsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;

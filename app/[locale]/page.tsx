@@ -30,8 +30,8 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         <h1>{t.home.title}</h1>
         <p className="hero__lead">{t.home.lead}</p>
         <div className="hero__actions">
-          <Link className="button button--dark" href={localPath(locale, '/blog')}>{t.home.readBlog}</Link>
-          <Link className="button button--line" href={localPath(locale, '/kontakt')}>{t.nav.contact}</Link>
+          <Link className="button button--dark" href={localPath(locale, '/catering-trojmiasto')}>{t.nav.catering}</Link>
+          <Link className="button button--line" href={localPath(locale, '/blog')}>{t.home.readBlog}</Link>
         </div>
       </section>
 

@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next';
-import { getArticles } from '@/lib/cms';
+import { cateringSlugs } from '@/lib/catering';
+import { getArticles, getIngredients } from '@/lib/cms';
 import { locales } from '@/lib/i18n';
 
 export const revalidate = 300;
@@ -20,12 +21,16 @@ function languageAlternates(path: string) {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const articles = await getArticles();
+  const [articles, ingredients] = await Promise.all([getArticles(), getIngredients()]);
   return [
-    ...locales.flatMap((locale) => ['', '/blog', '/o-mnie', '/kontakt'].map((path) => ({ url: `${base}/${locale}${path}`, lastModified: new Date(), alternates: languageAlternates(path) }))),
+    ...locales.flatMap((locale) => ['', '/blog', '/sklep', '/skladniki', '/o-mnie', '/kontakt', ...cateringSlugs.map((slug) => `/${slug}`)].map((path) => ({ url: `${base}/${locale}${path}`, lastModified: new Date(), alternates: languageAlternates(path) }))),
     ...locales.flatMap((locale) => articles.map((article) => {
       const path = `/blog/${article.slug}`;
       return { url: `${base}/${locale}${path}`, lastModified: safeDate(article.updated_at), alternates: languageAlternates(path) };
+    })),
+    ...locales.flatMap((locale) => ingredients.map((ingredient) => {
+      const path = `/skladniki/${ingredient.slug}`;
+      return { url: `${base}/${locale}${path}`, lastModified: safeDate(ingredient.updated_at), alternates: languageAlternates(path) };
     })),
   ];
 }
