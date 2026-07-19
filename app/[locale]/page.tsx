@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { articleDescription, articleTitle, getArticles } from '@/lib/cms';
+import { ArticleBody } from '@/components/ArticleBody';
+import { articleContent, articleDescription, articleTitle, getBlogArticles, getSiteArticle } from '@/lib/cms';
 import { categoryName, getCopy, isLocale, localPath } from '@/lib/i18n';
 
 export const revalidate = 300;
@@ -10,9 +11,10 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const { locale } = await params;
   if (!isLocale(locale)) return {};
   const t = getCopy(locale);
+  const page = await getSiteArticle('home');
   return {
-    title: t.home.title,
-    description: t.home.lead,
+    title: page ? articleTitle(page, locale) : t.home.title,
+    description: page ? articleDescription(page, locale) : t.home.lead,
     alternates: { canonical: localPath(locale, '') },
   };
 }
@@ -21,19 +23,28 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   const t = getCopy(locale);
-  const articles = await getArticles();
+  const [page, articles] = await Promise.all([getSiteArticle('home'), getBlogArticles()]);
+  const heroTitle = page ? articleTitle(page, locale) : t.home.title;
+  const heroLead = page ? articleDescription(page, locale) : t.home.lead;
+  const managedContent = page ? articleContent(page, locale) : '';
 
   return (
     <>
       <section className="hero">
         <p className="eyebrow">{t.home.eyebrow}</p>
-        <h1>{t.home.title}</h1>
-        <p className="hero__lead">{t.home.lead}</p>
+        <h1>{heroTitle}</h1>
+        <p className="hero__lead">{heroLead}</p>
         <div className="hero__actions">
           <Link className="button button--dark" href={localPath(locale, '/catering-trojmiasto')}>{t.nav.catering}</Link>
           <Link className="button button--line" href={localPath(locale, '/blog')}>{t.home.readBlog}</Link>
         </div>
       </section>
+
+      {managedContent ? (
+        <section className="section">
+          <ArticleBody content={managedContent} />
+        </section>
+      ) : null}
 
       <section className="section local-seo-section">
         <div className="section-heading">

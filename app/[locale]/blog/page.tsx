@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { articleDescription, articleTitle, getArticles } from '@/lib/cms';
+import { articleDescription, articleTitle, getBlogArticles } from '@/lib/cms';
 import { categoryName, getCopy, isLocale, localPath } from '@/lib/i18n';
 
 export const revalidate = 300;
@@ -21,7 +21,7 @@ export default async function BlogPage({ params }: { params: Promise<{ locale: s
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   const t = getCopy(locale);
-  const articles = await getArticles();
+  const articles = await getBlogArticles();
 
   return (
     <section className="page">

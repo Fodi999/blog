@@ -243,6 +243,18 @@ export async function getArticles(): Promise<Article[]> {
   }
 }
 
+const systemArticleSlugs = new Set(['home', 'kontakt', 'catering-trojmiasto', 'catering-gdansk', 'catering-sopot', 'catering-gdynia']);
+const systemArticleCategories = new Set(['page', 'landing', 'contact', 'home', 'catering']);
+
+export function isSystemArticle(article: Pick<Article, 'slug' | 'category'>): boolean {
+  return systemArticleSlugs.has(article.slug) || systemArticleCategories.has(String(article.category || '').toLowerCase());
+}
+
+export async function getBlogArticles(): Promise<Article[]> {
+  const articles = await getArticles();
+  return articles.filter((article) => !isSystemArticle(article));
+}
+
 function normalizeSlug(slug: string): string {
   try {
     return decodeURIComponent(slug);
@@ -261,6 +273,11 @@ export async function getArticle(slug: string): Promise<Article | null> {
   } catch {
     return null;
   }
+}
+
+export async function getSiteArticle(slug: string): Promise<Article | null> {
+  const article = await getArticle(slug);
+  return article && isSystemArticle(article) ? article : article;
 }
 
 export async function getProducts(): Promise<Product[]> {

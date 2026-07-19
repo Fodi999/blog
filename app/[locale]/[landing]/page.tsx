@@ -1,7 +1,9 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { ArticleBody } from '@/components/ArticleBody';
 import { cateringPages, cateringSlugs, cateringText, isCateringSlug } from '@/lib/catering';
+import { articleContent, articleDescription, articleSeoTitle, articleTitle, getSiteArticle } from '@/lib/cms';
 import { isLocale, localPath, locales, type Locale } from '@/lib/i18n';
 
 export const revalidate = 300;
@@ -16,11 +18,15 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const { locale, landing } = await params;
   if (!isLocale(locale) || !isCateringSlug(landing)) return {};
   const page = cateringPages[landing];
+  const cmsPage = await getSiteArticle(landing);
   const path = `/${landing}`;
+  const title = cmsPage ? articleSeoTitle(cmsPage, locale) : page.title[locale];
+  const description = cmsPage ? articleDescription(cmsPage, locale) : page.metaDescription[locale];
+  const image = cmsPage?.image_url || page.image;
 
   return {
-    title: page.title[locale],
-    description: page.metaDescription[locale],
+    title,
+    description,
     alternates: {
       canonical: localPath(locale, path),
       languages: {
@@ -31,9 +37,9 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     openGraph: {
       type: 'website',
       url: `${baseUrl}/${locale}${path}`,
-      title: page.title[locale],
-      description: page.metaDescription[locale],
-      images: [{ url: page.image, width: 1600, height: 1067, alt: page.title[locale] }],
+      title,
+      description,
+      images: [{ url: image, width: 1600, height: 1067, alt: title }],
     },
   };
 }
@@ -44,8 +50,13 @@ export default async function CateringLandingPage({ params }: { params: Promise<
 
   const activeLocale = locale as Locale;
   const page = cateringPages[landing];
+  const cmsPage = await getSiteArticle(landing);
   const t = cateringText[activeLocale];
   const cityLinks = cateringSlugs.filter((slug) => slug !== landing);
+  const pageTitle = cmsPage ? articleTitle(cmsPage, activeLocale) : page.title[activeLocale];
+  const pageLead = cmsPage ? articleDescription(cmsPage, activeLocale) : page.lead[activeLocale];
+  const pageImage = cmsPage?.image_url || page.image;
+  const managedContent = cmsPage ? articleContent(cmsPage, activeLocale) : '';
   const contactSubject = encodeURIComponent(`Catering ${page.city}`);
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -55,7 +66,7 @@ export default async function CateringLandingPage({ params }: { params: Promise<
         '@id': `${baseUrl}/${activeLocale}/${landing}#foodservice`,
         name: `Dima Fomin - ${page.title.pl}`,
         url: `${baseUrl}/${activeLocale}/${landing}`,
-        image: page.image,
+        image: pageImage,
         telephone: '+48576212418',
         email: 'kontakt@dima-fomin.pl',
         address: {
@@ -89,8 +100,8 @@ export default async function CateringLandingPage({ params }: { params: Promise<
       <section className="catering-hero">
         <div className="catering-hero__copy">
           <p className="eyebrow">{t.eyebrow}</p>
-          <h1>{page.title[activeLocale]}</h1>
-          <p>{page.lead[activeLocale]}</p>
+          <h1>{pageTitle}</h1>
+          <p>{pageLead}</p>
           <div className="hero__actions">
             <a className="button button--dark" href={`mailto:kontakt@dima-fomin.pl?subject=${contactSubject}`} data-ga-event="catering_email_click" data-ga-label={landing}>
               {t.primaryCta}
@@ -99,7 +110,7 @@ export default async function CateringLandingPage({ params }: { params: Promise<
           </div>
         </div>
         <div className="catering-hero__media">
-          <img src={page.image} alt={page.title[activeLocale]} />
+          <img src={pageImage} alt={pageTitle} />
           <div className="catering-hero__proof">
             {t.proof.map((item) => (
               <span key={item}>{item}</span>
@@ -107,6 +118,12 @@ export default async function CateringLandingPage({ params }: { params: Promise<
           </div>
         </div>
       </section>
+
+      {managedContent ? (
+        <section className="section">
+          <ArticleBody content={managedContent} />
+        </section>
+      ) : null}
 
       <section className="section catering-intro">
         <div className="section-heading">

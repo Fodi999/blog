@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { cateringSlugs } from '@/lib/catering';
-import { getArticles, getIngredients } from '@/lib/cms';
+import { getBlogArticles, getIngredients } from '@/lib/cms';
 import { locales } from '@/lib/i18n';
 
 export const revalidate = 300;
@@ -21,7 +21,7 @@ function languageAlternates(path: string) {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [articles, ingredients] = await Promise.all([getArticles(), getIngredients()]);
+  const [articles, ingredients] = await Promise.all([getBlogArticles(), getIngredients()]);
   return [
     ...locales.flatMap((locale) => ['', '/blog', '/sklep', '/skladniki', '/o-mnie', '/kontakt', ...cateringSlugs.map((slug) => `/${slug}`)].map((path) => ({ url: `${base}/${locale}${path}`, lastModified: new Date(), alternates: languageAlternates(path) }))),
     ...locales.flatMap((locale) => articles.map((article) => {
