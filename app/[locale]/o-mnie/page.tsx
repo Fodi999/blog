@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import {
   aboutContent,
@@ -13,6 +14,33 @@ import {
   getGallery
 } from '@/lib/cms';
 import { getCopy, isLocale, localPath } from '@/lib/i18n';
+import { languageAlternates, ogLocale, SITE_URL } from '@/lib/seo';
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  if (!isLocale(locale)) return {};
+  const t = getCopy(locale);
+  const about = await getAboutPage();
+  const path = '/o-mnie';
+  const title = about ? aboutTitle(about, locale) : t.about.title;
+  const description = t.about.p1;
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: localPath(locale, path),
+      languages: languageAlternates(path),
+    },
+    openGraph: {
+      type: 'profile',
+      locale: ogLocale[locale],
+      url: `${SITE_URL}/${locale}${path}`,
+      title,
+      description,
+      images: about?.image_url ? [{ url: about.image_url }] : undefined,
+    },
+  };
+}
 
 export default async function AboutPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;

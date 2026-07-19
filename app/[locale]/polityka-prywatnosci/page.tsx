@@ -1,12 +1,30 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import { notFound } from 'next/navigation';
-import { isLocale, type Locale } from '@/lib/i18n';
+import { isLocale, localPath, type Locale } from '@/lib/i18n';
+import { languageAlternates, ogLocale, SITE_URL } from '@/lib/seo';
 
-export const metadata: Metadata = {
-  title: 'Polityka prywatności',
-  description: 'Informacje o prywatności i plikach cookies na stronie FOMIN CHEF.',
-};
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  if (!isLocale(locale)) return {};
+  const t = privacyCopy[locale];
+  const path = '/polityka-prywatnosci';
+  return {
+    title: t.title,
+    description: t.lead,
+    alternates: {
+      canonical: localPath(locale, path),
+      languages: languageAlternates(path),
+    },
+    openGraph: {
+      type: 'website',
+      locale: ogLocale[locale],
+      url: `${SITE_URL}/${locale}${path}`,
+      title: t.title,
+      description: t.lead,
+    },
+  };
+}
 
 const privacyCopy: Record<Locale, {
   title: string;

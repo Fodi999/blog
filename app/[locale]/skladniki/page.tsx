@@ -1,9 +1,33 @@
 import Link from 'next/link';
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getIngredients, ingredientCategory, ingredientDescription, ingredientName } from '@/lib/cms';
 import { getCopy, isLocale, localPath } from '@/lib/i18n';
+import { languageAlternates, ogLocale, SITE_URL } from '@/lib/seo';
 
 export const revalidate = 300;
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  if (!isLocale(locale)) return {};
+  const t = getCopy(locale);
+  const path = '/skladniki';
+  return {
+    title: t.ingredients.title,
+    description: t.ingredients.lead,
+    alternates: {
+      canonical: localPath(locale, path),
+      languages: languageAlternates(path),
+    },
+    openGraph: {
+      type: 'website',
+      locale: ogLocale[locale],
+      url: `${SITE_URL}/${locale}${path}`,
+      title: t.ingredients.title,
+      description: t.ingredients.lead,
+    },
+  };
+}
 
 export default async function IngredientsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;

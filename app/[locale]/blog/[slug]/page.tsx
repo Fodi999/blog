@@ -2,11 +2,10 @@ import { notFound } from 'next/navigation';
 import { ViewItemTracker } from '@/components/AnalyticsEvents';
 import { ArticleBody } from '@/components/ArticleBody';
 import { articleContent, articleDescription, articleSeoTitle, articleTitle, getArticle } from '@/lib/cms';
-import { categoryName, isLocale, locales, type Locale } from '@/lib/i18n';
+import { categoryName, isLocale, type Locale } from '@/lib/i18n';
+import { articleLocales, languageAlternates, safeDate, SITE_URL } from '@/lib/seo';
 
 export const revalidate = 300;
-
-const SITE_URL = 'https://dima-fomin.pl';
 
 const articleUi = {
   pl: {
@@ -97,19 +96,8 @@ function readingMinutes(content: string) {
   return Math.max(1, Math.round(words / 180));
 }
 
-function dateFromValue(value?: string | number[] | null) {
-  if (!value) return null;
-  if (Array.isArray(value)) {
-    const [year, month = 1, day = 1, hour = 0, minute = 0, second = 0] = value;
-    if (!year) return null;
-    return new Date(Date.UTC(year, month - 1, day, hour, minute, second));
-  }
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? null : date;
-}
-
 function formatArticleDate(value: string | number[] | null | undefined, locale: Locale) {
-  const date = dateFromValue(value);
+  const date = safeDate(value);
   if (!date) return '';
   const localeCode = { pl: 'pl-PL', en: 'en-US', ru: 'ru-RU', uk: 'uk-UA' }[locale];
   return new Intl.DateTimeFormat(localeCode, { day: 'numeric', month: 'long', year: 'numeric' }).format(date);
@@ -147,10 +135,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     description: articleDescription(article, locale),
     alternates: {
       canonical: `/${locale}${path}`,
-      languages: {
-        ...Object.fromEntries(locales.map((item) => [item, `${SITE_URL}/${item}${path}`])),
-        'x-default': `${SITE_URL}/pl${path}`
-      }
+      languages: languageAlternates(path, articleLocales(article))
     },
     openGraph: {
       title: articleSeoTitle(article, locale),
@@ -186,9 +171,27 @@ export default async function ArticlePage({ params }: { params: Promise<{ locale
   const authorInitials = authorName.split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join('').toUpperCase() || 'SK';
   const articleDate = article.published_at || article.created_at;
   const formattedDate = formatArticleDate(articleDate, locale);
+  const publishedDate = safeDate(articleDate);
+  const modifiedDate = safeDate(article.updated_at);
+  const pageUrl = `${SITE_URL}/${locale}/blog/${article.slug}`;
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: title,
+    description: articleDescription(article, locale),
+    url: pageUrl,
+    mainEntityOfPage: { '@type': 'WebPage', '@id': pageUrl },
+    inLanguage: locale,
+    ...(heroImage ? { image: heroImage } : {}),
+    ...(publishedDate ? { datePublished: publishedDate.toISOString() } : {}),
+    ...(modifiedDate ? { dateModified: modifiedDate.toISOString() } : {}),
+    author: { '@type': 'Person', name: authorName },
+    publisher: { '@type': 'Organization', name: 'Dima Fomin', url: SITE_URL },
+  };
 
   return (
     <article className="article">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <ViewItemTracker item={{
         item_id: article.slug,
         item_name: title,

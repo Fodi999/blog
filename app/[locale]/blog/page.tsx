@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { articleDescription, articleTitle, getBlogArticles } from '@/lib/cms';
 import { categoryName, getCopy, isLocale, localPath } from '@/lib/i18n';
+import { languageAlternates, ogLocale, SITE_URL } from '@/lib/seo';
 
 export const revalidate = 300;
 
@@ -10,10 +11,22 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const { locale } = await params;
   if (!isLocale(locale)) return {};
   const t = getCopy(locale);
+  const path = '/blog';
+  const title = locale === 'pl' ? 'Blog Trójmiasto: Gdańsk, Sopot, Gdynia' : t.nav.blog;
   return {
-    title: locale === 'pl' ? 'Blog Trójmiasto: Gdańsk, Sopot, Gdynia' : t.nav.blog,
+    title,
     description: t.blog.lead,
-    alternates: { canonical: localPath(locale, '/blog') },
+    alternates: {
+      canonical: localPath(locale, path),
+      languages: languageAlternates(path),
+    },
+    openGraph: {
+      type: 'website',
+      locale: ogLocale[locale],
+      url: `${SITE_URL}/${locale}${path}`,
+      title,
+      description: t.blog.lead,
+    },
   };
 }
 

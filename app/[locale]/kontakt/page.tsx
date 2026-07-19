@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { ArticleBody } from '@/components/ArticleBody';
 import { articleContent, articleDescription, articleTitle, getSiteArticle } from '@/lib/cms';
 import { getCopy, isLocale, localPath } from '@/lib/i18n';
+import { languageAlternates, ogLocale, SITE_URL } from '@/lib/seo';
 
 export const revalidate = 300;
 
@@ -11,10 +12,23 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   if (!isLocale(locale)) return {};
   const t = getCopy(locale);
   const page = await getSiteArticle('kontakt');
+  const path = '/kontakt';
+  const title = page ? articleTitle(page, locale) : t.contact.title;
+  const description = page ? articleDescription(page, locale) : t.contact.title;
   return {
-    title: page ? articleTitle(page, locale) : t.contact.title,
-    description: page ? articleDescription(page, locale) : t.contact.title,
-    alternates: { canonical: localPath(locale, '/kontakt') },
+    title,
+    description,
+    alternates: {
+      canonical: localPath(locale, path),
+      languages: languageAlternates(path),
+    },
+    openGraph: {
+      type: 'website',
+      locale: ogLocale[locale],
+      url: `${SITE_URL}/${locale}${path}`,
+      title,
+      description,
+    },
   };
 }
 

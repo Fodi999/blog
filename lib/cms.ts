@@ -275,9 +275,11 @@ export async function getArticle(slug: string): Promise<Article | null> {
   }
 }
 
+// Returns the CMS article backing a managed site page (home, kontakt,
+// catering landings). A regular blog post with a colliding slug is ignored.
 export async function getSiteArticle(slug: string): Promise<Article | null> {
   const article = await getArticle(slug);
-  return article && isSystemArticle(article) ? article : article;
+  return article && isSystemArticle(article) ? article : null;
 }
 
 export async function getProducts(): Promise<Product[]> {
