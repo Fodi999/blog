@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import { ViewItemTracker } from '@/components/AnalyticsEvents';
 import { ArticleBody } from '@/components/ArticleBody';
+import { eyebrowClass } from '@/components/site/classes';
 import { articleContent, articleDescription, articleSeoTitle, articleTitle, getArticle } from '@/lib/cms';
 import { categoryName, isLocale, type Locale } from '@/lib/i18n';
 import { articleLocales, languageAlternates, safeDate, SITE_URL } from '@/lib/seo';
@@ -189,8 +190,11 @@ export default async function ArticlePage({ params }: { params: Promise<{ locale
     publisher: { '@type': 'Organization', name: 'Dima Fomin', url: SITE_URL },
   };
 
+  const metaSpanClass = (index: number) =>
+    index >= 2 ? "before:mr-3.5 before:content-['•'] max-[580px]:before:mr-2.5" : undefined;
+
   return (
-    <article className="article">
+    <article className="bg-bone">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <ViewItemTracker item={{
         item_id: article.slug,
@@ -198,63 +202,90 @@ export default async function ArticlePage({ params }: { params: Promise<{ locale
         item_category: categoryName(article.category, locale),
         item_type: 'article'
       }} />
-      <header className="article__heading">
-        <p className="eyebrow">{categoryName(article.category, locale)}</p>
-        <h1>{title}</h1>
-        <p>{articleDescription(article, locale)}</p>
-        <div className="article__meta">
-          <span className="article__avatar">
-            {article.author_avatar_url ? <img src={article.author_avatar_url} alt={authorName} style={avatarPanStyle(article.author_avatar_position)} /> : authorInitials}
-          </span>
-          <span>{authorName}</span>
-          {formattedDate && <span>{formattedDate}</span>}
-          <span>{readingMinutes(content)} {ui.read}</span>
-        </div>
-      </header>
-      {heroImage && <img className="article__hero" src={heroImage} alt={title} />}
-
-      <section className="article__intro-grid" aria-label={ui.whyTitle}>
-        <div>
-          <h2>{ui.whyTitle}</h2>
-          <p>{ui.whyCopy}</p>
-        </div>
-        <blockquote>
-          <span aria-hidden="true">“</span>
-          <p>{ui.quote}</p>
-          <cite>Szef Kuchni</cite>
-        </blockquote>
-      </section>
-
-      {stepImages.length > 0 && (
-        <section className="article__step-grid" aria-label="Visual story">
-          {ui.steps.map(([heading, copy], index) => {
-            const image = stepImages[index];
-            return (
-              <div className="article__step" key={heading}>
-                <div className="article__step-heading">
-                  <strong>{String(index + 1).padStart(2, '0')}</strong>
-                  <h3>{heading}</h3>
-                </div>
-                <p>{copy}</p>
-                {image && <img src={image.src} alt={image.alt || heading} loading="lazy" />}
-              </div>
-            );
-          })}
-        </section>
-      )}
-
-      {featureImage && (
-        <section className="article__rule">
-          <div>
-            <h2>{ui.ruleTitle}</h2>
-            <p>{ui.ruleCopy}</p>
-            <strong>„{ui.ruleQuote}”</strong>
+      <div className="content-frame max-w-[1180px] pt-14 pb-24 md:pt-20 md:pb-32">
+        <header className="animate-reveal max-w-[75ch]">
+          <p className={eyebrowClass}>{categoryName(article.category, locale)}</p>
+          <h1 className="mt-5 font-display text-[clamp(38px,6.2vw,72px)] leading-[1.02] font-medium">{title}</h1>
+          <p className="mt-6 max-w-[62ch] text-xl leading-[1.55] text-on-bone-muted">{articleDescription(article, locale)}</p>
+          <div className="mt-8 flex flex-wrap items-center gap-4 text-[13px] font-bold max-[580px]:gap-3">
+            <span className="relative grid size-12 place-items-center overflow-hidden rounded-full bg-ink font-display text-[13px] tracking-[-0.03em] text-on-ink shadow-[0_0_0_1px_rgba(214,179,106,.3)]">
+              {article.author_avatar_url ? (
+                <img className="absolute object-cover pointer-events-none" src={article.author_avatar_url} alt={authorName} style={avatarPanStyle(article.author_avatar_position)} />
+              ) : (
+                authorInitials
+              )}
+            </span>
+            <span>{authorName}</span>
+            {formattedDate && <span className={metaSpanClass(2)}>{formattedDate}</span>}
+            <span className={metaSpanClass(formattedDate ? 3 : 2)}>{readingMinutes(content)} {ui.read}</span>
           </div>
-          <img src={featureImage} alt={ui.ruleTitle} loading="lazy" />
-        </section>
-      )}
+        </header>
 
-      <ArticleBody content={cleanContent} />
+        {heroImage && (
+          <div className="my-12 aspect-[16/9] animate-reveal overflow-hidden bg-white md:my-16">
+            <img className="size-full object-cover" src={heroImage} alt={title} />
+          </div>
+        )}
+
+        <section className="grid animate-reveal grid-cols-[minmax(220px,0.85fr)_minmax(360px,1.15fr)] items-center gap-[clamp(38px,7vw,110px)] border-b border-hairline-bone pb-12 max-[900px]:grid-cols-1" aria-label={ui.whyTitle}>
+          <div>
+            <h2 className="mb-3 font-display text-[clamp(24px,2.6vw,34px)] leading-[1.1] font-medium">{ui.whyTitle}</h2>
+            <p className="text-[15.5px] leading-[1.6] text-on-bone-muted">{ui.whyCopy}</p>
+          </div>
+          <blockquote className="border-l-2 border-gold pl-8 max-[900px]:border-l-0 max-[900px]:border-t max-[900px]:pt-8 max-[900px]:pl-0">
+            <p className="max-w-[38ch] font-display text-[clamp(24px,2.8vw,34px)] leading-[1.2] font-medium italic">{ui.quote}</p>
+            <cite className="mt-4 block text-[13px] font-bold text-on-bone-muted not-italic uppercase tracking-[.04em]">— Szef Kuchni</cite>
+          </blockquote>
+        </section>
+
+        {stepImages.length > 0 && (
+          <section className="grid animate-reveal grid-cols-3 gap-10 border-b border-hairline-bone py-12 max-[900px]:grid-cols-1" aria-label="Visual story">
+            {ui.steps.map(([heading, copy], index) => {
+              const image = stepImages[index];
+              return (
+                <div
+                  className="group min-w-0"
+                  style={index === 1 ? { animationDelay: '80ms' } : index === 2 ? { animationDelay: '160ms' } : undefined}
+                  key={heading}
+                >
+                  {image && (
+                    <div className="mb-4 aspect-video overflow-hidden bg-bone-2">
+                      <img
+                        className="size-full object-cover transition-[transform,filter] duration-reveal ease-premium group-hover:scale-[1.035] group-hover:[filter:saturate(1.06)_contrast(1.03)]"
+                        src={image.src}
+                        alt={image.alt || heading}
+                        loading="lazy"
+                      />
+                    </div>
+                  )}
+                  <div className="flex items-baseline gap-3">
+                    <span className="font-display text-sm italic text-gold">{String(index + 1).padStart(2, '0')}</span>
+                    <h3 className="font-display text-lg font-medium">{heading}</h3>
+                  </div>
+                  <p className="mt-2 text-sm leading-[1.5] text-on-bone-muted">{copy}</p>
+                </div>
+              );
+            })}
+          </section>
+        )}
+
+        {featureImage && (
+          <section className="my-16 grid animate-reveal grid-cols-[minmax(260px,0.75fr)_minmax(420px,1.25fr)] items-stretch bg-ink text-on-ink max-[900px]:grid-cols-1">
+            <div className="flex flex-col justify-center p-[clamp(38px,6vw,72px)]">
+              <h2 className="mb-3 font-display text-[clamp(24px,2.6vw,34px)] leading-[1.1] font-medium">{ui.ruleTitle}</h2>
+              <p className="text-[15.5px] leading-[1.6] text-on-ink-muted">{ui.ruleCopy}</p>
+              <strong className="mt-8 block max-w-[38ch] border-t border-hairline-ink pt-6 font-display text-2xl leading-[1.2] font-medium italic">
+                „{ui.ruleQuote}”
+              </strong>
+            </div>
+            <div className="min-h-[280px] overflow-hidden max-[900px]:min-h-[320px]">
+              <img className="size-full object-cover" src={featureImage} alt={ui.ruleTitle} loading="lazy" />
+            </div>
+          </section>
+        )}
+
+        <ArticleBody content={cleanContent} />
+      </div>
     </article>
   );
 }

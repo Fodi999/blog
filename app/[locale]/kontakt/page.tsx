@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { ArticleBody } from '@/components/ArticleBody';
+import { eyebrowClass } from '@/components/site/classes';
 import { articleContent, articleDescription, articleTitle, getSiteArticle } from '@/lib/cms';
 import { getCopy, isLocale, localPath } from '@/lib/i18n';
 import { languageAlternates, ogLocale, SITE_URL } from '@/lib/seo';
@@ -67,13 +68,39 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
   const contact = contactConfig(content);
 
   return (
-    <section className="statement-page">
-      <p className="eyebrow">{t.nav.contact}</p>
-      <h1>{title}</h1>
-      {contact.body ? <ArticleBody content={contact.body} /> : null}
-      <div className="contact-links">
-        <a href={`mailto:${contact.email}`} data-ga-event="email_click" data-ga-label="contact_email">{contact.email} <span>↗</span></a>
-        <a href={contact.instagram} target="_blank" rel="noreferrer" data-ga-event="social_click" data-ga-label="instagram">Instagram <span>↗</span></a>
+    <section className="bg-bone">
+      <div className="content-frame min-h-[72vh] py-24 md:py-32">
+        <p className={`${eyebrowClass} animate-reveal`}>{t.nav.contact}</p>
+        <h1 className="animate-reveal mt-5 max-w-[20ch] font-display text-[clamp(40px,6vw,72px)] leading-[1.05] font-medium" style={{ animationDelay: '60ms' }}>
+          {title}
+        </h1>
+        {contact.body ? (
+          <div className="mt-14">
+            <ArticleBody content={contact.body} />
+          </div>
+        ) : null}
+        <div className="mt-16 border-t-2 border-on-bone">
+          <a
+            className="group flex items-center justify-between gap-4 border-b border-hairline-bone py-8 font-display text-[clamp(24px,3.4vw,44px)] leading-none font-medium transition-colors duration-ui ease-premium hover:text-gold"
+            href={`mailto:${contact.email}`}
+            data-ga-event="email_click"
+            data-ga-label="contact_email"
+          >
+            {contact.email}
+            <span className="text-2xl transition-transform duration-ui ease-premium group-hover:translate-x-1 group-hover:-translate-y-1">↗</span>
+          </a>
+          <a
+            className="group flex items-center justify-between gap-4 border-b border-hairline-bone py-8 font-display text-[clamp(24px,3.4vw,44px)] leading-none font-medium transition-colors duration-ui ease-premium hover:text-gold"
+            href={contact.instagram}
+            target="_blank"
+            rel="noreferrer"
+            data-ga-event="social_click"
+            data-ga-label="instagram"
+          >
+            Instagram
+            <span className="text-2xl transition-transform duration-ui ease-premium group-hover:translate-x-1 group-hover:-translate-y-1">↗</span>
+          </a>
+        </div>
       </div>
     </section>
   );

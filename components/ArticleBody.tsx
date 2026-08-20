@@ -4,17 +4,9 @@ type ArticleBlock =
   | { type: 'list'; items: string[] }
   | { type: 'image'; alt: string; src: string };
 
-function blockClass(block: ArticleBlock, index: number) {
-  if (block.type === 'heading') {
-    const text = block.text.toLowerCase();
-    if (text.includes('checklist') || text.includes('conclusion') || text.includes('wnios') || text.includes('podsum') || text.includes('вывод') || text.includes('итог')) {
-      return 'article-body__wide';
-    }
-    return 'article-body__heading';
-  }
-  if (block.type === 'list') return 'article-body__list article-body__wide';
-  if (index === 0) return 'article-body__lead article-body__wide';
-  return undefined;
+function isWideHeading(text: string) {
+  const lower = text.toLowerCase();
+  return lower.includes('checklist') || lower.includes('conclusion') || lower.includes('wnios') || lower.includes('podsum') || lower.includes('вывод') || lower.includes('итог');
 }
 
 function parseListItem(item: string) {
@@ -26,6 +18,12 @@ function parseListItem(item: string) {
     body: rest.join(':').trim(),
   };
 }
+
+const headingWideClass = 'col-span-full min-w-0 animate-reveal mt-16 max-w-[26ch] font-display text-[clamp(40px,5.4vw,72px)] leading-[1.05] font-medium';
+const headingDefaultClass = 'min-w-0 animate-reveal mt-12 mb-1 font-display text-[clamp(26px,3.2vw,40px)] leading-[1.1] font-medium max-[900px]:mt-9';
+const leadClass = 'col-span-full min-w-0 animate-reveal max-w-[62ch] text-[clamp(19px,2vw,24px)] leading-[1.55] text-on-bone';
+const paragraphClass = 'min-w-0 animate-reveal text-[17px] leading-[1.75] text-on-bone';
+const headingFollowupClass = 'min-w-0 animate-reveal mt-1 text-[17px] leading-[1.75] text-on-bone';
 
 export function ArticleBody({ content }: { content: string }) {
   const lines = content.split(/\r?\n/);
@@ -90,29 +88,64 @@ export function ArticleBody({ content }: { content: string }) {
   flushList();
 
   return (
-    <div className="article-body">
+    <div className="mx-auto grid max-w-[1180px] grid-cols-2 gap-x-[clamp(42px,6vw,90px)] gap-y-5 pt-2 max-[900px]:grid-cols-1">
       {blocks.map((block, index) => {
-        const className = blockClass(block, index);
         if (block.type === 'image') {
-          return <img className="article-body__image article-body__wide" src={block.src} alt={block.alt} key={index} loading="lazy" />;
+          return (
+            <img
+              className="col-span-full min-w-0 animate-reveal my-14 mx-auto h-auto w-[min(100%,960px)] border border-hairline-bone bg-white object-contain object-center"
+              src={block.src}
+              alt={block.alt}
+              key={index}
+              loading="lazy"
+            />
+          );
         }
-        if (block.type === 'heading') return <h2 className={className} key={index}>{block.text}</h2>;
+        if (block.type === 'heading') {
+          const wide = isWideHeading(block.text);
+          return (
+            <h2 className={wide ? headingWideClass : headingDefaultClass} key={index}>
+              {block.text}
+            </h2>
+          );
+        }
         if (block.type === 'list') {
           return (
-            <ol className={className} key={index}>
-              {block.items.map((item) => {
+            <ol
+              className="col-span-full min-w-0 animate-reveal mt-6 mb-14 grid grid-cols-2 gap-x-[clamp(42px,6vw,88px)] gap-y-0 border-t-2 border-on-bone border-b border-hairline-bone pt-8 pb-9 max-[900px]:grid-cols-1 max-[580px]:pt-5 max-[580px]:pb-5"
+              key={index}
+            >
+              {block.items.map((item, itemIndex) => {
                 const parsed = parseListItem(item);
                 return (
-                  <li key={item}>
-                    <strong>{parsed.title}</strong>
-                    {parsed.body && <span>{parsed.body}</span>}
+                  <li
+                    key={item}
+                    className="relative grid grid-cols-[auto_1fr] gap-x-[18px] gap-y-3 border-b border-on-bone/10 py-6 font-normal"
+                  >
+                    <span aria-hidden className="font-display text-2xl leading-none text-gold">
+                      {String(itemIndex + 1).padStart(2, '0')}
+                    </span>
+                    <strong className="col-start-2 self-end font-display text-xl leading-[1.05] font-medium">
+                      {parsed.title}
+                    </strong>
+                    {parsed.body && <span className="col-start-2 max-w-[360px] text-base leading-[1.5] text-on-bone-muted">{parsed.body}</span>}
                   </li>
                 );
               })}
             </ol>
           );
         }
-        return <p className={className} key={index}>{block.text.replace(/\*\*/g, '')}</p>;
+        const prevBlock = blocks[index - 1];
+        const isLead = index === 0;
+        const followsHeading = prevBlock?.type === 'heading' && !isWideHeading(prevBlock.text);
+        return (
+          <p
+            className={isLead ? leadClass : followsHeading ? headingFollowupClass : paragraphClass}
+            key={index}
+          >
+            {block.text.replace(/\*\*/g, '')}
+          </p>
+        );
       })}
     </div>
   );

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import { notFound } from 'next/navigation';
+import { eyebrowClass } from '@/components/site/classes';
 import { isLocale, localPath, type Locale } from '@/lib/i18n';
 import { languageAlternates, ogLocale, SITE_URL } from '@/lib/seo';
 
@@ -79,19 +80,21 @@ export default async function PrivacyPolicyPage({ params }: { params: Promise<{ 
   const copy = privacyCopy[locale];
 
   return (
-    <article className="article privacy-page">
-      <header className="article__heading">
-        <p className="eyebrow">FOMIN CHEF</p>
-        <h1>{copy.title}</h1>
-        <p>{copy.lead}</p>
-      </header>
-      <div className="privacy-content">
-        {copy.sections.map((section) => (
-          <section key={section.title}>
-            <h2>{section.title}</h2>
-            <p>{section.body}</p>
-          </section>
-        ))}
+    <article className="bg-bone">
+      <div className="content-frame-reading py-20 md:py-28">
+        <header className="animate-reveal">
+          <p className={eyebrowClass}>FOMIN CHEF</p>
+          <h1 className="mt-5 font-display text-[clamp(34px,4.6vw,52px)] leading-[1.1] font-medium">{copy.title}</h1>
+          <p className="mt-5 text-lg leading-[1.6] text-on-bone-muted">{copy.lead}</p>
+        </header>
+        <div className="mt-14 grid animate-reveal gap-8" style={{ animationDelay: '80ms' }}>
+          {copy.sections.map((section) => (
+            <section key={section.title} className="border-t border-hairline-bone pt-6">
+              <h2 className="mb-2.5 font-display text-2xl font-medium">{section.title}</h2>
+              <p className="text-[17px] leading-[1.7] text-on-bone-muted [&_a]:border-b [&_a]:border-gold [&_a]:text-on-bone">{section.body}</p>
+            </section>
+          ))}
+        </div>
       </div>
     </article>
   );

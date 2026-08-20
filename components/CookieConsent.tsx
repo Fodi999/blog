@@ -2,6 +2,9 @@
 
 import Script from 'next/script';
 import { useEffect, useState } from 'react';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import { Switch } from '@/components/ui/switch';
+import { siteButtonVariants } from '@/components/site/Button';
 
 type ConsentCategories = {
   necessary: true;
@@ -160,6 +163,10 @@ function writeStoredConsent(categories: ConsentCategories) {
   return consent;
 }
 
+const cookieButtonBase = `${siteButtonVariants({ variant: 'light' })} min-h-[46px] px-4 text-[11px]`;
+const cookieButtonOutline = `${siteButtonVariants({ variant: 'outline-light' })} min-h-[46px] px-4 text-[11px]`;
+const cookieQuietLink = `${siteButtonVariants({ variant: 'quiet-light' })} min-h-[46px] text-[11px]`;
+
 export function CookieConsent() {
   const [hydrated, setHydrated] = useState(false);
   const [bannerOpen, setBannerOpen] = useState(false);
@@ -220,7 +227,8 @@ export function CookieConsent() {
     setSettingsOpen(true);
   }
 
-  function closeSettings() {
+  function closeSettings(open: boolean) {
+    if (open) return;
     setSettingsOpen(false);
     if (!readStoredConsent()) setBannerOpen(true);
   }
@@ -247,81 +255,104 @@ export function CookieConsent() {
       ) : null}
 
       {hydrated && bannerOpen ? (
-        <section className="cookie-consent" role="dialog" aria-live="polite" aria-label={copy.title}>
-          <div className="cookie-consent__icon" aria-hidden="true">◌</div>
-          <div className="cookie-consent__copy">
-            <h2>{copy.title}</h2>
-            <p>{copy.body}</p>
-            <a href={`/${locale}/polityka-prywatnosci`}>{copy.privacy}</a>
+        <section
+          className="fixed right-6 bottom-[calc(1.5rem+env(safe-area-inset-bottom))] z-[120] grid w-[min(440px,calc(100vw-32px))] grid-cols-[auto_1fr] gap-[18px] rounded-sm border border-hairline-ink bg-ink-2 p-[22px] text-on-ink shadow-[0_24px_70px_rgba(0,0,0,.35)] max-[580px]:right-3 max-[580px]:bottom-[calc(0.75rem+env(safe-area-inset-bottom))] max-[580px]:w-[calc(100vw-24px)] max-[580px]:grid-cols-1 max-[580px]:gap-3.5 max-[580px]:p-[18px]"
+          role="dialog"
+          aria-live="polite"
+          aria-label={copy.title}
+        >
+          <div
+            aria-hidden
+            className="grid size-[34px] place-items-center rounded-full border border-gold font-display text-gold max-[580px]:hidden"
+          >
+            ◌
           </div>
-          <div className="cookie-consent__actions">
-            <button type="button" className="cookie-button cookie-button--dark" onClick={acceptAll}>{copy.acceptAll}</button>
-            <button type="button" className="cookie-button cookie-button--light" onClick={rejectOptional}>{copy.rejectOptional}</button>
-            <button type="button" className="cookie-button cookie-button--gold" onClick={openSettingsFromBanner}>{copy.settings}</button>
+          <div>
+            <h2 className="m-0 font-display text-2xl font-medium">{copy.title}</h2>
+            <p className="mt-2.5 text-sm leading-[1.55] text-on-ink-muted">{copy.body}</p>
+            <a
+              className="mt-3 inline-block border-b border-gold text-[13px] font-bold text-on-ink transition-colors duration-hover ease-premium hover:text-gold"
+              href={`/${locale}/polityka-prywatnosci`}
+            >
+              {copy.privacy}
+            </a>
+          </div>
+          <div className="col-span-full grid grid-cols-2 gap-2.5 max-[420px]:grid-cols-1">
+            <button type="button" className={cookieButtonBase} onClick={acceptAll}>{copy.acceptAll}</button>
+            <button type="button" className={cookieButtonOutline} onClick={rejectOptional}>{copy.rejectOptional}</button>
+            <button type="button" className={`${cookieQuietLink} col-span-full justify-self-start`} onClick={openSettingsFromBanner}>{copy.settings}</button>
           </div>
         </section>
       ) : null}
 
-      {hydrated && settingsOpen ? (
-        <div className="cookie-modal" role="dialog" aria-modal="true" aria-labelledby="cookie-settings-title">
-          <div className="cookie-modal__panel">
-            <div className="cookie-modal__head">
-              <div>
-                <span>FOMIN CHEF</span>
-                <h2 id="cookie-settings-title">{copy.settingsTitle}</h2>
-              </div>
-              <button type="button" className="cookie-modal__close" aria-label={copy.closeSettings} onClick={closeSettings}>×</button>
+      <Dialog open={hydrated && settingsOpen} onOpenChange={closeSettings}>
+        <DialogContent
+          showCloseButton={false}
+          className="max-h-[min(760px,calc(100dvh-44px))] w-[min(720px,100%)] max-w-[min(720px,100%)] overflow-auto rounded-sm border border-hairline-ink bg-ink-2 p-[clamp(22px,3vw,34px)] text-on-ink shadow-[0_36px_100px_rgba(0,0,0,.5)] max-[580px]:top-auto max-[580px]:bottom-[calc(0.75rem+env(safe-area-inset-bottom))] max-[580px]:left-3 max-[580px]:right-3 max-[580px]:w-auto max-[580px]:max-w-none max-[580px]:translate-x-0 max-[580px]:translate-y-0 max-[580px]:max-h-[calc(100dvh-24px-env(safe-area-inset-bottom))] max-[580px]:p-5"
+        >
+          <div className="mb-[22px] flex items-start justify-between gap-[18px] border-b border-hairline-ink pb-[18px]">
+            <div>
+              <span className="font-sans text-[11px] font-bold tracking-[.16em] text-gold uppercase">FOMIN CHEF</span>
+              <DialogTitle className="mt-1.5 font-display text-[clamp(28px,4vw,40px)] font-medium">
+                {copy.settingsTitle}
+              </DialogTitle>
             </div>
-
-            <div className="cookie-category">
-              <div>
-                <h3>{copy.necessaryTitle}</h3>
-                <p>{copy.necessaryDescription}</p>
-              </div>
-              <strong>{copy.alwaysActive}</strong>
-            </div>
-
-            <CookieToggle
-              title={copy.analyticsTitle}
-              description={copy.analyticsDescription}
-              checked={categories.analytics}
-              onChange={() => updateOptional('analytics')}
-            />
-            <CookieToggle
-              title={copy.marketingTitle}
-              description={copy.marketingDescription}
-              checked={categories.marketing}
-              onChange={() => updateOptional('marketing')}
-            />
-            <CookieToggle
-              title={copy.functionalTitle}
-              description={copy.functionalDescription}
-              checked={categories.functional}
-              onChange={() => updateOptional('functional')}
-            />
-
-            <div className="cookie-modal__actions">
-              <button type="button" className="cookie-button cookie-button--dark" onClick={() => save(categories)}>{copy.saveSettings}</button>
-              <button type="button" className="cookie-button cookie-button--light" onClick={acceptAll}>{copy.acceptAll}</button>
-              <button type="button" className="cookie-button cookie-button--gold" onClick={rejectOptional}>{copy.rejectOptional}</button>
-            </div>
+            <button
+              type="button"
+              className="grid size-11 shrink-0 cursor-pointer place-items-center border border-hairline-ink text-xl text-on-ink-muted transition-colors duration-hover ease-premium hover:border-gold hover:text-gold"
+              aria-label={copy.closeSettings}
+              onClick={() => closeSettings(false)}
+            >
+              ×
+            </button>
           </div>
-        </div>
-      ) : null}
+
+          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-5 border-b border-hairline-ink py-[18px] max-[580px]:grid-cols-1 max-[580px]:gap-3">
+            <div>
+              <h3 className="m-0 font-sans text-base font-bold">{copy.necessaryTitle}</h3>
+              <p className="mt-2.5 text-sm leading-[1.55] text-on-ink-muted">{copy.necessaryDescription}</p>
+            </div>
+            <strong className="whitespace-nowrap text-xs font-bold text-gold uppercase">{copy.alwaysActive}</strong>
+          </div>
+
+          <CookieToggle
+            title={copy.analyticsTitle}
+            description={copy.analyticsDescription}
+            checked={categories.analytics}
+            onChange={() => updateOptional('analytics')}
+          />
+          <CookieToggle
+            title={copy.marketingTitle}
+            description={copy.marketingDescription}
+            checked={categories.marketing}
+            onChange={() => updateOptional('marketing')}
+          />
+          <CookieToggle
+            title={copy.functionalTitle}
+            description={copy.functionalDescription}
+            checked={categories.functional}
+            onChange={() => updateOptional('functional')}
+          />
+
+          <div className="mt-6 grid grid-cols-3 gap-2.5 max-[580px]:grid-cols-1">
+            <button type="button" className={cookieButtonBase} onClick={() => save(categories)}>{copy.saveSettings}</button>
+            <button type="button" className={cookieButtonOutline} onClick={acceptAll}>{copy.acceptAll}</button>
+            <button type="button" className={cookieButtonOutline} onClick={rejectOptional}>{copy.rejectOptional}</button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
 
 function CookieToggle({ title, description, checked, onChange }: { title: string; description: string; checked: boolean; onChange: () => void }) {
   return (
-    <div className="cookie-category">
+    <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-5 border-b border-hairline-ink py-[18px] max-[580px]:grid-cols-1 max-[580px]:gap-3">
       <div>
-        <h3>{title}</h3>
-        <p>{description}</p>
+        <h3 className="m-0 font-sans text-base font-bold">{title}</h3>
+        <p className="mt-2.5 text-sm leading-[1.55] text-on-ink-muted">{description}</p>
       </div>
-      <button type="button" className={`cookie-toggle${checked ? ' active' : ''}`} role="switch" aria-checked={checked} onClick={onChange}>
-        <span />
-      </button>
+      <Switch variant="brand" size="brand" checked={checked} onCheckedChange={onChange} className="cursor-pointer" />
     </div>
   );
 }
