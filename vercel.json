@@ -12,6 +12,7 @@
     }
   ],
   "rewrites": [
+    { "source": "/", "destination": "https://blog.fodi85999.workers.dev/" },
     { "source": "/:path*", "destination": "https://blog.fodi85999.workers.dev/:path*" }
   ]
 }
