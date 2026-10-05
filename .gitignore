@@ -46,3 +46,6 @@ next-env.d.ts
 .wrangler
 .dev.vars*
 cloudflare-env.d.ts
+
+# production files for R2 (npm run files:upload) — not committed
+/r2/

@@ -1,19 +1,18 @@
 import Link from 'next/link';
 import { siteButtonVariants } from '@/components/site/Button';
-import { eyebrowClass } from '@/components/site/classes';
-import { getCopy, localPath, type Locale } from '@/lib/i18n';
+import { getDict, localPath } from '@/lib/i18n';
 
+// not-found receives no params, so it is written in the default locale (Polish).
 export default function NotFound() {
-  const locale: Locale = 'pl';
-  const t = getCopy(locale);
+  const t = getDict('pl');
   return (
-    <section className="content-frame flex min-h-[72vh] flex-col justify-center py-[110px] max-[580px]:pt-[70px] max-[580px]:pb-20">
-      <p className={`${eyebrowClass} animate-reveal`}>404</p>
-      <h1 className="animate-reveal mt-5 mb-9 max-w-[20ch] font-display text-[clamp(44px,7.2vw,96px)] leading-[1.02] font-medium" style={{ animationDelay: '60ms' }}>
-        {t.notFound}
-      </h1>
-      <Link className={`${siteButtonVariants({ variant: 'dark' })} animate-reveal w-max`} href={localPath(locale)} style={{ animationDelay: '120ms' }}>
-        {t.backHome}
+    <section className="content-frame relative flex min-h-[78vh] flex-col justify-center pt-28">
+      <div className="blueprint pointer-events-none absolute inset-0 [mask-image:radial-gradient(ellipse_at_30%_50%,black,transparent_70%)]" aria-hidden="true" />
+      <p className="relative font-mono text-[13px] text-steel">ERROR 404 · NO SUCH FACE</p>
+      <h1 className="relative mt-5 max-w-[16ch] font-display text-[clamp(40px,7vw,88px)] leading-[1.02] font-semibold tracking-[-.03em] text-on-ink">{t.notFound.title}</h1>
+      <p className="relative mt-5 text-[18px] text-on-ink-muted">{t.notFound.text}</p>
+      <Link className={`${siteButtonVariants({ variant: 'primary' })} relative mt-9 w-max`} href={localPath('pl')}>
+        {t.notFound.cta}
       </Link>
     </section>
   );

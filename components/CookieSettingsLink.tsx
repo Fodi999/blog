@@ -4,7 +4,6 @@ const labels = {
   pl: 'Ustawienia cookies',
   en: 'Cookie settings',
   ru: 'Настройки cookies',
-  uk: 'Налаштування cookies',
 } as const;
 
 export function CookieSettingsLink({ locale }: { locale: keyof typeof labels }) {

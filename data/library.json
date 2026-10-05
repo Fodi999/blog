@@ -1,0 +1,177 @@
+[
+  {
+    "slug": "work-table-1200x600",
+    "category": "stainless",
+    "title": {
+      "pl": "Stół produkcyjny 1200×600×850 z półką",
+      "ru": "Стол производственный 1200×600×850 с полкой",
+      "en": "Work table 1200×600×850 with undershelf"
+    },
+    "summary": {
+      "pl": "Blat z blachy 1,2 mm z giętym rantem, nogi z profilu 40×40, półka dolna. Parametryczny szablon: długość, głębokość i wysokość zmieniasz w Monge.",
+      "ru": "Столешница из листа 1,2 мм с загнутым бортом, ножки из профиля 40×40, нижняя полка. Параметрический шаблон: длину, глубину и высоту меняете в Monge.",
+      "en": "A 1.2 mm sheet top with a folded edge, 40×40 tube legs and an undershelf. A parametric template: change length, depth and height in Monge."
+    },
+    "material": {
+      "pl": "Stal nierdzewna AISI 304",
+      "ru": "Нержавеющая сталь AISI 304",
+      "en": "Stainless steel AISI 304"
+    },
+    "dimensions": "1200 × 600 × 850 mm",
+    "version": "0.3",
+    "image": "/library/work-table-1200x600/render.webp",
+    "model": "/library/work-table-1200x600/model.glb",
+    "finish": "steel",
+    "view": [
+      -35,
+      24
+    ],
+    "files": [
+      {
+        "format": "GLB",
+        "href": "/library/work-table-1200x600/model.glb",
+        "access": "free"
+      },
+      {
+        "format": "STEP",
+        "href": "models/work-table-1200x600/work-table-1200x600.step",
+        "access": "pro"
+      }
+    ],
+    "updated": "2026-10-05",
+    "massKg": 20.6,
+    "faces": 288
+  },
+  {
+    "slug": "wheel-9evo-7x17-et43",
+    "category": "precision",
+    "title": {
+      "pl": "Felga 7J×17 ET43 5×100 według rysunku",
+      "ru": "Диск 7J×17 ET43 5×100 по чертежу",
+      "en": "Wheel 7J×17 ET43 5×100 from the drawing"
+    },
+    "summary": {
+      "pl": "Test jądra Monge: felga odlewana zbudowana według rysunku fabrycznego — 20 okien, wklęsły front, gniazda śrub i zaokrąglenia. Bryła bez błędów topologii.",
+      "ru": "Проверка ядра Monge: литой диск по заводскому чертежу — 20 окон, вогнутая лицевая часть, колодцы под болты и скругления. Тело без ошибок топологии.",
+      "en": "A Monge kernel test: a cast wheel built from the factory drawing — 20 windows, a dished face, bolt pockets and fillets. A solid with no topology errors."
+    },
+    "material": {
+      "pl": "Stop aluminium AlSi7Mg",
+      "ru": "Алюминиевый сплав AlSi7Mg",
+      "en": "Aluminium alloy AlSi7Mg"
+    },
+    "dimensions": "Ø471 × 210 mm",
+    "massKg": 10.1,
+    "faces": 562,
+    "version": "0.3",
+    "image": "/library/wheel-9evo-7x17-et43/render.webp",
+    "model": "/library/wheel-9evo-7x17-et43/model.glb",
+    "finish": "satin",
+    "view": [
+      -28,
+      12
+    ],
+    "files": [
+      {
+        "format": "GLB",
+        "href": "/library/wheel-9evo-7x17-et43/model.glb",
+        "access": "free"
+      },
+      {
+        "format": "STEP",
+        "href": "models/wheel-9evo-7x17-et43/wheel-9evo-7x17-et43.step",
+        "access": "pro"
+      }
+    ],
+    "updated": "2026-10-05",
+    "rotate": [
+      90,
+      0,
+      0
+    ]
+  },
+  {
+    "slug": "nut-m12x1-5-closed",
+    "category": "fasteners",
+    "title": {
+      "pl": "Nakrętka zamknięta M12×1,5, klucz 19",
+      "ru": "Гайка закрытая M12×1,5, ключ 19",
+      "en": "Closed wheel nut M12×1.5, 19 mm hex"
+    },
+    "summary": {
+      "pl": "Nakrętka kołpakowa ze stożkiem 60°, gwint M12×1,5. Część zestawu do felgi.",
+      "ru": "Колпачковая гайка с конусом 60°, резьба M12×1,5. Деталь из комплекта к диску.",
+      "en": "A cap nut with a 60° seat and M12×1.5 thread, part of the wheel set."
+    },
+    "material": {
+      "pl": "Stal",
+      "ru": "Сталь",
+      "en": "Steel"
+    },
+    "dimensions": "25 × 30 mm",
+    "faces": 430,
+    "version": "0.3",
+    "image": "/library/nut-m12x1-5-closed/render.webp",
+    "model": "/library/nut-m12x1-5-closed/model.glb",
+    "finish": "steel",
+    "view": [
+      -30,
+      28
+    ],
+    "files": [
+      {
+        "format": "GLB",
+        "href": "/library/nut-m12x1-5-closed/model.glb",
+        "access": "free"
+      },
+      {
+        "format": "STEP",
+        "href": "models/nut-m12x1-5-closed/nut-m12x1-5-closed.step",
+        "access": "pro"
+      }
+    ],
+    "updated": "2026-10-05"
+  },
+  {
+    "slug": "centering-ring-75-57-1",
+    "category": "precision",
+    "title": {
+      "pl": "Pierścień centrujący 75 → 57,1",
+      "ru": "Центрирующее кольцо 75 → 57,1",
+      "en": "Hub-centric ring 75 → 57.1"
+    },
+    "summary": {
+      "pl": "Pierścień dopasowujący otwór centralny felgi Ø75 do piasty Ø57,1.",
+      "ru": "Кольцо переходит с центрального отверстия диска Ø75 на ступицу Ø57,1.",
+      "en": "Adapts a Ø75 wheel centre bore to a Ø57.1 hub."
+    },
+    "material": {
+      "pl": "Tworzywo sztuczne",
+      "ru": "Пластик",
+      "en": "Plastic"
+    },
+    "dimensions": "Ø77 × 10.5 mm",
+    "faces": 6,
+    "version": "0.3",
+    "image": "/library/centering-ring-75-57-1/render.webp",
+    "model": "/library/centering-ring-75-57-1/model.glb",
+    "finish": "source",
+    "view": [
+      -25,
+      40
+    ],
+    "files": [
+      {
+        "format": "GLB",
+        "href": "/library/centering-ring-75-57-1/model.glb",
+        "access": "free"
+      },
+      {
+        "format": "STEP",
+        "href": "models/centering-ring-75-57-1/centering-ring-75-57-1.step",
+        "access": "pro"
+      }
+    ],
+    "updated": "2026-10-05"
+  }
+]

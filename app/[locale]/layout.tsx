@@ -1,30 +1,21 @@
 import type { Metadata, Viewport } from 'next';
-import { Manrope, Playfair_Display } from 'next/font/google';
+import { JetBrains_Mono, Manrope, Unbounded } from 'next/font/google';
 import { notFound } from 'next/navigation';
 import { AnalyticsClickTracker } from '@/components/AnalyticsEvents';
 import { CookieConsent } from '@/components/CookieConsent';
 import { Footer } from '@/components/Footer';
 import { Header } from '@/components/Header';
-import { getCopy, isLocale, locales } from '@/lib/i18n';
+import { RevealObserver } from '@/components/Reveal';
+import { getDict, isLocale, locales } from '@/lib/i18n';
 import { ogLocale, SITE_URL } from '@/lib/seo';
+import { THREE_IMPORT_MAP } from '@/lib/three';
 import '../globals.css';
 
-// Both faces cover Cyrillic natively (verified against Next's font manifest),
-// so pl/en/ru/uk all share one font stack — no per-locale swap needed.
-const display = Playfair_Display({
-  subsets: ['latin', 'cyrillic'],
-  weight: ['500', '600', '900'],
-  style: ['normal', 'italic'],
-  variable: '--font-heading',
-});
-const text = Manrope({
-  subsets: ['latin', 'cyrillic'],
-  weight: ['400', '500', '600', '700', '800'],
-  variable: '--font-body',
-});
+// All three faces cover Latin + Cyrillic, so pl / ru / en share one stack.
+const display = Unbounded({ subsets: ['latin', 'latin-ext', 'cyrillic'], weight: ['400', '500', '600', '700'], variable: '--font-heading' });
+const body = Manrope({ subsets: ['latin', 'latin-ext', 'cyrillic'], weight: ['400', '500', '600', '700'], variable: '--font-body' });
+const code = JetBrains_Mono({ subsets: ['latin', 'latin-ext', 'cyrillic'], weight: ['400', '500'], variable: '--font-code' });
 
-// This layout renders <html>, so the locale segment is the root of the tree.
-// Unknown locales must not reach it — they fall through to the default 404.
 export const dynamicParams = false;
 
 export const viewport: Viewport = {
@@ -32,10 +23,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   viewportFit: 'cover',
   interactiveWidget: 'resizes-content',
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#f1ece1' },
-    { media: '(prefers-color-scheme: dark)', color: '#0c0a08' },
-  ],
+  themeColor: '#07090c',
+  colorScheme: 'dark',
 };
 
 export function generateStaticParams() {
@@ -45,39 +34,36 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   if (!isLocale(locale)) return {};
-  const t = getCopy(locale);
-  const title = locale === 'pl' ? 'Dima Fomin | Blog i catering w Trójmieście' : 'Dima Fomin';
+  const t = getDict(locale);
   return {
     metadataBase: new URL(SITE_URL),
-    title: { default: title, template: '%s | Dima Fomin' },
-    description: t.home.lead,
-    keywords: locale === 'pl' ? ['Trójmiasto', 'Gdańsk', 'Sopot', 'Gdynia', 'blog Trójmiasto', 'catering Trójmiasto', 'catering Gdańsk'] : undefined,
-    openGraph: {
-      type: 'website',
-      locale: ogLocale[locale],
-      url: `${SITE_URL}/${locale}`,
-      siteName: 'Dima Fomin',
-      title,
-      description: t.home.lead,
-    },
+    title: { default: t.meta.title, template: '%s | Monge' },
+    description: t.meta.description,
+    applicationName: 'Monge',
+    openGraph: { type: 'website', siteName: 'Monge', locale: ogLocale[locale], title: t.meta.title, description: t.meta.description, images: [{ url: '/og.png' }] },
+    icons: { icon: '/icon.svg', apple: '/apple-icon.png' },
   };
 }
 
-export default async function LocaleLayout({
-  children,
-  params,
-}: Readonly<{ children: React.ReactNode; params: Promise<{ locale: string }> }>) {
+export default async function LocaleLayout({ children, params }: Readonly<{ children: React.ReactNode; params: Promise<{ locale: string }> }>) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
+  const t = getDict(locale);
 
   return (
-    <html lang={locale} data-scroll-behavior="smooth">
-      <body className={`${display.variable} ${text.variable}`}>
-        <main>
-          <Header locale={locale} />
-          {children}
-          <Footer locale={locale} />
-        </main>
+    <html lang={locale} data-scroll-behavior="smooth" className={`${display.variable} ${body.variable} ${code.variable}`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }} />
+        <script type="importmap" dangerouslySetInnerHTML={{ __html: JSON.stringify(THREE_IMPORT_MAP) }} />
+      </head>
+      <body>
+        <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[200] focus:rounded-full focus:bg-signal focus:px-4 focus:py-2 focus:text-ink">
+          Skip to content
+        </a>
+        <Header locale={locale} nav={t.nav} />
+        <main id="main">{children}</main>
+        <Footer locale={locale} />
+        <RevealObserver />
         <AnalyticsClickTracker />
         <CookieConsent />
       </body>

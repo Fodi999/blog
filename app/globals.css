@@ -2,119 +2,210 @@
 @import "tw-animate-css";
 
 @theme {
-  /* ---- Dark surfaces (primary) — three tiers for depth, never flat #000 ---- */
-  --color-ink: #0c0a08;
-  --color-ink-2: #17130f;
-  --color-ink-3: #201a13;
-  --color-on-ink: #efe9dc;
-  --color-on-ink-muted: #a89e8c;
-  --color-hairline-ink: rgba(239, 233, 220, .12);
-  --color-hairline-ink-strong: rgba(239, 233, 220, .22);
+  /* ---- Surfaces: graphite, three tiers ---- */
+  --color-ink: #07090c;
+  --color-ink-2: #0d1117;
+  --color-ink-3: #151b24;
+  --color-on-ink: #e9eef4;
+  --color-on-ink-muted: #8d99aa;
+  --color-hairline-ink: rgba(233, 238, 244, .10);
+  --color-hairline-ink-strong: rgba(233, 238, 244, .22);
 
-  /* ---- Light surfaces (secondary) — for text-heavy / long-read pages ---- */
-  --color-bone: #f1ece1;
-  --color-bone-2: #e8e1d0;
-  --color-on-bone: #16130f;
-  --color-on-bone-muted: #6b6255;
-  --color-hairline-bone: #ddd5c2;
+  /* ---- Light surfaces (long reads: privacy) ---- */
+  --color-bone: #eef1f4;
+  --color-bone-2: #e1e6ec;
+  --color-on-bone: #0d1117;
+  --color-on-bone-muted: #5b6676;
+  --color-hairline-bone: #d3dae3;
 
-  /* ---- Brand accent — unchanged hexes, used only as hairlines/badges/hover ---- */
-  --color-gold: #d6b36a;
-  --color-copper: #a8653f;
-  --color-cream: #fff8e7;
+  /* ---- Accents: signal lime (action) + steel cyan (information).
+     Token names `gold` / `copper` are kept for shared components. ---- */
+  --color-gold: #c4ff4d;
+  --color-copper: #5cd2ff;
+  --color-signal: #c4ff4d;
+  --color-steel: #5cd2ff;
+  --color-cream: #f6ffe4;
 
-  /* ---- shadcn/Radix semantic tokens — default canvas is bone (most pages are
-     text/data-heavy); dark sections opt in explicitly via bg-ink utilities ---- */
-  --color-background: var(--color-bone);
-  --color-foreground: var(--color-on-bone);
-  --color-primary: var(--color-ink);
-  --color-primary-foreground: var(--color-on-ink);
-  --color-secondary: var(--color-bone-2);
-  --color-secondary-foreground: var(--color-on-bone);
-  --color-muted: var(--color-bone-2);
-  --color-muted-foreground: var(--color-on-bone-muted);
-  --color-accent: var(--color-gold);
-  --color-accent-foreground: var(--color-on-bone);
-  --color-destructive: #a8653f;
+  --color-background: var(--color-ink);
+  --color-foreground: var(--color-on-ink);
+  --color-primary: var(--color-signal);
+  --color-primary-foreground: var(--color-ink);
+  --color-secondary: var(--color-ink-3);
+  --color-secondary-foreground: var(--color-on-ink);
+  --color-muted: var(--color-ink-3);
+  --color-muted-foreground: var(--color-on-ink-muted);
+  --color-accent: var(--color-signal);
+  --color-accent-foreground: var(--color-ink);
+  --color-destructive: #ff6b5b;
   --color-destructive-foreground: #ffffff;
-  --color-border: var(--color-hairline-bone);
-  --color-input: var(--color-hairline-bone);
-  --color-ring: rgba(214, 179, 106, .5);
-  --radius: 0.125rem;
+  --color-border: var(--color-hairline-ink);
+  --color-input: var(--color-hairline-ink-strong);
+  --color-ring: rgba(196, 255, 77, .45);
+  --radius: 0.75rem;
 
-  /* ---- Typography — Playfair Display (editorial display) + Manrope (everything
-     else); both cover Cyrillic natively, so no per-locale font swap is needed ---- */
-  --font-sans: var(--font-body), "Segoe UI", Arial, sans-serif;
-  --font-display: var(--font-heading), "Iowan Old Style", Georgia, serif;
+  --font-sans: var(--font-body), "Segoe UI", system-ui, sans-serif;
+  --font-display: var(--font-heading), var(--font-body), system-ui, sans-serif;
+  --font-mono: var(--font-code), ui-monospace, "SFMono-Regular", monospace;
 
-  /* ---- Motion — quiet, three bands only ---- */
   --ease-premium: cubic-bezier(.16, 1, .3, 1);
   --duration-hover: 220ms;
   --duration-ui: 300ms;
-  --duration-reveal: 650ms;
+  --duration-reveal: 800ms;
   --animate-reveal: reveal var(--duration-reveal) var(--ease-premium) both;
+  --animate-marquee: marquee 38s linear infinite;
+  --animate-scan: scan 6s var(--ease-premium) infinite;
 
-  /* ---- Containers ---- */
-  --container-content: 1440px;
-  --container-reading: 860px;
+  --container-content: 1280px;
+  --container-reading: 780px;
 }
 
 @keyframes reveal {
-  from {
-    opacity: 0;
-    transform: translateY(14px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(18px); filter: blur(6px); }
+  to { opacity: 1; transform: translateY(0); filter: blur(0); }
 }
 
-/* Reusable layout primitive: the "min(content-width, viewport - gutter)" frame used
-   across section/page containers site-wide. */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@keyframes scan {
+  0% { transform: translateY(-100%); opacity: 0; }
+  20% { opacity: .9; }
+  80% { opacity: .9; }
+  100% { transform: translateY(100%); opacity: 0; }
+}
+
 @utility content-frame {
-  width: min(var(--container-content), calc(100% - 10vw));
+  width: min(var(--container-content), calc(100% - 32px));
   margin-inline: auto;
 }
 
-/* Narrower frame for long-form reading (articles, ingredient facts, forms). */
-@utility content-frame-reading {
-  width: min(var(--container-reading), calc(100% - 10vw));
+@utility reading-frame {
+  width: min(var(--container-reading), calc(100% - 32px));
   margin-inline: auto;
 }
 
-/* Base element resets live in Tailwind's `base` layer so utility classes
-   (which live in `utilities`, a later layer) can always override them —
-   an unlayered rule here would silently beat every `text-*`/`bg-*` utility
-   applied to that element, regardless of specificity. */
+/* Engineering grid: the drawing-sheet background behind dark sections. */
+@utility blueprint {
+  background-image:
+    linear-gradient(to right, rgba(92, 210, 255, .07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(92, 210, 255, .07) 1px, transparent 1px),
+    linear-gradient(to right, rgba(92, 210, 255, .035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(92, 210, 255, .035) 1px, transparent 1px);
+  background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px;
+}
+
+@utility glass {
+  background: linear-gradient(180deg, rgba(21, 27, 36, .9), rgba(13, 17, 23, .84));
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+}
+
+@utility text-gradient {
+  background: linear-gradient(100deg, #ffffff 10%, #c4ff4d 55%, #5cd2ff 95%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
 @layer base {
-  @media (prefers-reduced-motion: reduce) {
-    html { scroll-behavior: auto; }
-    *,
-    *::before,
-    *::after {
-      animation-duration: .01ms !important;
-      animation-iteration-count: 1 !important;
-      scroll-behavior: auto !important;
-      transition-duration: .01ms !important;
-    }
+  html {
+    color-scheme: dark;
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: 88px;
   }
 
-  html {
-    scroll-behavior: smooth;
-    overflow-x: hidden;
-    -webkit-text-size-adjust: 100%;
-  }
   body {
     margin: 0;
-    max-width: 100vw;
-    background: var(--color-bone);
-    color: var(--color-on-bone);
+    min-height: 100dvh;
+    background: var(--color-ink);
+    color: var(--color-on-ink);
     font-family: var(--font-sans);
+    font-feature-settings: "ss01", "cv11";
     -webkit-font-smoothing: antialiased;
-    -webkit-tap-highlight-color: transparent;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
   }
-  a { color: inherit; text-decoration: none; }
-  img { display: block; max-width: 100%; }
-  main { min-height: 70vh; }
+
+  ::selection {
+    background: var(--color-signal);
+    color: var(--color-ink);
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  img,
+  canvas {
+    display: block;
+    max-width: 100%;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-signal);
+    outline-offset: 3px;
+  }
+}
+
+/* Elements revealed on scroll: start hidden only once JS has marked the page. */
+.js [data-reveal] {
+  opacity: 0;
+  transform: translateY(18px);
+  filter: blur(6px);
+  transition:
+    opacity var(--duration-reveal) var(--ease-premium),
+    transform var(--duration-reveal) var(--ease-premium),
+    filter var(--duration-reveal) var(--ease-premium);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.js [data-reveal].is-visible {
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+
+  .js [data-reveal] {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
+/* Long-form text (privacy policy). */
+.prose-monge h2 {
+  margin: 2.2em 0 .6em;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: var(--color-on-ink);
+}
+
+.prose-monge p,
+.prose-monge li {
+  color: var(--color-on-ink-muted);
+  line-height: 1.75;
+}
+
+.prose-monge ul {
+  padding-left: 1.2em;
+  list-style: disc;
+}
+
+.prose-monge a {
+  color: var(--color-signal);
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }

@@ -1,5 +1,5 @@
 {
-  "name": "blog",
+  "name": "monge-site",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -10,7 +10,11 @@
     "lint": "eslint",
     "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
-    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
+    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
+    "db:migrate": "wrangler d1 migrations apply monge --remote",
+    "db:seed": "node scripts/seed-sql.mjs && wrangler d1 execute monge --remote --file migrations/0002_seed.sql",
+    "files:upload": "bash scripts/upload-r2.sh",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",

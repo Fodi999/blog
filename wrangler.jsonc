@@ -1,30 +1,48 @@
 {
-  "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "blog",
-  "main": ".open-next/worker.js",
-  "compatibility_date": "2026-07-19",
-  "compatibility_flags": ["nodejs_compat"],
-  "workers_dev": true,
-  "observability": {
-    "enabled": true
-  },
-  "assets": {
-    "directory": ".open-next/assets",
-    "binding": "ASSETS"
-  },
-  "images": {
-    "binding": "IMAGES"
-  },
-  "services": [
-    {
-      "binding": "WORKER_SELF_REFERENCE",
-      "service": "blog"
-    }
-  ],
-  "r2_buckets": [
-    {
-      "binding": "NEXT_INC_CACHE_R2_BUCKET",
-      "bucket_name": "blog-opennext-cache"
-    }
-  ]
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "blog",
+	"main": ".open-next/worker.js",
+	"compatibility_date": "2026-07-19",
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"workers_dev": true,
+	"observability": {
+		"enabled": true
+	},
+	"assets": {
+		"directory": ".open-next/assets",
+		"binding": "ASSETS"
+	},
+	"images": {
+		"binding": "IMAGES"
+	},
+	"services": [
+		{
+			"binding": "WORKER_SELF_REFERENCE",
+			"service": "blog"
+		}
+	],
+	"r2_buckets": [
+		{
+			"binding": "NEXT_INC_CACHE_R2_BUCKET",
+			"bucket_name": "blog-opennext-cache"
+		},
+		{
+			// Monge model files (STEP for Pro, app releases)
+			"binding": "FILES",
+			"bucket_name": "monge-files",
+			"remote": true
+		}
+	],
+	"d1_databases": [
+		{
+			// Monge library catalogue + leads
+			"binding": "DB",
+			"database_name": "monge",
+			"database_id": "e73132d7-c97a-45af-a107-a79cbbb480e9",
+			"migrations_dir": "migrations",
+			"remote": true
+		}
+	]
 }

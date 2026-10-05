@@ -19,9 +19,9 @@ type StoredConsent = {
   categories: ConsentCategories;
 };
 
-type ConsentLocale = 'pl' | 'en' | 'ru' | 'uk';
+type ConsentLocale = 'pl' | 'en' | 'ru';
 
-const CONSENT_KEY = 'fominChefCookieConsent';
+const CONSENT_KEY = 'mongeCookieConsent';
 const CONSENT_VERSION = '2026-06-30-v1';
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 
@@ -112,32 +112,12 @@ const cookieCopy: Record<ConsentLocale, {
     functionalTitle: 'Функциональные cookies',
     functionalDescription: 'Запоминают выбранные настройки, например язык сайта.',
   },
-  uk: {
-    title: 'Cookies',
-    body: 'Ми використовуємо cookies, щоб сайт працював коректно, аналізувати трафік і покращувати матеріали. Ви можете прийняти всі cookies, відхилити необов’язкові або налаштувати параметри.',
-    privacy: 'Політика конфіденційності',
-    acceptAll: 'ПРИЙНЯТИ ВСІ',
-    rejectOptional: 'ВІДХИЛИТИ НЕОБОВ’ЯЗКОВІ',
-    settings: 'НАЛАШТУВАННЯ',
-    settingsTitle: 'Налаштування cookies',
-    closeSettings: 'Закрити налаштування cookies',
-    saveSettings: 'ЗБЕРЕГТИ НАЛАШТУВАННЯ',
-    necessaryTitle: 'Необхідні cookies',
-    necessaryDescription: 'Ці файли потрібні для коректної роботи сайту.',
-    alwaysActive: 'Завжди активні',
-    analyticsTitle: 'Аналітичні cookies',
-    analyticsDescription: 'Допомагають зрозуміти, як користувачі використовують сайт.',
-    marketingTitle: 'Маркетингові cookies',
-    marketingDescription: 'Використовуються для персоналізації контенту та рекламних дій.',
-    functionalTitle: 'Функціональні cookies',
-    functionalDescription: 'Запам’ятовують вибрані налаштування, наприклад мову сайту.',
-  },
 };
 
 function currentLocale(): ConsentLocale {
   if (typeof window === 'undefined') return 'pl';
   const segment = window.location.pathname.split('/').filter(Boolean)[0];
-  return segment === 'en' || segment === 'ru' || segment === 'uk' ? segment : 'pl';
+  return segment === 'en' || segment === 'ru' ? segment : 'pl';
 }
 
 function readStoredConsent(): StoredConsent | null {
@@ -163,8 +143,8 @@ function writeStoredConsent(categories: ConsentCategories) {
   return consent;
 }
 
-const cookieButtonBase = `${siteButtonVariants({ variant: 'light' })} min-h-[46px] px-4 text-[11px]`;
-const cookieButtonOutline = `${siteButtonVariants({ variant: 'outline-light' })} min-h-[46px] px-4 text-[11px]`;
+const cookieButtonBase = `${siteButtonVariants({ variant: 'light' })} min-h-[46px] whitespace-normal! px-4 text-center text-[11px] leading-tight`;
+const cookieButtonOutline = `${siteButtonVariants({ variant: 'outline-light' })} min-h-[46px] whitespace-normal! px-4 text-center text-[11px] leading-tight`;
 const cookieQuietLink = `${siteButtonVariants({ variant: 'quiet-light' })} min-h-[46px] text-[11px]`;
 
 export function CookieConsent() {
@@ -272,7 +252,7 @@ export function CookieConsent() {
             <p className="mt-2.5 text-sm leading-[1.55] text-on-ink-muted">{copy.body}</p>
             <a
               className="mt-3 inline-block border-b border-gold text-[13px] font-bold text-on-ink transition-colors duration-hover ease-premium hover:text-gold"
-              href={`/${locale}/polityka-prywatnosci`}
+              href={`/${locale}/privacy`}
             >
               {copy.privacy}
             </a>
@@ -292,7 +272,7 @@ export function CookieConsent() {
         >
           <div className="mb-[22px] flex items-start justify-between gap-[18px] border-b border-hairline-ink pb-[18px]">
             <div>
-              <span className="font-sans text-[11px] font-bold tracking-[.16em] text-gold uppercase">FOMIN CHEF</span>
+              <span className="font-sans text-[11px] font-bold tracking-[.16em] text-gold uppercase">MONGE</span>
               <DialogTitle className="mt-1.5 font-display text-[clamp(28px,4vw,40px)] font-medium">
                 {copy.settingsTitle}
               </DialogTitle>
