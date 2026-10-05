@@ -1,0 +1,17 @@
+{
+  "framework": null,
+  "installCommand": "echo skip",
+  "buildCommand": "echo skip",
+  "outputDirectory": "public",
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "www.dima-fomin.pl" }],
+      "destination": "https://dima-fomin.pl/:path*",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
+    { "source": "/:path*", "destination": "https://blog.fodi85999.workers.dev/:path*" }
+  ]
+}
