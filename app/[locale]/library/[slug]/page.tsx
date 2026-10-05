@@ -73,6 +73,8 @@ export default async function ItemPage({ params }: { params: Promise<{ locale: s
                   finish={item.finish}
                   view={item.view}
                   rotate={item.rotate}
+                  dims={item.dims}
+                  labels={t.item.viewer}
                   loadingLabel={t.item.loading}
                   fallbackLabel={t.item.noWebgl}
                   className="absolute inset-0"

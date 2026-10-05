@@ -3,19 +3,19 @@
     "slug": "work-table-1200x600",
     "category": "stainless",
     "title": {
-      "pl": "Stół produkcyjny 1200×600×850 z półką",
-      "ru": "Стол производственный 1200×600×850 с полкой",
-      "en": "Work table 1200×600×850 with undershelf"
+      "pl": "Stół przyścienny 1200×600×850 z półką",
+      "ru": "Стол пристенный 1200×600×850 с полкой",
+      "en": "Wall work table 1200×600×850 with undershelf"
     },
     "summary": {
-      "pl": "Blat z blachy 1,2 mm z giętym rantem, nogi z profilu 40×40, półka dolna. Parametryczny szablon: długość, głębokość i wysokość zmieniasz w Monge.",
-      "ru": "Столешница из листа 1,2 мм с загнутым бортом, ножки из профиля 40×40, нижняя полка. Параметрический шаблон: длину, глубину и высоту меняете в Monge.",
-      "en": "A 1.2 mm sheet top with a folded edge, 40×40 tube legs and an undershelf. A parametric template: change length, depth and height in Monge."
+      "pl": "Blat „kanapkowy” 40 mm: stal nierdzewna AISI 304 (1.4301) 1 mm na płycie wiórowej wodoodpornej 18 mm, z tylnym rantem 50 mm i giętą krawędzią. Od spodu trzy profile omega 70×20, w nich gniazda nóg 40×40×1,5 skręcane śrubą M8. Stopki regulowane M12 (zakres 30 mm), półka 1 mm z omegą. Rozwinięcia DXF do lasera.",
+      "ru": "Столешница-«сэндвич» 40 мм: нержавейка AISI 304 (1.4301) 1 мм на влагостойкой ДСП 18 мм, с задним бортом 50 мм и загнутой кромкой. Снизу три омега-профиля 70×20 с гнёздами под ножки 40×40×1,5 на болтах M8. Регулируемые опоры M12 (ход 30 мм), полка 1 мм с омегой. Развёртки DXF для лазера.",
+      "en": "A 40 mm \"sandwich\" top: 1 mm AISI 304 (1.4301) stainless on an 18 mm moisture-resistant chipboard core, with a 50 mm upstand and folded edge. Three 70×20 hat channels underneath carry the sockets for the 40×40×1.5 legs, clamped with M8 bolts. M12 levelling feet (30 mm travel), 1 mm undershelf with a hat channel. DXF flat patterns for laser cutting."
     },
     "material": {
-      "pl": "Stal nierdzewna AISI 304",
-      "ru": "Нержавеющая сталь AISI 304",
-      "en": "Stainless steel AISI 304"
+      "pl": "Stal nierdzewna AISI 304 (1.4301), do kontaktu z żywnością",
+      "ru": "Нержавеющая сталь AISI 304 (1.4301), пищевая",
+      "en": "Stainless steel AISI 304 (1.4301), food grade"
     },
     "dimensions": "1200 × 600 × 850 mm",
     "version": "0.3",
@@ -23,7 +23,7 @@
     "model": "/library/work-table-1200x600/model.glb",
     "finish": "steel",
     "view": [
-      -35,
+      150,
       24
     ],
     "files": [
@@ -36,11 +36,107 @@
         "format": "STEP",
         "href": "models/work-table-1200x600/work-table-1200x600.step",
         "access": "pro"
+      },
+      {
+        "format": "DXF",
+        "href": "models/work-table-1200x600/work-table-1200x600-top-flat.dxf",
+        "access": "pro"
       }
     ],
     "updated": "2026-10-05",
-    "massKg": 20.6,
-    "faces": 288
+    "massKg": 29.7,
+    "dims": [
+      {
+        "a": [
+          0,
+          850,
+          0
+        ],
+        "b": [
+          1200,
+          850,
+          0
+        ],
+        "offset": [
+          0,
+          0,
+          -110
+        ],
+        "label": "1200"
+      },
+      {
+        "a": [
+          1200,
+          850,
+          0
+        ],
+        "b": [
+          1200,
+          850,
+          600
+        ],
+        "offset": [
+          110,
+          0,
+          0
+        ],
+        "label": "600"
+      },
+      {
+        "a": [
+          0,
+          0,
+          0
+        ],
+        "b": [
+          0,
+          850,
+          0
+        ],
+        "offset": [
+          -110,
+          0,
+          0
+        ],
+        "label": "850"
+      },
+      {
+        "a": [
+          1200,
+          850,
+          600
+        ],
+        "b": [
+          1200,
+          900,
+          600
+        ],
+        "offset": [
+          110,
+          0,
+          0
+        ],
+        "label": "50"
+      },
+      {
+        "a": [
+          1200,
+          0,
+          0
+        ],
+        "b": [
+          1200,
+          200,
+          0
+        ],
+        "offset": [
+          110,
+          0,
+          0
+        ],
+        "label": "200"
+      }
+    ]
   },
   {
     "slug": "wheel-9evo-7x17-et43",

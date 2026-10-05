@@ -176,6 +176,7 @@ export const en: Dict = {
     free: 'free',
     pro: 'Pro',
     getPro: 'Available in Monge Pro',
+    viewer: { explode: 'Take apart', assemble: 'Assemble', dims: 'Dimensions', demo: 'Demo' },
     related: 'More in the library',
   },
   download: {

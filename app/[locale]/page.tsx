@@ -107,6 +107,9 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
                   finish={heroItem.finish}
                   view={heroItem.view}
                   rotate={heroItem.rotate}
+                  dims={heroItem.dims}
+                  labels={t.item.viewer}
+                  autoDemo
                   loadingLabel={t.item.loading}
                   className="absolute inset-0"
                 />
@@ -115,11 +118,11 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
                   <span className="glass rounded-full border border-hairline-ink px-3 py-1">● {t.hero.viewerLabel}</span>
                   <span className="glass hidden rounded-full border border-hairline-ink px-3 py-1 sm:inline">B-Rep · STEP</span>
                 </div>
-                <div className="pointer-events-none absolute bottom-4 left-4 font-mono text-[10.5px] leading-relaxed text-on-ink-muted">
+                <div className="pointer-events-none absolute top-14 left-4 font-mono text-[10.5px] leading-relaxed text-on-ink-muted">
                   <div>{heroItem.title[locale]}</div>
                   <div className="text-steel">{heroItem.dimensions}</div>
                 </div>
-                <svg viewBox="0 0 40 40" className="pointer-events-none absolute right-4 bottom-4 size-10" aria-hidden="true">
+                <svg viewBox="0 0 40 40" className="pointer-events-none absolute top-14 right-4 size-10" aria-hidden="true">
                   <path d="M8 32h20" stroke="#ff6b5b" strokeWidth="1.5" />
                   <path d="M8 32V12" stroke="#c4ff4d" strokeWidth="1.5" />
                   <path d="M8 32l12-8" stroke="#5cd2ff" strokeWidth="1.5" />

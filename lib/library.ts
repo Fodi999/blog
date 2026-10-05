@@ -1,6 +1,7 @@
 import { getEnv } from '@/lib/cf';
 import type { Locale } from '@/lib/i18n';
 import seedJson from '@/data/library.json';
+import type { Dimension } from '@/components/ModelViewer';
 
 export type Category = 'stainless' | 'precision' | 'fasteners';
 export const categories: Category[] = ['stainless', 'precision', 'fasteners'];
@@ -32,6 +33,8 @@ export type LibraryItem = {
   view?: [number, number];
   /** Model rotation in degrees (x, y, z) for the viewer. */
   rotate?: [number, number, number];
+  /** Overall dimensions drawn by the viewer (model millimetres). */
+  dims?: Dimension[];
   files: LibraryFile[];
   updated: string;
 };

@@ -174,6 +174,7 @@ export const ru = {
     free: 'бесплатно',
     pro: 'Pro',
     getPro: 'Доступно в Monge Pro',
+    viewer: { explode: 'Разобрать', assemble: 'Собрать', dims: 'Размеры', demo: 'Демо' },
     related: 'Ещё в библиотеке',
   },
   download: {
