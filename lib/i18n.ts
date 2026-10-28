@@ -26,3 +26,8 @@ const dictionaries: Record<Locale, Dict> = { pl, ru, en };
 export function getDict(locale: Locale): Dict {
   return dictionaries[locale] ?? dictionaries[defaultLocale];
 }
+
+/** Puts values into a text: fill('Версия {version}', { version: '0.15.20' }). Unknown names stay as they are. */
+export function fill(text: string, values: Record<string, string | number>): string {
+  return text.replace(/\{(\w+)\}/g, (all, name: string) => (name in values ? String(values[name]) : all));
+}

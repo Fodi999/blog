@@ -22,7 +22,7 @@ export function LibraryGrid({ items, locale, t }: Props) {
             type="button"
             aria-selected={filter === c}
             onClick={() => setFilter(c)}
-            className={`rounded-full border px-4 py-2 text-[13px] font-medium transition-colors ${
+            className={`rounded-md border px-4 py-2 text-[14px] font-medium transition-colors ${
               filter === c ? 'border-on-ink bg-on-ink text-ink' : 'border-hairline-ink-strong text-on-ink-muted hover:text-on-ink'
             }`}
           >

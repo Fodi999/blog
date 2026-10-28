@@ -9,7 +9,7 @@ export function LibraryCard({ item, locale, categoryLabel, openLabel, priority =
   return (
     <Link
       href={localPath(locale, `/library/${item.slug}`)}
-      className="group relative flex flex-col overflow-hidden rounded-3xl border border-hairline-ink bg-ink-2 transition-[border-color,transform,box-shadow] duration-ui ease-premium hover:-translate-y-1 hover:border-hairline-ink-strong hover:shadow-[0_30px_80px_-30px_rgba(92,210,255,.25)]"
+      className="group relative flex flex-col overflow-hidden border border-hairline-ink-strong bg-ink-2 transition-[border-color] duration-ui ease-premium hover:border-on-ink/60"
       data-ga-event="library_open"
       data-ga-item-id={item.slug}
     >
@@ -23,9 +23,9 @@ export function LibraryCard({ item, locale, categoryLabel, openLabel, priority =
           height={900}
           loading={priority ? 'eager' : 'lazy'}
           decoding="async"
-          className="relative size-full object-contain p-6 transition-transform duration-[900ms] ease-premium group-hover:scale-[1.04]"
+          className="relative size-full object-contain p-6"
         />
-        <span className="glass absolute top-4 left-4 rounded-full border border-hairline-ink px-3 py-1 font-mono text-[10.5px] tracking-[.12em] text-on-ink-muted uppercase">
+        <span className="absolute top-3 left-4 text-[13px] text-on-ink-muted">
           {categoryLabel}
         </span>
       </div>
@@ -40,7 +40,7 @@ export function LibraryCard({ item, locale, categoryLabel, openLabel, priority =
               </span>
             ))}
           </div>
-          <span className="text-[13px] font-semibold text-signal transition-transform group-hover:translate-x-1">{openLabel} →</span>
+          <span className="text-[14px] font-semibold text-on-ink underline-offset-4 group-hover:underline">{openLabel}</span>
         </div>
       </div>
     </Link>

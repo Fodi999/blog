@@ -29,14 +29,17 @@ const nextConfig: NextConfig = {
       // The Ukrainian version of the former site → English.
       { source: '/uk', destination: '/en', permanent: true },
       { source: '/uk/:path*', destination: '/en', permanent: true },
+      // The former "about me" page → the developer page.
+      { source: '/:locale(pl|ru|en)/o-mnie', destination: '/:locale/about', permanent: true },
+      { source: '/o-mnie', destination: '/pl/about', permanent: true },
       // Pages of the former blog / shop → the new home of each locale.
       { source: '/:locale(pl|ru|en)/:old(blog|sklep|skladniki|o-mnie|catering)/:path*', destination: '/:locale', permanent: true },
-      { source: '/:locale(pl|ru|en)/:old(blog|sklep|skladniki|o-mnie|catering)', destination: '/:locale', permanent: true },
+      { source: '/:locale(pl|ru|en)/:old(blog|sklep|skladniki|catering)', destination: '/:locale', permanent: true },
       { source: '/:locale(pl|ru|en)/:old(catering-[a-z]+)', destination: '/:locale', permanent: true },
       { source: '/:locale(pl|ru|en)/kontakt', destination: '/:locale/contact', permanent: true },
       { source: '/:locale(pl|ru|en)/polityka-prywatnosci', destination: '/:locale/privacy', permanent: true },
       { source: '/:old(blog|sklep|skladniki|o-mnie|kontakt)/:path*', destination: '/pl', permanent: true },
-      { source: '/:old(blog|sklep|skladniki|o-mnie|kontakt)', destination: '/pl', permanent: true },
+      { source: '/:old(blog|sklep|skladniki|kontakt)', destination: '/pl', permanent: true },
     ];
   },
 };

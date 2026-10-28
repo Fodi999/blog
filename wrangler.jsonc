@@ -7,6 +7,10 @@
 		"nodejs_compat"
 	],
 	"workers_dev": true,
+	"vars": {
+		// Lead notifications (the Resend key is a secret: npx wrangler secret put RESEND_API_KEY)
+		"LEAD_EMAIL_TO": "fodi85999@gmail.com"
+	},
 	"observability": {
 		"enabled": true
 	},

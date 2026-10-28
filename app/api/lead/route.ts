@@ -1,7 +1,10 @@
 import { NextResponse } from 'next/server';
+import { getCloudflareContext } from '@opennextjs/cloudflare';
 import { getEnv } from '@/lib/cf';
+import { notifyLead } from '@/lib/notify';
 
-const KINDS = new Set(['early_access', 'pilot', 'custom', 'other']);
+// beta: the closed beta waiting list (the site's main form); early_access: the same, from older links.
+const KINDS = new Set(['beta', 'early_access', 'pilot', 'custom', 'other']);
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 function clean(value: unknown, max: number): string {
@@ -32,7 +35,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, error: 'invalid' }, { status: 422 });
   }
 
-  const { DB } = await getEnv();
+  const env = await getEnv();
+  const { DB } = env;
   if (!DB) {
     console.error('[lead] D1 binding "DB" is missing — lead not stored', lead.kind);
     return NextResponse.json({ ok: false, error: 'storage_unavailable' }, { status: 503 });
@@ -45,6 +49,15 @@ export async function POST(request: Request) {
   )
     .bind(new Date().toISOString(), lead.kind, lead.name, lead.email, lead.company, lead.message, lead.context, lead.locale, country, agent)
     .run();
+
+  // E-mail notification runs after the response so the form stays fast.
+  const mail = notifyLead(env, lead, country);
+  try {
+    const { ctx } = await getCloudflareContext({ async: true });
+    ctx.waitUntil(mail);
+  } catch {
+    await mail;
+  }
 
   return NextResponse.json({ ok: true });
 }

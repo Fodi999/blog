@@ -56,12 +56,12 @@ const cookieCopy: Record<ConsentLocale, {
     title: 'Cookies',
     body: 'Używamy plików cookies, aby zapewnić prawidłowe działanie strony, analizować ruch oraz ulepszać treści. Możesz zaakceptować wszystkie pliki cookies, odrzucić opcjonalne lub dostosować ustawienia.',
     privacy: 'Polityka prywatności',
-    acceptAll: 'AKCEPTUJ WSZYSTKIE',
-    rejectOptional: 'ODRZUĆ OPCJONALNE',
-    settings: 'USTAWIENIA',
+    acceptAll: 'Akceptuj wszystkie',
+    rejectOptional: 'Odrzuć opcjonalne',
+    settings: 'Ustawienia',
     settingsTitle: 'Ustawienia cookies',
     closeSettings: 'Zamknij ustawienia cookies',
-    saveSettings: 'ZAPISZ USTAWIENIA',
+    saveSettings: 'Zapisz ustawienia',
     necessaryTitle: 'Niezbędne cookies',
     necessaryDescription: 'Te pliki są wymagane do prawidłowego działania strony.',
     alwaysActive: 'Zawsze aktywne',
@@ -76,12 +76,12 @@ const cookieCopy: Record<ConsentLocale, {
     title: 'Cookies',
     body: 'We use cookies to keep the website working properly, analyze traffic and improve content. You can accept all cookies, reject optional cookies or adjust your settings.',
     privacy: 'Privacy policy',
-    acceptAll: 'ACCEPT ALL',
-    rejectOptional: 'REJECT OPTIONAL',
-    settings: 'SETTINGS',
+    acceptAll: 'Accept all',
+    rejectOptional: 'Reject optional',
+    settings: 'Settings',
     settingsTitle: 'Cookie settings',
     closeSettings: 'Close cookie settings',
-    saveSettings: 'SAVE SETTINGS',
+    saveSettings: 'Save settings',
     necessaryTitle: 'Necessary cookies',
     necessaryDescription: 'These files are required for the website to work properly.',
     alwaysActive: 'Always active',
@@ -96,12 +96,12 @@ const cookieCopy: Record<ConsentLocale, {
     title: 'Cookies',
     body: 'Мы используем cookies, чтобы сайт работал корректно, анализировать трафик и улучшать материалы. Вы можете принять все cookies, отклонить необязательные или настроить параметры.',
     privacy: 'Политика конфиденциальности',
-    acceptAll: 'ПРИНЯТЬ ВСЕ',
-    rejectOptional: 'ОТКЛОНИТЬ НЕОБЯЗАТЕЛЬНЫЕ',
-    settings: 'НАСТРОЙКИ',
+    acceptAll: 'Принять все',
+    rejectOptional: 'Отклонить необязательные',
+    settings: 'Настройки',
     settingsTitle: 'Настройки cookies',
     closeSettings: 'Закрыть настройки cookies',
-    saveSettings: 'СОХРАНИТЬ НАСТРОЙКИ',
+    saveSettings: 'Сохранить настройки',
     necessaryTitle: 'Необходимые cookies',
     necessaryDescription: 'Эти файлы нужны для корректной работы сайта.',
     alwaysActive: 'Всегда активны',
@@ -143,9 +143,9 @@ function writeStoredConsent(categories: ConsentCategories) {
   return consent;
 }
 
-const cookieButtonBase = `${siteButtonVariants({ variant: 'light' })} min-h-[46px] whitespace-normal! px-4 text-center text-[11px] leading-tight`;
-const cookieButtonOutline = `${siteButtonVariants({ variant: 'outline-light' })} min-h-[46px] whitespace-normal! px-4 text-center text-[11px] leading-tight`;
-const cookieQuietLink = `${siteButtonVariants({ variant: 'quiet-light' })} min-h-[46px] text-[11px]`;
+const cookieButtonBase = `${siteButtonVariants({ variant: 'light' })} min-h-[46px] whitespace-normal! px-4 text-center text-[14px] leading-tight`;
+const cookieButtonOutline = `${siteButtonVariants({ variant: 'outline-light' })} min-h-[46px] whitespace-normal! px-4 text-center text-[14px] leading-tight`;
+const cookieQuietLink = `${siteButtonVariants({ variant: 'quiet-light' })} min-h-[46px] text-[14px]`;
 
 export function CookieConsent() {
   const [hydrated, setHydrated] = useState(false);

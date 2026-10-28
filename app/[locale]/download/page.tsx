@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { PageHero } from '@/components/sections';
-import { siteButtonVariants } from '@/components/site/Button';
-import { getDict, isLocale, localPath } from '@/lib/i18n';
+import { DirectContacts } from '@/components/DirectContacts';
+import { LeadForm } from '@/components/LeadForm';
+import { PageHero, SectionHeading } from '@/components/sections';
+import { fill, getDict, isLocale } from '@/lib/i18n';
 import { pageMetadata } from '@/lib/seo';
+import { statusValues } from '@/lib/statusText';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -28,48 +29,52 @@ export default async function DownloadPage({ params }: { params: Promise<{ local
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   const t = getDict(locale);
+  const d = t.download;
+  const v = statusValues(locale, t);
+
+  const platforms = [
+    { icon: apple, title: d.macTitle, state: d.macState, text: d.macText, first: true },
+    { icon: windows, title: d.winTitle, state: d.winState, text: d.winText, first: false },
+  ];
 
   return (
     <>
-      <PageHero eyebrow={t.download.version} title={t.download.title} lead={t.download.lead} />
-      <section className="content-frame grid gap-5 md:grid-cols-2">
-        <div className="relative overflow-hidden rounded-3xl border border-signal/40 bg-[linear-gradient(160deg,rgba(196,255,77,.08),rgba(13,17,23,.95)_55%)] p-8" data-reveal>
-          <div className="flex items-center gap-4 text-on-ink">
-            {apple}
-            <div>
-              <h2 className="font-display text-[22px] font-semibold">{t.download.macTitle}</h2>
-              <p className="font-mono text-[11.5px] text-signal">{t.download.version}</p>
+      <PageHero eyebrow={fill(d.status, v)} title={d.title} lead={d.lead} />
+      <section className="content-frame grid border-2 border-on-ink/45 md:grid-cols-2">
+        {platforms.map((p, i) => (
+          <div key={p.title} className={`p-7 md:p-8 ${i === 0 ? 'border-b border-hairline-ink-strong md:border-r md:border-b-0' : ''}`}>
+            <div className="flex items-center justify-between gap-4 text-on-ink">
+              <span className="flex items-center gap-3">
+                {p.icon}
+                <h2 className="font-display text-[26px] font-semibold">{p.title}</h2>
+              </span>
+              <span className={`text-[14px] ${p.first ? 'text-signal' : 'text-on-ink-muted'}`}>{p.state}</span>
             </div>
+            <p className="mt-5 text-[16px] leading-relaxed text-on-ink-muted">{p.text}</p>
           </div>
-          <p className="mt-5 text-[15px] text-on-ink-muted">{t.download.macText}</p>
-          <Link href={localPath(locale, '/contact?kind=early_access&platform=mac')} className={`${siteButtonVariants({ variant: 'primary' })} mt-8`} data-ga-event="download_request" data-ga-label="mac">
-            {t.download.macCta}
-          </Link>
-        </div>
-        <div className="rounded-3xl border border-hairline-ink bg-ink-2 p-8" data-reveal style={{ '--reveal-delay': '90ms' } as React.CSSProperties}>
-          <div className="flex items-center gap-4 text-on-ink">
-            {windows}
-            <div>
-              <h2 className="font-display text-[22px] font-semibold">{t.download.winTitle}</h2>
-              <p className="font-mono text-[11.5px] text-steel">{t.download.soon}</p>
-            </div>
-          </div>
-          <p className="mt-5 text-[15px] text-on-ink-muted">{t.download.winText}</p>
-          <Link href={localPath(locale, '/contact?kind=early_access&platform=windows')} className={`${siteButtonVariants({ variant: 'ghost' })} mt-8`} data-ga-event="download_request" data-ga-label="windows">
-            {t.download.winCta}
-          </Link>
-        </div>
+        ))}
       </section>
+
       <section className="content-frame mt-10">
-        <div className="rounded-3xl border border-hairline-ink p-7" data-reveal>
-          <h2 className="font-mono text-[12px] tracking-[.14em] text-on-ink-muted uppercase">{t.download.reqTitle}</h2>
-          <ul className="mt-4 grid gap-3 sm:grid-cols-3">
-            {t.download.req.map((r) => (
-              <li key={r} className="text-[15px] text-on-ink">
-                {r}
-              </li>
-            ))}
-          </ul>
+        <h2 className="text-[15px] font-medium text-on-ink-muted">{d.reqTitle}</h2>
+        <ul className="mt-3 grid border-t border-hairline-ink-strong sm:grid-cols-3">
+          {d.req.map((r) => (
+            <li key={r} className="border-b border-hairline-ink-strong py-3.5 text-[16px] text-on-ink sm:pr-6">
+              {r}
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section id="beta" aria-labelledby="beta-title" className="content-frame mt-20 scroll-mt-24">
+        <div className="grid gap-10 lg:grid-cols-[1fr_1.3fr] lg:items-start">
+          <div>
+            <SectionHeading id="beta-title" title={d.formTitle} lead={t.updates.text} />
+            <DirectContacts t={t.contacts} className="mt-8" />
+          </div>
+          <div className="border-2 border-on-ink/45 p-6 md:p-8">
+            <LeadForm locale={locale} t={t.form} beta context="download" />
+          </div>
         </div>
       </section>
     </>

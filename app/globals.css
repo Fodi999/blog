@@ -1,6 +1,19 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* Typefaces, self-hosted (public/fonts, SIL OFL 1.1 — licences next to the files):
+   Sofia Sans Condensed for headings (narrow, upright, like drawing lettering), Sofia Sans for text,
+   JetBrains Mono for measured values. Variable weight; latin, latin-ext (Polish) and cyrillic. */
+@font-face { font-family: "Sofia Sans Condensed"; src: url("/fonts/sofia-sans-condensed-latin-wght-normal.woff2") format("woff2-variations"); font-weight: 100 900; font-display: swap; unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+@font-face { font-family: "Sofia Sans Condensed"; src: url("/fonts/sofia-sans-condensed-latin-ext-wght-normal.woff2") format("woff2-variations"); font-weight: 100 900; font-display: swap; unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF; }
+@font-face { font-family: "Sofia Sans Condensed"; src: url("/fonts/sofia-sans-condensed-cyrillic-wght-normal.woff2") format("woff2-variations"); font-weight: 100 900; font-display: swap; unicode-range: U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116; }
+@font-face { font-family: "Sofia Sans"; src: url("/fonts/sofia-sans-latin-wght-normal.woff2") format("woff2-variations"); font-weight: 100 900; font-display: swap; unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+@font-face { font-family: "Sofia Sans"; src: url("/fonts/sofia-sans-latin-ext-wght-normal.woff2") format("woff2-variations"); font-weight: 100 900; font-display: swap; unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF; }
+@font-face { font-family: "Sofia Sans"; src: url("/fonts/sofia-sans-cyrillic-wght-normal.woff2") format("woff2-variations"); font-weight: 100 900; font-display: swap; unicode-range: U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116; }
+@font-face { font-family: "JetBrains Mono"; src: url("/fonts/jetbrains-mono-latin-wght-normal.woff2") format("woff2-variations"); font-weight: 100 800; font-display: swap; unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+@font-face { font-family: "JetBrains Mono"; src: url("/fonts/jetbrains-mono-latin-ext-wght-normal.woff2") format("woff2-variations"); font-weight: 100 800; font-display: swap; unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF; }
+@font-face { font-family: "JetBrains Mono"; src: url("/fonts/jetbrains-mono-cyrillic-wght-normal.woff2") format("woff2-variations"); font-weight: 100 800; font-display: swap; unicode-range: U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116; }
+
 @theme {
   /* ---- Surfaces: graphite, three tiers ---- */
   --color-ink: #07090c;
@@ -43,9 +56,9 @@
   --color-ring: rgba(196, 255, 77, .45);
   --radius: 0.75rem;
 
-  --font-sans: var(--font-body), "Segoe UI", system-ui, sans-serif;
-  --font-display: var(--font-heading), var(--font-body), system-ui, sans-serif;
-  --font-mono: var(--font-code), ui-monospace, "SFMono-Regular", monospace;
+  --font-sans: "Sofia Sans", "Segoe UI", system-ui, sans-serif;
+  --font-display: "Sofia Sans Condensed", "Sofia Sans", "Arial Narrow", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
 
   --ease-premium: cubic-bezier(.16, 1, .3, 1);
   --duration-hover: 220ms;
@@ -96,6 +109,11 @@
   background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px;
 }
 
+/* Section hatching (45°, as on a drawing's cut face). */
+@utility hatch {
+  background-image: repeating-linear-gradient(-45deg, rgba(233, 238, 244, .09) 0 1px, transparent 1px 7px);
+}
+
 @utility glass {
   background: linear-gradient(180deg, rgba(21, 27, 36, .9), rgba(13, 17, 23, .84));
   backdrop-filter: blur(18px) saturate(140%);
@@ -122,7 +140,6 @@
     background: var(--color-ink);
     color: var(--color-on-ink);
     font-family: var(--font-sans);
-    font-feature-settings: "ss01", "cv11";
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
     overflow-x: hidden;

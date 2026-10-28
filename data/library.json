@@ -8,9 +8,9 @@
       "en": "Wall work table 1200×600×850 with undershelf"
     },
     "summary": {
-      "pl": "Blat „kanapkowy” 40 mm: stal nierdzewna AISI 304 (1.4301) 1 mm na płycie wiórowej wodoodpornej 18 mm, z tylnym rantem 50 mm i giętą krawędzią. Od spodu trzy profile omega 70×20, w nich gniazda nóg 40×40×1,5 skręcane śrubą M8. Stopki regulowane M12 (zakres 30 mm), półka 1 mm z omegą. Rozwinięcia DXF do lasera.",
-      "ru": "Столешница-«сэндвич» 40 мм: нержавейка AISI 304 (1.4301) 1 мм на влагостойкой ДСП 18 мм, с задним бортом 50 мм и загнутой кромкой. Снизу три омега-профиля 70×20 с гнёздами под ножки 40×40×1,5 на болтах M8. Регулируемые опоры M12 (ход 30 мм), полка 1 мм с омегой. Развёртки DXF для лазера.",
-      "en": "A 40 mm \"sandwich\" top: 1 mm AISI 304 (1.4301) stainless on an 18 mm moisture-resistant chipboard core, with a 50 mm upstand and folded edge. Three 70×20 hat channels underneath carry the sockets for the 40×40×1.5 legs, clamped with M8 bolts. M12 levelling feet (30 mm travel), 1 mm undershelf with a hat channel. DXF flat patterns for laser cutting."
+      "pl": "Blat „kanapkowy” 40 mm: stal nierdzewna AISI 304 (1.4301) 1 mm na płycie wiórowej wodoodpornej 18 mm, tylny rant 50 mm z zawinięciem, gięta krawędź przednia i tylny kołnierz zamykający płytę. Od spodu trzy profile omega 70×20 z gniazdami nóg 40×40×1,5 na śrubach M8, stopki regulowane M12 (zakres 30 mm). Półka dolna także „kanapkowa”: stal 1 mm na płycie 16 mm, z kołnierzami na czterech bokach, przykręcona do nóg. Rozwinięcia DXF do lasera.",
+      "ru": "Столешница-«сэндвич» 40 мм: нержавейка AISI 304 (1.4301) 1 мм на влагостойкой ДСП 18 мм, задний борт 50 мм с загибом, загнутая передняя кромка и задний отгиб, закрывающий ДСП. Снизу три омега-профиля 70×20 с гнёздами под ножки 40×40×1,5 на болтах M8, регулируемые опоры M12 (ход 30 мм). Нижняя полка тоже «сэндвич»: сталь 1 мм на ДСП 16 мм, отбортовка с четырёх сторон, крепление к ножкам на болтах. Развёртки DXF для лазера.",
+      "en": "A 40 mm \"sandwich\" top: 1 mm AISI 304 (1.4301) stainless on an 18 mm moisture-resistant chipboard core, a 50 mm upstand with a folded hem, a folded front edge and a back flange that closes the core. Three 70×20 hat channels carry the sockets for the 40×40×1.5 legs on M8 bolts; M12 levelling feet (30 mm travel). The undershelf is a sandwich too: 1 mm steel on 16 mm chipboard, flanged on all four sides and bolted to the legs. DXF flat patterns for laser cutting."
     },
     "material": {
       "pl": "Stal nierdzewna AISI 304 (1.4301), do kontaktu z żywnością",
@@ -19,7 +19,7 @@
     },
     "dimensions": "1200 × 600 × 850 mm",
     "version": "0.3",
-    "image": "/library/work-table-1200x600/render.webp",
+    "image": "/library/work-table-1200x600/photo.webp",
     "model": "/library/work-table-1200x600/model.glb",
     "finish": "steel",
     "view": [
@@ -43,8 +43,8 @@
         "access": "pro"
       }
     ],
-    "updated": "2026-10-05",
-    "massKg": 29.7,
+    "updated": "2026-10-06",
+    "massKg": 36.0,
     "dims": [
       {
         "a": [
@@ -120,21 +120,178 @@
       },
       {
         "a": [
-          1200,
+          1130,
           0,
+          30
+        ],
+        "b": [
+          1130,
+          200,
+          30
+        ],
+        "offset": [
+          0,
+          0,
+          -140
+        ],
+        "label": "200 ↥"
+      }
+    ]
+  },
+  {
+    "slug": "sink-600x600",
+    "category": "stainless",
+    "title": {
+      "pl": "Zlew gastronomiczny 600×600×850 z komorą 500×400×300",
+      "ru": "Мойка 600×600×850 с вварной чашей 500×400×300",
+      "en": "Sink table 600×600×850 with a welded 500×400×300 bowl"
+    },
+    "summary": {
+      "pl": "Blat ze stali nierdzewnej AISI 304 1 mm z rantem tylnym 100 mm (zawinięty, otwór Ø35 na baterię) i giętą krawędzią. Komora 500×400×300 wspawana na równo z blatem: ścianki gięte z jednego pasa R20, szlif biegnie dookoła, dno z odpływem Ø52. Bez płyty wiórowej (strefa mokra) — usztywnienie profilami omega z przodu i z tyłu. Nogi 40×40 w gniazdach, stopki regulowane M12, półka dolna. Rozwinięcia DXF do lasera.",
+      "ru": "Столешница из нержавейки AISI 304 1 мм с задним бортом 100 мм (с загибом, отверстие Ø35 под смеситель) и загнутой кромкой. Чаша 500×400×300 вварена заподлицо: стенки согнуты из одной полосы с радиусом R20, шлифовка идёт вокруг чаши, дно с выпуском Ø52. Без ДСП (мокрая зона) — жёсткость дают омеги спереди и сзади. Ножки 40×40 в гнёздах, регулируемые опоры M12, нижняя полка. Развёртки DXF для лазера.",
+      "en": "A 1 mm AISI 304 top with a 100 mm hemmed upstand (Ø35 tap hole) and a folded front edge. The 500×400×300 bowl is welded in flush: walls bent from one strip with R20 corners, brushed all the way round, a bottom with a Ø52 waste. No chipboard (wet area) — hat channels front and back stiffen the top. 40×40 legs in sockets, M12 levelling feet, an undershelf. DXF flat patterns for laser cutting."
+    },
+    "material": {
+      "pl": "Stal nierdzewna AISI 304 (1.4301), do kontaktu z żywnością",
+      "ru": "Нержавеющая сталь AISI 304 (1.4301), пищевая",
+      "en": "Stainless steel AISI 304 (1.4301), food grade"
+    },
+    "dimensions": "600 × 600 × 850 mm",
+    "version": "0.3",
+    "image": "/library/sink-600x600/photo.webp",
+    "model": "/library/sink-600x600/model.glb",
+    "finish": "steel",
+    "view": [
+      150,
+      30
+    ],
+    "files": [
+      {
+        "format": "GLB",
+        "href": "/library/sink-600x600/model.glb",
+        "access": "free"
+      },
+      {
+        "format": "STEP",
+        "href": "models/sink-600x600/sink-600x600.step",
+        "access": "pro"
+      },
+      {
+        "format": "DXF",
+        "href": "models/sink-600x600/sink-600x600-top-flat.dxf",
+        "access": "pro"
+      }
+    ],
+    "updated": "2026-10-06",
+    "massKg": 19.9,
+    "dims": [
+      {
+        "a": [
+          0,
+          850,
           0
         ],
         "b": [
-          1200,
-          200,
+          600,
+          850,
           0
+        ],
+        "offset": [
+          0,
+          0,
+          -110
+        ],
+        "label": "600"
+      },
+      {
+        "a": [
+          600,
+          850,
+          0
+        ],
+        "b": [
+          600,
+          850,
+          600
         ],
         "offset": [
           110,
           0,
           0
         ],
-        "label": "200"
+        "label": "600"
+      },
+      {
+        "a": [
+          0,
+          0,
+          0
+        ],
+        "b": [
+          0,
+          850,
+          0
+        ],
+        "offset": [
+          -110,
+          0,
+          0
+        ],
+        "label": "850"
+      },
+      {
+        "a": [
+          600,
+          850,
+          600
+        ],
+        "b": [
+          600,
+          950,
+          600
+        ],
+        "offset": [
+          110,
+          0,
+          0
+        ],
+        "label": "100"
+      },
+      {
+        "a": [
+          50,
+          850,
+          100
+        ],
+        "b": [
+          550,
+          850,
+          100
+        ],
+        "offset": [
+          0,
+          60,
+          0
+        ],
+        "label": "500"
+      },
+      {
+        "a": [
+          50,
+          550,
+          500
+        ],
+        "b": [
+          50,
+          850,
+          500
+        ],
+        "offset": [
+          -90,
+          0,
+          0
+        ],
+        "label": "300 ↧"
       }
     ]
   },

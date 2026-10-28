@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { DirectContacts } from '@/components/DirectContacts';
 import { LeadForm } from '@/components/LeadForm';
 import { PageHero } from '@/components/sections';
 import { getDict, isLocale } from '@/lib/i18n';
@@ -23,7 +24,9 @@ export default async function ContactPage({
   if (!isLocale(locale)) notFound();
   const t = getDict(locale);
   const sp = await searchParams;
-  const kind = typeof sp.kind === 'string' ? sp.kind : 'early_access';
+  // Old links said kind=early_access: that is the beta now.
+  const asked = typeof sp.kind === 'string' ? sp.kind : 'beta';
+  const kind = asked === 'early_access' ? 'beta' : asked;
   const context = ['plan', 'platform']
     .map((k) => (typeof sp[k] === 'string' ? `${k}=${String(sp[k]).slice(0, 40)}` : ''))
     .filter(Boolean)
@@ -31,11 +34,12 @@ export default async function ContactPage({
 
   return (
     <>
-      <PageHero eyebrow={t.nav.contact} title={t.contact.title} lead={t.contact.lead} />
+      <PageHero title={t.contact.title} lead={t.contact.lead} />
       <section className="content-frame">
-        <div className="max-w-3xl rounded-[32px] border border-hairline-ink bg-ink-2 p-7 md:p-10">
+        <div className="max-w-3xl border-2 border-on-ink/45 p-6 md:p-10">
           <LeadForm locale={locale} t={t.form} initialKind={kind} context={context} />
         </div>
+        <DirectContacts t={t.contacts} className="mt-8" />
       </section>
     </>
   );

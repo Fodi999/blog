@@ -43,7 +43,7 @@ type Props = {
 type Api = { explode: () => void; dims: () => void; demo: () => void };
 
 const btn = (on: boolean) =>
-  `glass rounded-full border px-3.5 py-1.5 font-mono text-[11.5px] transition-colors ${on ? 'border-signal text-signal' : 'border-hairline-ink-strong text-on-ink hover:border-on-ink/60'}`;
+  `glass rounded-md border px-3.5 py-1.5 font-mono text-[11.5px] transition-colors ${on ? 'border-signal text-signal' : 'border-hairline-ink-strong text-on-ink hover:border-on-ink/60'}`;
 
 function webglAvailable(): boolean {
   try {

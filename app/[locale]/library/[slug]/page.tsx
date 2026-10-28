@@ -63,7 +63,7 @@ export default async function ItemPage({ params }: { params: Promise<{ locale: s
 
         <div className="mt-6 grid gap-8 lg:grid-cols-[1.5fr_1fr]">
           <div className="animate-reveal">
-            <div className="relative aspect-[4/3] overflow-hidden rounded-[32px] border border-hairline-ink bg-[radial-gradient(ellipse_at_50%_50%,rgba(92,210,255,.12),rgba(7,9,12,0)_65%)]">
+            <div className="relative aspect-[4/3] overflow-hidden border border-hairline-ink-strong bg-ink-2">
               <div className="blueprint absolute inset-0 opacity-70" aria-hidden="true" />
               {item.model ? (
                 <ModelViewer
@@ -92,20 +92,20 @@ export default async function ItemPage({ params }: { params: Promise<{ locale: s
             <h1 className="mt-4 font-display text-[clamp(28px,3.6vw,42px)] leading-[1.1] font-semibold tracking-[-.02em] text-balance text-on-ink">{item.title[locale]}</h1>
             <p className="mt-5 text-[16.5px] leading-relaxed text-on-ink-muted">{item.summary[locale]}</p>
 
-            <h2 className="mt-9 font-mono text-[11.5px] tracking-[.14em] text-on-ink-muted uppercase">{t.item.specs}</h2>
-            <dl className="mt-3 divide-y divide-hairline-ink rounded-2xl border border-hairline-ink bg-ink-2">
+            <h2 className="mt-9 text-[15px] font-medium text-on-ink-muted">{t.item.specs}</h2>
+            <dl className="mt-3 divide-y divide-hairline-ink-strong border-y-2 border-on-ink/45">
               {specs.map(([k, v]) => (
-                <div key={k} className="flex justify-between gap-6 px-5 py-3.5 text-[14.5px]">
+                <div key={k} className="flex justify-between gap-6 py-3.5 text-[15px]">
                   <dt className="text-on-ink-muted">{k}</dt>
                   <dd className="text-right text-on-ink">{v}</dd>
                 </div>
               ))}
             </dl>
 
-            <h2 className="mt-9 font-mono text-[11.5px] tracking-[.14em] text-on-ink-muted uppercase">{t.item.downloads}</h2>
-            <ul className="mt-3 space-y-2.5">
+            <h2 className="mt-9 text-[15px] font-medium text-on-ink-muted">{t.item.downloads}</h2>
+            <ul className="mt-3 border-t-2 border-on-ink/45">
               {item.files.map((f) => (
-                <li key={f.href} className="flex items-center justify-between gap-4 rounded-2xl border border-hairline-ink bg-ink-2 px-5 py-3.5">
+                <li key={f.href} className="flex items-center justify-between gap-4 border-b border-hairline-ink-strong py-3.5">
                   <span className="flex items-center gap-3">
                     <span className="rounded-md border border-hairline-ink-strong px-2 py-0.5 font-mono text-[11px] text-on-ink">{f.format}</span>
                     <span className="text-[14px] text-on-ink-muted">{f.format === 'GLB' ? t.item.preview : f.access === 'free' ? t.item.free : t.item.getPro}</span>
@@ -115,7 +115,7 @@ export default async function ItemPage({ params }: { params: Promise<{ locale: s
                       ↓
                     </a>
                   ) : (
-                    <Link href={localPath(locale, '/pricing')} className="rounded-full bg-signal/10 px-3 py-1 font-mono text-[11px] font-medium text-signal">
+                    <Link href={localPath(locale, '/download')} className="rounded-md border border-hairline-ink-strong px-3 py-1 text-[13px] text-on-ink-muted hover:text-on-ink">
                       {t.item.pro}
                     </Link>
                   )}
@@ -123,7 +123,7 @@ export default async function ItemPage({ params }: { params: Promise<{ locale: s
               ))}
             </ul>
 
-            <Link href={localPath(locale, '/contact?kind=early_access')} className={`${siteButtonVariants({ variant: 'primary' })} mt-8 w-full`} data-ga-event="cta_item">
+            <Link href={`${localPath(locale, '/download')}#beta`} className={`${siteButtonVariants({ variant: 'primary' })} mt-8 w-full`} data-ga-event="cta_item">
               {t.nav.cta}
             </Link>
           </div>

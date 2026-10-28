@@ -23,15 +23,15 @@ export default async function LibraryPage({ params }: { params: Promise<{ locale
 
   return (
     <>
-      <PageHero eyebrow={t.nav.library} title={t.library.title} lead={t.library.lead} />
+      <PageHero title={t.library.title} lead={t.library.lead} />
       <section className="content-frame">
         <LibraryGrid items={items} locale={locale} t={t.library} />
 
-        <div className="mt-16 rounded-3xl border border-dashed border-hairline-ink-strong p-7" data-reveal>
-          <h2 className="font-mono text-[12px] tracking-[.14em] text-steel uppercase">{t.library.soonTitle}</h2>
+        <div className="mt-16 border border-dashed border-hairline-ink-strong p-7">
+          <h2 className="text-[15px] font-medium text-steel">{t.library.soonTitle}</h2>
           <div className="mt-4 flex flex-wrap gap-2">
             {t.library.soon.map((s) => (
-              <span key={s} className="rounded-full border border-hairline-ink px-4 py-2 text-[14px] text-on-ink-muted">
+              <span key={s} className="rounded-md border border-hairline-ink px-4 py-2 text-[14px] text-on-ink-muted">
                 {s}
               </span>
             ))}

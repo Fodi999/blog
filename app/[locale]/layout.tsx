@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from 'next';
-import { JetBrains_Mono, Manrope, Unbounded } from 'next/font/google';
 import { notFound } from 'next/navigation';
 import { AnalyticsClickTracker } from '@/components/AnalyticsEvents';
 import { CookieConsent } from '@/components/CookieConsent';
@@ -11,11 +10,7 @@ import { ogLocale, SITE_URL } from '@/lib/seo';
 import { THREE_IMPORT_MAP } from '@/lib/three';
 import '../globals.css';
 
-// All three faces cover Latin + Cyrillic, so pl / ru / en share one stack.
-const display = Unbounded({ subsets: ['latin', 'latin-ext', 'cyrillic'], weight: ['400', '500', '600', '700'], variable: '--font-heading' });
-const body = Manrope({ subsets: ['latin', 'latin-ext', 'cyrillic'], weight: ['400', '500', '600', '700'], variable: '--font-body' });
-const code = JetBrains_Mono({ subsets: ['latin', 'latin-ext', 'cyrillic'], weight: ['400', '500'], variable: '--font-code' });
-
+// Typefaces are self-hosted (public/fonts, @font-face in globals.css): the build needs no font service.
 export const dynamicParams = false;
 
 export const viewport: Viewport = {
@@ -51,10 +46,13 @@ export default async function LocaleLayout({ children, params }: Readonly<{ chil
   const t = getDict(locale);
 
   return (
-    <html lang={locale} data-scroll-behavior="smooth" className={`${display.variable} ${body.variable} ${code.variable}`} suppressHydrationWarning>
+    <html lang={locale} data-scroll-behavior="smooth" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }} />
         <script type="importmap" dangerouslySetInnerHTML={{ __html: JSON.stringify(THREE_IMPORT_MAP) }} />
+        {/* The heading and text faces (latin; cyrillic loads only where used). */}
+        <link rel="preload" href="/fonts/sofia-sans-condensed-latin-wght-normal.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+        <link rel="preload" href="/fonts/sofia-sans-latin-wght-normal.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
       </head>
       <body>
         <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[200] focus:rounded-full focus:bg-signal focus:px-4 focus:py-2 focus:text-ink">
