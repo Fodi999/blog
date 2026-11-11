@@ -16,6 +16,7 @@ export function statusValues(locale: Locale, t: Dict): Record<string, string> {
     open: fmtNum(locale, status.cases.open),
     rounding: fmtNum(locale, status.cases.openRounding),
     boolean: fmtNum(locale, status.cases.openBoolean),
+    other: fmtNum(locale, status.cases.openOther),
     lines: fmtNum(locale, status.kernelLines),
     tests: plural(locale, status.tests.passed, t.plurals.tests),
     autoTests: plural(locale, status.tests.passed, t.plurals.autoTests),

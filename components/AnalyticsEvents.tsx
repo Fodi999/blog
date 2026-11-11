@@ -43,9 +43,11 @@ export function AnalyticsClickTracker() {
 }
 
 export function ViewItemTracker({ item }: { item: AnalyticsPayload }) {
+  // (the item as a string: a new object with the same content must not send the event again)
+  const key = JSON.stringify(item);
   useEffect(() => {
-    trackEvent('view_item', item);
-  }, [JSON.stringify(item)]);
+    trackEvent('view_item', JSON.parse(key) as AnalyticsPayload);
+  }, [key]);
 
   return null;
 }

@@ -6,6 +6,8 @@
 
 **Состояние Monge — в одном месте: `lib/status.ts`** (версия, даты, тесты, случаи ядра, бенчмарки). После
 проверки программы (`./tools/check_kernel.sh` в репозитории Monge) поправьте числа там — все страницы обновятся.
+Числа случаев ядра — из `python3 tools/cases.py` (входящие по видам: скругления и фаски, булевы, остальное → `cases.openRounding / openBoolean / openOther`).
+Снимки и кадры роликов — `public/media` + `lib/media.ts` (галерея главной — `gallery` в `app/[locale]/page.tsx`).
 Тексты — `lib/dict/{pl,ru,en}.ts` (форма задаётся `ru.ts`), в них `{version}`, `{passed}` и т. п. подставляет `fill()`.
 
 ## Технологии

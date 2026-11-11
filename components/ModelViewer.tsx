@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { ensureThreeImportMap } from '@/lib/three';
 
 /* three.js is self-hosted under /public/vendor/three and resolved through the
    import map in the root layout ("three" + "three/addons/"). It is loaded with a
@@ -90,6 +91,7 @@ export function ModelViewer({
       }
       setState('loading');
       try {
+        ensureThreeImportMap();
         const [THREE, { GLTFLoader }, { OrbitControls }] = await Promise.all([
           runtimeImport('three'),
           runtimeImport('three/addons/loaders/GLTFLoader.js'),

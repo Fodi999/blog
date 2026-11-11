@@ -14,6 +14,9 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     ".open-next/**",
     "open-next.config.ts",
+    // build output of wrangler and the vendored three.js (not our code: 41 errors and 1 500 warnings drowned ours)
+    ".wrangler/**",
+    "public/vendor/**",
   ]),
 ]);
 

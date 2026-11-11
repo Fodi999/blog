@@ -7,7 +7,6 @@ import { Header } from '@/components/Header';
 import { RevealObserver } from '@/components/Reveal';
 import { getDict, isLocale, locales } from '@/lib/i18n';
 import { ogLocale, SITE_URL } from '@/lib/seo';
-import { THREE_IMPORT_MAP } from '@/lib/three';
 import '../globals.css';
 
 // Typefaces are self-hosted (public/fonts, @font-face in globals.css): the build needs no font service.
@@ -46,10 +45,14 @@ export default async function LocaleLayout({ children, params }: Readonly<{ chil
   const t = getDict(locale);
 
   return (
-    <html lang={locale} data-scroll-behavior="smooth" suppressHydrationWarning>
+    <html lang={locale} className="js" data-scroll-behavior="smooth" suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }} />
-        <script type="importmap" dangerouslySetInnerHTML={{ __html: JSON.stringify(THREE_IMPORT_MAP) }} />
+        {/* No scripts here: React refuses a <script> in a component it renders in the browser (a change of language,
+            the not-found page). The page is marked as scripted by the class on <html>, and without JavaScript the
+            blocks that fade in on scroll are simply shown; three.js gets its import map from the 3D viewer itself. */}
+        <noscript>
+          <style>{'.js [data-reveal]{opacity:1;transform:none;filter:none}'}</style>
+        </noscript>
         {/* The heading and text faces (latin; cyrillic loads only where used). */}
         <link rel="preload" href="/fonts/sofia-sans-condensed-latin-wght-normal.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
         <link rel="preload" href="/fonts/sofia-sans-latin-wght-normal.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />

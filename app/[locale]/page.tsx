@@ -80,7 +80,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   const items = await getItems();
   const heroItem = items.find((i) => i.category === 'stainless' && i.model) ?? items.find((i) => i.model);
   const shot = (key: string) => t.now.shots.find((s) => s.key === key)!;
-  const gallery: ShotId[] = ['suspension', 'wheel', 'render'];
+  const gallery: ShotId[] = ['suspension', 'wheel', 'render', 'physics', 'cloth', 'brush'];
 
   return (
     <>
