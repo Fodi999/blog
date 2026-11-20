@@ -1,0 +1,5571 @@
+[
+ {
+  "id": "ISO 261",
+  "slug": "iso-261",
+  "family": "fasteners",
+  "title": "ISO general purpose metric screw threads — coarse pitch",
+  "edition": "2026-11-14",
+  "checked": "2026-11-14",
+  "columns": [
+   "size",
+   "pitch",
+   "second"
+  ],
+  "rows": [
+   {
+    "size": "M1.6",
+    "pitch": 0.35,
+    "second": false
+   },
+   {
+    "size": "M2",
+    "pitch": 0.4,
+    "second": false
+   },
+   {
+    "size": "M2.5",
+    "pitch": 0.45,
+    "second": false
+   },
+   {
+    "size": "M3",
+    "pitch": 0.5,
+    "second": false
+   },
+   {
+    "size": "M(3.5)",
+    "pitch": 0.6,
+    "second": true
+   },
+   {
+    "size": "M4",
+    "pitch": 0.7,
+    "second": false
+   },
+   {
+    "size": "M5",
+    "pitch": 0.8,
+    "second": false
+   },
+   {
+    "size": "M6",
+    "pitch": 1.0,
+    "second": false
+   },
+   {
+    "size": "M8",
+    "pitch": 1.25,
+    "second": false
+   },
+   {
+    "size": "M10",
+    "pitch": 1.5,
+    "second": false
+   },
+   {
+    "size": "M12",
+    "pitch": 1.75,
+    "second": false
+   },
+   {
+    "size": "M(14)",
+    "pitch": 2.0,
+    "second": true
+   },
+   {
+    "size": "M16",
+    "pitch": 2.0,
+    "second": false
+   },
+   {
+    "size": "M(18)",
+    "pitch": 2.5,
+    "second": true
+   },
+   {
+    "size": "M20",
+    "pitch": 2.5,
+    "second": false
+   },
+   {
+    "size": "M(22)",
+    "pitch": 2.5,
+    "second": true
+   },
+   {
+    "size": "M24",
+    "pitch": 3.0,
+    "second": false
+   },
+   {
+    "size": "M(27)",
+    "pitch": 3.0,
+    "second": true
+   },
+   {
+    "size": "M30",
+    "pitch": 3.5,
+    "second": false
+   },
+   {
+    "size": "M(33)",
+    "pitch": 3.5,
+    "second": true
+   },
+   {
+    "size": "M36",
+    "pitch": 4.0,
+    "second": false
+   },
+   {
+    "size": "M(39)",
+    "pitch": 4.0,
+    "second": true
+   },
+   {
+    "size": "M42",
+    "pitch": 4.5,
+    "second": false
+   },
+   {
+    "size": "M(45)",
+    "pitch": 4.5,
+    "second": true
+   },
+   {
+    "size": "M48",
+    "pitch": 5.0,
+    "second": false
+   },
+   {
+    "size": "M(52)",
+    "pitch": 5.0,
+    "second": true
+   },
+   {
+    "size": "M56",
+    "pitch": 5.5,
+    "second": false
+   },
+   {
+    "size": "M(60)",
+    "pitch": 5.5,
+    "second": true
+   },
+   {
+    "size": "M64",
+    "pitch": 6.0,
+    "second": false
+   }
+  ],
+  "sources": [
+   "maschinenbaurechner.de",
+   "en.wikipedia.org"
+  ],
+  "usedBy": [
+   "nut-iso-4032",
+   "bolt-iso-4017",
+   "screw-iso-4762",
+   "bolt-joint-iso-4017",
+   "shaft"
+  ]
+ },
+ {
+  "id": "ISO 261 fine",
+  "slug": "iso-261-fine",
+  "family": "fasteners",
+  "title": "ISO general purpose metric screw threads — the fine pitches, 3…100 mm (first, second, third choice)",
+  "edition": "2026-11-15",
+  "checked": "2026-11-15",
+  "columns": [
+   "size",
+   "choice",
+   "fine",
+   "coarse"
+  ],
+  "rows": [
+   {
+    "size": "M3",
+    "choice": 1,
+    "fine": [
+     0.35
+    ],
+    "coarse": 0.5
+   },
+   {
+    "size": "M3.5",
+    "choice": 2,
+    "fine": [
+     0.35
+    ],
+    "coarse": 0.6
+   },
+   {
+    "size": "M4",
+    "choice": 1,
+    "fine": [
+     0.5
+    ],
+    "coarse": 0.7
+   },
+   {
+    "size": "M4.5",
+    "choice": 2,
+    "fine": [
+     0.5
+    ],
+    "coarse": null
+   },
+   {
+    "size": "M5",
+    "choice": 1,
+    "fine": [
+     0.5
+    ],
+    "coarse": 0.8
+   },
+   {
+    "size": "M5.5",
+    "choice": 3,
+    "fine": [
+     0.5
+    ],
+    "coarse": null
+   },
+   {
+    "size": "M6",
+    "choice": 1,
+    "fine": [
+     0.75
+    ],
+    "coarse": 1.0
+   },
+   {
+    "size": "M7",
+    "choice": 2,
+    "fine": [
+     0.75
+    ],
+    "coarse": null
+   },
+   {
+    "size": "M8",
+    "choice": 1,
+    "fine": [
+     1.0,
+     0.75
+    ],
+    "coarse": 1.25
+   },
+   {
+    "size": "M9",
+    "choice": 3,
+    "fine": [
+     1.0,
+     0.75
+    ],
+    "coarse": null
+   },
+   {
+    "size": "M10",
+    "choice": 1,
+    "fine": [
+     1.25,
+     1.0,
+     0.75
+    ],
+    "coarse": 1.5
+   },
+   {
+    "size": "M11",
+    "choice": 3,
+    "fine": [
+     1.0,
+     0.75
+    ],
+    "coarse": null
+   },
+   {
+    "size": "M12",
+    "choice": 1,
+    "fine": [
+     1.5,
+     1.25,
+     1.0
+    ],
+    "coarse": 1.75
+   },
+   {
+    "size": "M14",
+    "choice": 2,
+    "fine": [
+     1.5,
+     1.25,
+     1.0
+    ],
+    "coarse": 2.0
+   },
+   {
+    "size": "M15",
+    "choice": 3,
+    "fine": [
+     1.5,
+     1.0
+    ],
+    "coarse": null
+   },
+   {
+    "size": "M16",
+    "choice": 1,
+    "fine": [
+     1.5,
+     1.0
+    ],
+    "coarse": 2.0
+   },
+   {
+    "size": "M17",
+    "choice": 3,
+    "fine": [
+     1.5,
+     1.0
+    ],
+    "coarse": null
+   },
+   {
+    "size": "M18",
+    "choice": 2,
+    "fine": [
+     2.0,
+     1.5,
+     1.0
+    ],
+    "coarse": 2.5
+   },
+   {
+    "size": "M20",
+    "choice": 1,
+    "fine": [
+     2.0,
+     1.5,
+     1.0
+    ],
+    "coarse": 2.5
+   },
+   {
+    "size": "M22",
+    "choice": 2,
+    "fine": [
+     2.0,
+     1.5,
+     1.0
+    ],
+    "coarse": 2.5
+   },
+   {
+    "size": "M24",
+    "choice": 1,
+    "fine": [
+     2.0,
+     1.5,
+     1.0
+    ],
+    "coarse": 3.0
+   },
+   {
+    "size": "M25",
+    "choice": 3,
+    "fine": [
+     2.0,
+     1.5,
+     1.0
+    ],
+    "coarse": null
+   },
+   {
+    "size": "M26",
+    "choice": 3,
+    "fine": [
+     1.5
+    ],
+    "coarse": null
+   },
+   {
+    "size": "M27",
+    "choice": 2,
+    "fine": [
+     2.0,
+     1.5,
+     1.0
+    ],
+    "coarse": 3.0
+   },
+   {
+    "size": "M28",
+    "choice": 3,
+    "fine": [
+     2.0,
+     1.5,
+     1.0
+    ],
+    "coarse": null
+   },
+   {
+    "size": "M30",
+    "choice": 1,
+    "fine": [
+     3.0,
+     2.0,
+     1.5,
+     1.0
+    ],
+    "coarse": 3.5
+   },
+   {
+    "size": "M32",
+    "choice": 3,
+    "fine": [
+     2.0,
+     1.5
+    ],
+    "coarse": null
+   },
+   {
+    "size": "M33",
+    "choice": 2,
+    "fine": [
+     3.0,
+     2.0,
+     1.5
+    ],
+    "coarse": 3.5
+   },
+   {
+    "size": "M35",
+    "choice": 3,
+    "fine": [
+     1.5
+    ],
+    "coarse": null
+   },
+   {
+    "size": "M36",
+    "choice": 1,
+    "fine": [
+     3.0,
+     2.0,
+     1.5
+    ],
+    "coarse": 4.0
+   },
+   {
+    "size": "M38",
+    "choice": 3,
+    "fine": [
+     1.5
+    ],
+    "coarse": null
+   },
+   {
+    "size": "M39",
+    "choice": 2,
+    "fine": [
+     3.0,
+     2.0,
+     1.5
+    ],
+    "coarse": 4.0
+   },
+   {
+    "size": "M40",
+    "choice": 3,
+    "fine": [
+     3.0,
+     2.0,
+     1.5
+    ],
+    "coarse": null
+   },
+   {
+    "size": "M42",
+    "choice": 1,
+    "fine": [
+     4.0,
+     3.0,
+     2.0,
+     1.5
+    ],
+    "coarse": 4.5
+   },
+   {
+    "size": "M45",
+    "choice": 2,
+    "fine": [
+     4.0,
+     3.0,
+     2.0,
+     1.5
+    ],
+    "coarse": 4.5
+   },
+   {
+    "size": "M48",
+    "choice": 1,
+    "fine": [
+     4.0,
+     3.0,
+     2.0,
+     1.5
+    ],
+    "coarse": 5.0
+   },
+   {
+    "size": "M50",
+    "choice": 3,
+    "fine": [
+     3.0,
+     2.0,
+     1.5
+    ],
+    "coarse": null
+   },
+   {
+    "size": "M52",
+    "choice": 2,
+    "fine": [
+     4.0,
+     3.0,
+     2.0,
+     1.5
+    ],
+    "coarse": 5.0
+   },
+   {
+    "size": "M55",
+    "choice": 3,
+    "fine": [
+     4.0,
+     3.0,
+     2.0,
+     1.5
+    ],
+    "coarse": null
+   },
+   {
+    "size": "M56",
+    "choice": 1,
+    "fine": [
+     4.0,
+     3.0,
+     2.0,
+     1.5
+    ],
+    "coarse": 5.5
+   },
+   {
+    "size": "M58",
+    "choice": 3,
+    "fine": [
+     4.0,
+     3.0,
+     2.0,
+     1.5
+    ],
+    "coarse": null
+   },
+   {
+    "size": "M60",
+    "choice": 2,
+    "fine": [
+     4.0,
+     3.0,
+     2.0,
+     1.5
+    ],
+    "coarse": 5.5
+   },
+   {
+    "size": "M62",
+    "choice": 3,
+    "fine": [
+     4.0,
+     3.0,
+     2.0,
+     1.5
+    ],
+    "coarse": null
+   },
+   {
+    "size": "M64",
+    "choice": 1,
+    "fine": [
+     4.0,
+     3.0,
+     2.0,
+     1.5
+    ],
+    "coarse": 6.0
+   },
+   {
+    "size": "M65",
+    "choice": 3,
+    "fine": [
+     4.0,
+     3.0,
+     2.0,
+     1.5
+    ],
+    "coarse": null
+   },
+   {
+    "size": "M68",
+    "choice": 2,
+    "fine": [
+     4.0,
+     3.0,
+     2.0,
+     1.5
+    ],
+    "coarse": null
+   },
+   {
+    "size": "M70",
+    "choice": 3,
+    "fine": [
+     6.0,
+     4.0,
+     3.0,
+     2.0,
+     1.5
+    ],
+    "coarse": null
+   },
+   {
+    "size": "M72",
+    "choice": 1,
+    "fine": [
+     6.0,
+     4.0,
+     3.0,
+     2.0,
+     1.5
+    ],
+    "coarse": null
+   },
+   {
+    "size": "M75",
+    "choice": 3,
+    "fine": [
+     4.0,
+     3.0,
+     2.0,
+     1.5
+    ],
+    "coarse": null
+   },
+   {
+    "size": "M76",
+    "choice": 2,
+    "fine": [
+     6.0,
+     4.0,
+     3.0,
+     2.0,
+     1.5
+    ],
+    "coarse": null
+   },
+   {
+    "size": "M78",
+    "choice": 3,
+    "fine": [
+     2.0
+    ],
+    "coarse": null
+   },
+   {
+    "size": "M80",
+    "choice": 1,
+    "fine": [
+     6.0,
+     4.0,
+     3.0,
+     2.0,
+     1.5
+    ],
+    "coarse": null
+   },
+   {
+    "size": "M82",
+    "choice": 3,
+    "fine": [
+     2.0
+    ],
+    "coarse": null
+   },
+   {
+    "size": "M85",
+    "choice": 2,
+    "fine": [
+     6.0,
+     4.0,
+     3.0,
+     2.0
+    ],
+    "coarse": null
+   },
+   {
+    "size": "M90",
+    "choice": 1,
+    "fine": [
+     6.0,
+     4.0,
+     3.0,
+     2.0
+    ],
+    "coarse": null
+   },
+   {
+    "size": "M95",
+    "choice": 2,
+    "fine": [
+     6.0,
+     4.0,
+     3.0,
+     2.0
+    ],
+    "coarse": null
+   },
+   {
+    "size": "M100",
+    "choice": 1,
+    "fine": [
+     6.0,
+     4.0,
+     3.0,
+     2.0
+    ],
+    "coarse": null
+   }
+  ],
+  "sources": [
+   "de.wikipedia.org (ISO 261 Tabelle 2, 3…100)",
+   "tabelic.com (3…64)",
+   "jp.misumi-ec.com (JIS B 0205-2 = ISO 261, 3…60)",
+   "NBK (JIS, 3…55)",
+   "65…100: IS 4218 (Part 2):2001 = ISO 261:1998, and the ISO 261:1998 preview (Table 2)"
+  ],
+  "usedBy": [
+   "lock-nut-din-981",
+   "shaft"
+  ]
+ },
+ {
+  "id": "ISO 2306",
+  "slug": "iso-2306",
+  "family": "fasteners",
+  "title": "Tap drills for the coarse thread",
+  "edition": "2026-11-14",
+  "checked": "2026-11-14",
+  "columns": [
+   "size",
+   "tap_drill"
+  ],
+  "rows": [
+   {
+    "size": "M1.6",
+    "tap_drill": 1.25
+   },
+   {
+    "size": "M2",
+    "tap_drill": 1.6
+   },
+   {
+    "size": "M2.5",
+    "tap_drill": 2.05
+   },
+   {
+    "size": "M3",
+    "tap_drill": 2.5
+   },
+   {
+    "size": "M(3.5)",
+    "tap_drill": 2.9
+   },
+   {
+    "size": "M4",
+    "tap_drill": 3.3
+   },
+   {
+    "size": "M5",
+    "tap_drill": 4.2
+   },
+   {
+    "size": "M6",
+    "tap_drill": 5.0
+   },
+   {
+    "size": "M8",
+    "tap_drill": 6.8
+   },
+   {
+    "size": "M10",
+    "tap_drill": 8.5
+   },
+   {
+    "size": "M12",
+    "tap_drill": 10.2
+   },
+   {
+    "size": "M(14)",
+    "tap_drill": 12.0
+   },
+   {
+    "size": "M16",
+    "tap_drill": 14.0
+   },
+   {
+    "size": "M(18)",
+    "tap_drill": 15.5
+   },
+   {
+    "size": "M20",
+    "tap_drill": 17.5
+   },
+   {
+    "size": "M(22)",
+    "tap_drill": 19.5
+   },
+   {
+    "size": "M24",
+    "tap_drill": 21.0
+   },
+   {
+    "size": "M(27)",
+    "tap_drill": 24.0
+   },
+   {
+    "size": "M30",
+    "tap_drill": 26.5
+   },
+   {
+    "size": "M(33)",
+    "tap_drill": 29.5
+   },
+   {
+    "size": "M36",
+    "tap_drill": 32.0
+   },
+   {
+    "size": "M(39)",
+    "tap_drill": 35.0
+   },
+   {
+    "size": "M42",
+    "tap_drill": 37.5
+   },
+   {
+    "size": "M(45)",
+    "tap_drill": 40.5
+   },
+   {
+    "size": "M48",
+    "tap_drill": 43.0
+   },
+   {
+    "size": "M(52)",
+    "tap_drill": 47.0
+   },
+   {
+    "size": "M56",
+    "tap_drill": 50.5
+   },
+   {
+    "size": "M(60)",
+    "tap_drill": 54.5
+   },
+   {
+    "size": "M64",
+    "tap_drill": 58.0
+   }
+  ],
+  "sources": [
+   "maschinenbaurechner.de",
+   "d − P (ISO 2306 rounds M12 to 10.2)"
+  ],
+  "usedBy": []
+ },
+ {
+  "id": "ISO 273",
+  "slug": "iso-273",
+  "family": "fasteners",
+  "title": "Clearance holes for bolts and screws — fine (H12), medium (H13), coarse (H14)",
+  "edition": "2026-11-14",
+  "checked": "2026-11-14",
+  "columns": [
+   "size",
+   "fine",
+   "medium",
+   "coarse"
+  ],
+  "rows": [
+   {
+    "size": "M1.6",
+    "fine": 1.7,
+    "medium": 1.8,
+    "coarse": 2.0
+   },
+   {
+    "size": "M2",
+    "fine": 2.2,
+    "medium": 2.4,
+    "coarse": 2.6
+   },
+   {
+    "size": "M2.5",
+    "fine": 2.7,
+    "medium": 2.9,
+    "coarse": 3.1
+   },
+   {
+    "size": "M3",
+    "fine": 3.2,
+    "medium": 3.4,
+    "coarse": 3.6
+   },
+   {
+    "size": "M(3.5)",
+    "fine": 3.7,
+    "medium": 3.9,
+    "coarse": 4.2
+   },
+   {
+    "size": "M4",
+    "fine": 4.3,
+    "medium": 4.5,
+    "coarse": 4.8
+   },
+   {
+    "size": "M5",
+    "fine": 5.3,
+    "medium": 5.5,
+    "coarse": 5.8
+   },
+   {
+    "size": "M6",
+    "fine": 6.4,
+    "medium": 6.6,
+    "coarse": 7.0
+   },
+   {
+    "size": "M8",
+    "fine": 8.4,
+    "medium": 9.0,
+    "coarse": 10.0
+   },
+   {
+    "size": "M10",
+    "fine": 10.5,
+    "medium": 11.0,
+    "coarse": 12.0
+   },
+   {
+    "size": "M12",
+    "fine": 13.0,
+    "medium": 13.5,
+    "coarse": 14.5
+   },
+   {
+    "size": "M(14)",
+    "fine": 15.0,
+    "medium": 15.5,
+    "coarse": 16.5
+   },
+   {
+    "size": "M16",
+    "fine": 17.0,
+    "medium": 17.5,
+    "coarse": 18.5
+   },
+   {
+    "size": "M(18)",
+    "fine": 19.0,
+    "medium": 20.0,
+    "coarse": 21.0
+   },
+   {
+    "size": "M20",
+    "fine": 21.0,
+    "medium": 22.0,
+    "coarse": 24.0
+   },
+   {
+    "size": "M(22)",
+    "fine": 23.0,
+    "medium": 24.0,
+    "coarse": 26.0
+   },
+   {
+    "size": "M24",
+    "fine": 25.0,
+    "medium": 26.0,
+    "coarse": 28.0
+   },
+   {
+    "size": "M(27)",
+    "fine": 28.0,
+    "medium": 30.0,
+    "coarse": 32.0
+   },
+   {
+    "size": "M30",
+    "fine": 31.0,
+    "medium": 33.0,
+    "coarse": 35.0
+   },
+   {
+    "size": "M(33)",
+    "fine": 34.0,
+    "medium": 36.0,
+    "coarse": 38.0
+   },
+   {
+    "size": "M36",
+    "fine": 37.0,
+    "medium": 39.0,
+    "coarse": 42.0
+   },
+   {
+    "size": "M(39)",
+    "fine": 40.0,
+    "medium": 42.0,
+    "coarse": 45.0
+   },
+   {
+    "size": "M42",
+    "fine": 43.0,
+    "medium": 45.0,
+    "coarse": 48.0
+   },
+   {
+    "size": "M(45)",
+    "fine": 46.0,
+    "medium": 48.0,
+    "coarse": 52.0
+   },
+   {
+    "size": "M48",
+    "fine": 50.0,
+    "medium": 52.0,
+    "coarse": 56.0
+   },
+   {
+    "size": "M(52)",
+    "fine": 54.0,
+    "medium": 56.0,
+    "coarse": 62.0
+   },
+   {
+    "size": "M56",
+    "fine": 58.0,
+    "medium": 62.0,
+    "coarse": 66.0
+   },
+   {
+    "size": "M(60)",
+    "fine": 62.0,
+    "medium": 66.0,
+    "coarse": 70.0
+   },
+   {
+    "size": "M64",
+    "fine": 66.0,
+    "medium": 70.0,
+    "coarse": 74.0
+   }
+  ],
+  "sources": [
+   "engineeringhardware.com",
+   "maschinenbaurechner.de"
+  ],
+  "usedBy": [
+   "bolt-joint-iso-4017"
+  ]
+ },
+ {
+  "id": "ISO 7089",
+  "slug": "iso-7089",
+  "family": "fasteners",
+  "title": "Plain washers — normal series, product grade A (200 HV, 300 HV)",
+  "edition": "2026-11-14",
+  "checked": "2026-11-14",
+  "columns": [
+   "size",
+   "d1",
+   "d1_max",
+   "d2",
+   "d2_min",
+   "h",
+   "h_min",
+   "h_max"
+  ],
+  "rows": [
+   {
+    "size": "M1.6",
+    "d1": 1.7,
+    "d1_max": 1.84,
+    "d2": 4.0,
+    "d2_min": 3.7,
+    "h": 0.3,
+    "h_min": 0.25,
+    "h_max": 0.35
+   },
+   {
+    "size": "M2",
+    "d1": 2.2,
+    "d1_max": 2.34,
+    "d2": 5.0,
+    "d2_min": 4.7,
+    "h": 0.3,
+    "h_min": 0.25,
+    "h_max": 0.35
+   },
+   {
+    "size": "M2.5",
+    "d1": 2.7,
+    "d1_max": 2.84,
+    "d2": 6.0,
+    "d2_min": 5.7,
+    "h": 0.5,
+    "h_min": 0.45,
+    "h_max": 0.55
+   },
+   {
+    "size": "M3",
+    "d1": 3.2,
+    "d1_max": 3.38,
+    "d2": 7.0,
+    "d2_min": 6.64,
+    "h": 0.5,
+    "h_min": 0.45,
+    "h_max": 0.55
+   },
+   {
+    "size": "M(3.5)",
+    "d1": 3.7,
+    "d1_max": 3.88,
+    "d2": 8.0,
+    "d2_min": 7.64,
+    "h": 0.5,
+    "h_min": 0.45,
+    "h_max": 0.55
+   },
+   {
+    "size": "M4",
+    "d1": 4.3,
+    "d1_max": 4.48,
+    "d2": 9.0,
+    "d2_min": 8.64,
+    "h": 0.8,
+    "h_min": 0.7,
+    "h_max": 0.9
+   },
+   {
+    "size": "M5",
+    "d1": 5.3,
+    "d1_max": 5.48,
+    "d2": 10.0,
+    "d2_min": 9.64,
+    "h": 1.0,
+    "h_min": 0.9,
+    "h_max": 1.1
+   },
+   {
+    "size": "M6",
+    "d1": 6.4,
+    "d1_max": 6.62,
+    "d2": 12.0,
+    "d2_min": 11.57,
+    "h": 1.6,
+    "h_min": 1.4,
+    "h_max": 1.8
+   },
+   {
+    "size": "M8",
+    "d1": 8.4,
+    "d1_max": 8.62,
+    "d2": 16.0,
+    "d2_min": 15.57,
+    "h": 1.6,
+    "h_min": 1.4,
+    "h_max": 1.8
+   },
+   {
+    "size": "M10",
+    "d1": 10.5,
+    "d1_max": 10.77,
+    "d2": 20.0,
+    "d2_min": 19.48,
+    "h": 2.0,
+    "h_min": 1.8,
+    "h_max": 2.2
+   },
+   {
+    "size": "M12",
+    "d1": 13.0,
+    "d1_max": 13.27,
+    "d2": 24.0,
+    "d2_min": 23.48,
+    "h": 2.5,
+    "h_min": 2.3,
+    "h_max": 2.7
+   },
+   {
+    "size": "M(14)",
+    "d1": 15.0,
+    "d1_max": 15.27,
+    "d2": 28.0,
+    "d2_min": 27.48,
+    "h": 2.5,
+    "h_min": 2.3,
+    "h_max": 2.7
+   },
+   {
+    "size": "M16",
+    "d1": 17.0,
+    "d1_max": 17.27,
+    "d2": 30.0,
+    "d2_min": 29.48,
+    "h": 3.0,
+    "h_min": 2.7,
+    "h_max": 3.3
+   },
+   {
+    "size": "M(18)",
+    "d1": 19.0,
+    "d1_max": 19.33,
+    "d2": 34.0,
+    "d2_min": 33.38,
+    "h": 3.0,
+    "h_min": 2.7,
+    "h_max": 3.3
+   },
+   {
+    "size": "M20",
+    "d1": 21.0,
+    "d1_max": 21.33,
+    "d2": 37.0,
+    "d2_min": 36.38,
+    "h": 3.0,
+    "h_min": 2.7,
+    "h_max": 3.3
+   },
+   {
+    "size": "M(22)",
+    "d1": 23.0,
+    "d1_max": 23.33,
+    "d2": 39.0,
+    "d2_min": 38.38,
+    "h": 3.0,
+    "h_min": 2.7,
+    "h_max": 3.3
+   },
+   {
+    "size": "M24",
+    "d1": 25.0,
+    "d1_max": 25.33,
+    "d2": 44.0,
+    "d2_min": 43.38,
+    "h": 4.0,
+    "h_min": 3.7,
+    "h_max": 4.3
+   },
+   {
+    "size": "M(27)",
+    "d1": 28.0,
+    "d1_max": 28.33,
+    "d2": 50.0,
+    "d2_min": 49.38,
+    "h": 4.0,
+    "h_min": 3.7,
+    "h_max": 4.3
+   },
+   {
+    "size": "M30",
+    "d1": 31.0,
+    "d1_max": 31.39,
+    "d2": 56.0,
+    "d2_min": 55.26,
+    "h": 4.0,
+    "h_min": 3.7,
+    "h_max": 4.3
+   },
+   {
+    "size": "M(33)",
+    "d1": 34.0,
+    "d1_max": 34.62,
+    "d2": 60.0,
+    "d2_min": 58.8,
+    "h": 5.0,
+    "h_min": 4.4,
+    "h_max": 5.6
+   },
+   {
+    "size": "M36",
+    "d1": 37.0,
+    "d1_max": 37.62,
+    "d2": 66.0,
+    "d2_min": 64.8,
+    "h": 5.0,
+    "h_min": 4.4,
+    "h_max": 5.6
+   },
+   {
+    "size": "M(39)",
+    "d1": 42.0,
+    "d1_max": 42.62,
+    "d2": 72.0,
+    "d2_min": 70.8,
+    "h": 6.0,
+    "h_min": 5.4,
+    "h_max": 6.6
+   },
+   {
+    "size": "M42",
+    "d1": 45.0,
+    "d1_max": 45.62,
+    "d2": 78.0,
+    "d2_min": 76.8,
+    "h": 8.0,
+    "h_min": 7.0,
+    "h_max": 9.0
+   },
+   {
+    "size": "M(45)",
+    "d1": 48.0,
+    "d1_max": 48.62,
+    "d2": 85.0,
+    "d2_min": 83.6,
+    "h": 8.0,
+    "h_min": 7.0,
+    "h_max": 9.0
+   },
+   {
+    "size": "M48",
+    "d1": 52.0,
+    "d1_max": 52.74,
+    "d2": 92.0,
+    "d2_min": 90.6,
+    "h": 8.0,
+    "h_min": 7.0,
+    "h_max": 9.0
+   },
+   {
+    "size": "M(52)",
+    "d1": 56.0,
+    "d1_max": 56.74,
+    "d2": 98.0,
+    "d2_min": 96.6,
+    "h": 8.0,
+    "h_min": 7.0,
+    "h_max": 9.0
+   },
+   {
+    "size": "M56",
+    "d1": 62.0,
+    "d1_max": 62.74,
+    "d2": 105.0,
+    "d2_min": 103.6,
+    "h": 10.0,
+    "h_min": 9.0,
+    "h_max": 11.0
+   },
+   {
+    "size": "M(60)",
+    "d1": 66.0,
+    "d1_max": 66.74,
+    "d2": 110.0,
+    "d2_min": 108.6,
+    "h": 10.0,
+    "h_min": 9.0,
+    "h_max": 11.0
+   },
+   {
+    "size": "M64",
+    "d1": 70.0,
+    "d1_max": 70.74,
+    "d2": 115.0,
+    "d2_min": 113.6,
+    "h": 10.0,
+    "h_min": 9.0,
+    "h_max": 11.0
+   }
+  ],
+  "sources": [
+   "westfieldfasteners.co.uk",
+   "amesweb.info"
+  ],
+  "usedBy": [
+   "washer-iso-7089",
+   "bolt-joint-iso-4017"
+  ]
+ },
+ {
+  "id": "ISO 4017",
+  "slug": "iso-4017",
+  "family": "fasteners",
+  "title": "Hexagon head screws, fully threaded — steel 5.6, 8.8, 10.9 (M3…M39); stainless A2-70 / A4-70 to M24, A2-50 / A4-50 to M39",
+  "edition": "2026-11-14",
+  "checked": "2026-11-14",
+  "columns": [
+   "size",
+   "s",
+   "k",
+   "e_min_a",
+   "e_min_b",
+   "dw_min_a",
+   "dw_min_b",
+   "c_min",
+   "c_max",
+   "l_min",
+   "l_max"
+  ],
+  "rows": [
+   {
+    "size": "M1.6",
+    "s": 3.2,
+    "k": 1.1,
+    "e_min_a": 3.41,
+    "e_min_b": 3.28,
+    "dw_min_a": 2.27,
+    "dw_min_b": 2.3,
+    "c_min": 0.1,
+    "c_max": 0.25,
+    "l_min": 2.0,
+    "l_max": 16.0
+   },
+   {
+    "size": "M2",
+    "s": 4.0,
+    "k": 1.4,
+    "e_min_a": 4.32,
+    "e_min_b": 4.18,
+    "dw_min_a": 3.07,
+    "dw_min_b": 2.95,
+    "c_min": 0.1,
+    "c_max": 0.25,
+    "l_min": 4.0,
+    "l_max": 20.0
+   },
+   {
+    "size": "M2.5",
+    "s": 5.0,
+    "k": 1.7,
+    "e_min_a": 5.45,
+    "e_min_b": 5.31,
+    "dw_min_a": 4.07,
+    "dw_min_b": 3.95,
+    "c_min": 0.1,
+    "c_max": 0.25,
+    "l_min": 5.0,
+    "l_max": 25.0
+   },
+   {
+    "size": "M3",
+    "s": 5.5,
+    "k": 2.0,
+    "e_min_a": 6.01,
+    "e_min_b": 5.88,
+    "dw_min_a": 4.57,
+    "dw_min_b": 4.45,
+    "c_min": 0.15,
+    "c_max": 0.4,
+    "l_min": 6.0,
+    "l_max": 30.0
+   },
+   {
+    "size": "M(3.5)",
+    "s": 6.0,
+    "k": 2.4,
+    "e_min_a": 6.58,
+    "e_min_b": 6.44,
+    "dw_min_a": 5.07,
+    "dw_min_b": 4.95,
+    "c_min": 0.15,
+    "c_max": 0.4,
+    "l_min": 8.0,
+    "l_max": 30.0
+   },
+   {
+    "size": "M4",
+    "s": 7.0,
+    "k": 2.8,
+    "e_min_a": 7.66,
+    "e_min_b": 7.5,
+    "dw_min_a": 5.88,
+    "dw_min_b": 5.74,
+    "c_min": 0.15,
+    "c_max": 0.4,
+    "l_min": 8.0,
+    "l_max": 40.0
+   },
+   {
+    "size": "M5",
+    "s": 8.0,
+    "k": 3.5,
+    "e_min_a": 8.79,
+    "e_min_b": 8.63,
+    "dw_min_a": 6.88,
+    "dw_min_b": 6.74,
+    "c_min": 0.15,
+    "c_max": 0.5,
+    "l_min": 10.0,
+    "l_max": 50.0
+   },
+   {
+    "size": "M6",
+    "s": 10.0,
+    "k": 4.0,
+    "e_min_a": 11.05,
+    "e_min_b": 10.89,
+    "dw_min_a": 8.88,
+    "dw_min_b": 8.74,
+    "c_min": 0.15,
+    "c_max": 0.5,
+    "l_min": 12.0,
+    "l_max": 60.0
+   },
+   {
+    "size": "M8",
+    "s": 13.0,
+    "k": 5.3,
+    "e_min_a": 14.38,
+    "e_min_b": 14.2,
+    "dw_min_a": 11.63,
+    "dw_min_b": 11.47,
+    "c_min": 0.15,
+    "c_max": 0.6,
+    "l_min": 16.0,
+    "l_max": 80.0
+   },
+   {
+    "size": "M10",
+    "s": 16.0,
+    "k": 6.4,
+    "e_min_a": 17.77,
+    "e_min_b": 17.59,
+    "dw_min_a": 14.63,
+    "dw_min_b": 14.47,
+    "c_min": 0.15,
+    "c_max": 0.6,
+    "l_min": 20.0,
+    "l_max": 100.0
+   },
+   {
+    "size": "M12",
+    "s": 18.0,
+    "k": 7.5,
+    "e_min_a": 20.03,
+    "e_min_b": 19.85,
+    "dw_min_a": 16.63,
+    "dw_min_b": 16.47,
+    "c_min": 0.15,
+    "c_max": 0.6,
+    "l_min": 25.0,
+    "l_max": 120.0
+   },
+   {
+    "size": "M(14)",
+    "s": 21.0,
+    "k": 8.8,
+    "e_min_a": 23.36,
+    "e_min_b": 22.78,
+    "dw_min_a": 19.64,
+    "dw_min_b": 19.15,
+    "c_min": 0.15,
+    "c_max": 0.6,
+    "l_min": 30.0,
+    "l_max": 120.0
+   },
+   {
+    "size": "M16",
+    "s": 24.0,
+    "k": 10.0,
+    "e_min_a": 26.75,
+    "e_min_b": 26.17,
+    "dw_min_a": 22.49,
+    "dw_min_b": 22.0,
+    "c_min": 0.2,
+    "c_max": 0.8,
+    "l_min": 30.0,
+    "l_max": 200.0
+   },
+   {
+    "size": "M(18)",
+    "s": 27.0,
+    "k": 11.5,
+    "e_min_a": 30.14,
+    "e_min_b": 29.56,
+    "dw_min_a": 25.34,
+    "dw_min_b": 24.85,
+    "c_min": 0.2,
+    "c_max": 0.8,
+    "l_min": 40.0,
+    "l_max": 200.0
+   },
+   {
+    "size": "M20",
+    "s": 30.0,
+    "k": 12.5,
+    "e_min_a": 33.53,
+    "e_min_b": 32.95,
+    "dw_min_a": 28.19,
+    "dw_min_b": 27.7,
+    "c_min": 0.2,
+    "c_max": 0.8,
+    "l_min": 40.0,
+    "l_max": 200.0
+   },
+   {
+    "size": "M(22)",
+    "s": 34.0,
+    "k": 14.0,
+    "e_min_a": 37.72,
+    "e_min_b": 37.29,
+    "dw_min_a": 31.71,
+    "dw_min_b": 31.35,
+    "c_min": 0.2,
+    "c_max": 0.8,
+    "l_min": 50.0,
+    "l_max": 200.0
+   },
+   {
+    "size": "M24",
+    "s": 36.0,
+    "k": 15.0,
+    "e_min_a": 39.98,
+    "e_min_b": 39.55,
+    "dw_min_a": 33.61,
+    "dw_min_b": 33.25,
+    "c_min": 0.2,
+    "c_max": 0.8,
+    "l_min": 50.0,
+    "l_max": 200.0
+   },
+   {
+    "size": "M(27)",
+    "s": 41.0,
+    "k": 17.0,
+    "e_min_a": null,
+    "e_min_b": 45.2,
+    "dw_min_a": null,
+    "dw_min_b": 38.0,
+    "c_min": 0.2,
+    "c_max": 0.8,
+    "l_min": 60.0,
+    "l_max": 200.0
+   },
+   {
+    "size": "M30",
+    "s": 46.0,
+    "k": 18.7,
+    "e_min_a": null,
+    "e_min_b": 50.85,
+    "dw_min_a": null,
+    "dw_min_b": 42.75,
+    "c_min": 0.2,
+    "c_max": 0.8,
+    "l_min": 60.0,
+    "l_max": 200.0
+   },
+   {
+    "size": "M(33)",
+    "s": 50.0,
+    "k": 21.0,
+    "e_min_a": null,
+    "e_min_b": 55.37,
+    "dw_min_a": null,
+    "dw_min_b": 46.55,
+    "c_min": 0.2,
+    "c_max": 0.8,
+    "l_min": 70.0,
+    "l_max": 200.0
+   },
+   {
+    "size": "M36",
+    "s": 55.0,
+    "k": 22.5,
+    "e_min_a": null,
+    "e_min_b": 60.79,
+    "dw_min_a": null,
+    "dw_min_b": 51.11,
+    "c_min": 0.2,
+    "c_max": 0.8,
+    "l_min": 70.0,
+    "l_max": 200.0
+   },
+   {
+    "size": "M(39)",
+    "s": 60.0,
+    "k": 25.0,
+    "e_min_a": null,
+    "e_min_b": 66.44,
+    "dw_min_a": null,
+    "dw_min_b": 55.86,
+    "c_min": 0.3,
+    "c_max": 1.0,
+    "l_min": 80.0,
+    "l_max": 200.0
+   },
+   {
+    "size": "M42",
+    "s": 65.0,
+    "k": 26.0,
+    "e_min_a": null,
+    "e_min_b": 71.3,
+    "dw_min_a": null,
+    "dw_min_b": 59.95,
+    "c_min": 0.3,
+    "c_max": 1.0,
+    "l_min": 80.0,
+    "l_max": 200.0
+   },
+   {
+    "size": "M(45)",
+    "s": 70.0,
+    "k": 28.0,
+    "e_min_a": null,
+    "e_min_b": 76.95,
+    "dw_min_a": null,
+    "dw_min_b": 64.7,
+    "c_min": 0.3,
+    "c_max": 1.0,
+    "l_min": 100.0,
+    "l_max": 200.0
+   },
+   {
+    "size": "M48",
+    "s": 75.0,
+    "k": 30.0,
+    "e_min_a": null,
+    "e_min_b": 82.6,
+    "dw_min_a": null,
+    "dw_min_b": 69.45,
+    "c_min": 0.3,
+    "c_max": 1.0,
+    "l_min": 100.0,
+    "l_max": 200.0
+   },
+   {
+    "size": "M(52)",
+    "s": 80.0,
+    "k": 33.0,
+    "e_min_a": null,
+    "e_min_b": 88.25,
+    "dw_min_a": null,
+    "dw_min_b": 74.2,
+    "c_min": 0.3,
+    "c_max": 1.0,
+    "l_min": 110.0,
+    "l_max": 200.0
+   },
+   {
+    "size": "M56",
+    "s": 85.0,
+    "k": 35.0,
+    "e_min_a": null,
+    "e_min_b": 93.56,
+    "dw_min_a": null,
+    "dw_min_b": 78.66,
+    "c_min": 0.3,
+    "c_max": 1.0,
+    "l_min": 110.0,
+    "l_max": 200.0
+   },
+   {
+    "size": "M(60)",
+    "s": 90.0,
+    "k": 38.0,
+    "e_min_a": null,
+    "e_min_b": 99.21,
+    "dw_min_a": null,
+    "dw_min_b": 83.41,
+    "c_min": 0.3,
+    "c_max": 1.0,
+    "l_min": 120.0,
+    "l_max": 200.0
+   },
+   {
+    "size": "M64",
+    "s": 95.0,
+    "k": 40.0,
+    "e_min_a": null,
+    "e_min_b": 104.86,
+    "dw_min_a": null,
+    "dw_min_b": 88.16,
+    "c_min": 0.3,
+    "c_max": 1.0,
+    "l_min": 120.0,
+    "l_max": 200.0
+   }
+  ],
+  "sources": [
+   "ISO 4017:2011 Tables 1–3 (head, lengths series, classes)",
+   "westfieldfasteners.co.uk (head)",
+   "globalfastener.com (s, k)",
+   "lengths per size (one source, preferred sizes) — engineersedge.com"
+  ],
+  "usedBy": [
+   "bolt-iso-4017",
+   "bolt-joint-iso-4017"
+  ]
+ },
+ {
+  "id": "ISO 4032",
+  "slug": "iso-4032",
+  "family": "fasteners",
+  "title": "Hexagon regular nuts (style 1) — steel 6, 8, 10 (M3…M39); stainless A2-70 / A4-70 to M24, A2-50 / A4-50 to M39",
+  "edition": "2026-11-14",
+  "checked": "2026-11-14",
+  "columns": [
+   "size",
+   "s",
+   "s_min",
+   "e_min",
+   "m",
+   "m_min"
+  ],
+  "rows": [
+   {
+    "size": "M1.6",
+    "s": 3.2,
+    "s_min": 3.02,
+    "e_min": 3.41,
+    "m": 1.3,
+    "m_min": 1.05
+   },
+   {
+    "size": "M2",
+    "s": 4.0,
+    "s_min": 3.82,
+    "e_min": 4.32,
+    "m": 1.6,
+    "m_min": 1.35
+   },
+   {
+    "size": "M2.5",
+    "s": 5.0,
+    "s_min": 4.82,
+    "e_min": 5.45,
+    "m": 2.0,
+    "m_min": 1.75
+   },
+   {
+    "size": "M3",
+    "s": 5.5,
+    "s_min": 5.32,
+    "e_min": 6.01,
+    "m": 2.4,
+    "m_min": 2.15
+   },
+   {
+    "size": "M(3.5)",
+    "s": 6.0,
+    "s_min": 5.82,
+    "e_min": 6.58,
+    "m": 2.8,
+    "m_min": 2.55
+   },
+   {
+    "size": "M4",
+    "s": 7.0,
+    "s_min": 6.78,
+    "e_min": 7.66,
+    "m": 3.2,
+    "m_min": 2.9
+   },
+   {
+    "size": "M5",
+    "s": 8.0,
+    "s_min": 7.78,
+    "e_min": 8.79,
+    "m": 4.7,
+    "m_min": 4.4
+   },
+   {
+    "size": "M6",
+    "s": 10.0,
+    "s_min": 9.78,
+    "e_min": 11.05,
+    "m": 5.2,
+    "m_min": 4.9
+   },
+   {
+    "size": "M8",
+    "s": 13.0,
+    "s_min": 12.73,
+    "e_min": 14.38,
+    "m": 6.8,
+    "m_min": 6.44
+   },
+   {
+    "size": "M10",
+    "s": 16.0,
+    "s_min": 15.73,
+    "e_min": 17.77,
+    "m": 8.4,
+    "m_min": 8.04
+   },
+   {
+    "size": "M12",
+    "s": 18.0,
+    "s_min": 17.73,
+    "e_min": 20.03,
+    "m": 10.8,
+    "m_min": 10.37
+   },
+   {
+    "size": "M(14)",
+    "s": 21.0,
+    "s_min": 20.67,
+    "e_min": 23.36,
+    "m": 12.8,
+    "m_min": 12.1
+   },
+   {
+    "size": "M16",
+    "s": 24.0,
+    "s_min": 23.67,
+    "e_min": 26.75,
+    "m": 14.8,
+    "m_min": 14.1
+   },
+   {
+    "size": "M(18)",
+    "s": 27.0,
+    "s_min": 26.16,
+    "e_min": 29.56,
+    "m": 15.8,
+    "m_min": 15.1
+   },
+   {
+    "size": "M20",
+    "s": 30.0,
+    "s_min": 29.16,
+    "e_min": 32.95,
+    "m": 18.0,
+    "m_min": 16.9
+   },
+   {
+    "size": "M(22)",
+    "s": 34.0,
+    "s_min": 33.0,
+    "e_min": 37.29,
+    "m": 19.4,
+    "m_min": 18.1
+   },
+   {
+    "size": "M24",
+    "s": 36.0,
+    "s_min": 35.0,
+    "e_min": 39.55,
+    "m": 21.5,
+    "m_min": 20.2
+   },
+   {
+    "size": "M(27)",
+    "s": 41.0,
+    "s_min": 40.0,
+    "e_min": 45.2,
+    "m": 23.8,
+    "m_min": 22.5
+   },
+   {
+    "size": "M30",
+    "s": 46.0,
+    "s_min": 45.0,
+    "e_min": 50.85,
+    "m": 25.6,
+    "m_min": 24.3
+   },
+   {
+    "size": "M(33)",
+    "s": 50.0,
+    "s_min": 49.0,
+    "e_min": 55.37,
+    "m": 28.7,
+    "m_min": 27.4
+   },
+   {
+    "size": "M36",
+    "s": 55.0,
+    "s_min": 53.8,
+    "e_min": 60.79,
+    "m": 31.0,
+    "m_min": 29.4
+   },
+   {
+    "size": "M(39)",
+    "s": 60.0,
+    "s_min": 58.8,
+    "e_min": 66.44,
+    "m": 33.4,
+    "m_min": 31.8
+   },
+   {
+    "size": "M42",
+    "s": 65.0,
+    "s_min": 63.1,
+    "e_min": 71.3,
+    "m": 34.0,
+    "m_min": 32.4
+   },
+   {
+    "size": "M(45)",
+    "s": 70.0,
+    "s_min": 68.1,
+    "e_min": 76.95,
+    "m": 36.0,
+    "m_min": 34.4
+   },
+   {
+    "size": "M48",
+    "s": 75.0,
+    "s_min": 73.1,
+    "e_min": 82.6,
+    "m": 38.0,
+    "m_min": 36.4
+   },
+   {
+    "size": "M(52)",
+    "s": 80.0,
+    "s_min": 78.1,
+    "e_min": 88.25,
+    "m": 42.0,
+    "m_min": 40.4
+   },
+   {
+    "size": "M56",
+    "s": 85.0,
+    "s_min": 82.8,
+    "e_min": 93.56,
+    "m": 45.0,
+    "m_min": 43.4
+   },
+   {
+    "size": "M(60)",
+    "s": 90.0,
+    "s_min": 87.8,
+    "e_min": 99.21,
+    "m": 48.0,
+    "m_min": 46.4
+   },
+   {
+    "size": "M64",
+    "s": 95.0,
+    "s_min": 92.8,
+    "e_min": 104.86,
+    "m": 51.0,
+    "m_min": 49.1
+   }
+  ],
+  "sources": [
+   "wermac.org",
+   "torqbolt.com",
+   "royasutton.github.io (first choice)",
+   "aspenfasteners.com (M3.5)",
+   "classes: amesweb.info (steel); ISO 4032:2012 and IS 1364-3 tables (stainless)"
+  ],
+  "usedBy": [
+   "nut-iso-4032",
+   "bolt-joint-iso-4017"
+  ]
+ },
+ {
+  "id": "ISO 4762",
+  "slug": "iso-4762",
+  "family": "fasteners",
+  "title": "Hexagon socket head cap screws — steel 8.8, 10.9, 12.9 (M3…M39); stainless A2-70 / A4-70 to M24, A2-50 / A4-50 to M39",
+  "edition": "2026-11-14",
+  "checked": "2026-11-14",
+  "columns": [
+   "size",
+   "dk",
+   "k",
+   "s",
+   "t",
+   "b",
+   "l_min",
+   "l_max"
+  ],
+  "rows": [
+   {
+    "size": "M1.6",
+    "dk": 3.0,
+    "k": 1.6,
+    "s": 1.5,
+    "t": 0.7,
+    "b": 15.0,
+    "l_min": 2.5,
+    "l_max": 16.0
+   },
+   {
+    "size": "M2",
+    "dk": 3.8,
+    "k": 2.0,
+    "s": 1.5,
+    "t": 1.0,
+    "b": 16.0,
+    "l_min": 3.0,
+    "l_max": 20.0
+   },
+   {
+    "size": "M2.5",
+    "dk": 4.5,
+    "k": 2.5,
+    "s": 2.0,
+    "t": 1.1,
+    "b": 17.0,
+    "l_min": 4.0,
+    "l_max": 25.0
+   },
+   {
+    "size": "M3",
+    "dk": 5.5,
+    "k": 3.0,
+    "s": 2.5,
+    "t": 1.3,
+    "b": 18.0,
+    "l_min": 5.0,
+    "l_max": 30.0
+   },
+   {
+    "size": "M4",
+    "dk": 7.0,
+    "k": 4.0,
+    "s": 3.0,
+    "t": 2.0,
+    "b": 20.0,
+    "l_min": 6.0,
+    "l_max": 40.0
+   },
+   {
+    "size": "M5",
+    "dk": 8.5,
+    "k": 5.0,
+    "s": 4.0,
+    "t": 2.5,
+    "b": 22.0,
+    "l_min": 8.0,
+    "l_max": 50.0
+   },
+   {
+    "size": "M6",
+    "dk": 10.0,
+    "k": 6.0,
+    "s": 5.0,
+    "t": 3.0,
+    "b": 24.0,
+    "l_min": 10.0,
+    "l_max": 60.0
+   },
+   {
+    "size": "M8",
+    "dk": 13.0,
+    "k": 8.0,
+    "s": 6.0,
+    "t": 4.0,
+    "b": 28.0,
+    "l_min": 12.0,
+    "l_max": 80.0
+   },
+   {
+    "size": "M10",
+    "dk": 16.0,
+    "k": 10.0,
+    "s": 8.0,
+    "t": 5.0,
+    "b": 32.0,
+    "l_min": 16.0,
+    "l_max": 100.0
+   },
+   {
+    "size": "M12",
+    "dk": 18.0,
+    "k": 12.0,
+    "s": 10.0,
+    "t": 6.0,
+    "b": 36.0,
+    "l_min": 20.0,
+    "l_max": 120.0
+   },
+   {
+    "size": "M(14)",
+    "dk": 21.0,
+    "k": 14.0,
+    "s": 12.0,
+    "t": 7.0,
+    "b": 40.0,
+    "l_min": 25.0,
+    "l_max": 120.0
+   },
+   {
+    "size": "M16",
+    "dk": 24.0,
+    "k": 16.0,
+    "s": 14.0,
+    "t": 8.0,
+    "b": 44.0,
+    "l_min": 25.0,
+    "l_max": 160.0
+   },
+   {
+    "size": "M20",
+    "dk": 30.0,
+    "k": 20.0,
+    "s": 17.0,
+    "t": 10.0,
+    "b": 52.0,
+    "l_min": 30.0,
+    "l_max": 200.0
+   },
+   {
+    "size": "M24",
+    "dk": 36.0,
+    "k": 24.0,
+    "s": 19.0,
+    "t": 12.0,
+    "b": 60.0,
+    "l_min": 40.0,
+    "l_max": 200.0
+   },
+   {
+    "size": "M30",
+    "dk": 45.0,
+    "k": 30.0,
+    "s": 22.0,
+    "t": 15.5,
+    "b": 72.0,
+    "l_min": 45.0,
+    "l_max": 200.0
+   },
+   {
+    "size": "M36",
+    "dk": 54.0,
+    "k": 36.0,
+    "s": 27.0,
+    "t": 19.0,
+    "b": 84.0,
+    "l_min": 55.0,
+    "l_max": 200.0
+   },
+   {
+    "size": "M42",
+    "dk": 63.0,
+    "k": 42.0,
+    "s": 32.0,
+    "t": 24.0,
+    "b": 96.0,
+    "l_min": 0.0,
+    "l_max": 0.0
+   },
+   {
+    "size": "M48",
+    "dk": 72.0,
+    "k": 48.0,
+    "s": 36.0,
+    "t": 28.0,
+    "b": 108.0,
+    "l_min": 0.0,
+    "l_max": 0.0
+   },
+   {
+    "size": "M56",
+    "dk": 84.0,
+    "k": 56.0,
+    "s": 41.0,
+    "t": 34.0,
+    "b": 124.0,
+    "l_min": 0.0,
+    "l_max": 0.0
+   },
+   {
+    "size": "M64",
+    "dk": 96.0,
+    "k": 64.0,
+    "s": 46.0,
+    "t": 38.0,
+    "b": 140.0,
+    "l_min": 0.0,
+    "l_max": 0.0
+   }
+  ],
+  "sources": [
+   "westfieldfasteners.co.uk (head, b)",
+   "fasten.it (head, b)",
+   "amesweb.info (sizes)",
+   "lengths per size and the ones threaded to the head (one source, M1.6…M36) — engineersedge.com",
+   "classes: ISO 4762:2004 Table 3; Würth catalogue (A2-70 to M24, A2-50 above)"
+  ],
+  "usedBy": [
+   "screw-iso-4762"
+  ]
+ },
+ {
+  "id": "ISO 15",
+  "slug": "iso-15",
+  "family": "bearings",
+  "title": "Rolling bearings — boundary dimensions: single row deep groove ball bearings, series 60, 62, 63, bores 10…100 mm",
+  "edition": "2026-11-15",
+  "checked": "2026-11-15",
+  "columns": [
+   "name",
+   "d",
+   "D",
+   "B",
+   "rs"
+  ],
+  "rows": [
+   {
+    "name": "6000",
+    "d": 10.0,
+    "D": 26.0,
+    "B": 8.0,
+    "rs": 0.3
+   },
+   {
+    "name": "6001",
+    "d": 12.0,
+    "D": 28.0,
+    "B": 8.0,
+    "rs": 0.3
+   },
+   {
+    "name": "6002",
+    "d": 15.0,
+    "D": 32.0,
+    "B": 9.0,
+    "rs": 0.3
+   },
+   {
+    "name": "6003",
+    "d": 17.0,
+    "D": 35.0,
+    "B": 10.0,
+    "rs": 0.3
+   },
+   {
+    "name": "6004",
+    "d": 20.0,
+    "D": 42.0,
+    "B": 12.0,
+    "rs": 0.6
+   },
+   {
+    "name": "6005",
+    "d": 25.0,
+    "D": 47.0,
+    "B": 12.0,
+    "rs": 0.6
+   },
+   {
+    "name": "6006",
+    "d": 30.0,
+    "D": 55.0,
+    "B": 13.0,
+    "rs": 1.0
+   },
+   {
+    "name": "6007",
+    "d": 35.0,
+    "D": 62.0,
+    "B": 14.0,
+    "rs": 1.0
+   },
+   {
+    "name": "6008",
+    "d": 40.0,
+    "D": 68.0,
+    "B": 15.0,
+    "rs": 1.0
+   },
+   {
+    "name": "6009",
+    "d": 45.0,
+    "D": 75.0,
+    "B": 16.0,
+    "rs": 1.0
+   },
+   {
+    "name": "6010",
+    "d": 50.0,
+    "D": 80.0,
+    "B": 16.0,
+    "rs": 1.0
+   },
+   {
+    "name": "6011",
+    "d": 55.0,
+    "D": 90.0,
+    "B": 18.0,
+    "rs": 1.1
+   },
+   {
+    "name": "6012",
+    "d": 60.0,
+    "D": 95.0,
+    "B": 18.0,
+    "rs": 1.1
+   },
+   {
+    "name": "6013",
+    "d": 65.0,
+    "D": 100.0,
+    "B": 18.0,
+    "rs": 1.1
+   },
+   {
+    "name": "6014",
+    "d": 70.0,
+    "D": 110.0,
+    "B": 20.0,
+    "rs": 1.1
+   },
+   {
+    "name": "6015",
+    "d": 75.0,
+    "D": 115.0,
+    "B": 20.0,
+    "rs": 1.1
+   },
+   {
+    "name": "6016",
+    "d": 80.0,
+    "D": 125.0,
+    "B": 22.0,
+    "rs": 1.1
+   },
+   {
+    "name": "6017",
+    "d": 85.0,
+    "D": 130.0,
+    "B": 22.0,
+    "rs": 1.1
+   },
+   {
+    "name": "6018",
+    "d": 90.0,
+    "D": 140.0,
+    "B": 24.0,
+    "rs": 1.5
+   },
+   {
+    "name": "6019",
+    "d": 95.0,
+    "D": 145.0,
+    "B": 24.0,
+    "rs": 1.5
+   },
+   {
+    "name": "6020",
+    "d": 100.0,
+    "D": 150.0,
+    "B": 24.0,
+    "rs": 1.5
+   },
+   {
+    "name": "6200",
+    "d": 10.0,
+    "D": 30.0,
+    "B": 9.0,
+    "rs": 0.6
+   },
+   {
+    "name": "6201",
+    "d": 12.0,
+    "D": 32.0,
+    "B": 10.0,
+    "rs": 0.6
+   },
+   {
+    "name": "6202",
+    "d": 15.0,
+    "D": 35.0,
+    "B": 11.0,
+    "rs": 0.6
+   },
+   {
+    "name": "6203",
+    "d": 17.0,
+    "D": 40.0,
+    "B": 12.0,
+    "rs": 0.6
+   },
+   {
+    "name": "6204",
+    "d": 20.0,
+    "D": 47.0,
+    "B": 14.0,
+    "rs": 1.0
+   },
+   {
+    "name": "6205",
+    "d": 25.0,
+    "D": 52.0,
+    "B": 15.0,
+    "rs": 1.0
+   },
+   {
+    "name": "6206",
+    "d": 30.0,
+    "D": 62.0,
+    "B": 16.0,
+    "rs": 1.0
+   },
+   {
+    "name": "6207",
+    "d": 35.0,
+    "D": 72.0,
+    "B": 17.0,
+    "rs": 1.1
+   },
+   {
+    "name": "6208",
+    "d": 40.0,
+    "D": 80.0,
+    "B": 18.0,
+    "rs": 1.1
+   },
+   {
+    "name": "6209",
+    "d": 45.0,
+    "D": 85.0,
+    "B": 19.0,
+    "rs": 1.1
+   },
+   {
+    "name": "6210",
+    "d": 50.0,
+    "D": 90.0,
+    "B": 20.0,
+    "rs": 1.1
+   },
+   {
+    "name": "6211",
+    "d": 55.0,
+    "D": 100.0,
+    "B": 21.0,
+    "rs": 1.5
+   },
+   {
+    "name": "6212",
+    "d": 60.0,
+    "D": 110.0,
+    "B": 22.0,
+    "rs": 1.5
+   },
+   {
+    "name": "6213",
+    "d": 65.0,
+    "D": 120.0,
+    "B": 23.0,
+    "rs": 1.5
+   },
+   {
+    "name": "6214",
+    "d": 70.0,
+    "D": 125.0,
+    "B": 24.0,
+    "rs": 1.5
+   },
+   {
+    "name": "6215",
+    "d": 75.0,
+    "D": 130.0,
+    "B": 25.0,
+    "rs": 1.5
+   },
+   {
+    "name": "6216",
+    "d": 80.0,
+    "D": 140.0,
+    "B": 26.0,
+    "rs": 2.0
+   },
+   {
+    "name": "6217",
+    "d": 85.0,
+    "D": 150.0,
+    "B": 28.0,
+    "rs": 2.0
+   },
+   {
+    "name": "6218",
+    "d": 90.0,
+    "D": 160.0,
+    "B": 30.0,
+    "rs": 2.0
+   },
+   {
+    "name": "6219",
+    "d": 95.0,
+    "D": 170.0,
+    "B": 32.0,
+    "rs": 2.1
+   },
+   {
+    "name": "6220",
+    "d": 100.0,
+    "D": 180.0,
+    "B": 34.0,
+    "rs": 2.1
+   },
+   {
+    "name": "6300",
+    "d": 10.0,
+    "D": 35.0,
+    "B": 11.0,
+    "rs": 0.6
+   },
+   {
+    "name": "6301",
+    "d": 12.0,
+    "D": 37.0,
+    "B": 12.0,
+    "rs": 1.0
+   },
+   {
+    "name": "6302",
+    "d": 15.0,
+    "D": 42.0,
+    "B": 13.0,
+    "rs": 1.0
+   },
+   {
+    "name": "6303",
+    "d": 17.0,
+    "D": 47.0,
+    "B": 14.0,
+    "rs": 1.0
+   },
+   {
+    "name": "6304",
+    "d": 20.0,
+    "D": 52.0,
+    "B": 15.0,
+    "rs": 1.1
+   },
+   {
+    "name": "6305",
+    "d": 25.0,
+    "D": 62.0,
+    "B": 17.0,
+    "rs": 1.1
+   },
+   {
+    "name": "6306",
+    "d": 30.0,
+    "D": 72.0,
+    "B": 19.0,
+    "rs": 1.1
+   },
+   {
+    "name": "6307",
+    "d": 35.0,
+    "D": 80.0,
+    "B": 21.0,
+    "rs": 1.5
+   },
+   {
+    "name": "6308",
+    "d": 40.0,
+    "D": 90.0,
+    "B": 23.0,
+    "rs": 1.5
+   },
+   {
+    "name": "6309",
+    "d": 45.0,
+    "D": 100.0,
+    "B": 25.0,
+    "rs": 1.5
+   },
+   {
+    "name": "6310",
+    "d": 50.0,
+    "D": 110.0,
+    "B": 27.0,
+    "rs": 2.0
+   },
+   {
+    "name": "6311",
+    "d": 55.0,
+    "D": 120.0,
+    "B": 29.0,
+    "rs": 2.0
+   },
+   {
+    "name": "6312",
+    "d": 60.0,
+    "D": 130.0,
+    "B": 31.0,
+    "rs": 2.1
+   },
+   {
+    "name": "6313",
+    "d": 65.0,
+    "D": 140.0,
+    "B": 33.0,
+    "rs": 2.1
+   },
+   {
+    "name": "6314",
+    "d": 70.0,
+    "D": 150.0,
+    "B": 35.0,
+    "rs": 2.1
+   },
+   {
+    "name": "6315",
+    "d": 75.0,
+    "D": 160.0,
+    "B": 37.0,
+    "rs": 2.1
+   },
+   {
+    "name": "6316",
+    "d": 80.0,
+    "D": 170.0,
+    "B": 39.0,
+    "rs": 2.1
+   },
+   {
+    "name": "6317",
+    "d": 85.0,
+    "D": 180.0,
+    "B": 41.0,
+    "rs": 3.0
+   },
+   {
+    "name": "6318",
+    "d": 90.0,
+    "D": 190.0,
+    "B": 43.0,
+    "rs": 3.0
+   },
+   {
+    "name": "6319",
+    "d": 95.0,
+    "D": 200.0,
+    "B": 45.0,
+    "rs": 3.0
+   },
+   {
+    "name": "6320",
+    "d": 100.0,
+    "D": 215.0,
+    "B": 47.0,
+    "rs": 3.0
+   }
+  ],
+  "sources": [
+   "SKF Rolling bearings 17000, product table 1.1",
+   "Schaeffler HR 1 Rolling Bearings, pp. 196–217",
+   "NTN CAT. No. 2203/E, pp. B-22…B-29 (to d 85)"
+  ],
+  "usedBy": [
+   "bearing-iso-15"
+  ]
+ },
+ {
+  "id": "DIN 5418",
+  "slug": "din-5418",
+  "family": "bearings",
+  "title": "Rolling bearings — mounting dimensions: the shaft's shoulder d_a min, the housing's D_a max, the fillet r_a max",
+  "edition": "2026-11-15",
+  "checked": "2026-11-15",
+  "columns": [
+   "name",
+   "da_min",
+   "Da_max",
+   "ra"
+  ],
+  "rows": [
+   {
+    "name": "6000",
+    "da_min": 12.0,
+    "Da_max": 24.0,
+    "ra": 0.3
+   },
+   {
+    "name": "6001",
+    "da_min": 14.0,
+    "Da_max": 26.0,
+    "ra": 0.3
+   },
+   {
+    "name": "6002",
+    "da_min": 17.0,
+    "Da_max": 30.0,
+    "ra": 0.3
+   },
+   {
+    "name": "6003",
+    "da_min": 19.0,
+    "Da_max": 33.0,
+    "ra": 0.3
+   },
+   {
+    "name": "6004",
+    "da_min": 23.2,
+    "Da_max": 38.8,
+    "ra": 0.6
+   },
+   {
+    "name": "6005",
+    "da_min": 28.2,
+    "Da_max": 43.8,
+    "ra": 0.6
+   },
+   {
+    "name": "6006",
+    "da_min": 34.6,
+    "Da_max": 50.0,
+    "ra": 1.0
+   },
+   {
+    "name": "6007",
+    "da_min": 39.6,
+    "Da_max": 57.0,
+    "ra": 1.0
+   },
+   {
+    "name": "6008",
+    "da_min": 44.6,
+    "Da_max": 63.0,
+    "ra": 1.0
+   },
+   {
+    "name": "6009",
+    "da_min": 51.0,
+    "Da_max": 69.0,
+    "ra": 1.0
+   },
+   {
+    "name": "6010",
+    "da_min": 55.0,
+    "Da_max": 75.0,
+    "ra": 1.0
+   },
+   {
+    "name": "6011",
+    "da_min": 61.0,
+    "Da_max": 84.0,
+    "ra": 1.0
+   },
+   {
+    "name": "6012",
+    "da_min": 66.0,
+    "Da_max": 89.0,
+    "ra": 1.0
+   },
+   {
+    "name": "6013",
+    "da_min": 71.0,
+    "Da_max": 94.0,
+    "ra": 1.0
+   },
+   {
+    "name": "6014",
+    "da_min": 76.0,
+    "Da_max": 104.0,
+    "ra": 1.0
+   },
+   {
+    "name": "6015",
+    "da_min": 81.0,
+    "Da_max": 109.0,
+    "ra": 1.0
+   },
+   {
+    "name": "6016",
+    "da_min": 86.0,
+    "Da_max": 119.0,
+    "ra": 1.0
+   },
+   {
+    "name": "6017",
+    "da_min": 92.0,
+    "Da_max": 123.0,
+    "ra": 1.0
+   },
+   {
+    "name": "6018",
+    "da_min": 97.0,
+    "Da_max": 133.0,
+    "ra": 1.5
+   },
+   {
+    "name": "6019",
+    "da_min": 102.0,
+    "Da_max": 138.0,
+    "ra": 1.5
+   },
+   {
+    "name": "6020",
+    "da_min": 107.0,
+    "Da_max": 143.0,
+    "ra": 1.5
+   },
+   {
+    "name": "6200",
+    "da_min": 14.2,
+    "Da_max": 25.8,
+    "ra": 0.6
+   },
+   {
+    "name": "6201",
+    "da_min": 16.2,
+    "Da_max": 27.8,
+    "ra": 0.6
+   },
+   {
+    "name": "6202",
+    "da_min": 19.2,
+    "Da_max": 30.8,
+    "ra": 0.6
+   },
+   {
+    "name": "6203",
+    "da_min": 21.2,
+    "Da_max": 35.8,
+    "ra": 0.6
+   },
+   {
+    "name": "6204",
+    "da_min": 25.6,
+    "Da_max": 41.4,
+    "ra": 1.0
+   },
+   {
+    "name": "6205",
+    "da_min": 30.6,
+    "Da_max": 46.4,
+    "ra": 1.0
+   },
+   {
+    "name": "6206",
+    "da_min": 35.6,
+    "Da_max": 56.0,
+    "ra": 1.0
+   },
+   {
+    "name": "6207",
+    "da_min": 42.0,
+    "Da_max": 65.0,
+    "ra": 1.0
+   },
+   {
+    "name": "6208",
+    "da_min": 47.0,
+    "Da_max": 73.0,
+    "ra": 1.0
+   },
+   {
+    "name": "6209",
+    "da_min": 52.0,
+    "Da_max": 78.0,
+    "ra": 1.0
+   },
+   {
+    "name": "6210",
+    "da_min": 57.0,
+    "Da_max": 83.0,
+    "ra": 1.0
+   },
+   {
+    "name": "6211",
+    "da_min": 64.0,
+    "Da_max": 91.0,
+    "ra": 1.5
+   },
+   {
+    "name": "6212",
+    "da_min": 69.0,
+    "Da_max": 101.0,
+    "ra": 1.5
+   },
+   {
+    "name": "6213",
+    "da_min": 74.0,
+    "Da_max": 111.0,
+    "ra": 1.5
+   },
+   {
+    "name": "6214",
+    "da_min": 79.0,
+    "Da_max": 116.0,
+    "ra": 1.5
+   },
+   {
+    "name": "6215",
+    "da_min": 84.0,
+    "Da_max": 121.0,
+    "ra": 1.5
+   },
+   {
+    "name": "6216",
+    "da_min": 91.0,
+    "Da_max": 129.0,
+    "ra": 2.0
+   },
+   {
+    "name": "6217",
+    "da_min": 96.0,
+    "Da_max": 139.0,
+    "ra": 2.0
+   },
+   {
+    "name": "6218",
+    "da_min": 101.0,
+    "Da_max": 149.0,
+    "ra": 2.0
+   },
+   {
+    "name": "6219",
+    "da_min": 107.0,
+    "Da_max": 158.0,
+    "ra": 2.0
+   },
+   {
+    "name": "6220",
+    "da_min": 112.0,
+    "Da_max": 168.0,
+    "ra": 2.0
+   },
+   {
+    "name": "6300",
+    "da_min": 14.2,
+    "Da_max": 30.8,
+    "ra": 0.6
+   },
+   {
+    "name": "6301",
+    "da_min": 17.6,
+    "Da_max": 31.4,
+    "ra": 1.0
+   },
+   {
+    "name": "6302",
+    "da_min": 20.6,
+    "Da_max": 36.4,
+    "ra": 1.0
+   },
+   {
+    "name": "6303",
+    "da_min": 22.6,
+    "Da_max": 41.4,
+    "ra": 1.0
+   },
+   {
+    "name": "6304",
+    "da_min": 27.0,
+    "Da_max": 45.0,
+    "ra": 1.0
+   },
+   {
+    "name": "6305",
+    "da_min": 32.0,
+    "Da_max": 55.0,
+    "ra": 1.0
+   },
+   {
+    "name": "6306",
+    "da_min": 37.0,
+    "Da_max": 65.0,
+    "ra": 1.0
+   },
+   {
+    "name": "6307",
+    "da_min": 44.0,
+    "Da_max": 71.0,
+    "ra": 1.5
+   },
+   {
+    "name": "6308",
+    "da_min": 49.0,
+    "Da_max": 81.0,
+    "ra": 1.5
+   },
+   {
+    "name": "6309",
+    "da_min": 54.0,
+    "Da_max": 91.0,
+    "ra": 1.5
+   },
+   {
+    "name": "6310",
+    "da_min": 61.0,
+    "Da_max": 99.0,
+    "ra": 2.0
+   },
+   {
+    "name": "6311",
+    "da_min": 66.0,
+    "Da_max": 109.0,
+    "ra": 2.0
+   },
+   {
+    "name": "6312",
+    "da_min": 72.0,
+    "Da_max": 118.0,
+    "ra": 2.0
+   },
+   {
+    "name": "6313",
+    "da_min": 77.0,
+    "Da_max": 128.0,
+    "ra": 2.0
+   },
+   {
+    "name": "6314",
+    "da_min": 82.0,
+    "Da_max": 138.0,
+    "ra": 2.0
+   },
+   {
+    "name": "6315",
+    "da_min": 87.0,
+    "Da_max": 148.0,
+    "ra": 2.0
+   },
+   {
+    "name": "6316",
+    "da_min": 92.0,
+    "Da_max": 158.0,
+    "ra": 2.0
+   },
+   {
+    "name": "6317",
+    "da_min": 99.0,
+    "Da_max": 166.0,
+    "ra": 2.5
+   },
+   {
+    "name": "6318",
+    "da_min": 104.0,
+    "Da_max": 176.0,
+    "ra": 2.5
+   },
+   {
+    "name": "6319",
+    "da_min": 109.0,
+    "Da_max": 186.0,
+    "ra": 2.5
+   },
+   {
+    "name": "6320",
+    "da_min": 114.0,
+    "Da_max": 201.0,
+    "ra": 2.5
+   }
+  ],
+  "sources": [
+   "Schaeffler HR 1 (dimension tables; p. 156: shaft radii and shoulders after DIN 5418)",
+   "SKF 17000 table 1.1 — where stricter (6006…6010, 6017, 6206) its value: a shoulder good for both",
+   "r_a by r_s: JTEKT Table 14-2 (JIS B 1566), SKF, NTN — 2.1 → 2.0 (Schaeffler 2.1)"
+  ],
+  "usedBy": [
+   "bearing-iso-15"
+  ]
+ },
+ {
+  "id": "ISO 492",
+  "slug": "iso-492",
+  "family": "bearings",
+  "title": "Rolling bearings — radial bearings, tolerances of the Normal class: mean bore Δdmp, mean outside ΔDmp",
+  "edition": "2026-11-15",
+  "checked": "2026-11-15",
+  "columns": [
+   "ring",
+   "over",
+   "to",
+   "upper",
+   "lower"
+  ],
+  "rows": [
+   {
+    "ring": "bore",
+    "over": 0.6,
+    "to": 2.5,
+    "upper": 0.0,
+    "lower": -8.0
+   },
+   {
+    "ring": "bore",
+    "over": 2.5,
+    "to": 10.0,
+    "upper": 0.0,
+    "lower": -8.0
+   },
+   {
+    "ring": "bore",
+    "over": 10.0,
+    "to": 18.0,
+    "upper": 0.0,
+    "lower": -8.0
+   },
+   {
+    "ring": "bore",
+    "over": 18.0,
+    "to": 30.0,
+    "upper": 0.0,
+    "lower": -10.0
+   },
+   {
+    "ring": "bore",
+    "over": 30.0,
+    "to": 50.0,
+    "upper": 0.0,
+    "lower": -12.0
+   },
+   {
+    "ring": "bore",
+    "over": 50.0,
+    "to": 80.0,
+    "upper": 0.0,
+    "lower": -15.0
+   },
+   {
+    "ring": "bore",
+    "over": 80.0,
+    "to": 120.0,
+    "upper": 0.0,
+    "lower": -20.0
+   },
+   {
+    "ring": "bore",
+    "over": 120.0,
+    "to": 180.0,
+    "upper": 0.0,
+    "lower": -25.0
+   },
+   {
+    "ring": "bore",
+    "over": 180.0,
+    "to": 250.0,
+    "upper": 0.0,
+    "lower": -30.0
+   },
+   {
+    "ring": "outside",
+    "over": 2.5,
+    "to": 6.0,
+    "upper": 0.0,
+    "lower": -8.0
+   },
+   {
+    "ring": "outside",
+    "over": 6.0,
+    "to": 18.0,
+    "upper": 0.0,
+    "lower": -8.0
+   },
+   {
+    "ring": "outside",
+    "over": 18.0,
+    "to": 30.0,
+    "upper": 0.0,
+    "lower": -9.0
+   },
+   {
+    "ring": "outside",
+    "over": 30.0,
+    "to": 50.0,
+    "upper": 0.0,
+    "lower": -11.0
+   },
+   {
+    "ring": "outside",
+    "over": 50.0,
+    "to": 80.0,
+    "upper": 0.0,
+    "lower": -13.0
+   },
+   {
+    "ring": "outside",
+    "over": 80.0,
+    "to": 120.0,
+    "upper": 0.0,
+    "lower": -15.0
+   },
+   {
+    "ring": "outside",
+    "over": 120.0,
+    "to": 150.0,
+    "upper": 0.0,
+    "lower": -18.0
+   },
+   {
+    "ring": "outside",
+    "over": 150.0,
+    "to": 180.0,
+    "upper": 0.0,
+    "lower": -25.0
+   },
+   {
+    "ring": "outside",
+    "over": 180.0,
+    "to": 250.0,
+    "upper": 0.0,
+    "lower": -30.0
+   },
+   {
+    "ring": "outside",
+    "over": 250.0,
+    "to": 315.0,
+    "upper": 0.0,
+    "lower": -35.0
+   }
+  ],
+  "sources": [
+   "Schaeffler HR 1, pp. 107–108 (PN)",
+   "NTN Bearing Tolerances, Table 4.3"
+  ],
+  "usedBy": [
+   "bearing-iso-15"
+  ]
+ },
+ {
+  "id": "DIN 981",
+  "slug": "din-981",
+  "family": "bearings",
+  "title": "Rolling bearings — lock nuts KM0…KM20 (= ISO 2982-2): thread, outside, locating face, width, four slots",
+  "edition": "2026-11-15",
+  "checked": "2026-11-15",
+  "columns": [
+   "name",
+   "metric",
+   "d1",
+   "d2",
+   "B",
+   "slot_b",
+   "slot_h",
+   "mass_g"
+  ],
+  "rows": [
+   {
+    "name": "KM0",
+    "metric": "M10x0.75",
+    "d1": 18.0,
+    "d2": 13.5,
+    "B": 4.0,
+    "slot_b": 3.0,
+    "slot_h": 2.0,
+    "mass_g": 4.0
+   },
+   {
+    "name": "KM1",
+    "metric": "M12x1",
+    "d1": 22.0,
+    "d2": 17.0,
+    "B": 4.0,
+    "slot_b": 3.0,
+    "slot_h": 2.0,
+    "mass_g": 7.0
+   },
+   {
+    "name": "KM2",
+    "metric": "M15x1",
+    "d1": 25.0,
+    "d2": 21.0,
+    "B": 5.0,
+    "slot_b": 4.0,
+    "slot_h": 2.0,
+    "mass_g": 10.0
+   },
+   {
+    "name": "KM3",
+    "metric": "M17x1",
+    "d1": 28.0,
+    "d2": 24.0,
+    "B": 5.0,
+    "slot_b": 4.0,
+    "slot_h": 2.0,
+    "mass_g": 13.0
+   },
+   {
+    "name": "KM4",
+    "metric": "M20x1",
+    "d1": 32.0,
+    "d2": 26.0,
+    "B": 6.0,
+    "slot_b": 4.0,
+    "slot_h": 2.0,
+    "mass_g": 19.0
+   },
+   {
+    "name": "KM5",
+    "metric": "M25x1.5",
+    "d1": 38.0,
+    "d2": 32.0,
+    "B": 7.0,
+    "slot_b": 5.0,
+    "slot_h": 2.0,
+    "mass_g": 25.0
+   },
+   {
+    "name": "KM6",
+    "metric": "M30x1.5",
+    "d1": 45.0,
+    "d2": 38.0,
+    "B": 7.0,
+    "slot_b": 5.0,
+    "slot_h": 2.0,
+    "mass_g": 43.0
+   },
+   {
+    "name": "KM7",
+    "metric": "M35x1.5",
+    "d1": 52.0,
+    "d2": 44.0,
+    "B": 8.0,
+    "slot_b": 5.0,
+    "slot_h": 2.0,
+    "mass_g": 53.0
+   },
+   {
+    "name": "KM8",
+    "metric": "M40x1.5",
+    "d1": 58.0,
+    "d2": 50.0,
+    "B": 9.0,
+    "slot_b": 6.0,
+    "slot_h": 2.5,
+    "mass_g": 85.0
+   },
+   {
+    "name": "KM9",
+    "metric": "M45x1.5",
+    "d1": 65.0,
+    "d2": 56.0,
+    "B": 10.0,
+    "slot_b": 6.0,
+    "slot_h": 2.5,
+    "mass_g": 119.0
+   },
+   {
+    "name": "KM10",
+    "metric": "M50x1.5",
+    "d1": 70.0,
+    "d2": 61.0,
+    "B": 11.0,
+    "slot_b": 6.0,
+    "slot_h": 2.5,
+    "mass_g": 148.0
+   },
+   {
+    "name": "KM11",
+    "metric": "M55x2",
+    "d1": 75.0,
+    "d2": 67.0,
+    "B": 11.0,
+    "slot_b": 7.0,
+    "slot_h": 3.0,
+    "mass_g": 158.0
+   },
+   {
+    "name": "KM12",
+    "metric": "M60x2",
+    "d1": 80.0,
+    "d2": 73.0,
+    "B": 11.0,
+    "slot_b": 7.0,
+    "slot_h": 3.0,
+    "mass_g": 174.0
+   },
+   {
+    "name": "KM13",
+    "metric": "M65x2",
+    "d1": 85.0,
+    "d2": 79.0,
+    "B": 12.0,
+    "slot_b": 7.0,
+    "slot_h": 3.0,
+    "mass_g": 203.0
+   },
+   {
+    "name": "KM14",
+    "metric": "M70x2",
+    "d1": 92.0,
+    "d2": 85.0,
+    "B": 12.0,
+    "slot_b": 8.0,
+    "slot_h": 3.5,
+    "mass_g": 242.0
+   },
+   {
+    "name": "KM15",
+    "metric": "M75x2",
+    "d1": 98.0,
+    "d2": 90.0,
+    "B": 13.0,
+    "slot_b": 8.0,
+    "slot_h": 3.5,
+    "mass_g": 298.0
+   },
+   {
+    "name": "KM16",
+    "metric": "M80x2",
+    "d1": 105.0,
+    "d2": 95.0,
+    "B": 15.0,
+    "slot_b": 8.0,
+    "slot_h": 3.5,
+    "mass_g": 400.0
+   },
+   {
+    "name": "KM17",
+    "metric": "M85x2",
+    "d1": 110.0,
+    "d2": 102.0,
+    "B": 16.0,
+    "slot_b": 8.0,
+    "slot_h": 3.5,
+    "mass_g": 451.0
+   },
+   {
+    "name": "KM18",
+    "metric": "M90x2",
+    "d1": 120.0,
+    "d2": 108.0,
+    "B": 16.0,
+    "slot_b": 10.0,
+    "slot_h": 4.0,
+    "mass_g": 556.0
+   },
+   {
+    "name": "KM19",
+    "metric": "M95x2",
+    "d1": 125.0,
+    "d2": 113.0,
+    "B": 17.0,
+    "slot_b": 10.0,
+    "slot_h": 4.0,
+    "mass_g": 658.0
+   },
+   {
+    "name": "KM20",
+    "metric": "M100x2",
+    "d1": 130.0,
+    "d2": 120.0,
+    "B": 18.0,
+    "slot_b": 10.0,
+    "slot_h": 4.0,
+    "mass_g": 698.0
+   }
+  ],
+  "sources": [
+   "SKF catalogue chapter 25, table 25.1",
+   "Mädler p. 674 Nutmuttern DIN 981",
+   "cross-checks: HPC Europe KM.pdf, RECA 04-Matice.pdf, Mecmove; masses — Mädler (HPC agrees)"
+  ],
+  "usedBy": [
+   "lock-nut-din-981"
+  ]
+ },
+ {
+  "id": "DIN 5406",
+  "slug": "din-5406",
+  "family": "bearings",
+  "title": "Rolling bearings — tab washers MB0…MB20 (= ISO 2982-2); the shaft's groove for the tab is not in the table yet",
+  "edition": "2026-11-15",
+  "checked": "2026-11-15",
+  "columns": [
+   "name",
+   "d3",
+   "d4",
+   "d5",
+   "f1",
+   "f",
+   "M",
+   "s",
+   "tabs"
+  ],
+  "rows": [
+   {
+    "name": "MB0",
+    "d3": 10.0,
+    "d4": 13.5,
+    "d5": 21.0,
+    "f1": 3.0,
+    "f": 3.0,
+    "M": 8.5,
+    "s": 1.0,
+    "tabs": 9
+   },
+   {
+    "name": "MB1",
+    "d3": 12.0,
+    "d4": 17.0,
+    "d5": 25.0,
+    "f1": 3.0,
+    "f": 3.0,
+    "M": 10.5,
+    "s": 1.0,
+    "tabs": 9
+   },
+   {
+    "name": "MB2",
+    "d3": 15.0,
+    "d4": 21.0,
+    "d5": 28.0,
+    "f1": 4.0,
+    "f": 4.0,
+    "M": 13.5,
+    "s": 1.0,
+    "tabs": 13
+   },
+   {
+    "name": "MB3",
+    "d3": 17.0,
+    "d4": 24.0,
+    "d5": 32.0,
+    "f1": 4.0,
+    "f": 4.0,
+    "M": 15.5,
+    "s": 1.0,
+    "tabs": 13
+   },
+   {
+    "name": "MB4",
+    "d3": 20.0,
+    "d4": 26.0,
+    "d5": 36.0,
+    "f1": 4.0,
+    "f": 4.0,
+    "M": 18.5,
+    "s": 1.0,
+    "tabs": 13
+   },
+   {
+    "name": "MB5",
+    "d3": 25.0,
+    "d4": 32.0,
+    "d5": 42.0,
+    "f1": 5.0,
+    "f": 5.0,
+    "M": 23.0,
+    "s": 1.25,
+    "tabs": 13
+   },
+   {
+    "name": "MB6",
+    "d3": 30.0,
+    "d4": 38.0,
+    "d5": 49.0,
+    "f1": 5.0,
+    "f": 5.0,
+    "M": 27.5,
+    "s": 1.25,
+    "tabs": 13
+   },
+   {
+    "name": "MB7",
+    "d3": 35.0,
+    "d4": 44.0,
+    "d5": 57.0,
+    "f1": 6.0,
+    "f": 5.0,
+    "M": 32.5,
+    "s": 1.25,
+    "tabs": 15
+   },
+   {
+    "name": "MB8",
+    "d3": 40.0,
+    "d4": 50.0,
+    "d5": 62.0,
+    "f1": 6.0,
+    "f": 6.0,
+    "M": 37.5,
+    "s": 1.25,
+    "tabs": 15
+   },
+   {
+    "name": "MB9",
+    "d3": 45.0,
+    "d4": 56.0,
+    "d5": 69.0,
+    "f1": 6.0,
+    "f": 6.0,
+    "M": 42.5,
+    "s": 1.25,
+    "tabs": 17
+   },
+   {
+    "name": "MB10",
+    "d3": 50.0,
+    "d4": 61.0,
+    "d5": 74.0,
+    "f1": 6.0,
+    "f": 6.0,
+    "M": 47.5,
+    "s": 1.25,
+    "tabs": 17
+   },
+   {
+    "name": "MB11",
+    "d3": 55.0,
+    "d4": 67.0,
+    "d5": 81.0,
+    "f1": 8.0,
+    "f": 7.0,
+    "M": 52.5,
+    "s": 1.5,
+    "tabs": 17
+   },
+   {
+    "name": "MB12",
+    "d3": 60.0,
+    "d4": 73.0,
+    "d5": 86.0,
+    "f1": 8.0,
+    "f": 7.0,
+    "M": 57.5,
+    "s": 1.5,
+    "tabs": 17
+   },
+   {
+    "name": "MB13",
+    "d3": 65.0,
+    "d4": 79.0,
+    "d5": 92.0,
+    "f1": 8.0,
+    "f": 7.0,
+    "M": 62.5,
+    "s": 1.5,
+    "tabs": 19
+   },
+   {
+    "name": "MB14",
+    "d3": 70.0,
+    "d4": 85.0,
+    "d5": 98.0,
+    "f1": 8.0,
+    "f": 8.0,
+    "M": 66.5,
+    "s": 1.5,
+    "tabs": 19
+   },
+   {
+    "name": "MB15",
+    "d3": 75.0,
+    "d4": 90.0,
+    "d5": 104.0,
+    "f1": 8.0,
+    "f": 8.0,
+    "M": 71.5,
+    "s": 1.5,
+    "tabs": 19
+   },
+   {
+    "name": "MB16",
+    "d3": 80.0,
+    "d4": 95.0,
+    "d5": 112.0,
+    "f1": 10.0,
+    "f": 8.0,
+    "M": 76.5,
+    "s": 1.75,
+    "tabs": 19
+   },
+   {
+    "name": "MB17",
+    "d3": 85.0,
+    "d4": 102.0,
+    "d5": 119.0,
+    "f1": 10.0,
+    "f": 8.0,
+    "M": 81.5,
+    "s": 1.75,
+    "tabs": 19
+   },
+   {
+    "name": "MB18",
+    "d3": 90.0,
+    "d4": 108.0,
+    "d5": 126.0,
+    "f1": 10.0,
+    "f": 10.0,
+    "M": 86.5,
+    "s": 1.75,
+    "tabs": 19
+   },
+   {
+    "name": "MB19",
+    "d3": 95.0,
+    "d4": 113.0,
+    "d5": 133.0,
+    "f1": 10.0,
+    "f": 10.0,
+    "M": 91.5,
+    "s": 1.75,
+    "tabs": 19
+   },
+   {
+    "name": "MB20",
+    "d3": 100.0,
+    "d4": 120.0,
+    "d5": 142.0,
+    "f1": 12.0,
+    "f": 10.0,
+    "M": 96.5,
+    "s": 1.75,
+    "tabs": 19
+   }
+  ],
+  "sources": [
+   "SKF table 25.2 (the same catalogue as DIN 981)",
+   "Mädler p. 675; NSK AW02…AW20 product pages; PTI Europa MB.pdf (tab counts)",
+   "s of MB16…20: 1.75 (SKF, Schaeffler, HPC, Aspen) — Mädler, PTI, NSK 1.8"
+  ],
+  "usedBy": [
+   "lock-nut-din-981"
+  ]
+ },
+ {
+  "id": "ISO 286",
+  "slug": "iso-286",
+  "family": "shafts",
+  "title": "ISO system of limits and fits — tolerance grades IT5…IT11; shafts e f g h js k m n p r s, holes F G H JS K M N P; sizes to 500 mm",
+  "edition": "2026-11-15",
+  "checked": "2026-11-15",
+  "columns": [
+   "d_to",
+   "IT5",
+   "IT6",
+   "IT7",
+   "IT8",
+   "IT9",
+   "IT10",
+   "IT11",
+   "e",
+   "f",
+   "g",
+   "h",
+   "k",
+   "m",
+   "n",
+   "p"
+  ],
+  "rows": [
+   {
+    "d_to": 3.0,
+    "IT5": 4.0,
+    "IT6": 6.0,
+    "IT7": 10.0,
+    "IT8": 14.0,
+    "IT9": 25.0,
+    "IT10": 40.0,
+    "IT11": 60.0,
+    "e": -14.0,
+    "f": -6.0,
+    "g": -2.0,
+    "h": 0.0,
+    "k": 0.0,
+    "m": 2.0,
+    "n": 4.0,
+    "p": 6.0
+   },
+   {
+    "d_to": 6.0,
+    "IT5": 5.0,
+    "IT6": 8.0,
+    "IT7": 12.0,
+    "IT8": 18.0,
+    "IT9": 30.0,
+    "IT10": 48.0,
+    "IT11": 75.0,
+    "e": -20.0,
+    "f": -10.0,
+    "g": -4.0,
+    "h": 0.0,
+    "k": 1.0,
+    "m": 4.0,
+    "n": 8.0,
+    "p": 12.0
+   },
+   {
+    "d_to": 10.0,
+    "IT5": 6.0,
+    "IT6": 9.0,
+    "IT7": 15.0,
+    "IT8": 22.0,
+    "IT9": 36.0,
+    "IT10": 58.0,
+    "IT11": 90.0,
+    "e": -25.0,
+    "f": -13.0,
+    "g": -5.0,
+    "h": 0.0,
+    "k": 1.0,
+    "m": 6.0,
+    "n": 10.0,
+    "p": 15.0
+   },
+   {
+    "d_to": 18.0,
+    "IT5": 8.0,
+    "IT6": 11.0,
+    "IT7": 18.0,
+    "IT8": 27.0,
+    "IT9": 43.0,
+    "IT10": 70.0,
+    "IT11": 110.0,
+    "e": -32.0,
+    "f": -16.0,
+    "g": -6.0,
+    "h": 0.0,
+    "k": 1.0,
+    "m": 7.0,
+    "n": 12.0,
+    "p": 18.0
+   },
+   {
+    "d_to": 30.0,
+    "IT5": 9.0,
+    "IT6": 13.0,
+    "IT7": 21.0,
+    "IT8": 33.0,
+    "IT9": 52.0,
+    "IT10": 84.0,
+    "IT11": 130.0,
+    "e": -40.0,
+    "f": -20.0,
+    "g": -7.0,
+    "h": 0.0,
+    "k": 2.0,
+    "m": 8.0,
+    "n": 15.0,
+    "p": 22.0
+   },
+   {
+    "d_to": 50.0,
+    "IT5": 11.0,
+    "IT6": 16.0,
+    "IT7": 25.0,
+    "IT8": 39.0,
+    "IT9": 62.0,
+    "IT10": 100.0,
+    "IT11": 160.0,
+    "e": -50.0,
+    "f": -25.0,
+    "g": -9.0,
+    "h": 0.0,
+    "k": 2.0,
+    "m": 9.0,
+    "n": 17.0,
+    "p": 26.0
+   },
+   {
+    "d_to": 80.0,
+    "IT5": 13.0,
+    "IT6": 19.0,
+    "IT7": 30.0,
+    "IT8": 46.0,
+    "IT9": 74.0,
+    "IT10": 120.0,
+    "IT11": 190.0,
+    "e": -60.0,
+    "f": -30.0,
+    "g": -10.0,
+    "h": 0.0,
+    "k": 2.0,
+    "m": 11.0,
+    "n": 20.0,
+    "p": 32.0
+   },
+   {
+    "d_to": 120.0,
+    "IT5": 15.0,
+    "IT6": 22.0,
+    "IT7": 35.0,
+    "IT8": 54.0,
+    "IT9": 87.0,
+    "IT10": 140.0,
+    "IT11": 220.0,
+    "e": -72.0,
+    "f": -36.0,
+    "g": -12.0,
+    "h": 0.0,
+    "k": 3.0,
+    "m": 13.0,
+    "n": 23.0,
+    "p": 37.0
+   },
+   {
+    "d_to": 180.0,
+    "IT5": 18.0,
+    "IT6": 25.0,
+    "IT7": 40.0,
+    "IT8": 63.0,
+    "IT9": 100.0,
+    "IT10": 160.0,
+    "IT11": 250.0,
+    "e": -85.0,
+    "f": -43.0,
+    "g": -14.0,
+    "h": 0.0,
+    "k": 3.0,
+    "m": 15.0,
+    "n": 27.0,
+    "p": 43.0
+   },
+   {
+    "d_to": 250.0,
+    "IT5": 20.0,
+    "IT6": 29.0,
+    "IT7": 46.0,
+    "IT8": 72.0,
+    "IT9": 115.0,
+    "IT10": 185.0,
+    "IT11": 290.0,
+    "e": -100.0,
+    "f": -50.0,
+    "g": -15.0,
+    "h": 0.0,
+    "k": 4.0,
+    "m": 17.0,
+    "n": 31.0,
+    "p": 50.0
+   },
+   {
+    "d_to": 315.0,
+    "IT5": 23.0,
+    "IT6": 32.0,
+    "IT7": 52.0,
+    "IT8": 81.0,
+    "IT9": 130.0,
+    "IT10": 210.0,
+    "IT11": 320.0,
+    "e": -110.0,
+    "f": -56.0,
+    "g": -17.0,
+    "h": 0.0,
+    "k": 4.0,
+    "m": 20.0,
+    "n": 34.0,
+    "p": 56.0
+   },
+   {
+    "d_to": 400.0,
+    "IT5": 25.0,
+    "IT6": 36.0,
+    "IT7": 57.0,
+    "IT8": 89.0,
+    "IT9": 140.0,
+    "IT10": 230.0,
+    "IT11": 360.0,
+    "e": -125.0,
+    "f": -62.0,
+    "g": -18.0,
+    "h": 0.0,
+    "k": 4.0,
+    "m": 21.0,
+    "n": 37.0,
+    "p": 62.0
+   },
+   {
+    "d_to": 500.0,
+    "IT5": 27.0,
+    "IT6": 40.0,
+    "IT7": 63.0,
+    "IT8": 97.0,
+    "IT9": 155.0,
+    "IT10": 250.0,
+    "IT11": 400.0,
+    "e": -135.0,
+    "f": -68.0,
+    "g": -20.0,
+    "h": 0.0,
+    "k": 5.0,
+    "m": 23.0,
+    "n": 40.0,
+    "p": 68.0
+   }
+  ],
+  "sources": [
+   "IT — en.wikipedia.org, engineersedge.com",
+   "fundamental deviations and ISO 286-2 limits — roymech.co.uk",
+   "mitsubishicarbide.net",
+   "check set (JIS B 0401-2 = ISO 286-2) — pre-my.misumi-ec.com, mikipulley.co.jp",
+   "the hole rules and their exceptions (K, M, N, P ≤ 3 mm; M6 over 250 to 315 mm): IS 919 (Part 1):1993 = ISO 286-1:1988, tables 2–3"
+  ],
+  "usedBy": [
+   "shaft"
+  ]
+ },
+ {
+  "id": "DIN 471",
+  "slug": "din-471",
+  "family": "shafts",
+  "title": "Retaining rings for shafts, regular series — the grooves (d1 3…100 mm): ring s, groove d2, m (H13, least), n (least to the end)",
+  "edition": "2026-11-15",
+  "checked": "2026-11-15",
+  "columns": [
+   "size",
+   "s",
+   "d2",
+   "m",
+   "n"
+  ],
+  "rows": [
+   {
+    "size": "3",
+    "s": 0.4,
+    "d2": 2.8,
+    "m": 0.5,
+    "n": 0.3
+   },
+   {
+    "size": "4",
+    "s": 0.4,
+    "d2": 3.8,
+    "m": 0.5,
+    "n": 0.3
+   },
+   {
+    "size": "5",
+    "s": 0.6,
+    "d2": 4.8,
+    "m": 0.7,
+    "n": 0.3
+   },
+   {
+    "size": "6",
+    "s": 0.7,
+    "d2": 5.7,
+    "m": 0.8,
+    "n": 0.5
+   },
+   {
+    "size": "7",
+    "s": 0.8,
+    "d2": 6.7,
+    "m": 0.9,
+    "n": 0.5
+   },
+   {
+    "size": "8",
+    "s": 0.8,
+    "d2": 7.6,
+    "m": 0.9,
+    "n": 0.6
+   },
+   {
+    "size": "9",
+    "s": 1.0,
+    "d2": 8.6,
+    "m": 1.1,
+    "n": 0.6
+   },
+   {
+    "size": "10",
+    "s": 1.0,
+    "d2": 9.6,
+    "m": 1.1,
+    "n": 0.6
+   },
+   {
+    "size": "11",
+    "s": 1.0,
+    "d2": 10.5,
+    "m": 1.1,
+    "n": 0.8
+   },
+   {
+    "size": "12",
+    "s": 1.0,
+    "d2": 11.5,
+    "m": 1.1,
+    "n": 0.8
+   },
+   {
+    "size": "13",
+    "s": 1.0,
+    "d2": 12.4,
+    "m": 1.1,
+    "n": 0.9
+   },
+   {
+    "size": "14",
+    "s": 1.0,
+    "d2": 13.4,
+    "m": 1.1,
+    "n": 0.9
+   },
+   {
+    "size": "15",
+    "s": 1.0,
+    "d2": 14.3,
+    "m": 1.1,
+    "n": 1.1
+   },
+   {
+    "size": "16",
+    "s": 1.0,
+    "d2": 15.2,
+    "m": 1.1,
+    "n": 1.2
+   },
+   {
+    "size": "17",
+    "s": 1.0,
+    "d2": 16.2,
+    "m": 1.1,
+    "n": 1.2
+   },
+   {
+    "size": "18",
+    "s": 1.2,
+    "d2": 17.0,
+    "m": 1.3,
+    "n": 1.5
+   },
+   {
+    "size": "19",
+    "s": 1.2,
+    "d2": 18.0,
+    "m": 1.3,
+    "n": 1.5
+   },
+   {
+    "size": "20",
+    "s": 1.2,
+    "d2": 19.0,
+    "m": 1.3,
+    "n": 1.5
+   },
+   {
+    "size": "21",
+    "s": 1.2,
+    "d2": 20.0,
+    "m": 1.3,
+    "n": 1.5
+   },
+   {
+    "size": "22",
+    "s": 1.2,
+    "d2": 21.0,
+    "m": 1.3,
+    "n": 1.5
+   },
+   {
+    "size": "24",
+    "s": 1.2,
+    "d2": 22.9,
+    "m": 1.3,
+    "n": 1.7
+   },
+   {
+    "size": "25",
+    "s": 1.2,
+    "d2": 23.9,
+    "m": 1.3,
+    "n": 1.7
+   },
+   {
+    "size": "26",
+    "s": 1.2,
+    "d2": 24.9,
+    "m": 1.3,
+    "n": 1.7
+   },
+   {
+    "size": "28",
+    "s": 1.5,
+    "d2": 26.6,
+    "m": 1.6,
+    "n": 2.1
+   },
+   {
+    "size": "29",
+    "s": 1.5,
+    "d2": 27.6,
+    "m": 1.6,
+    "n": 2.1
+   },
+   {
+    "size": "30",
+    "s": 1.5,
+    "d2": 28.6,
+    "m": 1.6,
+    "n": 2.1
+   },
+   {
+    "size": "32",
+    "s": 1.5,
+    "d2": 30.3,
+    "m": 1.6,
+    "n": 2.6
+   },
+   {
+    "size": "34",
+    "s": 1.5,
+    "d2": 32.3,
+    "m": 1.6,
+    "n": 2.6
+   },
+   {
+    "size": "35",
+    "s": 1.5,
+    "d2": 33.0,
+    "m": 1.6,
+    "n": 3.0
+   },
+   {
+    "size": "36",
+    "s": 1.75,
+    "d2": 34.0,
+    "m": 1.85,
+    "n": 3.0
+   },
+   {
+    "size": "38",
+    "s": 1.75,
+    "d2": 36.0,
+    "m": 1.85,
+    "n": 3.0
+   },
+   {
+    "size": "40",
+    "s": 1.75,
+    "d2": 37.5,
+    "m": 1.85,
+    "n": 3.8
+   },
+   {
+    "size": "42",
+    "s": 1.75,
+    "d2": 39.5,
+    "m": 1.85,
+    "n": 3.8
+   },
+   {
+    "size": "45",
+    "s": 1.75,
+    "d2": 42.5,
+    "m": 1.85,
+    "n": 3.8
+   },
+   {
+    "size": "48",
+    "s": 1.75,
+    "d2": 45.5,
+    "m": 1.85,
+    "n": 3.8
+   },
+   {
+    "size": "50",
+    "s": 2.0,
+    "d2": 47.0,
+    "m": 2.15,
+    "n": 4.5
+   },
+   {
+    "size": "52",
+    "s": 2.0,
+    "d2": 49.0,
+    "m": 2.15,
+    "n": 4.5
+   },
+   {
+    "size": "55",
+    "s": 2.0,
+    "d2": 52.0,
+    "m": 2.15,
+    "n": 4.5
+   },
+   {
+    "size": "56",
+    "s": 2.0,
+    "d2": 53.0,
+    "m": 2.15,
+    "n": 4.5
+   },
+   {
+    "size": "58",
+    "s": 2.0,
+    "d2": 55.0,
+    "m": 2.15,
+    "n": 4.5
+   },
+   {
+    "size": "60",
+    "s": 2.0,
+    "d2": 57.0,
+    "m": 2.15,
+    "n": 4.5
+   },
+   {
+    "size": "62",
+    "s": 2.0,
+    "d2": 59.0,
+    "m": 2.15,
+    "n": 4.5
+   },
+   {
+    "size": "63",
+    "s": 2.0,
+    "d2": 60.0,
+    "m": 2.15,
+    "n": 4.5
+   },
+   {
+    "size": "65",
+    "s": 2.5,
+    "d2": 62.0,
+    "m": 2.65,
+    "n": 4.5
+   },
+   {
+    "size": "68",
+    "s": 2.5,
+    "d2": 65.0,
+    "m": 2.65,
+    "n": 4.5
+   },
+   {
+    "size": "70",
+    "s": 2.5,
+    "d2": 67.0,
+    "m": 2.65,
+    "n": 4.5
+   },
+   {
+    "size": "72",
+    "s": 2.5,
+    "d2": 69.0,
+    "m": 2.65,
+    "n": 4.5
+   },
+   {
+    "size": "75",
+    "s": 2.5,
+    "d2": 72.0,
+    "m": 2.65,
+    "n": 4.5
+   },
+   {
+    "size": "78",
+    "s": 2.5,
+    "d2": 75.0,
+    "m": 2.65,
+    "n": 4.5
+   },
+   {
+    "size": "80",
+    "s": 2.5,
+    "d2": 76.5,
+    "m": 2.65,
+    "n": 5.3
+   },
+   {
+    "size": "82",
+    "s": 2.5,
+    "d2": 78.5,
+    "m": 2.65,
+    "n": 5.3
+   },
+   {
+    "size": "85",
+    "s": 3.0,
+    "d2": 81.5,
+    "m": 3.15,
+    "n": 5.3
+   },
+   {
+    "size": "88",
+    "s": 3.0,
+    "d2": 84.5,
+    "m": 3.15,
+    "n": 5.3
+   },
+   {
+    "size": "90",
+    "s": 3.0,
+    "d2": 86.5,
+    "m": 3.15,
+    "n": 5.3
+   },
+   {
+    "size": "95",
+    "s": 3.0,
+    "d2": 91.5,
+    "m": 3.15,
+    "n": 5.3
+   },
+   {
+    "size": "100",
+    "s": 3.0,
+    "d2": 96.5,
+    "m": 3.15,
+    "n": 5.3
+   }
+  ],
+  "sources": [
+   "Seeger-Orbis, Katalog Seeger-Ringe, 8th ed., charts A3–A152",
+   "westfieldfasteners.co.uk",
+   "spot checks: Mädler K43_726 (DIN 471:2011), Rotor Clip DSH, SDP-SI 80510036, Böllhoff; sizes: amesweb.info",
+   "the 1981 / 2011 values; DIN 471:2026-05 not seen"
+  ],
+  "usedBy": [
+   "shaft"
+  ]
+ },
+ {
+  "id": "DIN 509",
+  "slug": "din-509",
+  "family": "shafts",
+  "title": "Undercuts (= ISO 18388), forms E and F — r × t1, f, g, t2; the diameters each is for under normal stress and for higher fatigue strength",
+  "edition": "2026-11-15",
+  "checked": "2026-11-15",
+  "columns": [
+   "size",
+   "r",
+   "t1",
+   "f",
+   "g",
+   "t2",
+   "series",
+   "normal",
+   "fatigue"
+  ],
+  "rows": [
+   {
+    "size": "0.2x0.1",
+    "r": 0.2,
+    "t1": 0.1,
+    "f": 1.0,
+    "g": 0.9,
+    "t2": 0.1,
+    "series": 2,
+    "normal": [
+     1.6,
+     3.0
+    ],
+    "fatigue": null
+   },
+   {
+    "size": "0.4x0.2",
+    "r": 0.4,
+    "t1": 0.2,
+    "f": 2.0,
+    "g": 1.1,
+    "t2": 0.1,
+    "series": 1,
+    "normal": [
+     3.0,
+     18.0
+    ],
+    "fatigue": null
+   },
+   {
+    "size": "0.6x0.2",
+    "r": 0.6,
+    "t1": 0.2,
+    "f": 2.0,
+    "g": 1.4,
+    "t2": 0.1,
+    "series": 2,
+    "normal": [
+     10.0,
+     18.0
+    ],
+    "fatigue": null
+   },
+   {
+    "size": "0.6x0.3",
+    "r": 0.6,
+    "t1": 0.3,
+    "f": 2.5,
+    "g": 2.1,
+    "t2": 0.2,
+    "series": 2,
+    "normal": [
+     18.0,
+     80.0
+    ],
+    "fatigue": null
+   },
+   {
+    "size": "0.8x0.3",
+    "r": 0.8,
+    "t1": 0.3,
+    "f": 2.5,
+    "g": 2.3,
+    "t2": 0.2,
+    "series": 1,
+    "normal": [
+     18.0,
+     80.0
+    ],
+    "fatigue": null
+   },
+   {
+    "size": "1x0.2",
+    "r": 1.0,
+    "t1": 0.2,
+    "f": 2.5,
+    "g": 1.8,
+    "t2": 0.1,
+    "series": 2,
+    "normal": null,
+    "fatigue": [
+     18.0,
+     50.0
+    ]
+   },
+   {
+    "size": "1x0.4",
+    "r": 1.0,
+    "t1": 0.4,
+    "f": 4.0,
+    "g": 3.2,
+    "t2": 0.3,
+    "series": 2,
+    "normal": [
+     80.0,
+     null
+    ],
+    "fatigue": null
+   },
+   {
+    "size": "1.2x0.2",
+    "r": 1.2,
+    "t1": 0.2,
+    "f": 2.5,
+    "g": 2.0,
+    "t2": 0.1,
+    "series": 1,
+    "normal": null,
+    "fatigue": [
+     18.0,
+     50.0
+    ]
+   },
+   {
+    "size": "1.2x0.4",
+    "r": 1.2,
+    "t1": 0.4,
+    "f": 4.0,
+    "g": 3.4,
+    "t2": 0.3,
+    "series": 1,
+    "normal": [
+     80.0,
+     null
+    ],
+    "fatigue": null
+   },
+   {
+    "size": "1.6x0.3",
+    "r": 1.6,
+    "t1": 0.3,
+    "f": 4.0,
+    "g": 3.1,
+    "t2": 0.2,
+    "series": 1,
+    "normal": null,
+    "fatigue": [
+     50.0,
+     80.0
+    ]
+   },
+   {
+    "size": "2.5x0.4",
+    "r": 2.5,
+    "t1": 0.4,
+    "f": 5.0,
+    "g": 4.8,
+    "t2": 0.3,
+    "series": 1,
+    "normal": null,
+    "fatigue": [
+     80.0,
+     125.0
+    ]
+   },
+   {
+    "size": "4x0.5",
+    "r": 4.0,
+    "t1": 0.5,
+    "f": 7.0,
+    "g": 6.4,
+    "t2": 0.3,
+    "series": 1,
+    "normal": null,
+    "fatigue": [
+     125.0,
+     null
+    ]
+   }
+  ],
+  "sources": [
+   "ekinsun.com",
+   "asdrawn.com",
+   "the profile (15° to the axis, 8° to the face for F): cad-markt.de · Heidenhain CNC PILOT 640, p. 617 — it gives the table's g within 0.05"
+  ],
+  "usedBy": [
+   "shaft"
+  ]
+ },
+ {
+  "id": "DIN 6885",
+  "slug": "din-6885",
+  "family": "shafts",
+  "title": "Parallel keys and keyways, high form (DIN 6885-1 = ISO/R 773) — shafts over 6 to 150 mm, forms A (round ends) and B (square)",
+  "edition": "2026-11-15",
+  "checked": "2026-11-15",
+  "columns": [
+   "size",
+   "d_from",
+   "d_to",
+   "b",
+   "h",
+   "t1",
+   "t1_tol",
+   "t2",
+   "t2_tol",
+   "l_min",
+   "l_max",
+   "lengths"
+  ],
+  "rows": [
+   {
+    "size": "2x2",
+    "d_from": 6.0,
+    "d_to": 8.0,
+    "b": 2.0,
+    "h": 2.0,
+    "t1": 1.2,
+    "t1_tol": 0.1,
+    "t2": 1.0,
+    "t2_tol": 0.1,
+    "l_min": 6.0,
+    "l_max": 20.0,
+    "lengths": [
+     6.0,
+     8.0,
+     10.0,
+     12.0,
+     14.0,
+     16.0,
+     18.0,
+     20.0
+    ]
+   },
+   {
+    "size": "3x3",
+    "d_from": 8.0,
+    "d_to": 10.0,
+    "b": 3.0,
+    "h": 3.0,
+    "t1": 1.8,
+    "t1_tol": 0.1,
+    "t2": 1.4,
+    "t2_tol": 0.1,
+    "l_min": 6.0,
+    "l_max": 36.0,
+    "lengths": [
+     6.0,
+     8.0,
+     10.0,
+     12.0,
+     14.0,
+     16.0,
+     18.0,
+     20.0,
+     22.0,
+     25.0,
+     28.0,
+     32.0,
+     36.0
+    ]
+   },
+   {
+    "size": "4x4",
+    "d_from": 10.0,
+    "d_to": 12.0,
+    "b": 4.0,
+    "h": 4.0,
+    "t1": 2.5,
+    "t1_tol": 0.1,
+    "t2": 1.8,
+    "t2_tol": 0.1,
+    "l_min": 8.0,
+    "l_max": 45.0,
+    "lengths": [
+     8.0,
+     10.0,
+     12.0,
+     14.0,
+     16.0,
+     18.0,
+     20.0,
+     22.0,
+     25.0,
+     28.0,
+     32.0,
+     36.0,
+     40.0,
+     45.0
+    ]
+   },
+   {
+    "size": "5x5",
+    "d_from": 12.0,
+    "d_to": 17.0,
+    "b": 5.0,
+    "h": 5.0,
+    "t1": 3.0,
+    "t1_tol": 0.1,
+    "t2": 2.3,
+    "t2_tol": 0.1,
+    "l_min": 10.0,
+    "l_max": 56.0,
+    "lengths": [
+     10.0,
+     12.0,
+     14.0,
+     16.0,
+     18.0,
+     20.0,
+     22.0,
+     25.0,
+     28.0,
+     32.0,
+     36.0,
+     40.0,
+     45.0,
+     50.0,
+     56.0
+    ]
+   },
+   {
+    "size": "6x6",
+    "d_from": 17.0,
+    "d_to": 22.0,
+    "b": 6.0,
+    "h": 6.0,
+    "t1": 3.5,
+    "t1_tol": 0.1,
+    "t2": 2.8,
+    "t2_tol": 0.1,
+    "l_min": 14.0,
+    "l_max": 70.0,
+    "lengths": [
+     14.0,
+     16.0,
+     18.0,
+     20.0,
+     22.0,
+     25.0,
+     28.0,
+     32.0,
+     36.0,
+     40.0,
+     45.0,
+     50.0,
+     56.0,
+     63.0,
+     70.0
+    ]
+   },
+   {
+    "size": "8x7",
+    "d_from": 22.0,
+    "d_to": 30.0,
+    "b": 8.0,
+    "h": 7.0,
+    "t1": 4.0,
+    "t1_tol": 0.2,
+    "t2": 3.3,
+    "t2_tol": 0.2,
+    "l_min": 18.0,
+    "l_max": 90.0,
+    "lengths": [
+     18.0,
+     20.0,
+     22.0,
+     25.0,
+     28.0,
+     32.0,
+     36.0,
+     40.0,
+     45.0,
+     50.0,
+     56.0,
+     63.0,
+     70.0,
+     80.0,
+     90.0
+    ]
+   },
+   {
+    "size": "10x8",
+    "d_from": 30.0,
+    "d_to": 38.0,
+    "b": 10.0,
+    "h": 8.0,
+    "t1": 5.0,
+    "t1_tol": 0.2,
+    "t2": 3.3,
+    "t2_tol": 0.2,
+    "l_min": 22.0,
+    "l_max": 110.0,
+    "lengths": [
+     22.0,
+     25.0,
+     28.0,
+     32.0,
+     36.0,
+     40.0,
+     45.0,
+     50.0,
+     56.0,
+     63.0,
+     70.0,
+     80.0,
+     90.0,
+     100.0,
+     110.0
+    ]
+   },
+   {
+    "size": "12x8",
+    "d_from": 38.0,
+    "d_to": 44.0,
+    "b": 12.0,
+    "h": 8.0,
+    "t1": 5.0,
+    "t1_tol": 0.2,
+    "t2": 3.3,
+    "t2_tol": 0.2,
+    "l_min": 28.0,
+    "l_max": 140.0,
+    "lengths": [
+     28.0,
+     32.0,
+     36.0,
+     40.0,
+     45.0,
+     50.0,
+     56.0,
+     63.0,
+     70.0,
+     80.0,
+     90.0,
+     100.0,
+     110.0,
+     125.0,
+     140.0
+    ]
+   },
+   {
+    "size": "14x9",
+    "d_from": 44.0,
+    "d_to": 50.0,
+    "b": 14.0,
+    "h": 9.0,
+    "t1": 5.5,
+    "t1_tol": 0.2,
+    "t2": 3.8,
+    "t2_tol": 0.2,
+    "l_min": 36.0,
+    "l_max": 160.0,
+    "lengths": [
+     36.0,
+     40.0,
+     45.0,
+     50.0,
+     56.0,
+     63.0,
+     70.0,
+     80.0,
+     90.0,
+     100.0,
+     110.0,
+     125.0,
+     140.0,
+     160.0
+    ]
+   },
+   {
+    "size": "16x10",
+    "d_from": 50.0,
+    "d_to": 58.0,
+    "b": 16.0,
+    "h": 10.0,
+    "t1": 6.0,
+    "t1_tol": 0.2,
+    "t2": 4.3,
+    "t2_tol": 0.2,
+    "l_min": 45.0,
+    "l_max": 180.0,
+    "lengths": [
+     45.0,
+     50.0,
+     56.0,
+     63.0,
+     70.0,
+     80.0,
+     90.0,
+     100.0,
+     110.0,
+     125.0,
+     140.0,
+     160.0,
+     180.0
+    ]
+   },
+   {
+    "size": "18x11",
+    "d_from": 58.0,
+    "d_to": 65.0,
+    "b": 18.0,
+    "h": 11.0,
+    "t1": 7.0,
+    "t1_tol": 0.2,
+    "t2": 4.4,
+    "t2_tol": 0.2,
+    "l_min": 50.0,
+    "l_max": 200.0,
+    "lengths": [
+     50.0,
+     56.0,
+     63.0,
+     70.0,
+     80.0,
+     90.0,
+     100.0,
+     110.0,
+     125.0,
+     140.0,
+     160.0,
+     180.0,
+     200.0
+    ]
+   },
+   {
+    "size": "20x12",
+    "d_from": 65.0,
+    "d_to": 75.0,
+    "b": 20.0,
+    "h": 12.0,
+    "t1": 7.5,
+    "t1_tol": 0.2,
+    "t2": 4.9,
+    "t2_tol": 0.2,
+    "l_min": 56.0,
+    "l_max": 220.0,
+    "lengths": [
+     56.0,
+     63.0,
+     70.0,
+     80.0,
+     90.0,
+     100.0,
+     110.0,
+     125.0,
+     140.0,
+     160.0,
+     180.0,
+     200.0,
+     220.0
+    ]
+   },
+   {
+    "size": "22x14",
+    "d_from": 75.0,
+    "d_to": 85.0,
+    "b": 22.0,
+    "h": 14.0,
+    "t1": 9.0,
+    "t1_tol": 0.2,
+    "t2": 5.4,
+    "t2_tol": 0.2,
+    "l_min": 63.0,
+    "l_max": 250.0,
+    "lengths": [
+     63.0,
+     70.0,
+     80.0,
+     90.0,
+     100.0,
+     110.0,
+     125.0,
+     140.0,
+     160.0,
+     180.0,
+     200.0,
+     220.0,
+     250.0
+    ]
+   },
+   {
+    "size": "25x14",
+    "d_from": 85.0,
+    "d_to": 95.0,
+    "b": 25.0,
+    "h": 14.0,
+    "t1": 9.0,
+    "t1_tol": 0.2,
+    "t2": 5.4,
+    "t2_tol": 0.2,
+    "l_min": 70.0,
+    "l_max": 280.0,
+    "lengths": [
+     70.0,
+     80.0,
+     90.0,
+     100.0,
+     110.0,
+     125.0,
+     140.0,
+     160.0,
+     180.0,
+     200.0,
+     220.0,
+     250.0,
+     280.0
+    ]
+   },
+   {
+    "size": "28x16",
+    "d_from": 95.0,
+    "d_to": 110.0,
+    "b": 28.0,
+    "h": 16.0,
+    "t1": 10.0,
+    "t1_tol": 0.2,
+    "t2": 6.4,
+    "t2_tol": 0.2,
+    "l_min": 80.0,
+    "l_max": 320.0,
+    "lengths": [
+     80.0,
+     90.0,
+     100.0,
+     110.0,
+     125.0,
+     140.0,
+     160.0,
+     180.0,
+     200.0,
+     220.0,
+     250.0,
+     280.0,
+     320.0
+    ]
+   },
+   {
+    "size": "32x18",
+    "d_from": 110.0,
+    "d_to": 130.0,
+    "b": 32.0,
+    "h": 18.0,
+    "t1": 11.0,
+    "t1_tol": 0.2,
+    "t2": 7.4,
+    "t2_tol": 0.2,
+    "l_min": 90.0,
+    "l_max": 360.0,
+    "lengths": [
+     90.0,
+     100.0,
+     110.0,
+     125.0,
+     140.0,
+     160.0,
+     180.0,
+     200.0,
+     220.0,
+     250.0,
+     280.0,
+     320.0,
+     360.0
+    ]
+   },
+   {
+    "size": "36x20",
+    "d_from": 130.0,
+    "d_to": 150.0,
+    "b": 36.0,
+    "h": 20.0,
+    "t1": 12.0,
+    "t1_tol": 0.3,
+    "t2": 8.4,
+    "t2_tol": 0.3,
+    "l_min": 100.0,
+    "l_max": 400.0,
+    "lengths": [
+     100.0,
+     110.0,
+     125.0,
+     140.0,
+     160.0,
+     180.0,
+     200.0,
+     220.0,
+     250.0,
+     280.0,
+     320.0,
+     360.0,
+     400.0
+    ]
+   }
+  ],
+  "sources": [
+   "Maryland Metrics",
+   "fasten.it",
+   "tolerances — mx.misumi-ec.com, mikipulley.co.jp, live-catalog.jwwinco.com",
+   "lengths: (320 and 360, as Misumi and ISO 2491 — fasten.it writes 315 / 355); 36 × 20: one source — engineersedge.com"
+  ],
+  "usedBy": [
+   "shaft"
+  ]
+ },
+ {
+  "id": "EN 10080",
+  "slug": "en-10080",
+  "family": "reinforcement",
+  "title": "Steel for the reinforcement of concrete — ribbed bars Ø 6…50 mm: nominal area and mass per metre",
+  "edition": "2026-11-20",
+  "checked": "2026-11-20",
+  "columns": [
+   "d",
+   "area",
+   "mass",
+   "preferred",
+   "fabric_only",
+   "source"
+  ],
+  "rows": [
+   {
+    "d": 6.0,
+    "area": 28.3,
+    "mass": 0.222,
+    "preferred": true,
+    "fabric_only": false,
+    "source": "BS 4449"
+   },
+   {
+    "d": 7.0,
+    "area": 38.5,
+    "mass": 0.302,
+    "preferred": false,
+    "fabric_only": true,
+    "source": "BS 4449"
+   },
+   {
+    "d": 8.0,
+    "area": 50.3,
+    "mass": 0.395,
+    "preferred": true,
+    "fabric_only": false,
+    "source": "BS 4449"
+   },
+   {
+    "d": 9.0,
+    "area": 63.6,
+    "mass": 0.499,
+    "preferred": false,
+    "fabric_only": true,
+    "source": "BS 4449"
+   },
+   {
+    "d": 10.0,
+    "area": 78.5,
+    "mass": 0.617,
+    "preferred": true,
+    "fabric_only": false,
+    "source": "BS 4449"
+   },
+   {
+    "d": 12.0,
+    "area": 113.0,
+    "mass": 0.888,
+    "preferred": true,
+    "fabric_only": false,
+    "source": "BS 4449"
+   },
+   {
+    "d": 14.0,
+    "area": 154.0,
+    "mass": 1.21,
+    "preferred": false,
+    "fabric_only": false,
+    "source": "DIN 488"
+   },
+   {
+    "d": 16.0,
+    "area": 201.0,
+    "mass": 1.58,
+    "preferred": true,
+    "fabric_only": false,
+    "source": "BS 4449"
+   },
+   {
+    "d": 20.0,
+    "area": 314.0,
+    "mass": 2.47,
+    "preferred": true,
+    "fabric_only": false,
+    "source": "BS 4449"
+   },
+   {
+    "d": 25.0,
+    "area": 491.0,
+    "mass": 3.85,
+    "preferred": true,
+    "fabric_only": false,
+    "source": "BS 4449"
+   },
+   {
+    "d": 28.0,
+    "area": 616.0,
+    "mass": 4.83,
+    "preferred": false,
+    "fabric_only": false,
+    "source": "DIN 488"
+   },
+   {
+    "d": 32.0,
+    "area": 804.0,
+    "mass": 6.31,
+    "preferred": true,
+    "fabric_only": false,
+    "source": "BS 4449"
+   },
+   {
+    "d": 40.0,
+    "area": 1257.0,
+    "mass": 9.86,
+    "preferred": true,
+    "fabric_only": false,
+    "source": "BS 4449"
+   },
+   {
+    "d": 50.0,
+    "area": 1963.0,
+    "mass": 15.4,
+    "preferred": true,
+    "fabric_only": false,
+    "source": "BS 4449"
+   }
+  ],
+  "sources": [
+   "BS 4449:2005+A2:2009 Table 7 and 7.3.1 (EN 10080 steel, Ø 6…50, mass = 0.00785 kg/mm² per metre)",
+   "the nominal section π d² / 4 × 7850 kg/m³ — DIN 488-2:2009 (B500B, Ø 6…40 incl. 14 and 28) — rechner-portal.de"
+  ],
+  "usedBy": [
+   "rebar-en-10080"
+  ]
+ },
+ {
+  "id": "EN 10080 ribs",
+  "slug": "en-10080-ribs",
+  "family": "reinforcement",
+  "title": "Rib geometry of ribbed bars — the ranges of EN 10080 and the least relative rib area fR",
+  "edition": "2026-11-20",
+  "checked": "2026-11-20",
+  "columns": [
+   "what",
+   "min",
+   "max",
+   "unit"
+  ],
+  "rows": [
+   {
+    "what": "transverse rib height",
+    "min": 0.03,
+    "max": 0.15,
+    "unit": "d"
+   },
+   {
+    "what": "transverse rib spacing",
+    "min": 0.4,
+    "max": 1.2,
+    "unit": "d"
+   },
+   {
+    "what": "transverse rib inclination",
+    "min": 35.0,
+    "max": 75.0,
+    "unit": "°"
+   },
+   {
+    "what": "longitudinal rib height",
+    "min": 0.0,
+    "max": 0.1,
+    "unit": "d"
+   },
+   {
+    "what": "circumference covered by transverse ribs",
+    "min": 0.75,
+    "max": 1.0,
+    "unit": ""
+   },
+   {
+    "what": "relative rib area fR, d ≤ 6",
+    "min": 0.035,
+    "max": null,
+    "unit": ""
+   },
+   {
+    "what": "relative rib area fR, 6 < d ≤ 12",
+    "min": 0.04,
+    "max": null,
+    "unit": ""
+   },
+   {
+    "what": "relative rib area fR, d > 12",
+    "min": 0.056,
+    "max": null,
+    "unit": ""
+   }
+  ],
+  "sources": [
+   "BS 4449:2005+A2:2009 Tables 8 and 9, 7.4.2 (the EN 10080 ranges; one source for the ranges)",
+   "EN 1992-1-1:2004 Table C.2N (fR min 0.035 / 0.040 / 0.056 — the same as BS 4449 Table 9)"
+  ],
+  "usedBy": [
+   "rebar-en-10080"
+  ]
+ },
+ {
+  "id": "EN 1992-1-1 C.1",
+  "slug": "en-1992-1-1-c-1",
+  "family": "reinforcement",
+  "title": "Classes of reinforcing steel — B500A, B500B, B500C (EN 1992-1-1 Annex C classes A, B, C)",
+  "edition": "2026-11-20",
+  "checked": "2026-11-20",
+  "columns": [
+   "grade",
+   "class",
+   "fyk",
+   "k_min",
+   "k_max",
+   "euk",
+   "k_min_below_8",
+   "euk_below_8"
+  ],
+  "rows": [
+   {
+    "grade": "B500A",
+    "class": "A",
+    "fyk": 500.0,
+    "k_min": 1.05,
+    "k_max": null,
+    "euk": 2.5,
+    "k_min_below_8": 1.02,
+    "euk_below_8": 1.0
+   },
+   {
+    "grade": "B500B",
+    "class": "B",
+    "fyk": 500.0,
+    "k_min": 1.08,
+    "k_max": null,
+    "euk": 5.0,
+    "k_min_below_8": 1.08,
+    "euk_below_8": 5.0
+   },
+   {
+    "grade": "B500C",
+    "class": "C",
+    "fyk": 500.0,
+    "k_min": 1.15,
+    "k_max": 1.35,
+    "euk": 7.5,
+    "k_min_below_8": 1.15,
+    "euk_below_8": 7.5
+   }
+  ],
+  "sources": [
+   "EN 1992-1-1:2004 Annex C Table C.1",
+   "BS 4449:2005+A2:2009 Table 4 (B500A / B / C, notes a, b below 8 mm)"
+  ],
+  "usedBy": [
+   "rebar-en-10080"
+  ]
+ },
+ {
+  "id": "EN 1992-1-1 8.1N",
+  "slug": "en-1992-1-1-8-1n",
+  "family": "reinforcement",
+  "title": "Minimum mandrel diameter of bent bars — recommended values (a National Annex may set others)",
+  "edition": "2026-11-20",
+  "checked": "2026-11-20",
+  "columns": [
+   "bars",
+   "mandrel"
+  ],
+  "rows": [
+   {
+    "bars": "φ ≤ 16",
+    "mandrel": "4φ"
+   },
+   {
+    "bars": "φ > 16",
+    "mandrel": "7φ"
+   },
+   {
+    "bars": "welded, weld ≥ 3φ from the bend",
+    "mandrel": "5φ"
+   },
+   {
+    "bars": "welded, weld < 3φ from the bend or within it",
+    "mandrel": "20φ"
+   }
+  ],
+  "sources": [
+   "EN 1992-1-1:2004 8.3, Table 8.1N",
+   "BS 4449:2005+A2:2009 Table 6 (the rebend test: 4d up to 16 mm, 7d above)"
+  ],
+  "usedBy": [
+   "rebar-en-10080"
+  ]
+ },
+ {
+  "id": "EN 1992-1-1 8.5",
+  "slug": "en-1992-1-1-8-5",
+  "family": "reinforcement",
+  "title": "Anchorage of links — the straight end after the bend",
+  "edition": "2026-11-20",
+  "checked": "2026-11-20",
+  "columns": [
+   "bend",
+   "end"
+  ],
+  "rows": [
+   {
+    "bend": "90°…150°",
+    "end": "10φ, ≥ 70 mm"
+   },
+   {
+    "bend": "≥ 150°",
+    "end": "5φ, ≥ 50 mm"
+   }
+  ],
+  "sources": [
+   "EN 1992-1-1:2004 8.5, Figure 8.5",
+   "EN 1992-1-1:2004 Figure 8.1 b, c (standard bend 90°…150°, hook ≥ 150°)"
+  ],
+  "usedBy": [
+   "rebar-en-10080"
+  ]
+ }
+]

@@ -22,8 +22,8 @@ export function LibraryGrid({ items, locale, t }: Props) {
             type="button"
             aria-selected={filter === c}
             onClick={() => setFilter(c)}
-            className={`rounded-md border px-4 py-2 text-[14px] font-medium transition-colors ${
-              filter === c ? 'border-on-ink bg-on-ink text-ink' : 'border-hairline-ink-strong text-on-ink-muted hover:text-on-ink'
+            className={`rounded-full border px-4 py-2 text-[14px] font-medium transition-colors ${
+              filter === c ? 'border-on-ink bg-on-ink text-ink' : 'border-hairline-ink-strong text-on-ink-muted hover:border-on-ink/50 hover:text-on-ink'
             }`}
           >
             {c === 'all' ? t.all : t.categories[c]}
@@ -37,7 +37,7 @@ export function LibraryGrid({ items, locale, t }: Props) {
       ) : (
         <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {shown.map((item, i) => (
-            <LibraryCard key={item.slug} item={item} locale={locale} categoryLabel={t.categories[item.category]} openLabel={t.open} priority={i < 3} />
+            <LibraryCard key={item.slug} item={item} locale={locale} categoryLabel={t.categories[item.category]} openLabel={t.open} configsLabel={t.configs} priority={i < 3} />
           ))}
         </div>
       )}

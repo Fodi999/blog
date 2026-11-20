@@ -25,7 +25,8 @@
 | `/[locale]/kernel` | ядро: что умеет, протокол испытаний, память ошибок, чего пока не умеет, как проверяем |
 | `/[locale]/about` | разработчик (старый адрес `/o-mnie` ведёт сюда) |
 | `/[locale]/download` | скачивание откроется с бетой; платформы, требования, запись в бету |
-| `/[locale]/library`, `/library/[slug]` | библиотека и карточка модели с 3D-просмотром |
+| `/[locale]/library`, `/library/[slug]` | библиотека (генераторы по стандартам и изделия) и карточка модели с 3D-просмотром, параметрами и стандартами |
+| `/[locale]/library/standards`, `/library/standards/[std]` | все таблицы стандартов Monge (ISO, DIN, EN) и полная таблица с источниками |
 | `/[locale]/contact`, `/privacy` | заявка, конфиденциальность |
 | `/[locale]/pricing` | временно ведёт на `/download` (цены объявим к выпуску) |
 | `/api/lead` | POST заявки → D1 `leads` (виды: `beta` — запись в бету, `pilot`, `custom`, `other`) |
@@ -45,10 +46,27 @@ npm run files:upload                      # r2/models/** → R2 (STEP для Pro
 npm run deploy
 ```
 
+## Таблицы стандартов
+
+`data/standards.json` — те же числа, по которым Monge строит библиотеку (`geometry_engine::standards`). Обновить:
+в окне Monge выполнить скрипт, который собирает `fastener_table(id)` всех таблиц в JSON-массив, сохранить его как
+`<папка>/standards.json`, затем `python3 scripts/standards-json.py <папка> data/standards.json`. Ссылки на копии
+текстов стандартов на сайт не попадают — только название документа или имя справочного сайта. Названия таблиц на трёх
+языках и единицы — `lib/standards.ts`.
+
+## Обложки моделей
+
+`scripts/poster.html` рисует GLB тем же светом, что 3D-просмотр сайта, на прозрачном фоне 1200×900: положить рядом
+`vendor/three` и `<slug>.glb`, открыть через локальный сервер `index.html?m=<slug>.glb&yaw=-30&pitch=22&rot=0,0,0`
+и снять headless Chrome (`--screenshot --default-background-color=00000000`), затем `cwebp -q 86 -alpha_q 90`.
+
 ## Как добавить модель
 
 1. В Monge: экспорт STEP (и превью GLB/рендер).
 2. Положить `public/library/<slug>/model.glb` и `render.webp`, STEP — в `r2/models/<slug>/`.
 3. Добавить запись в `data/library.json`, затем `npm run db:seed && npm run files:upload`.
+   Что есть в библиотеке, решает `data/library.json` (только детали библиотеки Monge): строка D1 может поменять
+   текст или скрыть запись (`published = 0`), но запись, которой нет в каталоге, на сайте не показывается.
+   У генератора библиотеки Monge есть `standards`, `params`, `configs`, `shown`.
 
 Заявки: `npx wrangler d1 execute monge --remote --command "SELECT created_at, kind, name, email, company FROM leads ORDER BY id DESC LIMIT 20"`.

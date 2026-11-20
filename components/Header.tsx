@@ -57,7 +57,7 @@ export function Header({ locale, nav }: Props) {
   return (
     <header
       className={`fixed inset-x-0 top-0 z-50 border-b pt-[env(safe-area-inset-top)] transition-[background-color,border-color] duration-ui ease-premium ${
-        scrolled || open ? 'border-hairline-ink-strong bg-ink/95 backdrop-blur-md' : 'border-transparent'
+        scrolled || open ? 'border-hairline-ink bg-ink/80 backdrop-blur-xl backdrop-saturate-150' : 'border-transparent'
       }`}
     >
       <div className="content-frame flex h-16 items-center justify-between gap-4">

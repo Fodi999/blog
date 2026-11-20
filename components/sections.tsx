@@ -36,8 +36,9 @@ export function Faq({ t }: { t: Dict['faq'] }) {
 
 export function PageHero({ eyebrow, title, lead }: { eyebrow?: string; title: string; lead?: string }) {
   return (
-    <section className="relative pt-32 pb-12 md:pt-36">
-      <div className="content-frame animate-reveal">
+    <section className="relative overflow-hidden pt-32 pb-12 md:pt-36">
+      <div className="hero-glow pointer-events-none absolute inset-0" aria-hidden="true" />
+      <div className="content-frame relative animate-reveal">
         {eyebrow ? <Eyebrow>{eyebrow}</Eyebrow> : null}
         <h1 className="mt-3 max-w-4xl font-display text-[clamp(38px,5.6vw,72px)] leading-[1] font-semibold tracking-[-.01em] text-balance text-on-ink">{title}</h1>
         {lead ? <p className="mt-6 max-w-[62ch] text-[18px] leading-relaxed text-pretty text-on-ink-muted">{lead}</p> : null}

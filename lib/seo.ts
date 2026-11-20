@@ -20,9 +20,20 @@ export function languageAlternates(path: string): Record<string, string> {
   };
 }
 
+/** A description for search results: at most `max` characters, cut after a sentence or a word, never mid-word. */
+export function clip(text: string, max = 160): string {
+  const s = text.replace(/\s+/g, ' ').trim();
+  if (s.length <= max) return s;
+  const cut = s.slice(0, max - 1);
+  const sentence = cut.lastIndexOf('. ');
+  if (sentence > max * 0.55) return cut.slice(0, sentence + 1);
+  return `${cut.slice(0, cut.lastIndexOf(' ')).replace(/[,;:—–-]\s*$/, '')}…`;
+}
+
 /** Per-page metadata with canonical + hreflang + Open Graph. `path` excludes the locale. */
-export function pageMetadata(locale: Locale, path: string, title: string | undefined, description: string, image?: string): Metadata {
+export function pageMetadata(locale: Locale, path: string, title: string | undefined, fullDescription: string, image?: string): Metadata {
   const t = getDict(locale);
+  const description = clip(fullDescription);
   const url = `${SITE_URL}/${locale}${path}`;
   const ogImage = image ?? '/og.png';
   return {

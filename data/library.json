@@ -1,430 +1,847 @@
 [
   {
-    "slug": "work-table-1200x600",
-    "category": "stainless",
+    "slug": "rebar-en-10080",
+    "category": "reinforcement",
     "title": {
-      "pl": "Stół przyścienny 1200×600×850 z półką",
-      "ru": "Стол пристенный 1200×600×850 с полкой",
-      "en": "Wall work table 1200×600×850 with undershelf"
+      "ru": "Арматура EN 10080 — стержни, Г, П и хомуты",
+      "pl": "Pręt zbrojeniowy EN 10080 — proste, L, U i strzemiona",
+      "en": "Reinforcing bar EN 10080 — straight, L, U and links"
     },
     "summary": {
-      "pl": "Blat „kanapkowy” 40 mm: stal nierdzewna AISI 304 (1.4301) 1 mm na płycie wiórowej wodoodpornej 18 mm, tylny rant 50 mm z zawinięciem, gięta krawędź przednia i tylny kołnierz zamykający płytę. Od spodu trzy profile omega 70×20 z gniazdami nóg 40×40×1,5 na śrubach M8, stopki regulowane M12 (zakres 30 mm). Półka dolna także „kanapkowa”: stal 1 mm na płycie 16 mm, z kołnierzami na czterech bokach, przykręcona do nóg. Rozwinięcia DXF do lasera.",
-      "ru": "Столешница-«сэндвич» 40 мм: нержавейка AISI 304 (1.4301) 1 мм на влагостойкой ДСП 18 мм, задний борт 50 мм с загибом, загнутая передняя кромка и задний отгиб, закрывающий ДСП. Снизу три омега-профиля 70×20 с гнёздами под ножки 40×40×1,5 на болтах M8, регулируемые опоры M12 (ход 30 мм). Нижняя полка тоже «сэндвич»: сталь 1 мм на ДСП 16 мм, отбортовка с четырёх сторон, крепление к ножкам на болтах. Развёртки DXF для лазера.",
-      "en": "A 40 mm \"sandwich\" top: 1 mm AISI 304 (1.4301) stainless on an 18 mm moisture-resistant chipboard core, a 50 mm upstand with a folded hem, a folded front edge and a back flange that closes the core. Three 70×20 hat channels carry the sockets for the 40×40×1.5 legs on M8 bolts; M12 levelling feet (30 mm travel). The undershelf is a sandwich too: 1 mm steel on 16 mm chipboard, flanged on all four sides and bolted to the legs. DXF flat patterns for laser cutting."
+      "ru": "Один генератор на весь ряд Ø6…50 мм и классы B500A, B500B, B500C. Оправка не меньше таблицы 8.1N Еврокода 2 (4φ до 16 мм, 7φ выше), прямой конец хомута — не короче 10φ и 70 мм (рисунок 8.5). Размеры — по наружной грани, длина заготовки — по оси, масса — по таблице. Рёбра на выбор: условный гладкий стержень или настоящая поверхность периодического профиля — точная NURBS-геометрия, высота и шаг рёбер в пределах EN 10080, площадь смятия fR измеряется на построенной поверхности. Ведомость гибки проекта — одной командой.",
+      "pl": "Jeden generator dla całego szeregu Ø6…50 mm i klas B500A, B500B, B500C. Trzpień nie mniejszy niż w tablicy 8.1N Eurokodu 2 (4φ do 16 mm, 7φ powyżej), prosty koniec strzemienia nie krótszy niż 10φ i 70 mm (rysunek 8.5). Wymiary po zewnętrznej krawędzi, długość cięcia po osi, masa z tablicy. Żebra do wyboru: umowny gładki pręt albo rzeczywista powierzchnia żebrowana — dokładna geometria NURBS, wysokość i rozstaw żeber w granicach EN 10080, względne pole żeber fR mierzone na zbudowanej powierzchni. Wykaz gięcia projektu jednym poleceniem.",
+      "en": "One generator for the whole range Ø6…50 mm and the classes B500A, B500B, B500C. The mandrel is never below Table 8.1N of Eurocode 2 (4φ up to 16 mm, 7φ above), a link’s straight end never shorter than 10φ and 70 mm (Figure 8.5). Dimensions by the outside, cut length along the centre line, mass by the table. Ribs by choice: a plain nominal bar or the real ribbed surface — exact NURBS geometry, rib height and spacing within EN 10080, the relative rib area fR measured on the surface built. The project’s bending schedule in one command."
     },
     "material": {
-      "pl": "Stal nierdzewna AISI 304 (1.4301), do kontaktu z żywnością",
-      "ru": "Нержавеющая сталь AISI 304 (1.4301), пищевая",
-      "en": "Stainless steel AISI 304 (1.4301), food grade"
+      "ru": "Арматурная сталь B500A / B500B / B500C",
+      "pl": "Stal zbrojeniowa B500A / B500B / B500C",
+      "en": "Reinforcing steel B500A / B500B / B500C"
     },
-    "dimensions": "1200 × 600 × 850 mm",
-    "version": "0.3",
-    "image": "/library/work-table-1200x600/photo.webp",
-    "model": "/library/work-table-1200x600/model.glb",
-    "finish": "steel",
+    "dimensions": "Ø16 × 160 mm",
+    "massKg": 0.252,
+    "version": "0.15.196",
+    "image": "/library/rebar-en-10080/render.webp",
+    "model": "/library/rebar-en-10080/model.glb",
+    "finish": "satin",
     "view": [
-      150,
+      -22,
       24
     ],
     "files": [
       {
         "format": "GLB",
-        "href": "/library/work-table-1200x600/model.glb",
+        "href": "/library/rebar-en-10080/model.glb",
         "access": "free"
-      },
-      {
-        "format": "STEP",
-        "href": "models/work-table-1200x600/work-table-1200x600.step",
-        "access": "pro"
-      },
-      {
-        "format": "DXF",
-        "href": "models/work-table-1200x600/work-table-1200x600-top-flat.dxf",
-        "access": "pro"
       }
     ],
-    "updated": "2026-10-06",
-    "massKg": 36.0,
-    "dims": [
+    "updated": "2026-11-20",
+    "standards": [
+      "EN 10080",
+      "EN 10080 ribs",
+      "EN 1992-1-1 C.1",
+      "EN 1992-1-1 8.1N",
+      "EN 1992-1-1 8.5"
+    ],
+    "params": [
       {
-        "a": [
-          0,
-          850,
-          0
-        ],
-        "b": [
-          1200,
-          850,
-          0
-        ],
-        "offset": [
-          0,
-          0,
-          -110
-        ],
-        "label": "1200"
+        "name": {
+          "ru": "Диаметр",
+          "pl": "Średnica",
+          "en": "Diameter"
+        },
+        "values": "6, 7, 8, 9, 10, 12, 14, 16, 20, 25, 28, 32, 40, 50 mm"
       },
       {
-        "a": [
-          1200,
-          850,
-          0
-        ],
-        "b": [
-          1200,
-          850,
-          600
-        ],
-        "offset": [
-          110,
-          0,
-          0
-        ],
-        "label": "600"
+        "name": {
+          "ru": "Класс стали",
+          "pl": "Klasa stali",
+          "en": "Steel class"
+        },
+        "values": "B500A · B500B · B500C"
       },
       {
-        "a": [
-          0,
-          0,
-          0
-        ],
-        "b": [
-          0,
-          850,
-          0
-        ],
-        "offset": [
-          -110,
-          0,
-          0
-        ],
-        "label": "850"
+        "name": {
+          "ru": "Форма",
+          "pl": "Kształt",
+          "en": "Shape"
+        },
+        "values": {
+          "ru": "прямой · Г · П · хомут 135° · по точкам",
+          "pl": "prosty · L · U · strzemię 135° · wg punktów",
+          "en": "straight · L · U · link 135° · by points"
+        }
       },
       {
-        "a": [
-          1200,
-          850,
-          600
-        ],
-        "b": [
-          1200,
-          900,
-          600
-        ],
-        "offset": [
-          110,
-          0,
-          0
-        ],
-        "label": "50"
+        "name": {
+          "ru": "Оправка",
+          "pl": "Trzpień",
+          "en": "Mandrel"
+        },
+        "values": "≥ EN 1992-1-1 Table 8.1N"
       },
       {
-        "a": [
-          1130,
-          0,
-          30
-        ],
-        "b": [
-          1130,
-          200,
-          30
-        ],
-        "offset": [
-          0,
-          0,
-          -140
-        ],
-        "label": "200 ↥"
+        "name": {
+          "ru": "Рёбра",
+          "pl": "Żebra",
+          "en": "Ribs"
+        },
+        "values": {
+          "ru": "условные · настоящие (EN 10080, fR)",
+          "pl": "umowne · rzeczywiste (EN 10080, fR)",
+          "en": "plain · exact (EN 10080, fR)"
+        }
       }
-    ]
+    ],
+    "configs": 7,
+    "shown": {
+      "ru": "Ø16 B500B, прямой 160 мм, настоящие рёбра",
+      "pl": "Ø16 B500B, prosty 160 mm, rzeczywiste żebra",
+      "en": "Ø16 B500B, straight 160 mm, real ribs"
+    }
   },
   {
-    "slug": "sink-600x600",
-    "category": "stainless",
-    "title": {
-      "pl": "Zlew gastronomiczny 600×600×850 z komorą 500×400×300",
-      "ru": "Мойка 600×600×850 с вварной чашей 500×400×300",
-      "en": "Sink table 600×600×850 with a welded 500×400×300 bowl"
-    },
-    "summary": {
-      "pl": "Blat ze stali nierdzewnej AISI 304 1 mm z rantem tylnym 100 mm (zawinięty, otwór Ø35 na baterię) i giętą krawędzią. Komora 500×400×300 wspawana na równo z blatem: ścianki gięte z jednego pasa R20, szlif biegnie dookoła, dno z odpływem Ø52. Bez płyty wiórowej (strefa mokra) — usztywnienie profilami omega z przodu i z tyłu. Nogi 40×40 w gniazdach, stopki regulowane M12, półka dolna. Rozwinięcia DXF do lasera.",
-      "ru": "Столешница из нержавейки AISI 304 1 мм с задним бортом 100 мм (с загибом, отверстие Ø35 под смеситель) и загнутой кромкой. Чаша 500×400×300 вварена заподлицо: стенки согнуты из одной полосы с радиусом R20, шлифовка идёт вокруг чаши, дно с выпуском Ø52. Без ДСП (мокрая зона) — жёсткость дают омеги спереди и сзади. Ножки 40×40 в гнёздах, регулируемые опоры M12, нижняя полка. Развёртки DXF для лазера.",
-      "en": "A 1 mm AISI 304 top with a 100 mm hemmed upstand (Ø35 tap hole) and a folded front edge. The 500×400×300 bowl is welded in flush: walls bent from one strip with R20 corners, brushed all the way round, a bottom with a Ø52 waste. No chipboard (wet area) — hat channels front and back stiffen the top. 40×40 legs in sockets, M12 levelling feet, an undershelf. DXF flat patterns for laser cutting."
-    },
-    "material": {
-      "pl": "Stal nierdzewna AISI 304 (1.4301), do kontaktu z żywnością",
-      "ru": "Нержавеющая сталь AISI 304 (1.4301), пищевая",
-      "en": "Stainless steel AISI 304 (1.4301), food grade"
-    },
-    "dimensions": "600 × 600 × 850 mm",
-    "version": "0.3",
-    "image": "/library/sink-600x600/photo.webp",
-    "model": "/library/sink-600x600/model.glb",
-    "finish": "steel",
-    "view": [
-      150,
-      30
-    ],
-    "files": [
-      {
-        "format": "GLB",
-        "href": "/library/sink-600x600/model.glb",
-        "access": "free"
-      },
-      {
-        "format": "STEP",
-        "href": "models/sink-600x600/sink-600x600.step",
-        "access": "pro"
-      },
-      {
-        "format": "DXF",
-        "href": "models/sink-600x600/sink-600x600-top-flat.dxf",
-        "access": "pro"
-      }
-    ],
-    "updated": "2026-10-06",
-    "massKg": 19.9,
-    "dims": [
-      {
-        "a": [
-          0,
-          850,
-          0
-        ],
-        "b": [
-          600,
-          850,
-          0
-        ],
-        "offset": [
-          0,
-          0,
-          -110
-        ],
-        "label": "600"
-      },
-      {
-        "a": [
-          600,
-          850,
-          0
-        ],
-        "b": [
-          600,
-          850,
-          600
-        ],
-        "offset": [
-          110,
-          0,
-          0
-        ],
-        "label": "600"
-      },
-      {
-        "a": [
-          0,
-          0,
-          0
-        ],
-        "b": [
-          0,
-          850,
-          0
-        ],
-        "offset": [
-          -110,
-          0,
-          0
-        ],
-        "label": "850"
-      },
-      {
-        "a": [
-          600,
-          850,
-          600
-        ],
-        "b": [
-          600,
-          950,
-          600
-        ],
-        "offset": [
-          110,
-          0,
-          0
-        ],
-        "label": "100"
-      },
-      {
-        "a": [
-          50,
-          850,
-          100
-        ],
-        "b": [
-          550,
-          850,
-          100
-        ],
-        "offset": [
-          0,
-          60,
-          0
-        ],
-        "label": "500"
-      },
-      {
-        "a": [
-          50,
-          550,
-          500
-        ],
-        "b": [
-          50,
-          850,
-          500
-        ],
-        "offset": [
-          -90,
-          0,
-          0
-        ],
-        "label": "300 ↧"
-      }
-    ]
-  },
-  {
-    "slug": "wheel-9evo-7x17-et43",
-    "category": "precision",
-    "title": {
-      "pl": "Felga 7J×17 ET43 5×100 według rysunku",
-      "ru": "Диск 7J×17 ET43 5×100 по чертежу",
-      "en": "Wheel 7J×17 ET43 5×100 from the drawing"
-    },
-    "summary": {
-      "pl": "Test jądra Monge: felga odlewana zbudowana według rysunku fabrycznego — 20 okien, wklęsły front, gniazda śrub i zaokrąglenia. Bryła bez błędów topologii.",
-      "ru": "Проверка ядра Monge: литой диск по заводскому чертежу — 20 окон, вогнутая лицевая часть, колодцы под болты и скругления. Тело без ошибок топологии.",
-      "en": "A Monge kernel test: a cast wheel built from the factory drawing — 20 windows, a dished face, bolt pockets and fillets. A solid with no topology errors."
-    },
-    "material": {
-      "pl": "Stop aluminium AlSi7Mg",
-      "ru": "Алюминиевый сплав AlSi7Mg",
-      "en": "Aluminium alloy AlSi7Mg"
-    },
-    "dimensions": "Ø471 × 210 mm",
-    "massKg": 10.1,
-    "faces": 562,
-    "version": "0.3",
-    "image": "/library/wheel-9evo-7x17-et43/render.webp",
-    "model": "/library/wheel-9evo-7x17-et43/model.glb",
-    "finish": "satin",
-    "view": [
-      -28,
-      12
-    ],
-    "files": [
-      {
-        "format": "GLB",
-        "href": "/library/wheel-9evo-7x17-et43/model.glb",
-        "access": "free"
-      },
-      {
-        "format": "STEP",
-        "href": "models/wheel-9evo-7x17-et43/wheel-9evo-7x17-et43.step",
-        "access": "pro"
-      }
-    ],
-    "updated": "2026-10-05",
-    "rotate": [
-      90,
-      0,
-      0
-    ]
-  },
-  {
-    "slug": "nut-m12x1-5-closed",
+    "slug": "bolt-joint-iso-4017",
     "category": "fasteners",
     "title": {
-      "pl": "Nakrętka zamknięta M12×1,5, klucz 19",
-      "ru": "Гайка закрытая M12×1,5, ключ 19",
-      "en": "Closed wheel nut M12×1.5, 19 mm hex"
+      "ru": "Болтовое соединение ISO 4017 + ISO 7089 + ISO 4032",
+      "pl": "Połączenie śrubowe ISO 4017 + ISO 7089 + ISO 4032",
+      "en": "Bolted joint ISO 4017 + ISO 7089 + ISO 4032"
     },
     "summary": {
-      "pl": "Nakrętka kołpakowa ze stożkiem 60°, gwint M12×1,5. Część zestawu do felgi.",
-      "ru": "Колпачковая гайка с конусом 60°, резьба M12×1,5. Деталь из комплекта к диску.",
-      "en": "A cap nut with a 60° seat and M12×1.5 thread, part of the wheel set."
+      "ru": "Болт, две шайбы и гайка по толщине пакета: Monge сам берёт самый короткий болт стандартной длины, из которого после гайки выходит не меньше двух витков, и отверстие по ISO 273. Крепёж в соединении — тот же, что в отдельных генераторах, по тем же таблицам.",
+      "pl": "Śruba, dwie podkładki i nakrętka dobrane do grubości pakietu: Monge sam bierze najkrótszą śrubę o długości ze szeregu normy, która wystaje za nakrętkę co najmniej o dwa zwoje, i otwór wg ISO 273. Elementy połączenia są te same co w osobnych generatorach, z tych samych tablic.",
+      "en": "A bolt, two washers and a nut sized by the grip: Monge picks the shortest standard length that leaves at least two threads past the nut, and the hole by ISO 273. The parts are the same as in the single generators, from the same tables."
     },
     "material": {
-      "pl": "Stal",
-      "ru": "Сталь",
-      "en": "Steel"
+      "ru": "Сталь; для крепежа — также нержавеющая A2 и A4",
+      "pl": "Stal; elementy złączne także ze stali nierdzewnej A2 i A4",
+      "en": "Steel; fasteners also in stainless A2 and A4"
     },
-    "dimensions": "25 × 30 mm",
-    "faces": 430,
-    "version": "0.3",
-    "image": "/library/nut-m12x1-5-closed/render.webp",
-    "model": "/library/nut-m12x1-5-closed/model.glb",
+    "dimensions": "M12, grip 25 mm",
+    "massKg": 0.076,
+    "version": "0.15.196",
+    "image": "/library/bolt-joint-iso-4017/render.webp",
+    "model": "/library/bolt-joint-iso-4017/model.glb",
+    "finish": "steel",
+    "view": [
+      -35,
+      16
+    ],
+    "files": [
+      {
+        "format": "GLB",
+        "href": "/library/bolt-joint-iso-4017/model.glb",
+        "access": "free"
+      }
+    ],
+    "updated": "2026-11-20",
+    "standards": [
+      "ISO 4017",
+      "ISO 7089",
+      "ISO 4032",
+      "ISO 273",
+      "ISO 261"
+    ],
+    "params": [
+      {
+        "name": {
+          "ru": "Размер",
+          "pl": "Rozmiar",
+          "en": "Size"
+        },
+        "values": "M3 … M36"
+      },
+      {
+        "name": {
+          "ru": "Толщина пакета",
+          "pl": "Grubość pakietu",
+          "en": "Grip"
+        },
+        "values": {
+          "ru": "любая, мм",
+          "pl": "dowolna, mm",
+          "en": "any, mm"
+        }
+      },
+      {
+        "name": {
+          "ru": "Шайбы",
+          "pl": "Podkładki",
+          "en": "Washers"
+        },
+        "values": {
+          "ru": "обе · под головкой · под гайкой · без",
+          "pl": "obie · pod łbem · pod nakrętką · bez",
+          "en": "both · under the head · under the nut · none"
+        }
+      },
+      {
+        "name": {
+          "ru": "Отверстие ISO 273",
+          "pl": "Otwór ISO 273",
+          "en": "Hole ISO 273"
+        },
+        "values": {
+          "ru": "точное · среднее · грубое",
+          "pl": "dokładny · średni · zgrubny",
+          "en": "fine · medium · coarse"
+        }
+      },
+      {
+        "name": {
+          "ru": "Класс прочности",
+          "pl": "Klasa właściwości",
+          "en": "Property class"
+        },
+        "values": "5.6 · 8.8 · 10.9 · A2-70 · A4-70 · A2-50 · A4-50"
+      },
+      {
+        "name": {
+          "ru": "Резьба",
+          "pl": "Gwint",
+          "en": "Thread"
+        },
+        "values": {
+          "ru": "условная · настоящая винтовая",
+          "pl": "umowny · rzeczywisty śrubowy",
+          "en": "cosmetic · real helix"
+        }
+      }
+    ],
+    "configs": 17,
+    "shown": {
+      "ru": "M12, пакет 25 мм, настоящая резьба",
+      "pl": "M12, pakiet 25 mm, gwint rzeczywisty",
+      "en": "M12, grip 25 mm, real thread"
+    },
+    "rotate": [
+      0,
+      0,
+      -15
+    ]
+  },
+  {
+    "slug": "bolt-iso-4017",
+    "category": "fasteners",
+    "title": {
+      "ru": "Болт с шестигранной головкой ISO 4017",
+      "pl": "Śruba z łbem sześciokątnym ISO 4017",
+      "en": "Hexagon head screw ISO 4017"
+    },
+    "summary": {
+      "ru": "M1.6…M64 во всех длинах стандарта для размера; головка — s, k, dw, c по таблице; классы прочности по размеру и материалу. Резьба условная (лёгкое тело для сборок) или настоящая винтовая — точными гранями, а не сеткой.",
+      "pl": "M1.6…M64 we wszystkich długościach normy dla rozmiaru; łeb — s, k, dw, c z tablicy; klasy właściwości wg rozmiaru i materiału. Gwint umowny (lekka bryła do złożeń) albo rzeczywisty śrubowy — dokładnymi ścianami, nie siatką.",
+      "en": "M1.6…M64 in every length the standard gives for the size; the head — s, k, dw, c by the table; property classes by size and material. Thread cosmetic (a light body for assemblies) or a real helix — exact faces, not a mesh."
+    },
+    "material": {
+      "ru": "Сталь; для крепежа — также нержавеющая A2 и A4",
+      "pl": "Stal; elementy złączne także ze stali nierdzewnej A2 i A4",
+      "en": "Steel; fasteners also in stainless A2 and A4"
+    },
+    "dimensions": "M12 × 60",
+    "massKg": 0.06,
+    "version": "0.15.196",
+    "image": "/library/bolt-iso-4017/render.webp",
+    "model": "/library/bolt-iso-4017/model.glb",
+    "finish": "steel",
+    "view": [
+      -35,
+      18
+    ],
+    "files": [
+      {
+        "format": "GLB",
+        "href": "/library/bolt-iso-4017/model.glb",
+        "access": "free"
+      }
+    ],
+    "updated": "2026-11-20",
+    "standards": [
+      "ISO 4017",
+      "ISO 261"
+    ],
+    "params": [
+      {
+        "name": {
+          "ru": "Размер",
+          "pl": "Rozmiar",
+          "en": "Size"
+        },
+        "values": "M1.6 … M64 (29)"
+      },
+      {
+        "name": {
+          "ru": "Длина",
+          "pl": "Długość",
+          "en": "Length"
+        },
+        "values": "ISO 4017"
+      },
+      {
+        "name": {
+          "ru": "Материал",
+          "pl": "Materiał",
+          "en": "Material"
+        },
+        "values": {
+          "ru": "сталь · A2 · A4",
+          "pl": "stal · A2 · A4",
+          "en": "steel · A2 · A4"
+        }
+      },
+      {
+        "name": {
+          "ru": "Класс прочности",
+          "pl": "Klasa właściwości",
+          "en": "Property class"
+        },
+        "values": "5.6 · 8.8 · 10.9 · A2-70 · A4-70 · A2-50 · A4-50"
+      },
+      {
+        "name": {
+          "ru": "Резьба",
+          "pl": "Gwint",
+          "en": "Thread"
+        },
+        "values": {
+          "ru": "условная · настоящая винтовая",
+          "pl": "umowny · rzeczywisty śrubowy",
+          "en": "cosmetic · real helix"
+        }
+      }
+    ],
+    "configs": 35,
+    "shown": {
+      "ru": "M12 × 60, класс 8.8, настоящая резьба",
+      "pl": "M12 × 60, klasa 8.8, gwint rzeczywisty",
+      "en": "M12 × 60, class 8.8, real thread"
+    },
+    "rotate": [
+      0,
+      0,
+      -70
+    ]
+  },
+  {
+    "slug": "nut-iso-4032",
+    "category": "fasteners",
+    "title": {
+      "ru": "Гайка шестигранная ISO 4032",
+      "pl": "Nakrętka sześciokątna ISO 4032",
+      "en": "Hexagon nut ISO 4032"
+    },
+    "summary": {
+      "ru": "M1.6…M64: размер под ключ, высота и фаски по таблице; классы 6, 8, 10 для стали и A2/A4 для нержавейки по размеру. Настоящая резьба — винтовая поверхность в отверстии.",
+      "pl": "M1.6…M64: rozwartość klucza, wysokość i fazy z tablicy; klasy 6, 8, 10 dla stali i A2/A4 dla stali nierdzewnej wg rozmiaru. Gwint rzeczywisty — powierzchnia śrubowa w otworze.",
+      "en": "M1.6…M64: width across flats, height and chamfers by the table; classes 6, 8, 10 for steel and A2/A4 for stainless by size. A real thread is a helical surface in the bore."
+    },
+    "material": {
+      "ru": "Сталь; для крепежа — также нержавеющая A2 и A4",
+      "pl": "Stal; elementy złączne także ze stali nierdzewnej A2 i A4",
+      "en": "Steel; fasteners also in stainless A2 and A4"
+    },
+    "dimensions": "M12, s 18, m 10.8",
+    "massKg": 0.015,
+    "version": "0.15.196",
+    "image": "/library/nut-iso-4032/render.webp",
+    "model": "/library/nut-iso-4032/model.glb",
     "finish": "steel",
     "view": [
       -30,
+      32
+    ],
+    "files": [
+      {
+        "format": "GLB",
+        "href": "/library/nut-iso-4032/model.glb",
+        "access": "free"
+      }
+    ],
+    "updated": "2026-11-20",
+    "standards": [
+      "ISO 4032",
+      "ISO 261"
+    ],
+    "params": [
+      {
+        "name": {
+          "ru": "Размер",
+          "pl": "Rozmiar",
+          "en": "Size"
+        },
+        "values": "M1.6 … M64 (29)"
+      },
+      {
+        "name": {
+          "ru": "Материал",
+          "pl": "Materiał",
+          "en": "Material"
+        },
+        "values": {
+          "ru": "сталь · A2 · A4",
+          "pl": "stal · A2 · A4",
+          "en": "steel · A2 · A4"
+        }
+      },
+      {
+        "name": {
+          "ru": "Класс прочности",
+          "pl": "Klasa właściwości",
+          "en": "Property class"
+        },
+        "values": "6 · 8 · 10 · A2-70 · A4-70 · A2-50 · A4-50"
+      },
+      {
+        "name": {
+          "ru": "Резьба",
+          "pl": "Gwint",
+          "en": "Thread"
+        },
+        "values": {
+          "ru": "условная · настоящая винтовая",
+          "pl": "umowny · rzeczywisty śrubowy",
+          "en": "cosmetic · real helix"
+        }
+      }
+    ],
+    "configs": 33,
+    "shown": {
+      "ru": "M12, класс 8, настоящая резьба",
+      "pl": "M12, klasa 8, gwint rzeczywisty",
+      "en": "M12, class 8, real thread"
+    }
+  },
+  {
+    "slug": "washer-iso-7089",
+    "category": "fasteners",
+    "title": {
+      "ru": "Шайба плоская ISO 7089",
+      "pl": "Podkładka płaska ISO 7089",
+      "en": "Plain washer ISO 7089"
+    },
+    "summary": {
+      "ru": "Нормальный ряд, класс точности A, M1.6…M64: внутренний и наружный диаметр и толщина — номинал и пределы из таблицы; твёрдость 200 HV или 300 HV.",
+      "pl": "Szereg normalny, klasa A, M1.6…M64: średnica wewnętrzna, zewnętrzna i grubość — wartości nominalne i graniczne z tablicy; twardość 200 HV lub 300 HV.",
+      "en": "Normal series, product grade A, M1.6…M64: inside and outside diameter and thickness — nominal and limits from the table; hardness 200 HV or 300 HV."
+    },
+    "material": {
+      "ru": "Сталь; для крепежа — также нержавеющая A2 и A4",
+      "pl": "Stal; elementy złączne także ze stali nierdzewnej A2 i A4",
+      "en": "Steel; fasteners also in stainless A2 and A4"
+    },
+    "dimensions": "M12: Ø13 / Ø24 × 2.5",
+    "massKg": 0.006,
+    "version": "0.15.196",
+    "image": "/library/washer-iso-7089/render.webp",
+    "model": "/library/washer-iso-7089/model.glb",
+    "finish": "steel",
+    "view": [
+      -30,
+      38
+    ],
+    "files": [
+      {
+        "format": "GLB",
+        "href": "/library/washer-iso-7089/model.glb",
+        "access": "free"
+      }
+    ],
+    "updated": "2026-11-20",
+    "standards": [
+      "ISO 7089"
+    ],
+    "params": [
+      {
+        "name": {
+          "ru": "Размер",
+          "pl": "Rozmiar",
+          "en": "Size"
+        },
+        "values": "M1.6 … M64 (29)"
+      },
+      {
+        "name": {
+          "ru": "Твёрдость",
+          "pl": "Twardość",
+          "en": "Hardness"
+        },
+        "values": "200 HV · 300 HV"
+      },
+      {
+        "name": {
+          "ru": "Материал",
+          "pl": "Materiał",
+          "en": "Material"
+        },
+        "values": {
+          "ru": "сталь · A2 · A4",
+          "pl": "stal · A2 · A4",
+          "en": "steel · A2 · A4"
+        }
+      }
+    ],
+    "configs": 32,
+    "shown": {
+      "ru": "M12, 200 HV",
+      "pl": "M12, 200 HV",
+      "en": "M12, 200 HV"
+    }
+  },
+  {
+    "slug": "screw-iso-4762",
+    "category": "fasteners",
+    "title": {
+      "ru": "Винт с цилиндрической головкой ISO 4762",
+      "pl": "Śruba z łbem walcowym ISO 4762",
+      "en": "Socket head cap screw ISO 4762"
+    },
+    "summary": {
+      "ru": "M1.6…M64 с шестигранным углублением под ключ; длины и участок резьбы до головки — по стандарту для размера. Головка и стержень с настоящей резьбой строятся одним телом гранями.",
+      "pl": "M1.6…M64 z gniazdem sześciokątnym; długości i odcinek gwintu do łba wg normy dla rozmiaru. Łeb i trzpień z gwintem rzeczywistym budowane jako jedna bryła ze ścian.",
+      "en": "M1.6…M64 with a hexagon socket; lengths and the thread run to the head by the standard for the size. Head and threaded shank are built as one body of faces."
+    },
+    "material": {
+      "ru": "Сталь; для крепежа — также нержавеющая A2 и A4",
+      "pl": "Stal; elementy złączne także ze stali nierdzewnej A2 i A4",
+      "en": "Steel; fasteners also in stainless A2 and A4"
+    },
+    "dimensions": "M10 × 40",
+    "massKg": 0.034,
+    "version": "0.15.196",
+    "image": "/library/screw-iso-4762/render.webp",
+    "model": "/library/screw-iso-4762/model.glb",
+    "finish": "steel",
+    "view": [
+      -35,
+      18
+    ],
+    "files": [
+      {
+        "format": "GLB",
+        "href": "/library/screw-iso-4762/model.glb",
+        "access": "free"
+      }
+    ],
+    "updated": "2026-11-20",
+    "standards": [
+      "ISO 4762",
+      "ISO 261"
+    ],
+    "params": [
+      {
+        "name": {
+          "ru": "Размер",
+          "pl": "Rozmiar",
+          "en": "Size"
+        },
+        "values": "M1.6 … M64 (20)"
+      },
+      {
+        "name": {
+          "ru": "Длина",
+          "pl": "Długość",
+          "en": "Length"
+        },
+        "values": "ISO 4762"
+      },
+      {
+        "name": {
+          "ru": "Материал",
+          "pl": "Materiał",
+          "en": "Material"
+        },
+        "values": {
+          "ru": "сталь · A2 · A4",
+          "pl": "stal · A2 · A4",
+          "en": "steel · A2 · A4"
+        }
+      },
+      {
+        "name": {
+          "ru": "Класс прочности",
+          "pl": "Klasa właściwości",
+          "en": "Property class"
+        },
+        "values": "8.8 · 10.9 · 12.9 · A2-70 · A4-70 · A2-50 · A4-50"
+      },
+      {
+        "name": {
+          "ru": "Резьба",
+          "pl": "Gwint",
+          "en": "Thread"
+        },
+        "values": {
+          "ru": "условная · настоящая винтовая",
+          "pl": "umowny · rzeczywisty śrubowy",
+          "en": "cosmetic · real helix"
+        }
+      }
+    ],
+    "configs": 22,
+    "shown": {
+      "ru": "M10 × 40, класс 8.8, настоящая резьба",
+      "pl": "M10 × 40, klasa 8.8, gwint rzeczywisty",
+      "en": "M10 × 40, class 8.8, real thread"
+    },
+    "rotate": [
+      0,
+      0,
+      -70
+    ]
+  },
+  {
+    "slug": "bearing-iso-15",
+    "category": "bearings",
+    "title": {
+      "ru": "Шарикоподшипник радиальный ISO 15",
+      "pl": "Łożysko kulkowe zwykłe ISO 15",
+      "en": "Deep groove ball bearing ISO 15"
+    },
+    "summary": {
+      "ru": "Серии 60, 62, 63, отверстие 10…100 мм — 63 типоразмера. Открытый, 2Z или 2RS; простой — одним телом для сборок, подробный — кольца с дорожками и шарики. Заплечики вала и корпуса — по DIN 5418, допуски колец — по ISO 492.",
+      "pl": "Serie 60, 62, 63, otwór 10…100 mm — 63 rozmiary. Otwarte, 2Z lub 2RS; proste — jedna bryła do złożeń, szczegółowe — pierścienie z bieżniami i kulki. Odsadzenia wału i oprawy wg DIN 5418, tolerancje pierścieni wg ISO 492.",
+      "en": "Series 60, 62, 63, bore 10…100 mm — 63 sizes. Open, 2Z or 2RS; simple — one body for assemblies, detailed — rings with raceways and balls. Shaft and housing shoulders by DIN 5418, ring tolerances by ISO 492."
+    },
+    "material": {
+      "ru": "Подшипниковая сталь",
+      "pl": "Stal łożyskowa",
+      "en": "Bearing steel"
+    },
+    "dimensions": "6205: 25 × 52 × 15",
+    "massKg": 0.127,
+    "version": "0.15.196",
+    "image": "/library/bearing-iso-15/render.webp",
+    "model": "/library/bearing-iso-15/model.glb",
+    "finish": "steel",
+    "view": [
+      -25,
       28
     ],
     "files": [
       {
         "format": "GLB",
-        "href": "/library/nut-m12x1-5-closed/model.glb",
+        "href": "/library/bearing-iso-15/model.glb",
         "access": "free"
-      },
-      {
-        "format": "STEP",
-        "href": "models/nut-m12x1-5-closed/nut-m12x1-5-closed.step",
-        "access": "pro"
       }
     ],
-    "updated": "2026-10-05"
+    "updated": "2026-11-20",
+    "standards": [
+      "ISO 15",
+      "DIN 5418",
+      "ISO 492"
+    ],
+    "params": [
+      {
+        "name": {
+          "ru": "Обозначение",
+          "pl": "Oznaczenie",
+          "en": "Designation"
+        },
+        "values": "6000 … 6320 (63)"
+      },
+      {
+        "name": {
+          "ru": "Уплотнения",
+          "pl": "Uszczelnienia",
+          "en": "Seals"
+        },
+        "values": {
+          "ru": "открытый · 2Z · 2RS",
+          "pl": "otwarte · 2Z · 2RS",
+          "en": "open · 2Z · 2RS"
+        }
+      },
+      {
+        "name": {
+          "ru": "Детализация",
+          "pl": "Szczegółowość",
+          "en": "Detail"
+        },
+        "values": {
+          "ru": "одним телом · кольца и шарики",
+          "pl": "jedna bryła · pierścienie i kulki",
+          "en": "one body · rings and balls"
+        }
+      }
+    ],
+    "configs": 6,
+    "shown": {
+      "ru": "6205, открытый, с шариками",
+      "pl": "6205, otwarte, z kulkami",
+      "en": "6205, open, with balls"
+    },
+    "rotate": [
+      65,
+      0,
+      0
+    ]
   },
   {
-    "slug": "centering-ring-75-57-1",
-    "category": "precision",
+    "slug": "lock-nut-din-981",
+    "category": "bearings",
     "title": {
-      "pl": "Pierścień centrujący 75 → 57,1",
-      "ru": "Центрирующее кольцо 75 → 57,1",
-      "en": "Hub-centric ring 75 → 57.1"
+      "ru": "Гайка шлицевая KM DIN 981",
+      "pl": "Nakrętka łożyskowa KM DIN 981",
+      "en": "Lock nut KM DIN 981"
     },
     "summary": {
-      "pl": "Pierścień dopasowujący otwór centralny felgi Ø75 do piasty Ø57,1.",
-      "ru": "Кольцо переходит с центрального отверстия диска Ø75 на ступицу Ø57,1.",
-      "en": "Adapts a Ø75 wheel centre bore to a Ø57.1 hub."
+      "ru": "KM0…KM20 (M10 × 0.75 … M100 × 2): наружный диаметр, торец, ширина и четыре паза по таблице, фаска 30° к торцу. Стопорная шайба MB — по DIN 5406; резьба на конце вала под гайку — в генераторе валов.",
+      "pl": "KM0…KM20 (M10 × 0,75 … M100 × 2): średnica zewnętrzna, czoło, szerokość i cztery rowki z tablicy, faza 30° do czoła. Podkładka MB wg DIN 5406; gwint na końcu wału pod nakrętkę — w generatorze wałów.",
+      "en": "KM0…KM20 (M10 × 0.75 … M100 × 2): outside, locating face, width and four slots by the table, a 30° chamfer to the face. The MB tab washer by DIN 5406; the thread on the shaft end is in the shaft generator."
     },
     "material": {
-      "pl": "Tworzywo sztuczne",
-      "ru": "Пластик",
-      "en": "Plastic"
+      "ru": "Сталь",
+      "pl": "Stal",
+      "en": "Steel"
     },
-    "dimensions": "Ø77 × 10.5 mm",
-    "faces": 6,
-    "version": "0.3",
-    "image": "/library/centering-ring-75-57-1/render.webp",
-    "model": "/library/centering-ring-75-57-1/model.glb",
-    "finish": "source",
+    "dimensions": "KM4: M20 × 1, Ø32 × 6",
+    "massKg": 0.022,
+    "version": "0.15.196",
+    "image": "/library/lock-nut-din-981/render.webp",
+    "model": "/library/lock-nut-din-981/model.glb",
+    "finish": "steel",
     "view": [
-      -25,
-      40
+      -30,
+      36
     ],
     "files": [
       {
         "format": "GLB",
-        "href": "/library/centering-ring-75-57-1/model.glb",
+        "href": "/library/lock-nut-din-981/model.glb",
         "access": "free"
-      },
-      {
-        "format": "STEP",
-        "href": "models/centering-ring-75-57-1/centering-ring-75-57-1.step",
-        "access": "pro"
       }
     ],
-    "updated": "2026-10-05"
+    "updated": "2026-11-20",
+    "standards": [
+      "DIN 981",
+      "DIN 5406",
+      "ISO 261 fine"
+    ],
+    "params": [
+      {
+        "name": {
+          "ru": "Размер",
+          "pl": "Rozmiar",
+          "en": "Size"
+        },
+        "values": "KM0 … KM20 (21)"
+      },
+      {
+        "name": {
+          "ru": "Резьба",
+          "pl": "Gwint",
+          "en": "Thread"
+        },
+        "values": {
+          "ru": "условная · настоящая винтовая",
+          "pl": "umowny · rzeczywisty śrubowy",
+          "en": "cosmetic · real helix"
+        }
+      }
+    ],
+    "configs": 5,
+    "shown": {
+      "ru": "KM4, настоящая резьба",
+      "pl": "KM4, gwint rzeczywisty",
+      "en": "KM4, real thread"
+    }
+  },
+  {
+    "slug": "shaft",
+    "category": "shafts",
+    "title": {
+      "ru": "Вал и ось — ступени, посадки, канавки и шпонки",
+      "pl": "Wał i oś — stopnie, pasowania, rowki i wpusty",
+      "en": "Shaft and axle — steps, fits, grooves and keyways"
+    },
+    "summary": {
+      "ru": "Вал описывается ступенями вдоль оси: диаметр, длина, посадка ISO 286, фаски и галтели, канавка под стопорное кольцо DIN 471, канавка выхода круга DIN 509, шпоночный паз DIN 6885, резьбовой конец под гайку. Проверен на 20 000 случайных валах: каждый принятый построен целым замкнутым телом, объём совпадает с профилем до 10⁻⁹.",
+      "pl": "Wał opisuje się stopniami wzdłuż osi: średnica, długość, pasowanie ISO 286, fazy i zaokrąglenia, rowek pod pierścień osadczy DIN 471, podcięcie DIN 509, rowek wpustowy DIN 6885, gwintowany koniec pod nakrętkę. Sprawdzony na 20 000 losowych wałów: każdy przyjęty zbudowany jako cała zamknięta bryła, objętość zgodna z profilem do 10⁻⁹.",
+      "en": "A shaft is described by steps along its axis: diameter, length, ISO 286 fit, chamfers and fillets, a DIN 471 ring groove, a DIN 509 undercut, a DIN 6885 keyway, a threaded end for a nut. Tested on 20 000 random shafts: every accepted one is built as a whole closed body, volume equal to the profile to 10⁻⁹."
+    },
+    "material": {
+      "ru": "Сталь; нержавеющая 304 и 316",
+      "pl": "Stal; nierdzewna 304 i 316",
+      "en": "Steel; stainless 304 and 316"
+    },
+    "dimensions": "Ø24 × 111",
+    "massKg": 0.269,
+    "version": "0.15.196",
+    "image": "/library/shaft/render.webp",
+    "model": "/library/shaft/model.glb",
+    "finish": "steel",
+    "view": [
+      -35,
+      18
+    ],
+    "files": [
+      {
+        "format": "GLB",
+        "href": "/library/shaft/model.glb",
+        "access": "free"
+      }
+    ],
+    "updated": "2026-11-20",
+    "standards": [
+      "ISO 286",
+      "DIN 471",
+      "DIN 509",
+      "DIN 6885",
+      "ISO 261",
+      "ISO 261 fine"
+    ],
+    "params": [
+      {
+        "name": {
+          "ru": "Ступени",
+          "pl": "Stopnie",
+          "en": "Steps"
+        },
+        "values": {
+          "ru": "d · l · посадка · фаски · галтели",
+          "pl": "d · l · pasowanie · fazy · zaokrąglenia",
+          "en": "d · l · fit · chamfers · fillets"
+        }
+      },
+      {
+        "name": {
+          "ru": "Посадки",
+          "pl": "Pasowania",
+          "en": "Fits"
+        },
+        "values": "ISO 286: e f g h js k m n p r s"
+      },
+      {
+        "name": {
+          "ru": "Элементы",
+          "pl": "Elementy",
+          "en": "Features"
+        },
+        "values": "DIN 471 · DIN 509 E/F · DIN 6885 · ISO 261"
+      },
+      {
+        "name": {
+          "ru": "Материал",
+          "pl": "Materiał",
+          "en": "Material"
+        },
+        "values": {
+          "ru": "сталь · 304 · 316",
+          "pl": "stal · 304 · 316",
+          "en": "steel · 304 · 316"
+        }
+      }
+    ],
+    "configs": 8,
+    "shown": {
+      "ru": "Приводной вал Ø24 × 111: посадки k6 и m6, два шпоночных паза, канавка под кольцо",
+      "pl": "Wał napędowy Ø24 × 111: pasowania k6 i m6, dwa rowki wpustowe, rowek pod pierścień",
+      "en": "Drive shaft Ø24 × 111: k6 and m6 seats, two keyways, a ring groove"
+    },
+    "rotate": [
+      0,
+      0,
+      -75
+    ]
   }
 ]

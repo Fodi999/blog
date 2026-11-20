@@ -1,0 +1,40 @@
+<!doctype html><html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:transparent;overflow:hidden}canvas{display:block}</style>
+<script type="importmap">{"imports":{"three":"./vendor/three/build/three.module.min.js","three/addons/":"./vendor/three/examples/jsm/"}}</script>
+</head><body>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+const q = new URLSearchParams(location.search);
+const src = q.get('m'); const yaw = +(q.get('yaw') ?? -30), pitch = +(q.get('pitch') ?? 22);
+const rot = (q.get('rot') ?? '0,0,0').split(',').map(Number); const finish = q.get('finish') ?? 'steel';
+const W = 1200, H = 900;
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1); renderer.setSize(W, H); renderer.setClearColor(0x000000, 0);
+renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
+document.body.appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+const pmrem = new THREE.PMREMGenerator(renderer);
+const studio = new THREE.Scene(); studio.background = new THREE.Color(0x4a525e);
+const panel = (w, h, color, k, pos) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ color: new THREE.Color(color).multiplyScalar(k), side: THREE.DoubleSide })); m.position.set(...pos); m.lookAt(0,0,0); studio.add(m); };
+panel(14,7,0xffffff,4.0,[0,6,1]); panel(2.5,8,0xffffff,3.0,[-6,1,2]); panel(2.5,8,0xbfe9ff,2.2,[6,1,-2]); panel(8,0.8,0xc4ff4d,0.08,[0,-2.5,-6]); panel(16,16,0x0e1218,1.0,[0,-5,0]);
+scene.environment = pmrem.fromScene(studio, 0.02).texture;
+const gltf = await new GLTFLoader().loadAsync(src);
+const model = gltf.scene;
+const mat = new THREE.MeshPhysicalMaterial({ color: finish === 'satin' ? 0xbcc2c9 : 0xd2d6db, metalness: 1, roughness: finish === 'satin' ? 0.34 : 0.22, clearcoat: finish === 'satin' ? 0 : 0.3, clearcoatRoughness: 0.25 });
+model.traverse(o => { if (o.isMesh) o.material = mat; });
+model.rotation.set(rot[0]*Math.PI/180, rot[1]*Math.PI/180, rot[2]*Math.PI/180);
+const holder = new THREE.Group(); holder.add(model);
+const box = new THREE.Box3().setFromObject(holder); const size = box.getSize(new THREE.Vector3()); const c = box.getCenter(new THREE.Vector3());
+const radius = size.length()/2; holder.position.sub(c); scene.add(holder);
+const cv = document.createElement('canvas'); cv.width = cv.height = 128; const g = cv.getContext('2d');
+const gr = g.createRadialGradient(64,64,4,64,64,64); gr.addColorStop(0,'rgba(0,0,0,0.55)'); gr.addColorStop(1,'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(0,0,128,128);
+const sh = new THREE.Mesh(new THREE.PlaneGeometry(radius*1.9, radius*1.9), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(cv), transparent: true, depthWrite: false }));
+sh.rotation.x = -Math.PI/2; sh.position.y = -size.y/2 - radius*0.02; scene.add(sh);
+const cam = new THREE.PerspectiveCamera(30, W/H, 0.001, 100);
+const fov = cam.fov*Math.PI/180; const dist = radius/Math.sin(fov/2)*(+(q.get('zoom') ?? 0.9));
+const yr = yaw*Math.PI/180, pr = pitch*Math.PI/180;
+cam.position.set(Math.sin(yr)*Math.cos(pr)*dist, Math.sin(pr)*dist, Math.cos(yr)*Math.cos(pr)*dist); cam.near = dist/100; cam.far = dist*10; cam.updateProjectionMatrix(); cam.lookAt(0,0,0);
+renderer.render(scene, cam);
+document.title = 'done';
+</script></body></html>

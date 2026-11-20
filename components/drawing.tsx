@@ -1,6 +1,6 @@
 import { LogoMark } from '@/components/Logo';
 import { fill, type Dict, type Locale } from '@/lib/i18n';
-import { benchmarks, fmtMemory, fmtTime, plural, status } from '@/lib/status';
+import { benchGroups, benchmarks, fmtMemory, fmtTime, plural, status } from '@/lib/status';
 import { statusValues } from '@/lib/statusText';
 
 /* Parts of the "drawing sheet" the site is laid out as: the title block with the project data,
@@ -91,78 +91,102 @@ const failMark = (
   </svg>
 );
 
-/** The kernel test protocol: the daily check in three numbers, then the measured tests. */
+/** The kernel test protocol: the check and the exams in four numbers, then the measured tests by groups. */
 export function Protocol({ locale, t }: { locale: Locale; t: Dict }) {
   const p = t.protocol;
   const v = statusValues(locale, t);
   const summary = [
     { n: v.passed, noun: plural(locale, status.tests.passed, t.plurals.tests), rest: fill(p.summary.tests, v) },
-    { n: v.fixed, noun: plural(locale, status.cases.fixed, t.plurals.kernelErrors), rest: p.summary.fixed },
-    { n: v.open, noun: plural(locale, status.cases.open, t.plurals.cases), rest: fill(p.summary.open, v) },
+    { n: v.valid, noun: fill(p.nouns.booleans, v), rest: fill(p.summary.booleans, v) },
+    { n: v.filletRight, noun: fill(p.nouns.fillets, v), rest: fill(p.summary.fillets, v) },
+    { n: v.fixed, noun: plural(locale, status.cases.fixed, t.plurals.kernelErrors), rest: fill(p.summary.fixed, v) },
   ];
+  const fresh = <span className="ml-2 inline-block rounded-sm bg-signal/15 px-1.5 py-px align-middle font-mono text-[10.5px] font-medium tracking-wide text-signal uppercase">{p.fresh}</span>;
   return (
     <div>
-      <div className={`${frame} grid md:grid-cols-3`}>
+      <div className={`${frame} grid gap-px bg-hairline-ink-strong sm:grid-cols-2 xl:grid-cols-4`}>
         {summary.map((s, i) => (
-          <p key={i} className={`px-5 py-5 text-[15px] leading-snug text-on-ink-muted ${i < 2 ? `border-b md:border-r md:border-b-0 ${line}` : ''}`}>
-            <span className="mb-2 block font-mono text-[34px] leading-none font-medium text-on-ink tabular-nums">{s.n}</span>
-            <span className="text-on-ink">{s.noun}</span> {s.rest}
+          <p key={i} className="bg-ink px-5 py-6 text-[14.5px] leading-snug text-on-ink-muted">
+            <span className="mb-3 flex items-baseline gap-2">
+              <span className="font-mono text-[38px] leading-none font-medium text-on-ink tabular-nums">{s.n}</span>
+              <span className="text-[14px] text-on-ink">{s.noun}</span>
+            </span>
+            {s.rest}
           </p>
         ))}
       </div>
 
-      {/* Wide screens: the table. */}
-      <table className="mt-8 hidden w-full border-collapse text-left md:table">
-        <thead>
-          <tr className={`border-b-2 border-on-ink/45 text-[13px] text-on-ink-muted`}>
-            <th scope="col" className="py-3 pr-4 font-normal">{p.columns.test}</th>
-            <th scope="col" className="py-3 pr-4 font-normal">{p.columns.result}</th>
-            <th scope="col" className="py-3 pr-4 text-right font-normal">{p.columns.time}</th>
-            <th scope="col" className="py-3 pr-4 text-right font-normal">{p.columns.memory}</th>
-            <th scope="col" className="w-8 py-3 font-normal">
-              <span className="sr-only">{p.pass}</span>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {benchmarks.map((b) => (
-            <tr key={b.id} className={`border-b align-top ${line}`}>
-              <th scope="row" className="py-4 pr-6 text-[15.5px] font-medium text-on-ink">{p.rows[b.id].name}</th>
-              <td className={`py-4 pr-6 text-[15px] leading-snug ${b.ok ? 'text-on-ink-muted' : 'text-on-ink'}`}>{p.rows[b.id].result}</td>
-              <td className="py-4 pr-4 text-right font-mono text-[13.5px] whitespace-nowrap text-on-ink tabular-nums">{fmtTime(locale, b)}</td>
-              <td className="py-4 pr-4 text-right font-mono text-[13.5px] whitespace-nowrap text-on-ink tabular-nums">{fmtMemory(locale, b.memory)}</td>
-              <td className="py-4">
-                {b.ok ? pass : failMark}
-                <span className="sr-only">{b.ok ? p.pass : p.fail}</span>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {benchGroups.map((g) => {
+        const rows = benchmarks.filter((b) => b.group === g);
+        return (
+          <div key={g} className="mt-10">
+            <h3 className="flex items-center gap-3 font-display text-[21px] font-semibold text-on-ink">
+              <span className="h-px w-6 bg-steel" aria-hidden="true" />
+              {fill(p.groups[g], v)}
+            </h3>
 
-      {/* Phones: the same rows, one under another. */}
-      <ul className={`mt-6 border-t md:hidden ${line}`}>
-        {benchmarks.map((b) => (
-          <li key={b.id} className={`border-b py-4 ${line}`}>
-            <div className="flex items-start justify-between gap-4">
-              <span className="text-[15.5px] font-medium text-on-ink">{p.rows[b.id].name}</span>
-              <span className="mt-1 shrink-0">
-                {b.ok ? pass : failMark}
-                <span className="sr-only">{b.ok ? p.pass : p.fail}</span>
-              </span>
-            </div>
-            <p className="mt-1.5 text-[14.5px] leading-snug text-on-ink-muted">{p.rows[b.id].result}</p>
-            {b.time || b.memory ? (
-              <p className="mt-2 flex flex-wrap gap-x-5 font-mono text-[13px] text-on-ink tabular-nums">
-                {b.time ? <span>{`${p.columns.time}: ${fmtTime(locale, b)}`}</span> : null}
-                {b.memory ? <span>{`${p.columns.memory}: ${fmtMemory(locale, b.memory)}`}</span> : null}
-              </p>
-            ) : null}
-          </li>
-        ))}
-      </ul>
+            {/* Wide screens: the table. */}
+            <table className="mt-4 hidden w-full border-collapse text-left md:table">
+              <thead>
+                <tr className="border-b-2 border-on-ink/45 text-[13px] text-on-ink-muted">
+                  <th scope="col" className="py-3 pr-4 font-normal">{p.columns.test}</th>
+                  <th scope="col" className="py-3 pr-4 font-normal">{p.columns.result}</th>
+                  <th scope="col" className="py-3 pr-4 text-right font-normal">{p.columns.time}</th>
+                  <th scope="col" className="py-3 pr-4 text-right font-normal">{p.columns.memory}</th>
+                  <th scope="col" className="py-3 pr-4 text-right font-normal">{p.columns.rev}</th>
+                  <th scope="col" className="w-8 py-3 font-normal">
+                    <span className="sr-only">{p.pass}</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((b) => (
+                  <tr key={b.id} className={`border-b align-top transition-colors hover:bg-white/[.025] ${line}`}>
+                    <th scope="row" className="w-[42%] py-4 pr-6 text-[15px] leading-snug font-medium text-on-ink">
+                      {p.rows[b.id].name}
+                      {b.fresh ? fresh : null}
+                    </th>
+                    <td className={`py-4 pr-6 text-[14.5px] leading-snug ${b.ok ? 'text-on-ink-muted' : 'text-on-ink'}`}>{p.rows[b.id].result}</td>
+                    <td className="py-4 pr-4 text-right font-mono text-[13px] whitespace-nowrap text-on-ink tabular-nums">{fmtTime(locale, b)}</td>
+                    <td className="py-4 pr-4 text-right font-mono text-[13px] whitespace-nowrap text-on-ink tabular-nums">{fmtMemory(locale, b.memory)}</td>
+                    <td className="py-4 pr-4 text-right font-mono text-[12.5px] whitespace-nowrap text-on-ink-muted tabular-nums">{b.rev}</td>
+                    <td className="py-4">
+                      {b.ok ? pass : failMark}
+                      <span className="sr-only">{b.ok ? p.pass : p.fail}</span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
 
-      <p className="mt-5 max-w-3xl text-[13.5px] leading-relaxed text-on-ink-muted">{fill(p.note, v)}</p>
+            {/* Phones: the same rows, one under another. */}
+            <ul className={`mt-4 border-t md:hidden ${line}`}>
+              {rows.map((b) => (
+                <li key={b.id} className={`border-b py-4 ${line}`}>
+                  <div className="flex items-start justify-between gap-4">
+                    <span className="text-[15.5px] font-medium text-on-ink">
+                      {p.rows[b.id].name}
+                      {b.fresh ? fresh : null}
+                    </span>
+                    <span className="mt-1 shrink-0">
+                      {b.ok ? pass : failMark}
+                      <span className="sr-only">{b.ok ? p.pass : p.fail}</span>
+                    </span>
+                  </div>
+                  <p className="mt-1.5 text-[14.5px] leading-snug text-on-ink-muted">{p.rows[b.id].result}</p>
+                  <p className="mt-2 flex flex-wrap gap-x-5 font-mono text-[13px] text-on-ink tabular-nums">
+                    {b.time ? <span>{`${p.columns.time}: ${fmtTime(locale, b)}`}</span> : null}
+                    {b.memory ? <span>{`${p.columns.memory}: ${fmtMemory(locale, b.memory)}`}</span> : null}
+                    <span className="text-on-ink-muted">{`Monge ${b.rev}`}</span>
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        );
+      })}
+
+      <p className="mt-6 max-w-3xl text-[13.5px] leading-relaxed text-on-ink-muted">{fill(p.note, v)}</p>
     </div>
   );
 }

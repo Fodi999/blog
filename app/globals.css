@@ -109,6 +109,14 @@
   background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px;
 }
 
+/* Soft light behind a page's first screen: steel cyan from the right, a trace of signal lime from the left. */
+@utility hero-glow {
+  background:
+    radial-gradient(640px 420px at 80% 12%, rgba(92, 210, 255, .13), transparent 70%),
+    radial-gradient(560px 360px at 8% 0%, rgba(196, 255, 77, .07), transparent 70%),
+    linear-gradient(to bottom, transparent 70%, var(--color-ink));
+}
+
 /* Section hatching (45°, as on a drawing's cut face). */
 @utility hatch {
   background-image: repeating-linear-gradient(-45deg, rgba(233, 238, 244, .09) 0 1px, transparent 1px 7px);

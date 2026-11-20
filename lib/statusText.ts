@@ -20,6 +20,14 @@ export function statusValues(locale: Locale, t: Dict): Record<string, string> {
     lines: fmtNum(locale, status.kernelLines),
     tests: plural(locale, status.tests.passed, t.plurals.tests),
     autoTests: plural(locale, status.tests.passed, t.plurals.autoTests),
+    ops: fmtNum(locale, status.booleans.ops),
+    valid: fmtNum(locale, status.booleans.valid),
+    invalid: fmtNum(locale, status.booleans.invalid),
+    filletCases: fmtNum(locale, status.fillets.cases),
+    filletRight: fmtNum(locale, status.fillets.right),
+    filletWrong: fmtNum(locale, status.fillets.wrong),
+    noBody: fmtNum(locale, status.fillets.noBody),
+    correctRefusals: fmtNum(locale, status.fillets.correctRefusals),
   };
 }
 

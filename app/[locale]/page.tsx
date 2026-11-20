@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { DirectContacts } from '@/components/DirectContacts';
+import { LibraryStrip } from '@/components/LibraryStrip';
 import { Protocol, Revisions, SpecList, TitleBlock } from '@/components/drawing';
 import { LeadForm } from '@/components/LeadForm';
 import { ModelViewer } from '@/components/ModelViewer';
@@ -12,7 +13,8 @@ import { fill, getDict, isLocale, localPath, type Locale } from '@/lib/i18n';
 import { getItems } from '@/lib/library';
 import { shots, type ShotId } from '@/lib/media';
 import { INSTAGRAM_URL, pageMetadata, SITE_URL, TELEGRAM_URL, VIDEO, YOUTUBE_URL } from '@/lib/seo';
-import { status } from '@/lib/status';
+import { fmtNum, status } from '@/lib/status';
+import { standards, totalRows } from '@/lib/standards';
 import { statusValues } from '@/lib/statusText';
 
 export const revalidate = 3600;
@@ -58,9 +60,9 @@ function Shot({ id, alt, caption, n, fig, priority = false }: { id: ShotId; alt:
   const s = shots[id];
   return (
     <figure>
-      <a href={s.src} target="_blank" rel="noopener" className="block overflow-hidden border border-hairline-ink-strong bg-ink-2 transition-colors hover:border-on-ink/60">
+      <a href={s.src} target="_blank" rel="noopener" className="group block overflow-hidden rounded-xl border border-hairline-ink-strong bg-ink-2 transition-colors hover:border-on-ink/60">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={s.src} width={s.w} height={s.h} alt={alt} loading={priority ? 'eager' : 'lazy'} decoding="async" className="aspect-[16/10] w-full object-cover" />
+        <img src={s.src} width={s.w} height={s.h} alt={alt} loading={priority ? 'eager' : 'lazy'} decoding="async" className="aspect-[16/10] w-full object-cover transition-transform duration-[900ms] ease-premium group-hover:scale-[1.03]" />
       </a>
       <figcaption className="mt-3 max-w-[70ch] text-[14.5px] leading-snug text-on-ink-muted">
         <span className="text-on-ink">
@@ -78,17 +80,25 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   const t = getDict(locale);
   const v = statusValues(locale, t);
   const items = await getItems();
-  const heroItem = items.find((i) => i.category === 'stainless' && i.model) ?? items.find((i) => i.model);
+  const heroItem = items.find((i) => i.slug === 'bearing-iso-15' && i.model) ?? items.find((i) => i.model);
   const shot = (key: string) => t.now.shots.find((s) => s.key === key)!;
-  const gallery: ShotId[] = ['suspension', 'wheel', 'render', 'physics', 'cloth', 'brush'];
+  const gallery: ShotId[] = ['fasteners', 'rebar', 'cage', 'bearings', 'joints', 'shafts'];
+  const generators = items.filter((i) => i.standards?.length);
+  const kpis = [
+    { n: v.passed, label: fill(t.kpi.tests, v), href: '#protocol' },
+    { n: v.ops, label: fill(t.kpi.booleans, v), href: '#protocol' },
+    { n: `${v.filletRight}/${v.filletCases}`, label: t.kpi.fillets, href: '#protocol' },
+    { n: fmtNum(locale, standards.length), label: t.kpi.tables, href: localPath(locale, '/library/standards') },
+  ];
 
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd(locale, t.meta.description)) }} />
 
       {/* Hero: what Monge is, a live model from it, and the project's title block. */}
-      <section className="pt-28 md:pt-36">
-        <div className="content-frame grid items-end gap-10 lg:grid-cols-[1fr_1.05fr]">
+      <section className="relative pt-28 md:pt-36">
+        <div className="hero-glow pointer-events-none absolute inset-x-0 top-0 h-[900px]" aria-hidden="true" />
+        <div className="content-frame relative grid items-end gap-10 lg:grid-cols-[1fr_1.05fr]">
           <div className="animate-reveal">
             <h1 className="font-display text-[clamp(44px,6.2vw,92px)] leading-[.95] font-semibold tracking-[-.015em] text-balance text-on-ink">{t.hero.title}</h1>
             <p className="mt-7 max-w-[56ch] text-[18.5px] leading-relaxed text-pretty text-on-ink-muted">{t.hero.lead}</p>
@@ -105,7 +115,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
 
           {heroItem?.model ? (
             <div className="relative animate-reveal [animation-delay:120ms]">
-              <div className="relative aspect-[5/4] overflow-hidden border border-hairline-ink-strong bg-ink-2">
+              <div className="relative aspect-[5/4] overflow-hidden rounded-xl border border-hairline-ink-strong bg-ink-2 shadow-[0_40px_120px_-40px_rgba(92,210,255,.25)]">
                 <div className="blueprint absolute inset-0 opacity-60" aria-hidden="true" />
                 <ModelViewer
                   src={heroItem.model}
@@ -133,10 +143,57 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
             </div>
           ) : null}
         </div>
-        <div className="content-frame mt-8">
+        <div className="content-frame relative mt-8">
           <TitleBlock locale={locale} t={t} className="animate-reveal [animation-delay:240ms] lg:ml-auto lg:max-w-[900px]" />
         </div>
+        <div className="content-frame relative mt-10">
+          <ul className="grid animate-reveal grid-cols-2 gap-px overflow-hidden rounded-xl border border-hairline-ink-strong bg-hairline-ink-strong [animation-delay:320ms] lg:grid-cols-4">
+            {kpis.map((k) => (
+              <li key={k.label}>
+                <Link href={k.href} className="group flex h-full flex-col justify-between gap-3 bg-ink px-5 py-5 transition-colors hover:bg-ink-2">
+                  <span className="font-mono text-[clamp(26px,3vw,36px)] leading-none font-medium text-on-ink tabular-nums group-hover:text-signal">{k.n}</span>
+                  <span className="text-[13.5px] leading-snug text-on-ink-muted">{k.label}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
       </section>
+
+      {/* The library by the standards. */}
+      {generators.length ? (
+        <section aria-labelledby="library-title" className={section}>
+          <div className="grid gap-10 lg:grid-cols-[1fr_1.35fr] lg:items-center">
+            <div>
+              <SectionHeading id="library-title" title={t.libraryHome.title} lead={t.libraryHome.lead} />
+              <dl className="mt-8 grid grid-cols-3 border-y border-hairline-ink-strong">
+                {[
+                  [fmtNum(locale, generators.length), t.library.stats.generators],
+                  [fmtNum(locale, standards.length), t.library.stats.tables],
+                  [fmtNum(locale, totalRows), t.library.stats.rows],
+                ].map(([n, l], i) => (
+                  <div key={l} className={`py-4 ${i ? 'border-l border-hairline-ink-strong pl-4' : ''}`}>
+                    <dt className="sr-only">{l}</dt>
+                    <dd>
+                      <span className="block font-mono text-[26px] leading-none text-on-ink tabular-nums">{n}</span>
+                      <span className="mt-1.5 block text-[13px] leading-snug text-on-ink-muted">{l}</span>
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Link href={localPath(locale, '/library')} className={siteButtonVariants({ variant: 'primary' })} data-ga-event="cta_library">
+                  {t.libraryHome.link}
+                </Link>
+                <Link href={localPath(locale, '/library/standards')} className={siteButtonVariants({ variant: 'ghost' })}>
+                  {t.libraryHome.tables}
+                </Link>
+              </div>
+            </div>
+            <LibraryStrip items={generators.slice(0, 9)} locale={locale} />
+          </div>
+        </section>
+      ) : null}
 
       {/* The program as it is today. */}
       <section aria-labelledby="now" className={section}>
@@ -184,9 +241,9 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
             </Link>
           </div>
           <figure className="lg:sticky lg:top-28">
-            <div className="overflow-hidden border border-hairline-ink-strong bg-ink-2">
+            <div className="overflow-hidden rounded-xl border border-hairline-ink-strong bg-ink-2">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={shots.disc.src} width={shots.disc.w} height={shots.disc.h} alt={shot('disc').alt} loading="lazy" decoding="async" className="aspect-[4/3] w-full object-cover" />
+              <img src={shots.ribs.src} width={shots.ribs.w} height={shots.ribs.h} alt={shot('ribs').alt} loading="lazy" decoding="async" className="aspect-[4/3] w-full object-cover" />
             </div>
             <figcaption className="mt-3 text-[14.5px] leading-snug text-on-ink-muted">{t.kernel.figure}</figcaption>
           </figure>

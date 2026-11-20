@@ -38,6 +38,7 @@ const nextConfig: NextConfig = {
       { source: '/:locale(pl|ru|en)/:old(catering-[a-z]+)', destination: '/:locale', permanent: true },
       { source: '/:locale(pl|ru|en)/kontakt', destination: '/:locale/contact', permanent: true },
       { source: '/:locale(pl|ru|en)/polityka-prywatnosci', destination: '/:locale/privacy', permanent: true },
+      { source: '/:locale(pl|ru|en)/library/:old(work-table-1200x600|sink-600x600|wheel-9evo-7x17-et43|nut-m12x1-5-closed|centering-ring-75-57-1)', destination: '/:locale/library', permanent: true },
       { source: '/:old(blog|sklep|skladniki|o-mnie|kontakt)/:path*', destination: '/pl', permanent: true },
       { source: '/:old(blog|sklep|skladniki|kontakt)', destination: '/pl', permanent: true },
     ];
