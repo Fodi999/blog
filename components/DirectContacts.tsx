@@ -1,5 +1,5 @@
 import type { Dict } from '@/lib/i18n';
-import { INSTAGRAM_URL, TELEGRAM_URL } from '@/lib/seo';
+import { EMAIL, INSTAGRAM_URL, TELEGRAM_URL } from '@/lib/seo';
 
 const instagram = (
   <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
@@ -14,11 +14,19 @@ const telegram = (
   </svg>
 );
 
-/** "Or message me directly": Instagram and Telegram, next to every sign-up form. */
+const mail = (
+  <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
+    <rect x="3" y="5" width="18" height="14" rx="2.5" />
+    <path d="m4 7 8 6 8-6" />
+  </svg>
+);
+
+/** "Or message me directly": email, Instagram and Telegram, next to every sign-up form. */
 export function DirectContacts({ t, className = '' }: { t: Dict['contacts']; className?: string }) {
   const links = [
     { href: INSTAGRAM_URL, icon: instagram, name: t.instagram, handle: '@fodifood' },
     { href: TELEGRAM_URL, icon: telegram, name: t.telegram, handle: '@fodi999' },
+    { href: `mailto:${EMAIL}`, icon: mail, name: t.email, handle: EMAIL },
   ];
   return (
     <div className={className}>
@@ -28,7 +36,7 @@ export function DirectContacts({ t, className = '' }: { t: Dict['contacts']; cla
           <li key={l.href}>
             <a
               href={l.href}
-              target="_blank"
+              target={l.href.startsWith('mailto:') ? undefined : '_blank'}
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2.5 rounded-md border border-hairline-ink-strong px-4 py-2.5 text-[15px] text-on-ink transition-colors hover:border-on-ink/60"
             >

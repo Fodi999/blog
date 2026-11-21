@@ -7,6 +7,9 @@ export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://dima-fomin.
 export const YOUTUBE_URL = 'https://www.youtube.com/@fodifood';
 export const INSTAGRAM_URL = 'https://www.instagram.com/fodifood';
 export const TELEGRAM_URL = 'https://t.me/fodi999';
+/** The developer's own address (published at his request) and his photo. */
+export const EMAIL = 'fodi85999@gmail.com';
+export const PHOTO = '/media/dima-fomin.webp';
 
 /** The video about Monge shown on the site (Russian, 9:07, 13.10.2026, Monge 0.12.1). */
 export const VIDEO = { id: 'VfdRDYKCte0', url: 'https://youtu.be/VfdRDYKCte0', duration: '9:07' } as const;

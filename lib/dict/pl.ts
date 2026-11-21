@@ -183,12 +183,12 @@ export const pl: Dict = {
   },
   developer: {
     title: 'Twórca',
-    name: 'Dmytro Fomin',
-    role: 'Szef kuchni i technolog produkcji spożywczej. Gdańsk.',
+    name: 'Dima Fomin',
+    role: 'Technolog i inżynier, autor i twórca Monge. Gdańsk.',
     text: 'Ponad 20 lat w kuchniach i zakładach spożywczych w Polsce, na Litwie, w Estonii, Niemczech, Francji i Kanadzie: rozwój produktów, kontrola jakości, HACCP, szkolenie zespołów. Zna produkcję od środka — dlatego tworzy CAD dla tych, którzy budują dla niej urządzenia. Monge to jego własny projekt od początku 2026 roku.',
     link: 'O twórcy',
   },
-  contacts: { title: 'Albo napisz bezpośrednio', instagram: 'Instagram', telegram: 'Telegram' },
+  contacts: { title: 'Albo napisz bezpośrednio', instagram: 'Instagram', telegram: 'Telegram', email: 'E-mail' },
   updates: {
     title: 'Zapisz się do bety',
     text: 'Zostaw imię i email — napiszemy, gdy otworzymy zamkniętą betę. Piszemy tylko w ważnych sprawach: beta i duże aktualizacje.',
@@ -393,8 +393,8 @@ export const pl: Dict = {
     ],
   },
   about: {
-    title: 'Dmytro Fomin',
-    role: 'Twórca Monge. Szef kuchni i technolog produkcji spożywczej.',
+    title: 'Dima Fomin',
+    role: 'Autor i twórca Monge — technolog i inżynier. Ponad 20 lat jako szef kuchni i technolog produkcji spożywczej.',
     text: [
       'Od ponad 20 lat pracuję z produktem, ludźmi i procesami — w kuchniach i zakładach spożywczych w Polsce, na Litwie, w Estonii, Niemczech, Francji i Kanadzie. Byłem szefem kuchni w zakładzie produkcyjnym: rozwój nowych produktów, kontrola jakości, trwałość, zakupy, HACCP, szkolenie personelu.',
       'W zakładzie widziałem, ile czasu zajmuje każdy niestandardowy wyrób: stół ma mieć nie 1500, lecz 1730 mm — i konstruktor znów przerysowuje model, rozwinięcia i rozkrój. Dlatego od początku 2026 roku tworzę Monge — CAD dla tych, którzy projektują i produkują urządzenia, z własnym precyzyjnym jądrem i AI, które buduje model według wymiarów.',
@@ -404,8 +404,10 @@ export const pl: Dict = {
       ['Miasto', 'Gdańsk, Polska'],
       ['Doświadczenie', 'Ponad 20 lat w kuchni i produkcji spożywczej'],
       ['Monge', 'Od początku 2026 roku'],
+      ['E-mail', 'fodi85999@gmail.com'],
     ],
     write: 'Napisz',
+    photo: 'Dima Fomin — autor i twórca Monge',
     youtube: 'YouTube',
   },
   contact: {

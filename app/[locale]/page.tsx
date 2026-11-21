@@ -12,7 +12,7 @@ import { VideoEmbed } from '@/components/VideoEmbed';
 import { fill, getDict, isLocale, localPath, type Locale } from '@/lib/i18n';
 import { getItems } from '@/lib/library';
 import { shots, type ShotId } from '@/lib/media';
-import { INSTAGRAM_URL, pageMetadata, SITE_URL, TELEGRAM_URL, VIDEO, YOUTUBE_URL } from '@/lib/seo';
+import { EMAIL, INSTAGRAM_URL, pageMetadata, PHOTO, SITE_URL, TELEGRAM_URL, VIDEO, YOUTUBE_URL } from '@/lib/seo';
 import { fmtNum, status } from '@/lib/status';
 import { standards, totalRows } from '@/lib/standards';
 import { statusValues } from '@/lib/statusText';
@@ -34,7 +34,11 @@ function jsonLd(locale: Locale, description: string) {
       {
         '@type': 'Person',
         '@id': `${SITE_URL}/#developer`,
-        name: 'Dmytro Fomin',
+        name: 'Dima Fomin',
+        alternateName: ['Dmytro Fomin', 'Дима Фомин'],
+        jobTitle: 'Technologist and engineer, developer of Monge',
+        image: `${SITE_URL}${PHOTO}`,
+        email: `mailto:${EMAIL}`,
         url: `${SITE_URL}/${locale}/about`,
         address: { '@type': 'PostalAddress', addressLocality: 'Gdańsk', addressCountry: 'PL' },
         sameAs: [YOUTUBE_URL, INSTAGRAM_URL, TELEGRAM_URL],
@@ -289,12 +293,19 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
       {/* The developer. */}
       <section aria-labelledby="developer-title" className={section}>
         <div className="grid gap-8 border-y-2 border-on-ink/45 py-10 lg:grid-cols-[1fr_1.7fr] lg:gap-12">
-          <div>
-            <p className="text-[14px] font-medium text-steel">{t.developer.title}</p>
-            <h2 id="developer-title" className="mt-2 font-display text-[clamp(34px,4vw,48px)] leading-none font-semibold text-on-ink">
-              {t.developer.name}
-            </h2>
-            <p className="mt-3 text-[16px] text-on-ink-muted">{t.developer.role}</p>
+          <div className="flex items-start gap-5">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/media/dima-fomin-square.webp" alt={t.about.photo} width={400} height={400} loading="lazy" decoding="async" className="size-24 shrink-0 rounded-xl border border-hairline-ink-strong object-cover md:size-28" />
+            <div>
+              <p className="text-[14px] font-medium text-steel">{t.developer.title}</p>
+              <h2 id="developer-title" className="mt-2 font-display text-[clamp(34px,4vw,48px)] leading-none font-semibold text-on-ink">
+                {t.developer.name}
+              </h2>
+              <p className="mt-3 text-[16px] text-on-ink-muted">{t.developer.role}</p>
+              <a href={`mailto:${EMAIL}`} className="mt-2 inline-block font-mono text-[14px] text-on-ink underline underline-offset-4 hover:text-signal">
+                {EMAIL}
+              </a>
+            </div>
           </div>
           <div>
             <p className="max-w-[64ch] text-[17.5px] leading-relaxed text-on-ink">{t.developer.text}</p>

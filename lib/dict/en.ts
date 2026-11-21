@@ -183,12 +183,12 @@ export const en: Dict = {
   },
   developer: {
     title: 'Developer',
-    name: 'Dmytro Fomin',
-    role: 'Chef and food production technologist. Gdańsk, Poland.',
+    name: 'Dima Fomin',
+    role: 'Technologist and engineer, the author and developer of Monge. Gdańsk, Poland.',
     text: 'More than 20 years in kitchens and food production in Poland, Lithuania, Estonia, Germany, France and Canada: product development, quality control, HACCP, training teams. He knows the production floor from the inside — so he builds CAD for the people who make its equipment. Monge has been his own project since early 2026.',
     link: 'About the developer',
   },
-  contacts: { title: 'Or message me directly', instagram: 'Instagram', telegram: 'Telegram' },
+  contacts: { title: 'Or message me directly', instagram: 'Instagram', telegram: 'Telegram', email: 'Email' },
   updates: {
     title: 'Join the beta list',
     text: 'Leave your name and email — we will write when the closed beta opens. Only what matters: the beta and major updates.',
@@ -393,8 +393,8 @@ export const en: Dict = {
     ],
   },
   about: {
-    title: 'Dmytro Fomin',
-    role: 'Developer of Monge. Chef and food production technologist.',
+    title: 'Dima Fomin',
+    role: 'The author and developer of Monge — technologist and engineer. Over 20 years as a chef and food production technologist.',
     text: [
       'For more than 20 years I have worked with product, people and processes — in kitchens and food production in Poland, Lithuania, Estonia, Germany, France and Canada. I was the head chef of a production facility: new product development, quality control, shelf life, purchasing, HACCP, staff training.',
       'On the production floor I saw how much time every non-standard product takes: the table has to be 1730 mm, not 1500 — and the designer redraws the model, the flat patterns and the cutting plan again. That is why since early 2026 I have been building Monge — CAD for people who design and make equipment, with its own exact kernel and an AI that builds the model from dimensions.',
@@ -404,8 +404,10 @@ export const en: Dict = {
       ['City', 'Gdańsk, Poland'],
       ['Experience', 'More than 20 years in kitchens and food production'],
       ['Monge', 'Since early 2026'],
+      ['Email', 'fodi85999@gmail.com'],
     ],
     write: 'Write to me',
+    photo: 'Dima Fomin — the author and developer of Monge',
     youtube: 'YouTube',
   },
   contact: {
