@@ -169,6 +169,7 @@ export const en: Dict = {
       { date: '17–18 Nov 2026', rev: '0.15.186', text: 'Lattices inside parts (12 kinds), a wall-thickness map, a layer-by-layer print check; the lines plan of a smooth form.' },
       { date: '19–20 Nov 2026', rev: '0.15.193', text: 'Exact loft and vertex blends: fillets meet at the corners of a rocket hull; fillet exam — 98 of 100, and an honest refusal where no body exists.' },
       { date: '20 Nov 2026', rev: '0.15.196', text: 'Reinforcing bars by EN 10080 and Eurocode 2 — with real ribs and a bending schedule.' },
+      { date: '21 Nov 2026', rev: '0.15.197', text: 'Library downloads: 165 ready configurations as STEP, STL, 3MF and GLB, each checked by the kernel; printing files Z up.' },
     ],
     nextTitle: 'Next',
     next: [
@@ -224,7 +225,7 @@ export const en: Dict = {
   },
   library: {
     title: 'Monge library',
-    lead: 'Parametric parts Monge builds by tables of ISO, DIN and EN standards. Spin each in 3D right in your browser; the standards tables are open in full.',
+    lead: 'Parametric parts Monge builds by tables of ISO, DIN and EN standards. Spin each in 3D and download it as STEP, STL, 3MF or GLB — free, no sign-up; the standards tables are open in full.',
     stats: { generators: 'part generators', configs: 'ready configurations', tables: 'standards tables', rows: 'rows of sizes' },
     all: 'All',
     categories: { reinforcement: 'Reinforcement', fasteners: 'Fasteners', bearings: 'Bearings', shafts: 'Shafts and axles' },
@@ -278,6 +279,15 @@ export const en: Dict = {
     params: 'Parameters',
     configs: 'Ready configurations',
     standards: 'Standards',
+    dl: {
+      title: 'Download the model',
+      config: 'Configuration',
+      size: 'Overall size',
+      mass: 'Mass, steel',
+      checks: { kernel: 'body checked by the Monge kernel', step: 'STEP read back with no difference', stl: 'STL mesh closed, no holes' },
+      formats: { step: 'CAD — exact geometry', stl: 'printing and CNC', '3mf': 'printing: Bambu, Prusa, Cura', glb: 'viewing, games, AR' },
+      axes: 'Millimetres; STL and 3MF are Z up. No sign-up.',
+    },
   },
   kpi: {
     tests: 'tests on every change, {failed} failed',
@@ -366,6 +376,7 @@ export const en: Dict = {
     lead: 'Beta testing, a production pilot, custom models or a question about Monge — write and we will reply within 1–2 business days.',
   },
   privacy: { title: 'Privacy policy' },
+  license: { title: 'Model licence', short: 'Licence', note: 'Free, commercial projects included; the files themselves may not be resold.' },
   footer: {
     tagline: 'Monge — AI-assisted CAD for manufacturing on its own exact kernel. Named after Gaspard Monge, the inventor of descriptive geometry.',
     program: 'Monge',

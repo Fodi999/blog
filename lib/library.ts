@@ -45,6 +45,8 @@ export type LibraryItem = {
   configs?: number;
   /** Which configuration the 3D model and the render show. */
   shown?: L10n;
+  /** The configuration the download panel opens on (an id of data/downloads.json). */
+  defaultConfig?: string;
 };
 
 /* Built-in catalogue (data/library.json). It is also the seed of the D1 table

@@ -19,6 +19,7 @@ export function Footer({ locale }: { locale: Locale }) {
   const site = [
     { href: localPath(locale, '/about'), label: t.nav.about },
     { href: localPath(locale, '/contact'), label: t.nav.contact },
+    { href: localPath(locale, '/license'), label: t.license.title },
     { href: localPath(locale, '/privacy'), label: t.footer.privacy },
   ];
   const link = 'text-[15px] text-on-ink transition-colors hover:text-steel';

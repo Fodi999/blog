@@ -97,7 +97,8 @@
       "ru": "Ø16 B500B, прямой 160 мм, настоящие рёбра",
       "pl": "Ø16 B500B, prosty 160 mm, rzeczywiste żebra",
       "en": "Ø16 B500B, straight 160 mm, real ribs"
-    }
+    },
+    "defaultConfig": "d12-l-400-x-600"
   },
   {
     "slug": "bolt-joint-iso-4017",
@@ -218,7 +219,8 @@
       0,
       0,
       -15
-    ]
+    ],
+    "defaultConfig": "exact-thread"
   },
   {
     "slug": "bolt-iso-4017",
@@ -320,7 +322,8 @@
       0,
       0,
       -70
-    ]
+    ],
+    "defaultConfig": "exact-thread"
   },
   {
     "slug": "nut-iso-4032",
@@ -409,7 +412,8 @@
       "ru": "M12, класс 8, настоящая резьба",
       "pl": "M12, klasa 8, gwint rzeczywisty",
       "en": "M12, class 8, real thread"
-    }
+    },
+    "defaultConfig": "exact-thread"
   },
   {
     "slug": "washer-iso-7089",
@@ -485,7 +489,8 @@
       "ru": "M12, 200 HV",
       "pl": "M12, 200 HV",
       "en": "M12, 200 HV"
-    }
+    },
+    "defaultConfig": "m12"
   },
   {
     "slug": "screw-iso-4762",
@@ -587,7 +592,8 @@
       0,
       0,
       -70
-    ]
+    ],
+    "defaultConfig": "exact-thread"
   },
   {
     "slug": "bearing-iso-15",
@@ -674,7 +680,8 @@
       65,
       0,
       0
-    ]
+    ],
+    "defaultConfig": "6205-open-with-balls"
   },
   {
     "slug": "lock-nut-din-981",
@@ -744,7 +751,8 @@
       "ru": "KM4, настоящая резьба",
       "pl": "KM4, gwint rzeczywisty",
       "en": "KM4, real thread"
-    }
+    },
+    "defaultConfig": "km4-exact-thread"
   },
   {
     "slug": "shaft",
@@ -842,6 +850,7 @@
       0,
       0,
       -75
-    ]
+    ],
+    "defaultConfig": "drive-shaft-d24-x-111-bearings"
   }
 ]

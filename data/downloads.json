@@ -1,0 +1,6326 @@
+{
+ "rebar-en-10080": {
+  "checked": "2026-11-21",
+  "version": "0.15.197",
+  "configs": [
+   {
+    "id": "d12-straight-6000",
+    "name": {
+     "en": "Ø12 straight 6000",
+     "ru": "Ø12 прямой 6000",
+     "pl": "Ø12 prosty 6000"
+    },
+    "sizeMm": [
+     6000.0,
+     12.0,
+     11.9
+    ],
+    "massKg": 5.2752,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/rebar-en-10080/d12-straight-6000/rebar-en-10080-d12-straight-6000.step",
+      "bytes": 3252
+     },
+     "stl": {
+      "key": "downloads/rebar-en-10080/d12-straight-6000/rebar-en-10080-d12-straight-6000.stl",
+      "bytes": 7384
+     },
+     "3mf": {
+      "key": "downloads/rebar-en-10080/d12-straight-6000/rebar-en-10080-d12-straight-6000.3mf",
+      "bytes": 10522
+     },
+     "glb": {
+      "key": "downloads/rebar-en-10080/d12-straight-6000/rebar-en-10080-d12-straight-6000.glb",
+      "bytes": 6516
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "d16-straight-12000",
+    "name": {
+     "en": "Ø16 straight 12000",
+     "ru": "Ø16 прямой 12000",
+     "pl": "Ø16 prosty 12000"
+    },
+    "sizeMm": [
+     12000.0,
+     16.0,
+     15.9
+    ],
+    "massKg": 18.7562,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/rebar-en-10080/d16-straight-12000/rebar-en-10080-d16-straight-12000.step",
+      "bytes": 3266
+     },
+     "stl": {
+      "key": "downloads/rebar-en-10080/d16-straight-12000/rebar-en-10080-d16-straight-12000.stl",
+      "bytes": 7384
+     },
+     "3mf": {
+      "key": "downloads/rebar-en-10080/d16-straight-12000/rebar-en-10080-d16-straight-12000.3mf",
+      "bytes": 10572
+     },
+     "glb": {
+      "key": "downloads/rebar-en-10080/d16-straight-12000/rebar-en-10080-d16-straight-12000.glb",
+      "bytes": 6520
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "d12-l-400-x-600",
+    "name": {
+     "en": "Ø12 L 400 × 600",
+     "ru": "Ø12 L 400 × 600",
+     "pl": "Ø12 L 400 × 600"
+    },
+    "sizeMm": [
+     600.0,
+     400.0,
+     12.0
+    ],
+    "massKg": 0.8572,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/rebar-en-10080/d12-l-400-x-600/rebar-en-10080-d12-l-400-x-600.step",
+      "bytes": 5072
+     },
+     "stl": {
+      "key": "downloads/rebar-en-10080/d12-l-400-x-600/rebar-en-10080-d12-l-400-x-600.stl",
+      "bytes": 48584
+     },
+     "3mf": {
+      "key": "downloads/rebar-en-10080/d12-l-400-x-600/rebar-en-10080-d12-l-400-x-600.3mf",
+      "bytes": 67551
+     },
+     "glb": {
+      "key": "downloads/rebar-en-10080/d12-l-400-x-600/rebar-en-10080-d12-l-400-x-600.glb",
+      "bytes": 28512
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "d16-u-300-x-500-x",
+    "name": {
+     "en": "Ø16 U 300 × 500 × 300",
+     "ru": "Ø16 U 300 × 500 × 300",
+     "pl": "Ø16 U 300 × 500 × 300"
+    },
+    "sizeMm": [
+     499.9,
+     299.9,
+     16.0
+    ],
+    "massKg": 1.6153,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/rebar-en-10080/d16-u-300-x-500-x/rebar-en-10080-d16-u-300-x-500-x.step",
+      "bytes": 7003
+     },
+     "stl": {
+      "key": "downloads/rebar-en-10080/d16-u-300-x-500-x/rebar-en-10080-d16-u-300-x-500-x.stl",
+      "bytes": 100184
+     },
+     "3mf": {
+      "key": "downloads/rebar-en-10080/d16-u-300-x-500-x/rebar-en-10080-d16-u-300-x-500-x.3mf",
+      "bytes": 140116
+     },
+     "glb": {
+      "key": "downloads/rebar-en-10080/d16-u-300-x-500-x/rebar-en-10080-d16-u-300-x-500-x.glb",
+      "bytes": 55584
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "d8-link-250-x-400",
+    "name": {
+     "en": "Ø8 link 250 × 400",
+     "ru": "Ø8 хомут 250 × 400",
+     "pl": "Ø8 strzemię 250 × 400"
+    },
+    "sizeMm": [
+     400.0,
+     249.9,
+     17.0
+    ],
+    "massKg": 0.5469,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/rebar-en-10080/d8-link-250-x-400/rebar-en-10080-d8-link-250-x-400.step",
+      "bytes": 13968
+     },
+     "stl": {
+      "key": "downloads/rebar-en-10080/d8-link-250-x-400/rebar-en-10080-d8-link-250-x-400.stl",
+      "bytes": 205484
+     },
+     "3mf": {
+      "key": "downloads/rebar-en-10080/d8-link-250-x-400/rebar-en-10080-d8-link-250-x-400.3mf",
+      "bytes": 296764
+     },
+     "glb": {
+      "key": "downloads/rebar-en-10080/d8-link-250-x-400/rebar-en-10080-d8-link-250-x-400.glb",
+      "bytes": 112496
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "d10-link-300-x-500",
+    "name": {
+     "en": "Ø10 link 300 × 500",
+     "ru": "Ø10 хомут 300 × 500",
+     "pl": "Ø10 strzemię 300 × 500"
+    },
+    "sizeMm": [
+     499.9,
+     299.9,
+     21.0
+    ],
+    "massKg": 1.053,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/rebar-en-10080/d10-link-300-x-500/rebar-en-10080-d10-link-300-x-500.step",
+      "bytes": 13974
+     },
+     "stl": {
+      "key": "downloads/rebar-en-10080/d10-link-300-x-500/rebar-en-10080-d10-link-300-x-500.stl",
+      "bytes": 231384
+     },
+     "3mf": {
+      "key": "downloads/rebar-en-10080/d10-link-300-x-500/rebar-en-10080-d10-link-300-x-500.3mf",
+      "bytes": 335133
+     },
+     "glb": {
+      "key": "downloads/rebar-en-10080/d10-link-300-x-500/rebar-en-10080-d10-link-300-x-500.glb",
+      "bytes": 125148
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "d16-straight-300-ribbed",
+    "name": {
+     "en": "Ø16 straight 300, ribbed",
+     "ru": "Ø16 прямой 300, с рёбрами",
+     "pl": "Ø16 prosty 300, żebrowany"
+    },
+    "sizeMm": [
+     300.0,
+     17.8,
+     17.2
+    ],
+    "massKg": 0.4721,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/rebar-en-10080/d16-straight-300-ribbed/rebar-en-10080-d16-straight-300-ribbed.step",
+      "bytes": 2065531
+     },
+     "stl": {
+      "key": "downloads/rebar-en-10080/d16-straight-300-ribbed/rebar-en-10080-d16-straight-300-ribbed.stl",
+      "bytes": 15877884
+     },
+     "3mf": {
+      "key": "downloads/rebar-en-10080/d16-straight-300-ribbed/rebar-en-10080-d16-straight-300-ribbed.3mf",
+      "bytes": 24608212
+     },
+     "glb": {
+      "key": "downloads/rebar-en-10080/d16-straight-300-ribbed/rebar-en-10080-d16-straight-300-ribbed.glb",
+      "bytes": 7626820
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   }
+  ]
+ },
+ "bolt-joint-iso-4017": {
+  "checked": "2026-11-21",
+  "version": "0.15.197",
+  "configs": [
+   {
+    "id": "m3-x-5",
+    "name": {
+     "en": "M3 × 5",
+     "ru": "M3 × 5",
+     "pl": "M3 × 5"
+    },
+    "sizeMm": [
+     12.0,
+     7.0,
+     7.0
+    ],
+    "massKg": 0.0016,
+    "bodies": 4,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-joint-iso-4017/m3-x-5/bolt-joint-iso-4017-m3-x-5.step",
+      "bytes": 166777
+     },
+     "stl": {
+      "key": "downloads/bolt-joint-iso-4017/m3-x-5/bolt-joint-iso-4017-m3-x-5.stl",
+      "bytes": 422084
+     },
+     "3mf": {
+      "key": "downloads/bolt-joint-iso-4017/m3-x-5/bolt-joint-iso-4017-m3-x-5.3mf",
+      "bytes": 512950
+     },
+     "glb": {
+      "key": "downloads/bolt-joint-iso-4017/m3-x-5/bolt-joint-iso-4017-m3-x-5.glb",
+      "bytes": 237744
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": false
+    }
+   },
+   {
+    "id": "m4-x-6",
+    "name": {
+     "en": "M4 × 6",
+     "ru": "M4 × 6",
+     "pl": "M4 × 6"
+    },
+    "sizeMm": [
+     18.8,
+     9.0,
+     9.0
+    ],
+    "massKg": 0.0039,
+    "bodies": 4,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-joint-iso-4017/m4-x-6/bolt-joint-iso-4017-m4-x-6.step",
+      "bytes": 166579
+     },
+     "stl": {
+      "key": "downloads/bolt-joint-iso-4017/m4-x-6/bolt-joint-iso-4017-m4-x-6.stl",
+      "bytes": 444284
+     },
+     "3mf": {
+      "key": "downloads/bolt-joint-iso-4017/m4-x-6/bolt-joint-iso-4017-m4-x-6.3mf",
+      "bytes": 513266
+     },
+     "glb": {
+      "key": "downloads/bolt-joint-iso-4017/m4-x-6/bolt-joint-iso-4017-m4-x-6.glb",
+      "bytes": 251712
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": false
+    }
+   },
+   {
+    "id": "m5-x-8",
+    "name": {
+     "en": "M5 × 8",
+     "ru": "M5 × 8",
+     "pl": "M5 × 8"
+    },
+    "sizeMm": [
+     23.5,
+     10.0,
+     10.0
+    ],
+    "massKg": 0.0069,
+    "bodies": 4,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-joint-iso-4017/m5-x-8/bolt-joint-iso-4017-m5-x-8.step",
+      "bytes": 166325
+     },
+     "stl": {
+      "key": "downloads/bolt-joint-iso-4017/m5-x-8/bolt-joint-iso-4017-m5-x-8.stl",
+      "bytes": 488884
+     },
+     "3mf": {
+      "key": "downloads/bolt-joint-iso-4017/m5-x-8/bolt-joint-iso-4017-m5-x-8.3mf",
+      "bytes": 513939
+     },
+     "glb": {
+      "key": "downloads/bolt-joint-iso-4017/m5-x-8/bolt-joint-iso-4017-m5-x-8.glb",
+      "bytes": 274600
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": false
+    }
+   },
+   {
+    "id": "m6-x-10",
+    "name": {
+     "en": "M6 × 10",
+     "ru": "M6 × 10",
+     "pl": "M6 × 10"
+    },
+    "sizeMm": [
+     29.0,
+     12.0,
+     12.0
+    ],
+    "massKg": 0.0128,
+    "bodies": 4,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-joint-iso-4017/m6-x-10/bolt-joint-iso-4017-m6-x-10.step",
+      "bytes": 166275
+     },
+     "stl": {
+      "key": "downloads/bolt-joint-iso-4017/m6-x-10/bolt-joint-iso-4017-m6-x-10.stl",
+      "bytes": 528884
+     },
+     "3mf": {
+      "key": "downloads/bolt-joint-iso-4017/m6-x-10/bolt-joint-iso-4017-m6-x-10.3mf",
+      "bytes": 515262
+     },
+     "glb": {
+      "key": "downloads/bolt-joint-iso-4017/m6-x-10/bolt-joint-iso-4017-m6-x-10.glb",
+      "bytes": 296488
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": false
+    }
+   },
+   {
+    "id": "m8-x-15",
+    "name": {
+     "en": "M8 × 15",
+     "ru": "M8 × 15",
+     "pl": "M8 × 15"
+    },
+    "sizeMm": [
+     35.3,
+     16.0,
+     16.0
+    ],
+    "massKg": 0.027,
+    "bodies": 4,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-joint-iso-4017/m8-x-15/bolt-joint-iso-4017-m8-x-15.step",
+      "bytes": 167593
+     },
+     "stl": {
+      "key": "downloads/bolt-joint-iso-4017/m8-x-15/bolt-joint-iso-4017-m8-x-15.stl",
+      "bytes": 627484
+     },
+     "3mf": {
+      "key": "downloads/bolt-joint-iso-4017/m8-x-15/bolt-joint-iso-4017-m8-x-15.3mf",
+      "bytes": 515591
+     },
+     "glb": {
+      "key": "downloads/bolt-joint-iso-4017/m8-x-15/bolt-joint-iso-4017-m8-x-15.glb",
+      "bytes": 346736
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": false
+    }
+   },
+   {
+    "id": "m10-x-20",
+    "name": {
+     "en": "M10 × 20",
+     "ru": "M10 × 20",
+     "pl": "M10 × 20"
+    },
+    "sizeMm": [
+     46.4,
+     20.0,
+     20.0
+    ],
+    "massKg": 0.0529,
+    "bodies": 4,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-joint-iso-4017/m10-x-20/bolt-joint-iso-4017-m10-x-20.step",
+      "bytes": 167141
+     },
+     "stl": {
+      "key": "downloads/bolt-joint-iso-4017/m10-x-20/bolt-joint-iso-4017-m10-x-20.stl",
+      "bytes": 628484
+     },
+     "3mf": {
+      "key": "downloads/bolt-joint-iso-4017/m10-x-20/bolt-joint-iso-4017-m10-x-20.3mf",
+      "bytes": 513002
+     },
+     "glb": {
+      "key": "downloads/bolt-joint-iso-4017/m10-x-20/bolt-joint-iso-4017-m10-x-20.glb",
+      "bytes": 346892
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": false
+    }
+   },
+   {
+    "id": "m12-x-25",
+    "name": {
+     "en": "M12 × 25",
+     "ru": "M12 × 25",
+     "pl": "M12 × 25"
+    },
+    "sizeMm": [
+     52.5,
+     24.0,
+     24.0
+    ],
+    "massKg": 0.0845,
+    "bodies": 4,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-joint-iso-4017/m12-x-25/bolt-joint-iso-4017-m12-x-25.step",
+      "bytes": 168209
+     },
+     "stl": {
+      "key": "downloads/bolt-joint-iso-4017/m12-x-25/bolt-joint-iso-4017-m12-x-25.stl",
+      "bytes": 622884
+     },
+     "3mf": {
+      "key": "downloads/bolt-joint-iso-4017/m12-x-25/bolt-joint-iso-4017-m12-x-25.3mf",
+      "bytes": 514071
+     },
+     "glb": {
+      "key": "downloads/bolt-joint-iso-4017/m12-x-25/bolt-joint-iso-4017-m12-x-25.glb",
+      "bytes": 344884
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": false
+    }
+   },
+   {
+    "id": "m16-x-30",
+    "name": {
+     "en": "M16 × 30",
+     "ru": "M16 × 30",
+     "pl": "M16 × 30"
+    },
+    "sizeMm": [
+     65.0,
+     30.0,
+     30.0
+    ],
+    "massKg": 0.1859,
+    "bodies": 4,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-joint-iso-4017/m16-x-30/bolt-joint-iso-4017-m16-x-30.step",
+      "bytes": 167867
+     },
+     "stl": {
+      "key": "downloads/bolt-joint-iso-4017/m16-x-30/bolt-joint-iso-4017-m16-x-30.stl",
+      "bytes": 624284
+     },
+     "3mf": {
+      "key": "downloads/bolt-joint-iso-4017/m16-x-30/bolt-joint-iso-4017-m16-x-30.3mf",
+      "bytes": 520256
+     },
+     "glb": {
+      "key": "downloads/bolt-joint-iso-4017/m16-x-30/bolt-joint-iso-4017-m16-x-30.glb",
+      "bytes": 346180
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": false
+    }
+   },
+   {
+    "id": "m20-x-40",
+    "name": {
+     "en": "M20 × 40",
+     "ru": "M20 × 40",
+     "pl": "M20 × 40"
+    },
+    "sizeMm": [
+     82.5,
+     37.0,
+     37.0
+    ],
+    "massKg": 0.3544,
+    "bodies": 4,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-joint-iso-4017/m20-x-40/bolt-joint-iso-4017-m20-x-40.step",
+      "bytes": 168259
+     },
+     "stl": {
+      "key": "downloads/bolt-joint-iso-4017/m20-x-40/bolt-joint-iso-4017-m20-x-40.stl",
+      "bytes": 622484
+     },
+     "3mf": {
+      "key": "downloads/bolt-joint-iso-4017/m20-x-40/bolt-joint-iso-4017-m20-x-40.3mf",
+      "bytes": 532834
+     },
+     "glb": {
+      "key": "downloads/bolt-joint-iso-4017/m20-x-40/bolt-joint-iso-4017-m20-x-40.glb",
+      "bytes": 344872
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": false
+    }
+   },
+   {
+    "id": "m24-x-50",
+    "name": {
+     "en": "M24 × 50",
+     "ru": "M24 × 50",
+     "pl": "M24 × 50"
+    },
+    "sizeMm": [
+     105.0,
+     44.0,
+     44.0
+    ],
+    "massKg": 0.6385,
+    "bodies": 4,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-joint-iso-4017/m24-x-50/bolt-joint-iso-4017-m24-x-50.step",
+      "bytes": 168523
+     },
+     "stl": {
+      "key": "downloads/bolt-joint-iso-4017/m24-x-50/bolt-joint-iso-4017-m24-x-50.stl",
+      "bytes": 622484
+     },
+     "3mf": {
+      "key": "downloads/bolt-joint-iso-4017/m24-x-50/bolt-joint-iso-4017-m24-x-50.3mf",
+      "bytes": 538782
+     },
+     "glb": {
+      "key": "downloads/bolt-joint-iso-4017/m24-x-50/bolt-joint-iso-4017-m24-x-50.glb",
+      "bytes": 344872
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": false
+    }
+   },
+   {
+    "id": "m30-x-60",
+    "name": {
+     "en": "M30 × 60",
+     "ru": "M30 × 60",
+     "pl": "M30 × 60"
+    },
+    "sizeMm": [
+     128.7,
+     56.0,
+     56.0
+    ],
+    "massKg": 1.2271,
+    "bodies": 4,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-joint-iso-4017/m30-x-60/bolt-joint-iso-4017-m30-x-60.step",
+      "bytes": 169266
+     },
+     "stl": {
+      "key": "downloads/bolt-joint-iso-4017/m30-x-60/bolt-joint-iso-4017-m30-x-60.stl",
+      "bytes": 630484
+     },
+     "3mf": {
+      "key": "downloads/bolt-joint-iso-4017/m30-x-60/bolt-joint-iso-4017-m30-x-60.3mf",
+      "bytes": 555816
+     },
+     "glb": {
+      "key": "downloads/bolt-joint-iso-4017/m30-x-60/bolt-joint-iso-4017-m30-x-60.glb",
+      "bytes": 348616
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": false
+    }
+   },
+   {
+    "id": "m36-x-80",
+    "name": {
+     "en": "M36 × 80",
+     "ru": "M36 × 80",
+     "pl": "M36 × 80"
+    },
+    "sizeMm": [
+     152.5,
+     66.0,
+     66.0
+    ],
+    "massKg": 2.0995,
+    "bodies": 4,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-joint-iso-4017/m36-x-80/bolt-joint-iso-4017-m36-x-80.step",
+      "bytes": 169235
+     },
+     "stl": {
+      "key": "downloads/bolt-joint-iso-4017/m36-x-80/bolt-joint-iso-4017-m36-x-80.stl",
+      "bytes": 624084
+     },
+     "3mf": {
+      "key": "downloads/bolt-joint-iso-4017/m36-x-80/bolt-joint-iso-4017-m36-x-80.3mf",
+      "bytes": 568930
+     },
+     "glb": {
+      "key": "downloads/bolt-joint-iso-4017/m36-x-80/bolt-joint-iso-4017-m36-x-80.glb",
+      "bytes": 345628
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": false
+    }
+   },
+   {
+    "id": "m10-x-20-10_9",
+    "name": {
+     "en": "M10 × 20 · 10.9",
+     "ru": "M10 × 20 · 10.9",
+     "pl": "M10 × 20 · 10.9"
+    },
+    "sizeMm": [
+     46.4,
+     20.0,
+     20.0
+    ],
+    "massKg": 0.0529,
+    "bodies": 4,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-joint-iso-4017/m10-x-20-10_9/bolt-joint-iso-4017-m10-x-20-10_9.step",
+      "bytes": 167153
+     },
+     "stl": {
+      "key": "downloads/bolt-joint-iso-4017/m10-x-20-10_9/bolt-joint-iso-4017-m10-x-20-10_9.stl",
+      "bytes": 628484
+     },
+     "3mf": {
+      "key": "downloads/bolt-joint-iso-4017/m10-x-20-10_9/bolt-joint-iso-4017-m10-x-20-10_9.3mf",
+      "bytes": 513004
+     },
+     "glb": {
+      "key": "downloads/bolt-joint-iso-4017/m10-x-20-10_9/bolt-joint-iso-4017-m10-x-20-10_9.glb",
+      "bytes": 346900
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": false
+    }
+   },
+   {
+    "id": "m10-x-20-a2-70",
+    "name": {
+     "en": "M10 × 20 · A2-70",
+     "ru": "M10 × 20 · A2-70",
+     "pl": "M10 × 20 · A2-70"
+    },
+    "sizeMm": [
+     46.4,
+     20.0,
+     20.0
+    ],
+    "massKg": 0.0529,
+    "bodies": 4,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-joint-iso-4017/m10-x-20-a2-70/bolt-joint-iso-4017-m10-x-20-a2-70.step",
+      "bytes": 167241
+     },
+     "stl": {
+      "key": "downloads/bolt-joint-iso-4017/m10-x-20-a2-70/bolt-joint-iso-4017-m10-x-20-a2-70.stl",
+      "bytes": 628484
+     },
+     "3mf": {
+      "key": "downloads/bolt-joint-iso-4017/m10-x-20-a2-70/bolt-joint-iso-4017-m10-x-20-a2-70.3mf",
+      "bytes": 513018
+     },
+     "glb": {
+      "key": "downloads/bolt-joint-iso-4017/m10-x-20-a2-70/bolt-joint-iso-4017-m10-x-20-a2-70.glb",
+      "bytes": 347060
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": false
+    }
+   },
+   {
+    "id": "m10-x-20-washer-under-the",
+    "name": {
+     "en": "M10 × 20 · washer under the head only",
+     "ru": "M10 × 20 · шайба только под головкой",
+     "pl": "M10 × 20 · podkładka tylko pod łbem"
+    },
+    "sizeMm": [
+     41.4,
+     20.0,
+     20.0
+    ],
+    "massKg": 0.0463,
+    "bodies": 3,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-joint-iso-4017/m10-x-20-washer-under-the/bolt-joint-iso-4017-m10-x-20-washer-under-the.step",
+      "bytes": 166559
+     },
+     "stl": {
+      "key": "downloads/bolt-joint-iso-4017/m10-x-20-washer-under-the/bolt-joint-iso-4017-m10-x-20-washer-under-the.stl",
+      "bytes": 600084
+     },
+     "3mf": {
+      "key": "downloads/bolt-joint-iso-4017/m10-x-20-washer-under-the/bolt-joint-iso-4017-m10-x-20-washer-under-the.3mf",
+      "bytes": 498587
+     },
+     "glb": {
+      "key": "downloads/bolt-joint-iso-4017/m10-x-20-washer-under-the/bolt-joint-iso-4017-m10-x-20-washer-under-the.glb",
+      "bytes": 325152
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": false
+    }
+   },
+   {
+    "id": "m10-x-20-fine-hole",
+    "name": {
+     "en": "M10 × 20 · fine hole",
+     "ru": "M10 × 20 · точное отверстие",
+     "pl": "M10 × 20 · otwór dokładny"
+    },
+    "sizeMm": [
+     46.4,
+     20.0,
+     20.0
+    ],
+    "massKg": 0.0529,
+    "bodies": 4,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-joint-iso-4017/m10-x-20-fine-hole/bolt-joint-iso-4017-m10-x-20-fine-hole.step",
+      "bytes": 167141
+     },
+     "stl": {
+      "key": "downloads/bolt-joint-iso-4017/m10-x-20-fine-hole/bolt-joint-iso-4017-m10-x-20-fine-hole.stl",
+      "bytes": 628484
+     },
+     "3mf": {
+      "key": "downloads/bolt-joint-iso-4017/m10-x-20-fine-hole/bolt-joint-iso-4017-m10-x-20-fine-hole.3mf",
+      "bytes": 513002
+     },
+     "glb": {
+      "key": "downloads/bolt-joint-iso-4017/m10-x-20-fine-hole/bolt-joint-iso-4017-m10-x-20-fine-hole.glb",
+      "bytes": 346892
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": false
+    }
+   },
+   {
+    "id": "exact-thread",
+    "name": {
+     "en": "M10 × 20 · exact thread",
+     "ru": "M10 × 20 · настоящая резьба",
+     "pl": "M10 × 20 · gwint rzeczywisty"
+    },
+    "sizeMm": [
+     46.4,
+     20.0,
+     20.0
+    ],
+    "massKg": 0.0475,
+    "bodies": 4,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-joint-iso-4017/exact-thread/bolt-joint-iso-4017-exact-thread.step",
+      "bytes": 1796143
+     },
+     "stl": {
+      "key": "downloads/bolt-joint-iso-4017/exact-thread/bolt-joint-iso-4017-exact-thread.stl",
+      "bytes": 1826484
+     },
+     "3mf": {
+      "key": "downloads/bolt-joint-iso-4017/exact-thread/bolt-joint-iso-4017-exact-thread.3mf",
+      "bytes": 1339263
+     },
+     "glb": {
+      "key": "downloads/bolt-joint-iso-4017/exact-thread/bolt-joint-iso-4017-exact-thread.glb",
+      "bytes": 1070312
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": false
+    }
+   }
+  ]
+ },
+ "bolt-iso-4017": {
+  "checked": "2026-11-21",
+  "version": "0.15.197",
+  "configs": [
+   {
+    "id": "m1_6-x-5",
+    "name": {
+     "en": "M1.6 × 5",
+     "ru": "M1.6 × 5",
+     "pl": "M1.6 × 5"
+    },
+    "sizeMm": [
+     6.1,
+     3.7,
+     3.2
+    ],
+    "massKg": 0.0001,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-iso-4017/m1_6-x-5/bolt-iso-4017-m1_6-x-5.step",
+      "bytes": 82865
+     },
+     "stl": {
+      "key": "downloads/bolt-iso-4017/m1_6-x-5/bolt-iso-4017-m1_6-x-5.stl",
+      "bytes": 139684
+     },
+     "3mf": {
+      "key": "downloads/bolt-iso-4017/m1_6-x-5/bolt-iso-4017-m1_6-x-5.3mf",
+      "bytes": 182297
+     },
+     "glb": {
+      "key": "downloads/bolt-iso-4017/m1_6-x-5/bolt-iso-4017-m1_6-x-5.glb",
+      "bytes": 75688
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m2-x-6",
+    "name": {
+     "en": "M2 × 6",
+     "ru": "M2 × 6",
+     "pl": "M2 × 6"
+    },
+    "sizeMm": [
+     7.4,
+     4.6,
+     4.0
+    ],
+    "massKg": 0.0003,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-iso-4017/m2-x-6/bolt-iso-4017-m2-x-6.step",
+      "bytes": 82433
+     },
+     "stl": {
+      "key": "downloads/bolt-iso-4017/m2-x-6/bolt-iso-4017-m2-x-6.stl",
+      "bytes": 137484
+     },
+     "3mf": {
+      "key": "downloads/bolt-iso-4017/m2-x-6/bolt-iso-4017-m2-x-6.3mf",
+      "bytes": 179426
+     },
+     "glb": {
+      "key": "downloads/bolt-iso-4017/m2-x-6/bolt-iso-4017-m2-x-6.glb",
+      "bytes": 75152
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m2_5-x-8",
+    "name": {
+     "en": "M2.5 × 8",
+     "ru": "M2.5 × 8",
+     "pl": "M2.5 × 8"
+    },
+    "sizeMm": [
+     9.7,
+     5.8,
+     5.0
+    ],
+    "massKg": 0.0006,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-iso-4017/m2_5-x-8/bolt-iso-4017-m2_5-x-8.step",
+      "bytes": 82977
+     },
+     "stl": {
+      "key": "downloads/bolt-iso-4017/m2_5-x-8/bolt-iso-4017-m2_5-x-8.stl",
+      "bytes": 142684
+     },
+     "3mf": {
+      "key": "downloads/bolt-iso-4017/m2_5-x-8/bolt-iso-4017-m2_5-x-8.3mf",
+      "bytes": 179348
+     },
+     "glb": {
+      "key": "downloads/bolt-iso-4017/m2_5-x-8/bolt-iso-4017-m2_5-x-8.glb",
+      "bytes": 78616
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m3-x-8",
+    "name": {
+     "en": "M3 × 8",
+     "ru": "M3 × 8",
+     "pl": "M3 × 8"
+    },
+    "sizeMm": [
+     10.0,
+     6.4,
+     5.5
+    ],
+    "massKg": 0.0008,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-iso-4017/m3-x-8/bolt-iso-4017-m3-x-8.step",
+      "bytes": 82686
+     },
+     "stl": {
+      "key": "downloads/bolt-iso-4017/m3-x-8/bolt-iso-4017-m3-x-8.stl",
+      "bytes": 146484
+     },
+     "3mf": {
+      "key": "downloads/bolt-iso-4017/m3-x-8/bolt-iso-4017-m3-x-8.3mf",
+      "bytes": 180955
+     },
+     "glb": {
+      "key": "downloads/bolt-iso-4017/m3-x-8/bolt-iso-4017-m3-x-8.glb",
+      "bytes": 81072
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m3_5-x-10",
+    "name": {
+     "en": "M(3.5) × 10",
+     "ru": "M(3.5) × 10",
+     "pl": "M(3.5) × 10"
+    },
+    "sizeMm": [
+     12.4,
+     6.9,
+     6.0
+    ],
+    "massKg": 0.0013,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-iso-4017/m3_5-x-10/bolt-iso-4017-m3_5-x-10.step",
+      "bytes": 82699
+     },
+     "stl": {
+      "key": "downloads/bolt-iso-4017/m3_5-x-10/bolt-iso-4017-m3_5-x-10.stl",
+      "bytes": 148884
+     },
+     "3mf": {
+      "key": "downloads/bolt-iso-4017/m3_5-x-10/bolt-iso-4017-m3_5-x-10.3mf",
+      "bytes": 181126
+     },
+     "glb": {
+      "key": "downloads/bolt-iso-4017/m3_5-x-10/bolt-iso-4017-m3_5-x-10.glb",
+      "bytes": 82520
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m4-x-12",
+    "name": {
+     "en": "M4 × 12",
+     "ru": "M4 × 12",
+     "pl": "M4 × 12"
+    },
+    "sizeMm": [
+     14.8,
+     8.1,
+     7.0
+    ],
+    "massKg": 0.0021,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-iso-4017/m4-x-12/bolt-iso-4017-m4-x-12.step",
+      "bytes": 82775
+     },
+     "stl": {
+      "key": "downloads/bolt-iso-4017/m4-x-12/bolt-iso-4017-m4-x-12.stl",
+      "bytes": 160484
+     },
+     "3mf": {
+      "key": "downloads/bolt-iso-4017/m4-x-12/bolt-iso-4017-m4-x-12.3mf",
+      "bytes": 181095
+     },
+     "glb": {
+      "key": "downloads/bolt-iso-4017/m4-x-12/bolt-iso-4017-m4-x-12.glb",
+      "bytes": 88756
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m5-x-16",
+    "name": {
+     "en": "M5 × 16",
+     "ru": "M5 × 16",
+     "pl": "M5 × 16"
+    },
+    "sizeMm": [
+     19.5,
+     9.2,
+     8.0
+    ],
+    "massKg": 0.0039,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-iso-4017/m5-x-16/bolt-iso-4017-m5-x-16.step",
+      "bytes": 82777
+     },
+     "stl": {
+      "key": "downloads/bolt-iso-4017/m5-x-16/bolt-iso-4017-m5-x-16.stl",
+      "bytes": 160884
+     },
+     "3mf": {
+      "key": "downloads/bolt-iso-4017/m5-x-16/bolt-iso-4017-m5-x-16.3mf",
+      "bytes": 181189
+     },
+     "glb": {
+      "key": "downloads/bolt-iso-4017/m5-x-16/bolt-iso-4017-m5-x-16.glb",
+      "bytes": 89044
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m6-x-16",
+    "name": {
+     "en": "M6 × 16",
+     "ru": "M6 × 16",
+     "pl": "M6 × 16"
+    },
+    "sizeMm": [
+     20.0,
+     11.5,
+     10.0
+    ],
+    "massKg": 0.0061,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-iso-4017/m6-x-16/bolt-iso-4017-m6-x-16.step",
+      "bytes": 82332
+     },
+     "stl": {
+      "key": "downloads/bolt-iso-4017/m6-x-16/bolt-iso-4017-m6-x-16.stl",
+      "bytes": 188284
+     },
+     "3mf": {
+      "key": "downloads/bolt-iso-4017/m6-x-16/bolt-iso-4017-m6-x-16.3mf",
+      "bytes": 181055
+     },
+     "glb": {
+      "key": "downloads/bolt-iso-4017/m6-x-16/bolt-iso-4017-m6-x-16.glb",
+      "bytes": 102916
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m8-x-25",
+    "name": {
+     "en": "M8 × 25",
+     "ru": "M8 × 25",
+     "pl": "M8 × 25"
+    },
+    "sizeMm": [
+     30.3,
+     15.0,
+     13.0
+    ],
+    "massKg": 0.0156,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-iso-4017/m8-x-25/bolt-iso-4017-m8-x-25.step",
+      "bytes": 83035
+     },
+     "stl": {
+      "key": "downloads/bolt-iso-4017/m8-x-25/bolt-iso-4017-m8-x-25.stl",
+      "bytes": 161684
+     },
+     "3mf": {
+      "key": "downloads/bolt-iso-4017/m8-x-25/bolt-iso-4017-m8-x-25.3mf",
+      "bytes": 181221
+     },
+     "glb": {
+      "key": "downloads/bolt-iso-4017/m8-x-25/bolt-iso-4017-m8-x-25.glb",
+      "bytes": 89620
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m10-x-30",
+    "name": {
+     "en": "M10 × 30",
+     "ru": "M10 × 30",
+     "pl": "M10 × 30"
+    },
+    "sizeMm": [
+     36.4,
+     18.5,
+     16.0
+    ],
+    "massKg": 0.0291,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-iso-4017/m10-x-30/bolt-iso-4017-m10-x-30.step",
+      "bytes": 82720
+     },
+     "stl": {
+      "key": "downloads/bolt-iso-4017/m10-x-30/bolt-iso-4017-m10-x-30.stl",
+      "bytes": 158884
+     },
+     "3mf": {
+      "key": "downloads/bolt-iso-4017/m10-x-30/bolt-iso-4017-m10-x-30.3mf",
+      "bytes": 175638
+     },
+     "glb": {
+      "key": "downloads/bolt-iso-4017/m10-x-30/bolt-iso-4017-m10-x-30.glb",
+      "bytes": 88564
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m12-x-35",
+    "name": {
+     "en": "M12 × 35",
+     "ru": "M12 × 35",
+     "pl": "M12 × 35"
+    },
+    "sizeMm": [
+     42.5,
+     20.8,
+     18.0
+    ],
+    "massKg": 0.0468,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-iso-4017/m12-x-35/bolt-iso-4017-m12-x-35.step",
+      "bytes": 82992
+     },
+     "stl": {
+      "key": "downloads/bolt-iso-4017/m12-x-35/bolt-iso-4017-m12-x-35.stl",
+      "bytes": 158884
+     },
+     "3mf": {
+      "key": "downloads/bolt-iso-4017/m12-x-35/bolt-iso-4017-m12-x-35.3mf",
+      "bytes": 175279
+     },
+     "glb": {
+      "key": "downloads/bolt-iso-4017/m12-x-35/bolt-iso-4017-m12-x-35.glb",
+      "bytes": 88564
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m14-x-40",
+    "name": {
+     "en": "M(14) × 40",
+     "ru": "M(14) × 40",
+     "pl": "M(14) × 40"
+    },
+    "sizeMm": [
+     48.8,
+     24.2,
+     21.0
+    ],
+    "massKg": 0.0735,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-iso-4017/m14-x-40/bolt-iso-4017-m14-x-40.step",
+      "bytes": 82706
+     },
+     "stl": {
+      "key": "downloads/bolt-iso-4017/m14-x-40/bolt-iso-4017-m14-x-40.stl",
+      "bytes": 158884
+     },
+     "3mf": {
+      "key": "downloads/bolt-iso-4017/m14-x-40/bolt-iso-4017-m14-x-40.3mf",
+      "bytes": 175830
+     },
+     "glb": {
+      "key": "downloads/bolt-iso-4017/m14-x-40/bolt-iso-4017-m14-x-40.glb",
+      "bytes": 88564
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m16-x-50",
+    "name": {
+     "en": "M16 × 50",
+     "ru": "M16 × 50",
+     "pl": "M16 × 50"
+    },
+    "sizeMm": [
+     60.0,
+     27.7,
+     24.0
+    ],
+    "massKg": 0.1164,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-iso-4017/m16-x-50/bolt-iso-4017-m16-x-50.step",
+      "bytes": 82636
+     },
+     "stl": {
+      "key": "downloads/bolt-iso-4017/m16-x-50/bolt-iso-4017-m16-x-50.stl",
+      "bytes": 156484
+     },
+     "3mf": {
+      "key": "downloads/bolt-iso-4017/m16-x-50/bolt-iso-4017-m16-x-50.3mf",
+      "bytes": 177301
+     },
+     "glb": {
+      "key": "downloads/bolt-iso-4017/m16-x-50/bolt-iso-4017-m16-x-50.glb",
+      "bytes": 87412
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m18-x-55",
+    "name": {
+     "en": "M(18) × 55",
+     "ru": "M(18) × 55",
+     "pl": "M(18) × 55"
+    },
+    "sizeMm": [
+     66.5,
+     31.2,
+     27.0
+    ],
+    "massKg": 0.1644,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-iso-4017/m18-x-55/bolt-iso-4017-m18-x-55.step",
+      "bytes": 83243
+     },
+     "stl": {
+      "key": "downloads/bolt-iso-4017/m18-x-55/bolt-iso-4017-m18-x-55.stl",
+      "bytes": 157684
+     },
+     "3mf": {
+      "key": "downloads/bolt-iso-4017/m18-x-55/bolt-iso-4017-m18-x-55.3mf",
+      "bytes": 180333
+     },
+     "glb": {
+      "key": "downloads/bolt-iso-4017/m18-x-55/bolt-iso-4017-m18-x-55.glb",
+      "bytes": 87988
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m20-x-60",
+    "name": {
+     "en": "M20 × 60",
+     "ru": "M20 × 60",
+     "pl": "M20 × 60"
+    },
+    "sizeMm": [
+     72.5,
+     34.6,
+     30.0
+    ],
+    "massKg": 0.2214,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-iso-4017/m20-x-60/bolt-iso-4017-m20-x-60.step",
+      "bytes": 83341
+     },
+     "stl": {
+      "key": "downloads/bolt-iso-4017/m20-x-60/bolt-iso-4017-m20-x-60.stl",
+      "bytes": 157684
+     },
+     "3mf": {
+      "key": "downloads/bolt-iso-4017/m20-x-60/bolt-iso-4017-m20-x-60.3mf",
+      "bytes": 181689
+     },
+     "glb": {
+      "key": "downloads/bolt-iso-4017/m20-x-60/bolt-iso-4017-m20-x-60.glb",
+      "bytes": 87988
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m22-x-65",
+    "name": {
+     "en": "M(22) × 65",
+     "ru": "M(22) × 65",
+     "pl": "M(22) × 65"
+    },
+    "sizeMm": [
+     79.0,
+     39.3,
+     34.0
+    ],
+    "massKg": 0.3001,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-iso-4017/m22-x-65/bolt-iso-4017-m22-x-65.step",
+      "bytes": 83344
+     },
+     "stl": {
+      "key": "downloads/bolt-iso-4017/m22-x-65/bolt-iso-4017-m22-x-65.stl",
+      "bytes": 156484
+     },
+     "3mf": {
+      "key": "downloads/bolt-iso-4017/m22-x-65/bolt-iso-4017-m22-x-65.3mf",
+      "bytes": 182925
+     },
+     "glb": {
+      "key": "downloads/bolt-iso-4017/m22-x-65/bolt-iso-4017-m22-x-65.glb",
+      "bytes": 87412
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m24-x-70",
+    "name": {
+     "en": "M24 × 70",
+     "ru": "M24 × 70",
+     "pl": "M24 × 70"
+    },
+    "sizeMm": [
+     85.0,
+     41.6,
+     36.0
+    ],
+    "massKg": 0.3756,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-iso-4017/m24-x-70/bolt-iso-4017-m24-x-70.step",
+      "bytes": 83272
+     },
+     "stl": {
+      "key": "downloads/bolt-iso-4017/m24-x-70/bolt-iso-4017-m24-x-70.stl",
+      "bytes": 157684
+     },
+     "3mf": {
+      "key": "downloads/bolt-iso-4017/m24-x-70/bolt-iso-4017-m24-x-70.3mf",
+      "bytes": 182929
+     },
+     "glb": {
+      "key": "downloads/bolt-iso-4017/m24-x-70/bolt-iso-4017-m24-x-70.glb",
+      "bytes": 87988
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m27-x-80",
+    "name": {
+     "en": "M(27) × 80",
+     "ru": "M(27) × 80",
+     "pl": "M(27) × 80"
+    },
+    "sizeMm": [
+     97.0,
+     47.3,
+     41.0
+    ],
+    "massKg": 0.5472,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-iso-4017/m27-x-80/bolt-iso-4017-m27-x-80.step",
+      "bytes": 83306
+     },
+     "stl": {
+      "key": "downloads/bolt-iso-4017/m27-x-80/bolt-iso-4017-m27-x-80.stl",
+      "bytes": 156484
+     },
+     "3mf": {
+      "key": "downloads/bolt-iso-4017/m27-x-80/bolt-iso-4017-m27-x-80.3mf",
+      "bytes": 187742
+     },
+     "glb": {
+      "key": "downloads/bolt-iso-4017/m27-x-80/bolt-iso-4017-m27-x-80.glb",
+      "bytes": 87412
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m30-x-90",
+    "name": {
+     "en": "M30 × 90",
+     "ru": "M30 × 90",
+     "pl": "M30 × 90"
+    },
+    "sizeMm": [
+     108.7,
+     53.1,
+     46.0
+    ],
+    "massKg": 0.759,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-iso-4017/m30-x-90/bolt-iso-4017-m30-x-90.step",
+      "bytes": 83757
+     },
+     "stl": {
+      "key": "downloads/bolt-iso-4017/m30-x-90/bolt-iso-4017-m30-x-90.stl",
+      "bytes": 156484
+     },
+     "3mf": {
+      "key": "downloads/bolt-iso-4017/m30-x-90/bolt-iso-4017-m30-x-90.3mf",
+      "bytes": 188778
+     },
+     "glb": {
+      "key": "downloads/bolt-iso-4017/m30-x-90/bolt-iso-4017-m30-x-90.glb",
+      "bytes": 87412
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m33-x-100",
+    "name": {
+     "en": "M(33) × 100",
+     "ru": "M(33) × 100",
+     "pl": "M(33) × 100"
+    },
+    "sizeMm": [
+     121.0,
+     57.7,
+     50.0
+    ],
+    "massKg": 1.017,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-iso-4017/m33-x-100/bolt-iso-4017-m33-x-100.step",
+      "bytes": 83708
+     },
+     "stl": {
+      "key": "downloads/bolt-iso-4017/m33-x-100/bolt-iso-4017-m33-x-100.stl",
+      "bytes": 155284
+     },
+     "3mf": {
+      "key": "downloads/bolt-iso-4017/m33-x-100/bolt-iso-4017-m33-x-100.3mf",
+      "bytes": 189720
+     },
+     "glb": {
+      "key": "downloads/bolt-iso-4017/m33-x-100/bolt-iso-4017-m33-x-100.glb",
+      "bytes": 86836
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m36-x-110",
+    "name": {
+     "en": "M36 × 110",
+     "ru": "M36 × 110",
+     "pl": "M36 × 110"
+    },
+    "sizeMm": [
+     132.5,
+     63.5,
+     55.0
+    ],
+    "massKg": 1.3265,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-iso-4017/m36-x-110/bolt-iso-4017-m36-x-110.step",
+      "bytes": 84089
+     },
+     "stl": {
+      "key": "downloads/bolt-iso-4017/m36-x-110/bolt-iso-4017-m36-x-110.stl",
+      "bytes": 156484
+     },
+     "3mf": {
+      "key": "downloads/bolt-iso-4017/m36-x-110/bolt-iso-4017-m36-x-110.3mf",
+      "bytes": 193169
+     },
+     "glb": {
+      "key": "downloads/bolt-iso-4017/m36-x-110/bolt-iso-4017-m36-x-110.glb",
+      "bytes": 87412
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m39-x-120",
+    "name": {
+     "en": "M(39) × 120",
+     "ru": "M(39) × 120",
+     "pl": "M(39) × 120"
+    },
+    "sizeMm": [
+     145.0,
+     69.3,
+     60.0
+    ],
+    "massKg": 1.7183,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-iso-4017/m39-x-120/bolt-iso-4017-m39-x-120.step",
+      "bytes": 83905
+     },
+     "stl": {
+      "key": "downloads/bolt-iso-4017/m39-x-120/bolt-iso-4017-m39-x-120.stl",
+      "bytes": 151684
+     },
+     "3mf": {
+      "key": "downloads/bolt-iso-4017/m39-x-120/bolt-iso-4017-m39-x-120.3mf",
+      "bytes": 186636
+     },
+     "glb": {
+      "key": "downloads/bolt-iso-4017/m39-x-120/bolt-iso-4017-m39-x-120.glb",
+      "bytes": 85108
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m42-x-130",
+    "name": {
+     "en": "M42 × 130",
+     "ru": "M42 × 130",
+     "pl": "M42 × 130"
+    },
+    "sizeMm": [
+     156.0,
+     75.1,
+     65.0
+    ],
+    "massKg": 2.1361,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-iso-4017/m42-x-130/bolt-iso-4017-m42-x-130.step",
+      "bytes": 84365
+     },
+     "stl": {
+      "key": "downloads/bolt-iso-4017/m42-x-130/bolt-iso-4017-m42-x-130.stl",
+      "bytes": 155284
+     },
+     "3mf": {
+      "key": "downloads/bolt-iso-4017/m42-x-130/bolt-iso-4017-m42-x-130.3mf",
+      "bytes": 195251
+     },
+     "glb": {
+      "key": "downloads/bolt-iso-4017/m42-x-130/bolt-iso-4017-m42-x-130.glb",
+      "bytes": 86820
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m45-x-130",
+    "name": {
+     "en": "M(45) × 130",
+     "ru": "M(45) × 130",
+     "pl": "M(45) × 130"
+    },
+    "sizeMm": [
+     158.0,
+     80.8,
+     70.0
+    ],
+    "massKg": 2.5275,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-iso-4017/m45-x-130/bolt-iso-4017-m45-x-130.step",
+      "bytes": 84139
+     },
+     "stl": {
+      "key": "downloads/bolt-iso-4017/m45-x-130/bolt-iso-4017-m45-x-130.stl",
+      "bytes": 151684
+     },
+     "3mf": {
+      "key": "downloads/bolt-iso-4017/m45-x-130/bolt-iso-4017-m45-x-130.3mf",
+      "bytes": 190498
+     },
+     "glb": {
+      "key": "downloads/bolt-iso-4017/m45-x-130/bolt-iso-4017-m45-x-130.glb",
+      "bytes": 85088
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m48-x-140",
+    "name": {
+     "en": "M48 × 140",
+     "ru": "M48 × 140",
+     "pl": "M48 × 140"
+    },
+    "sizeMm": [
+     170.0,
+     86.6,
+     75.0
+    ],
+    "massKg": 3.1008,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-iso-4017/m48-x-140/bolt-iso-4017-m48-x-140.step",
+      "bytes": 84011
+     },
+     "stl": {
+      "key": "downloads/bolt-iso-4017/m48-x-140/bolt-iso-4017-m48-x-140.stl",
+      "bytes": 149284
+     },
+     "3mf": {
+      "key": "downloads/bolt-iso-4017/m48-x-140/bolt-iso-4017-m48-x-140.3mf",
+      "bytes": 198402
+     },
+     "glb": {
+      "key": "downloads/bolt-iso-4017/m48-x-140/bolt-iso-4017-m48-x-140.glb",
+      "bytes": 83936
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m52-x-160",
+    "name": {
+     "en": "M(52) × 160",
+     "ru": "M(52) × 160",
+     "pl": "M(52) × 160"
+    },
+    "sizeMm": [
+     193.0,
+     92.4,
+     80.0
+    ],
+    "massKg": 4.0621,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-iso-4017/m52-x-160/bolt-iso-4017-m52-x-160.step",
+      "bytes": 83853
+     },
+     "stl": {
+      "key": "downloads/bolt-iso-4017/m52-x-160/bolt-iso-4017-m52-x-160.stl",
+      "bytes": 150884
+     },
+     "3mf": {
+      "key": "downloads/bolt-iso-4017/m52-x-160/bolt-iso-4017-m52-x-160.3mf",
+      "bytes": 194117
+     },
+     "glb": {
+      "key": "downloads/bolt-iso-4017/m52-x-160/bolt-iso-4017-m52-x-160.glb",
+      "bytes": 84704
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m56-x-160",
+    "name": {
+     "en": "M56 × 160",
+     "ru": "M56 × 160",
+     "pl": "M56 × 160"
+    },
+    "sizeMm": [
+     195.0,
+     98.2,
+     85.0
+    ],
+    "massKg": 4.7626,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-iso-4017/m56-x-160/bolt-iso-4017-m56-x-160.step",
+      "bytes": 84267
+     },
+     "stl": {
+      "key": "downloads/bolt-iso-4017/m56-x-160/bolt-iso-4017-m56-x-160.stl",
+      "bytes": 152084
+     },
+     "3mf": {
+      "key": "downloads/bolt-iso-4017/m56-x-160/bolt-iso-4017-m56-x-160.3mf",
+      "bytes": 195640
+     },
+     "glb": {
+      "key": "downloads/bolt-iso-4017/m56-x-160/bolt-iso-4017-m56-x-160.glb",
+      "bytes": 85380
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m60-x-180",
+    "name": {
+     "en": "M(60) × 180",
+     "ru": "M(60) × 180",
+     "pl": "M(60) × 180"
+    },
+    "sizeMm": [
+     218.0,
+     103.9,
+     90.0
+    ],
+    "massKg": 6.0301,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-iso-4017/m60-x-180/bolt-iso-4017-m60-x-180.step",
+      "bytes": 84265
+     },
+     "stl": {
+      "key": "downloads/bolt-iso-4017/m60-x-180/bolt-iso-4017-m60-x-180.stl",
+      "bytes": 150884
+     },
+     "3mf": {
+      "key": "downloads/bolt-iso-4017/m60-x-180/bolt-iso-4017-m60-x-180.3mf",
+      "bytes": 196526
+     },
+     "glb": {
+      "key": "downloads/bolt-iso-4017/m60-x-180/bolt-iso-4017-m60-x-180.glb",
+      "bytes": 84704
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m64-x-200",
+    "name": {
+     "en": "M64 × 200",
+     "ru": "M64 × 200",
+     "pl": "M64 × 200"
+    },
+    "sizeMm": [
+     240.0,
+     109.7,
+     95.0
+    ],
+    "massKg": 7.4352,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-iso-4017/m64-x-200/bolt-iso-4017-m64-x-200.step",
+      "bytes": 84045
+     },
+     "stl": {
+      "key": "downloads/bolt-iso-4017/m64-x-200/bolt-iso-4017-m64-x-200.stl",
+      "bytes": 150884
+     },
+     "3mf": {
+      "key": "downloads/bolt-iso-4017/m64-x-200/bolt-iso-4017-m64-x-200.3mf",
+      "bytes": 198429
+     },
+     "glb": {
+      "key": "downloads/bolt-iso-4017/m64-x-200/bolt-iso-4017-m64-x-200.glb",
+      "bytes": 84704
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m8-x-16",
+    "name": {
+     "en": "M8 × 16",
+     "ru": "M8 × 16",
+     "pl": "M8 × 16"
+    },
+    "sizeMm": [
+     21.3,
+     15.0,
+     13.0
+    ],
+    "massKg": 0.0121,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-iso-4017/m8-x-16/bolt-iso-4017-m8-x-16.step",
+      "bytes": 83035
+     },
+     "stl": {
+      "key": "downloads/bolt-iso-4017/m8-x-16/bolt-iso-4017-m8-x-16.stl",
+      "bytes": 201284
+     },
+     "3mf": {
+      "key": "downloads/bolt-iso-4017/m8-x-16/bolt-iso-4017-m8-x-16.3mf",
+      "bytes": 181221
+     },
+     "glb": {
+      "key": "downloads/bolt-iso-4017/m8-x-16/bolt-iso-4017-m8-x-16.glb",
+      "bytes": 109780
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m8-x-80",
+    "name": {
+     "en": "M8 × 80",
+     "ru": "M8 × 80",
+     "pl": "M8 × 80"
+    },
+    "sizeMm": [
+     85.3,
+     15.0,
+     13.0
+    ],
+    "massKg": 0.0372,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-iso-4017/m8-x-80/bolt-iso-4017-m8-x-80.step",
+      "bytes": 83035
+     },
+     "stl": {
+      "key": "downloads/bolt-iso-4017/m8-x-80/bolt-iso-4017-m8-x-80.stl",
+      "bytes": 135484
+     },
+     "3mf": {
+      "key": "downloads/bolt-iso-4017/m8-x-80/bolt-iso-4017-m8-x-80.3mf",
+      "bytes": 181221
+     },
+     "glb": {
+      "key": "downloads/bolt-iso-4017/m8-x-80/bolt-iso-4017-m8-x-80.glb",
+      "bytes": 73732
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m8-x-30-10_9",
+    "name": {
+     "en": "M8 × 30 · 10.9",
+     "ru": "M8 × 30 · 10.9",
+     "pl": "M8 × 30 · 10.9"
+    },
+    "sizeMm": [
+     35.3,
+     15.0,
+     13.0
+    ],
+    "massKg": 0.0176,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-iso-4017/m8-x-30-10_9/bolt-iso-4017-m8-x-30-10_9.step",
+      "bytes": 83040
+     },
+     "stl": {
+      "key": "downloads/bolt-iso-4017/m8-x-30-10_9/bolt-iso-4017-m8-x-30-10_9.stl",
+      "bytes": 151484
+     },
+     "3mf": {
+      "key": "downloads/bolt-iso-4017/m8-x-30-10_9/bolt-iso-4017-m8-x-30-10_9.3mf",
+      "bytes": 181222
+     },
+     "glb": {
+      "key": "downloads/bolt-iso-4017/m8-x-30-10_9/bolt-iso-4017-m8-x-30-10_9.glb",
+      "bytes": 84392
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m8-x-30-a2-70",
+    "name": {
+     "en": "M8 × 30 · A2-70",
+     "ru": "M8 × 30 · A2-70",
+     "pl": "M8 × 30 · A2-70"
+    },
+    "sizeMm": [
+     35.3,
+     15.0,
+     13.0
+    ],
+    "massKg": 0.0176,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-iso-4017/m8-x-30-a2-70/bolt-iso-4017-m8-x-30-a2-70.step",
+      "bytes": 83045
+     },
+     "stl": {
+      "key": "downloads/bolt-iso-4017/m8-x-30-a2-70/bolt-iso-4017-m8-x-30-a2-70.stl",
+      "bytes": 151484
+     },
+     "3mf": {
+      "key": "downloads/bolt-iso-4017/m8-x-30-a2-70/bolt-iso-4017-m8-x-30-a2-70.3mf",
+      "bytes": 181223
+     },
+     "glb": {
+      "key": "downloads/bolt-iso-4017/m8-x-30-a2-70/bolt-iso-4017-m8-x-30-a2-70.glb",
+      "bytes": 84392
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m30-x-100-a4-50",
+    "name": {
+     "en": "M30 × 100 · A4-50",
+     "ru": "M30 × 100 · A4-50",
+     "pl": "M30 × 100 · A4-50"
+    },
+    "sizeMm": [
+     118.7,
+     53.1,
+     46.0
+    ],
+    "massKg": 0.8142,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-iso-4017/m30-x-100-a4-50/bolt-iso-4017-m30-x-100-a4-50.step",
+      "bytes": 83869
+     },
+     "stl": {
+      "key": "downloads/bolt-iso-4017/m30-x-100-a4-50/bolt-iso-4017-m30-x-100-a4-50.stl",
+      "bytes": 154484
+     },
+     "3mf": {
+      "key": "downloads/bolt-iso-4017/m30-x-100-a4-50/bolt-iso-4017-m30-x-100-a4-50.3mf",
+      "bytes": 188773
+     },
+     "glb": {
+      "key": "downloads/bolt-iso-4017/m30-x-100-a4-50/bolt-iso-4017-m30-x-100-a4-50.glb",
+      "bytes": 86268
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "exact-thread",
+    "name": {
+     "en": "M8 × 30 · exact thread",
+     "ru": "M8 × 30 · настоящая резьба",
+     "pl": "M8 × 30 · gwint rzeczywisty"
+    },
+    "sizeMm": [
+     35.3,
+     15.0,
+     13.0
+    ],
+    "massKg": 0.0154,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/bolt-iso-4017/exact-thread/bolt-iso-4017-exact-thread.step",
+      "bytes": 1362534
+     },
+     "stl": {
+      "key": "downloads/bolt-iso-4017/exact-thread/bolt-iso-4017-exact-thread.stl",
+      "bytes": 1100884
+     },
+     "3mf": {
+      "key": "downloads/bolt-iso-4017/exact-thread/bolt-iso-4017-exact-thread.3mf",
+      "bytes": 851283
+     },
+     "glb": {
+      "key": "downloads/bolt-iso-4017/exact-thread/bolt-iso-4017-exact-thread.glb",
+      "bytes": 658188
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   }
+  ]
+ },
+ "nut-iso-4032": {
+  "checked": "2026-11-21",
+  "version": "0.15.197",
+  "configs": [
+   {
+    "id": "m1_6",
+    "name": {
+     "en": "M1.6",
+     "ru": "M1.6",
+     "pl": "M1.6"
+    },
+    "sizeMm": [
+     3.7,
+     3.2,
+     1.3
+    ],
+    "massKg": 0.0001,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/nut-iso-4032/m1_6/nut-iso-4032-m1_6.step",
+      "bytes": 72678
+     },
+     "stl": {
+      "key": "downloads/nut-iso-4032/m1_6/nut-iso-4032-m1_6.stl",
+      "bytes": 221684
+     },
+     "3mf": {
+      "key": "downloads/nut-iso-4032/m1_6/nut-iso-4032-m1_6.3mf",
+      "bytes": 296957
+     },
+     "glb": {
+      "key": "downloads/nut-iso-4032/m1_6/nut-iso-4032-m1_6.glb",
+      "bytes": 116052
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m2",
+    "name": {
+     "en": "M2",
+     "ru": "M2",
+     "pl": "M2"
+    },
+    "sizeMm": [
+     4.6,
+     4.0,
+     1.6
+    ],
+    "massKg": 0.0001,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/nut-iso-4032/m2/nut-iso-4032-m2.step",
+      "bytes": 72330
+     },
+     "stl": {
+      "key": "downloads/nut-iso-4032/m2/nut-iso-4032-m2.stl",
+      "bytes": 224484
+     },
+     "3mf": {
+      "key": "downloads/nut-iso-4032/m2/nut-iso-4032-m2.3mf",
+      "bytes": 300428
+     },
+     "glb": {
+      "key": "downloads/nut-iso-4032/m2/nut-iso-4032-m2.glb",
+      "bytes": 118064
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m2_5",
+    "name": {
+     "en": "M2.5",
+     "ru": "M2.5",
+     "pl": "M2.5"
+    },
+    "sizeMm": [
+     5.8,
+     5.0,
+     2.0
+    ],
+    "massKg": 0.0003,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/nut-iso-4032/m2_5/nut-iso-4032-m2_5.step",
+      "bytes": 72489
+     },
+     "stl": {
+      "key": "downloads/nut-iso-4032/m2_5/nut-iso-4032-m2_5.stl",
+      "bytes": 228484
+     },
+     "3mf": {
+      "key": "downloads/nut-iso-4032/m2_5/nut-iso-4032-m2_5.3mf",
+      "bytes": 303663
+     },
+     "glb": {
+      "key": "downloads/nut-iso-4032/m2_5/nut-iso-4032-m2_5.glb",
+      "bytes": 120948
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m3",
+    "name": {
+     "en": "M3",
+     "ru": "M3",
+     "pl": "M3"
+    },
+    "sizeMm": [
+     6.4,
+     5.5,
+     2.4
+    ],
+    "massKg": 0.0004,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/nut-iso-4032/m3/nut-iso-4032-m3.step",
+      "bytes": 72902
+     },
+     "stl": {
+      "key": "downloads/nut-iso-4032/m3/nut-iso-4032-m3.stl",
+      "bytes": 231284
+     },
+     "3mf": {
+      "key": "downloads/nut-iso-4032/m3/nut-iso-4032-m3.3mf",
+      "bytes": 303717
+     },
+     "glb": {
+      "key": "downloads/nut-iso-4032/m3/nut-iso-4032-m3.glb",
+      "bytes": 122964
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m3_5",
+    "name": {
+     "en": "M(3.5)",
+     "ru": "M(3.5)",
+     "pl": "M(3.5)"
+    },
+    "sizeMm": [
+     6.9,
+     6.0,
+     2.8
+    ],
+    "massKg": 0.0005,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/nut-iso-4032/m3_5/nut-iso-4032-m3_5.step",
+      "bytes": 72346
+     },
+     "stl": {
+      "key": "downloads/nut-iso-4032/m3_5/nut-iso-4032-m3_5.stl",
+      "bytes": 232884
+     },
+     "3mf": {
+      "key": "downloads/nut-iso-4032/m3_5/nut-iso-4032-m3_5.3mf",
+      "bytes": 303877
+     },
+     "glb": {
+      "key": "downloads/nut-iso-4032/m3_5/nut-iso-4032-m3_5.glb",
+      "bytes": 124124
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m4",
+    "name": {
+     "en": "M4",
+     "ru": "M4",
+     "pl": "M4"
+    },
+    "sizeMm": [
+     8.1,
+     7.0,
+     3.2
+    ],
+    "massKg": 0.0008,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/nut-iso-4032/m4/nut-iso-4032-m4.step",
+      "bytes": 72660
+     },
+     "stl": {
+      "key": "downloads/nut-iso-4032/m4/nut-iso-4032-m4.stl",
+      "bytes": 236084
+     },
+     "3mf": {
+      "key": "downloads/nut-iso-4032/m4/nut-iso-4032-m4.3mf",
+      "bytes": 303954
+     },
+     "glb": {
+      "key": "downloads/nut-iso-4032/m4/nut-iso-4032-m4.glb",
+      "bytes": 126424
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m5",
+    "name": {
+     "en": "M5",
+     "ru": "M5",
+     "pl": "M5"
+    },
+    "sizeMm": [
+     9.2,
+     8.0,
+     4.7
+    ],
+    "massKg": 0.0015,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/nut-iso-4032/m5/nut-iso-4032-m5.step",
+      "bytes": 72386
+     },
+     "stl": {
+      "key": "downloads/nut-iso-4032/m5/nut-iso-4032-m5.stl",
+      "bytes": 285284
+     },
+     "3mf": {
+      "key": "downloads/nut-iso-4032/m5/nut-iso-4032-m5.3mf",
+      "bytes": 303919
+     },
+     "glb": {
+      "key": "downloads/nut-iso-4032/m5/nut-iso-4032-m5.glb",
+      "bytes": 150900
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m6",
+    "name": {
+     "en": "M6",
+     "ru": "M6",
+     "pl": "M6"
+    },
+    "sizeMm": [
+     11.5,
+     10.0,
+     5.2
+    ],
+    "massKg": 0.0027,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/nut-iso-4032/m6/nut-iso-4032-m6.step",
+      "bytes": 72446
+     },
+     "stl": {
+      "key": "downloads/nut-iso-4032/m6/nut-iso-4032-m6.stl",
+      "bytes": 319284
+     },
+     "3mf": {
+      "key": "downloads/nut-iso-4032/m6/nut-iso-4032-m6.3mf",
+      "bytes": 303648
+     },
+     "glb": {
+      "key": "downloads/nut-iso-4032/m6/nut-iso-4032-m6.glb",
+      "bytes": 168468
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m8",
+    "name": {
+     "en": "M8",
+     "ru": "M8",
+     "pl": "M8"
+    },
+    "sizeMm": [
+     15.0,
+     13.0,
+     6.8
+    ],
+    "massKg": 0.0057,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/nut-iso-4032/m8/nut-iso-4032-m8.step",
+      "bytes": 72720
+     },
+     "stl": {
+      "key": "downloads/nut-iso-4032/m8/nut-iso-4032-m8.stl",
+      "bytes": 411284
+     },
+     "3mf": {
+      "key": "downloads/nut-iso-4032/m8/nut-iso-4032-m8.3mf",
+      "bytes": 303839
+     },
+     "glb": {
+      "key": "downloads/nut-iso-4032/m8/nut-iso-4032-m8.glb",
+      "bytes": 213976
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m10",
+    "name": {
+     "en": "M10",
+     "ru": "M10",
+     "pl": "M10"
+    },
+    "sizeMm": [
+     18.5,
+     16.0,
+     8.4
+    ],
+    "massKg": 0.0106,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/nut-iso-4032/m10/nut-iso-4032-m10.step",
+      "bytes": 72353
+     },
+     "stl": {
+      "key": "downloads/nut-iso-4032/m10/nut-iso-4032-m10.stl",
+      "bytes": 411284
+     },
+     "3mf": {
+      "key": "downloads/nut-iso-4032/m10/nut-iso-4032-m10.3mf",
+      "bytes": 305645
+     },
+     "glb": {
+      "key": "downloads/nut-iso-4032/m10/nut-iso-4032-m10.glb",
+      "bytes": 213976
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m12",
+    "name": {
+     "en": "M12",
+     "ru": "M12",
+     "pl": "M12"
+    },
+    "sizeMm": [
+     20.8,
+     18.0,
+     10.8
+    ],
+    "massKg": 0.0163,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/nut-iso-4032/m12/nut-iso-4032-m12.step",
+      "bytes": 72742
+     },
+     "stl": {
+      "key": "downloads/nut-iso-4032/m12/nut-iso-4032-m12.stl",
+      "bytes": 404484
+     },
+     "3mf": {
+      "key": "downloads/nut-iso-4032/m12/nut-iso-4032-m12.3mf",
+      "bytes": 306485
+     },
+     "glb": {
+      "key": "downloads/nut-iso-4032/m12/nut-iso-4032-m12.glb",
+      "bytes": 211096
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m14",
+    "name": {
+     "en": "M(14)",
+     "ru": "M(14)",
+     "pl": "M(14)"
+    },
+    "sizeMm": [
+     24.2,
+     21.0,
+     12.8
+    ],
+    "massKg": 0.0263,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/nut-iso-4032/m14/nut-iso-4032-m14.step",
+      "bytes": 73084
+     },
+     "stl": {
+      "key": "downloads/nut-iso-4032/m14/nut-iso-4032-m14.stl",
+      "bytes": 404484
+     },
+     "3mf": {
+      "key": "downloads/nut-iso-4032/m14/nut-iso-4032-m14.3mf",
+      "bytes": 307091
+     },
+     "glb": {
+      "key": "downloads/nut-iso-4032/m14/nut-iso-4032-m14.glb",
+      "bytes": 211096
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m16",
+    "name": {
+     "en": "M16",
+     "ru": "M16",
+     "pl": "M16"
+    },
+    "sizeMm": [
+     27.7,
+     24.0,
+     14.8
+    ],
+    "massKg": 0.0391,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/nut-iso-4032/m16/nut-iso-4032-m16.step",
+      "bytes": 73120
+     },
+     "stl": {
+      "key": "downloads/nut-iso-4032/m16/nut-iso-4032-m16.stl",
+      "bytes": 404484
+     },
+     "3mf": {
+      "key": "downloads/nut-iso-4032/m16/nut-iso-4032-m16.3mf",
+      "bytes": 307928
+     },
+     "glb": {
+      "key": "downloads/nut-iso-4032/m16/nut-iso-4032-m16.glb",
+      "bytes": 211096
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m18",
+    "name": {
+     "en": "M(18)",
+     "ru": "M(18)",
+     "pl": "M(18)"
+    },
+    "sizeMm": [
+     31.2,
+     27.0,
+     15.8
+    ],
+    "massKg": 0.0534,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/nut-iso-4032/m18/nut-iso-4032-m18.step",
+      "bytes": 73490
+     },
+     "stl": {
+      "key": "downloads/nut-iso-4032/m18/nut-iso-4032-m18.stl",
+      "bytes": 412884
+     },
+     "3mf": {
+      "key": "downloads/nut-iso-4032/m18/nut-iso-4032-m18.3mf",
+      "bytes": 311799
+     },
+     "glb": {
+      "key": "downloads/nut-iso-4032/m18/nut-iso-4032-m18.glb",
+      "bytes": 215128
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m20",
+    "name": {
+     "en": "M20",
+     "ru": "M20",
+     "pl": "M20"
+    },
+    "sizeMm": [
+     34.6,
+     30.0,
+     18.0
+    ],
+    "massKg": 0.0741,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/nut-iso-4032/m20/nut-iso-4032-m20.step",
+      "bytes": 73183
+     },
+     "stl": {
+      "key": "downloads/nut-iso-4032/m20/nut-iso-4032-m20.stl",
+      "bytes": 404484
+     },
+     "3mf": {
+      "key": "downloads/nut-iso-4032/m20/nut-iso-4032-m20.3mf",
+      "bytes": 313196
+     },
+     "glb": {
+      "key": "downloads/nut-iso-4032/m20/nut-iso-4032-m20.glb",
+      "bytes": 211096
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m22",
+    "name": {
+     "en": "M(22)",
+     "ru": "M(22)",
+     "pl": "M(22)"
+    },
+    "sizeMm": [
+     39.3,
+     34.0,
+     19.4
+    ],
+    "massKg": 0.1042,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/nut-iso-4032/m22/nut-iso-4032-m22.step",
+      "bytes": 73388
+     },
+     "stl": {
+      "key": "downloads/nut-iso-4032/m22/nut-iso-4032-m22.stl",
+      "bytes": 412884
+     },
+     "3mf": {
+      "key": "downloads/nut-iso-4032/m22/nut-iso-4032-m22.3mf",
+      "bytes": 313564
+     },
+     "glb": {
+      "key": "downloads/nut-iso-4032/m22/nut-iso-4032-m22.glb",
+      "bytes": 215128
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m24",
+    "name": {
+     "en": "M24",
+     "ru": "M24",
+     "pl": "M24"
+    },
+    "sizeMm": [
+     41.6,
+     36.0,
+     21.5
+    ],
+    "massKg": 0.1275,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/nut-iso-4032/m24/nut-iso-4032-m24.step",
+      "bytes": 73376
+     },
+     "stl": {
+      "key": "downloads/nut-iso-4032/m24/nut-iso-4032-m24.stl",
+      "bytes": 404484
+     },
+     "3mf": {
+      "key": "downloads/nut-iso-4032/m24/nut-iso-4032-m24.3mf",
+      "bytes": 314770
+     },
+     "glb": {
+      "key": "downloads/nut-iso-4032/m24/nut-iso-4032-m24.glb",
+      "bytes": 211096
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m27",
+    "name": {
+     "en": "M(27)",
+     "ru": "M(27)",
+     "pl": "M(27)"
+    },
+    "sizeMm": [
+     47.3,
+     41.0,
+     23.8
+    ],
+    "massKg": 0.1825,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/nut-iso-4032/m27/nut-iso-4032-m27.step",
+      "bytes": 73742
+     },
+     "stl": {
+      "key": "downloads/nut-iso-4032/m27/nut-iso-4032-m27.stl",
+      "bytes": 412884
+     },
+     "3mf": {
+      "key": "downloads/nut-iso-4032/m27/nut-iso-4032-m27.3mf",
+      "bytes": 319817
+     },
+     "glb": {
+      "key": "downloads/nut-iso-4032/m27/nut-iso-4032-m27.glb",
+      "bytes": 215128
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m30",
+    "name": {
+     "en": "M30",
+     "ru": "M30",
+     "pl": "M30"
+    },
+    "sizeMm": [
+     53.1,
+     46.0,
+     25.6
+    ],
+    "massKg": 0.2503,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/nut-iso-4032/m30/nut-iso-4032-m30.step",
+      "bytes": 73512
+     },
+     "stl": {
+      "key": "downloads/nut-iso-4032/m30/nut-iso-4032-m30.stl",
+      "bytes": 412884
+     },
+     "3mf": {
+      "key": "downloads/nut-iso-4032/m30/nut-iso-4032-m30.3mf",
+      "bytes": 320826
+     },
+     "glb": {
+      "key": "downloads/nut-iso-4032/m30/nut-iso-4032-m30.glb",
+      "bytes": 215128
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m33",
+    "name": {
+     "en": "M(33)",
+     "ru": "M(33)",
+     "pl": "M(33)"
+    },
+    "sizeMm": [
+     57.7,
+     50.0,
+     28.7
+    ],
+    "massKg": 0.3249,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/nut-iso-4032/m33/nut-iso-4032-m33.step",
+      "bytes": 73568
+     },
+     "stl": {
+      "key": "downloads/nut-iso-4032/m33/nut-iso-4032-m33.stl",
+      "bytes": 412884
+     },
+     "3mf": {
+      "key": "downloads/nut-iso-4032/m33/nut-iso-4032-m33.3mf",
+      "bytes": 324026
+     },
+     "glb": {
+      "key": "downloads/nut-iso-4032/m33/nut-iso-4032-m33.glb",
+      "bytes": 215128
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m36",
+    "name": {
+     "en": "M36",
+     "ru": "M36",
+     "pl": "M36"
+    },
+    "sizeMm": [
+     63.5,
+     55.0,
+     31.0
+    ],
+    "massKg": 0.4298,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/nut-iso-4032/m36/nut-iso-4032-m36.step",
+      "bytes": 73597
+     },
+     "stl": {
+      "key": "downloads/nut-iso-4032/m36/nut-iso-4032-m36.stl",
+      "bytes": 412884
+     },
+     "3mf": {
+      "key": "downloads/nut-iso-4032/m36/nut-iso-4032-m36.3mf",
+      "bytes": 323986
+     },
+     "glb": {
+      "key": "downloads/nut-iso-4032/m36/nut-iso-4032-m36.glb",
+      "bytes": 215124
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m39",
+    "name": {
+     "en": "M(39)",
+     "ru": "M(39)",
+     "pl": "M(39)"
+    },
+    "sizeMm": [
+     69.3,
+     60.0,
+     33.4
+    ],
+    "massKg": 0.55,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/nut-iso-4032/m39/nut-iso-4032-m39.step",
+      "bytes": 73560
+     },
+     "stl": {
+      "key": "downloads/nut-iso-4032/m39/nut-iso-4032-m39.stl",
+      "bytes": 412884
+     },
+     "3mf": {
+      "key": "downloads/nut-iso-4032/m39/nut-iso-4032-m39.3mf",
+      "bytes": 326664
+     },
+     "glb": {
+      "key": "downloads/nut-iso-4032/m39/nut-iso-4032-m39.glb",
+      "bytes": 215128
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m42",
+    "name": {
+     "en": "M42",
+     "ru": "M42",
+     "pl": "M42"
+    },
+    "sizeMm": [
+     75.1,
+     65.0,
+     34.0
+    ],
+    "massKg": 0.662,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/nut-iso-4032/m42/nut-iso-4032-m42.step",
+      "bytes": 73857
+     },
+     "stl": {
+      "key": "downloads/nut-iso-4032/m42/nut-iso-4032-m42.stl",
+      "bytes": 412884
+     },
+     "3mf": {
+      "key": "downloads/nut-iso-4032/m42/nut-iso-4032-m42.3mf",
+      "bytes": 328125
+     },
+     "glb": {
+      "key": "downloads/nut-iso-4032/m42/nut-iso-4032-m42.glb",
+      "bytes": 215116
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m45",
+    "name": {
+     "en": "M(45)",
+     "ru": "M(45)",
+     "pl": "M(45)"
+    },
+    "sizeMm": [
+     80.8,
+     70.0,
+     36.0
+    ],
+    "massKg": 0.8108,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/nut-iso-4032/m45/nut-iso-4032-m45.step",
+      "bytes": 73583
+     },
+     "stl": {
+      "key": "downloads/nut-iso-4032/m45/nut-iso-4032-m45.stl",
+      "bytes": 412884
+     },
+     "3mf": {
+      "key": "downloads/nut-iso-4032/m45/nut-iso-4032-m45.3mf",
+      "bytes": 328385
+     },
+     "glb": {
+      "key": "downloads/nut-iso-4032/m45/nut-iso-4032-m45.glb",
+      "bytes": 215112
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m48",
+    "name": {
+     "en": "M48",
+     "ru": "M48",
+     "pl": "M48"
+    },
+    "sizeMm": [
+     86.6,
+     75.0,
+     38.0
+    ],
+    "massKg": 0.9897,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/nut-iso-4032/m48/nut-iso-4032-m48.step",
+      "bytes": 73605
+     },
+     "stl": {
+      "key": "downloads/nut-iso-4032/m48/nut-iso-4032-m48.stl",
+      "bytes": 412884
+     },
+     "3mf": {
+      "key": "downloads/nut-iso-4032/m48/nut-iso-4032-m48.3mf",
+      "bytes": 330766
+     },
+     "glb": {
+      "key": "downloads/nut-iso-4032/m48/nut-iso-4032-m48.glb",
+      "bytes": 215112
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m52",
+    "name": {
+     "en": "M(52)",
+     "ru": "M(52)",
+     "pl": "M(52)"
+    },
+    "sizeMm": [
+     92.4,
+     80.0,
+     42.0
+    ],
+    "massKg": 1.2193,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/nut-iso-4032/m52/nut-iso-4032-m52.step",
+      "bytes": 73479
+     },
+     "stl": {
+      "key": "downloads/nut-iso-4032/m52/nut-iso-4032-m52.stl",
+      "bytes": 412884
+     },
+     "3mf": {
+      "key": "downloads/nut-iso-4032/m52/nut-iso-4032-m52.3mf",
+      "bytes": 330766
+     },
+     "glb": {
+      "key": "downloads/nut-iso-4032/m52/nut-iso-4032-m52.glb",
+      "bytes": 215112
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m56",
+    "name": {
+     "en": "M56",
+     "ru": "M56",
+     "pl": "M56"
+    },
+    "sizeMm": [
+     98.2,
+     85.0,
+     45.0
+    ],
+    "massKg": 1.459,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/nut-iso-4032/m56/nut-iso-4032-m56.step",
+      "bytes": 73905
+     },
+     "stl": {
+      "key": "downloads/nut-iso-4032/m56/nut-iso-4032-m56.stl",
+      "bytes": 412884
+     },
+     "3mf": {
+      "key": "downloads/nut-iso-4032/m56/nut-iso-4032-m56.3mf",
+      "bytes": 335081
+     },
+     "glb": {
+      "key": "downloads/nut-iso-4032/m56/nut-iso-4032-m56.glb",
+      "bytes": 215116
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m60",
+    "name": {
+     "en": "M(60)",
+     "ru": "M(60)",
+     "pl": "M(60)"
+    },
+    "sizeMm": [
+     103.9,
+     90.0,
+     48.0
+    ],
+    "massKg": 1.7127,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/nut-iso-4032/m60/nut-iso-4032-m60.step",
+      "bytes": 73579
+     },
+     "stl": {
+      "key": "downloads/nut-iso-4032/m60/nut-iso-4032-m60.stl",
+      "bytes": 412884
+     },
+     "3mf": {
+      "key": "downloads/nut-iso-4032/m60/nut-iso-4032-m60.3mf",
+      "bytes": 334393
+     },
+     "glb": {
+      "key": "downloads/nut-iso-4032/m60/nut-iso-4032-m60.glb",
+      "bytes": 215112
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m64",
+    "name": {
+     "en": "M64",
+     "ru": "M64",
+     "pl": "M64"
+    },
+    "sizeMm": [
+     109.7,
+     95.0,
+     51.0
+    ],
+    "massKg": 2.0101,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/nut-iso-4032/m64/nut-iso-4032-m64.step",
+      "bytes": 73887
+     },
+     "stl": {
+      "key": "downloads/nut-iso-4032/m64/nut-iso-4032-m64.stl",
+      "bytes": 412884
+     },
+     "3mf": {
+      "key": "downloads/nut-iso-4032/m64/nut-iso-4032-m64.3mf",
+      "bytes": 335867
+     },
+     "glb": {
+      "key": "downloads/nut-iso-4032/m64/nut-iso-4032-m64.glb",
+      "bytes": 215112
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m8-class-10",
+    "name": {
+     "en": "M8 · class 10",
+     "ru": "M8 · класс 10",
+     "pl": "M8 · klasa 10"
+    },
+    "sizeMm": [
+     15.0,
+     13.0,
+     6.8
+    ],
+    "massKg": 0.0057,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/nut-iso-4032/m8-class-10/nut-iso-4032-m8-class-10.step",
+      "bytes": 72725
+     },
+     "stl": {
+      "key": "downloads/nut-iso-4032/m8-class-10/nut-iso-4032-m8-class-10.stl",
+      "bytes": 411284
+     },
+     "3mf": {
+      "key": "downloads/nut-iso-4032/m8-class-10/nut-iso-4032-m8-class-10.3mf",
+      "bytes": 303840
+     },
+     "glb": {
+      "key": "downloads/nut-iso-4032/m8-class-10/nut-iso-4032-m8-class-10.glb",
+      "bytes": 213976
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m8-a2-70",
+    "name": {
+     "en": "M8 · A2-70",
+     "ru": "M8 · A2-70",
+     "pl": "M8 · A2-70"
+    },
+    "sizeMm": [
+     15.0,
+     13.0,
+     6.8
+    ],
+    "massKg": 0.0057,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/nut-iso-4032/m8-a2-70/nut-iso-4032-m8-a2-70.step",
+      "bytes": 72740
+     },
+     "stl": {
+      "key": "downloads/nut-iso-4032/m8-a2-70/nut-iso-4032-m8-a2-70.stl",
+      "bytes": 411284
+     },
+     "3mf": {
+      "key": "downloads/nut-iso-4032/m8-a2-70/nut-iso-4032-m8-a2-70.3mf",
+      "bytes": 303843
+     },
+     "glb": {
+      "key": "downloads/nut-iso-4032/m8-a2-70/nut-iso-4032-m8-a2-70.glb",
+      "bytes": 213988
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m30-a4-50",
+    "name": {
+     "en": "M30 · A4-50",
+     "ru": "M30 · A4-50",
+     "pl": "M30 · A4-50"
+    },
+    "sizeMm": [
+     53.1,
+     46.0,
+     25.6
+    ],
+    "massKg": 0.2503,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/nut-iso-4032/m30-a4-50/nut-iso-4032-m30-a4-50.step",
+      "bytes": 73532
+     },
+     "stl": {
+      "key": "downloads/nut-iso-4032/m30-a4-50/nut-iso-4032-m30-a4-50.stl",
+      "bytes": 412884
+     },
+     "3mf": {
+      "key": "downloads/nut-iso-4032/m30-a4-50/nut-iso-4032-m30-a4-50.3mf",
+      "bytes": 320830
+     },
+     "glb": {
+      "key": "downloads/nut-iso-4032/m30-a4-50/nut-iso-4032-m30-a4-50.glb",
+      "bytes": 215140
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "exact-thread",
+    "name": {
+     "en": "M8 · exact thread",
+     "ru": "M8 · настоящая резьба",
+     "pl": "M8 · gwint rzeczywisty"
+    },
+    "sizeMm": [
+     15.0,
+     13.0,
+     6.8
+    ],
+    "massKg": 0.0053,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/nut-iso-4032/exact-thread/nut-iso-4032-exact-thread.step",
+      "bytes": 346563
+     },
+     "stl": {
+      "key": "downloads/nut-iso-4032/exact-thread/nut-iso-4032-exact-thread.stl",
+      "bytes": 691284
+     },
+     "3mf": {
+      "key": "downloads/nut-iso-4032/exact-thread/nut-iso-4032-exact-thread.3mf",
+      "bytes": 421672
+     },
+     "glb": {
+      "key": "downloads/nut-iso-4032/exact-thread/nut-iso-4032-exact-thread.glb",
+      "bytes": 379148
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   }
+  ]
+ },
+ "washer-iso-7089": {
+  "checked": "2026-11-21",
+  "version": "0.15.197",
+  "configs": [
+   {
+    "id": "m1_6",
+    "name": {
+     "en": "M1.6",
+     "ru": "M1.6",
+     "pl": "M1.6"
+    },
+    "sizeMm": [
+     4.0,
+     4.0,
+     0.3
+    ],
+    "massKg": 0.0,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/washer-iso-7089/m1_6/washer-iso-7089-m1_6.step",
+      "bytes": 4501
+     },
+     "stl": {
+      "key": "downloads/washer-iso-7089/m1_6/washer-iso-7089-m1_6.stl",
+      "bytes": 16684
+     },
+     "3mf": {
+      "key": "downloads/washer-iso-7089/m1_6/washer-iso-7089-m1_6.3mf",
+      "bytes": 11994
+     },
+     "glb": {
+      "key": "downloads/washer-iso-7089/m1_6/washer-iso-7089-m1_6.glb",
+      "bytes": 13184
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m2",
+    "name": {
+     "en": "M2",
+     "ru": "M2",
+     "pl": "M2"
+    },
+    "sizeMm": [
+     5.0,
+     5.0,
+     0.3
+    ],
+    "massKg": 0.0,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/washer-iso-7089/m2/washer-iso-7089-m2.step",
+      "bytes": 4491
+     },
+     "stl": {
+      "key": "downloads/washer-iso-7089/m2/washer-iso-7089-m2.stl",
+      "bytes": 18684
+     },
+     "3mf": {
+      "key": "downloads/washer-iso-7089/m2/washer-iso-7089-m2.3mf",
+      "bytes": 14626
+     },
+     "glb": {
+      "key": "downloads/washer-iso-7089/m2/washer-iso-7089-m2.glb",
+      "bytes": 14624
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m2_5",
+    "name": {
+     "en": "M2.5",
+     "ru": "M2.5",
+     "pl": "M2.5"
+    },
+    "sizeMm": [
+     6.0,
+     6.0,
+     0.5
+    ],
+    "massKg": 0.0001,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/washer-iso-7089/m2_5/washer-iso-7089-m2_5.step",
+      "bytes": 4501
+     },
+     "stl": {
+      "key": "downloads/washer-iso-7089/m2_5/washer-iso-7089-m2_5.stl",
+      "bytes": 20484
+     },
+     "3mf": {
+      "key": "downloads/washer-iso-7089/m2_5/washer-iso-7089-m2_5.3mf",
+      "bytes": 14648
+     },
+     "glb": {
+      "key": "downloads/washer-iso-7089/m2_5/washer-iso-7089-m2_5.glb",
+      "bytes": 15924
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m3",
+    "name": {
+     "en": "M3",
+     "ru": "M3",
+     "pl": "M3"
+    },
+    "sizeMm": [
+     7.0,
+     7.0,
+     0.5
+    ],
+    "massKg": 0.0001,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/washer-iso-7089/m3/washer-iso-7089-m3.step",
+      "bytes": 4491
+     },
+     "stl": {
+      "key": "downloads/washer-iso-7089/m3/washer-iso-7089-m3.stl",
+      "bytes": 22284
+     },
+     "3mf": {
+      "key": "downloads/washer-iso-7089/m3/washer-iso-7089-m3.3mf",
+      "bytes": 14605
+     },
+     "glb": {
+      "key": "downloads/washer-iso-7089/m3/washer-iso-7089-m3.glb",
+      "bytes": 17216
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m3_5",
+    "name": {
+     "en": "M(3.5)",
+     "ru": "M(3.5)",
+     "pl": "M(3.5)"
+    },
+    "sizeMm": [
+     8.0,
+     8.0,
+     0.5
+    ],
+    "massKg": 0.0002,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/washer-iso-7089/m3_5/washer-iso-7089-m3_5.step",
+      "bytes": 4501
+     },
+     "stl": {
+      "key": "downloads/washer-iso-7089/m3_5/washer-iso-7089-m3_5.stl",
+      "bytes": 23884
+     },
+     "3mf": {
+      "key": "downloads/washer-iso-7089/m3_5/washer-iso-7089-m3_5.3mf",
+      "bytes": 14653
+     },
+     "glb": {
+      "key": "downloads/washer-iso-7089/m3_5/washer-iso-7089-m3_5.glb",
+      "bytes": 18368
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m4",
+    "name": {
+     "en": "M4",
+     "ru": "M4",
+     "pl": "M4"
+    },
+    "sizeMm": [
+     9.0,
+     9.0,
+     0.8
+    ],
+    "massKg": 0.0003,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/washer-iso-7089/m4/washer-iso-7089-m4.step",
+      "bytes": 4497
+     },
+     "stl": {
+      "key": "downloads/washer-iso-7089/m4/washer-iso-7089-m4.stl",
+      "bytes": 25484
+     },
+     "3mf": {
+      "key": "downloads/washer-iso-7089/m4/washer-iso-7089-m4.3mf",
+      "bytes": 14635
+     },
+     "glb": {
+      "key": "downloads/washer-iso-7089/m4/washer-iso-7089-m4.glb",
+      "bytes": 19516
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m5",
+    "name": {
+     "en": "M5",
+     "ru": "M5",
+     "pl": "M5"
+    },
+    "sizeMm": [
+     10.0,
+     10.0,
+     1.0
+    ],
+    "massKg": 0.0004,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/washer-iso-7089/m5/washer-iso-7089-m5.step",
+      "bytes": 4484
+     },
+     "stl": {
+      "key": "downloads/washer-iso-7089/m5/washer-iso-7089-m5.stl",
+      "bytes": 27484
+     },
+     "3mf": {
+      "key": "downloads/washer-iso-7089/m5/washer-iso-7089-m5.3mf",
+      "bytes": 14523
+     },
+     "glb": {
+      "key": "downloads/washer-iso-7089/m5/washer-iso-7089-m5.glb",
+      "bytes": 20956
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m6",
+    "name": {
+     "en": "M6",
+     "ru": "M6",
+     "pl": "M6"
+    },
+    "sizeMm": [
+     12.0,
+     12.0,
+     1.6
+    ],
+    "massKg": 0.001,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/washer-iso-7089/m6/washer-iso-7089-m6.step",
+      "bytes": 4485
+     },
+     "stl": {
+      "key": "downloads/washer-iso-7089/m6/washer-iso-7089-m6.stl",
+      "bytes": 30084
+     },
+     "3mf": {
+      "key": "downloads/washer-iso-7089/m6/washer-iso-7089-m6.3mf",
+      "bytes": 14631
+     },
+     "glb": {
+      "key": "downloads/washer-iso-7089/m6/washer-iso-7089-m6.glb",
+      "bytes": 22828
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m8",
+    "name": {
+     "en": "M8",
+     "ru": "M8",
+     "pl": "M8"
+    },
+    "sizeMm": [
+     16.0,
+     16.0,
+     1.6
+    ],
+    "massKg": 0.0018,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/washer-iso-7089/m8/washer-iso-7089-m8.step",
+      "bytes": 4485
+     },
+     "stl": {
+      "key": "downloads/washer-iso-7089/m8/washer-iso-7089-m8.stl",
+      "bytes": 32484
+     },
+     "3mf": {
+      "key": "downloads/washer-iso-7089/m8/washer-iso-7089-m8.3mf",
+      "bytes": 14647
+     },
+     "glb": {
+      "key": "downloads/washer-iso-7089/m8/washer-iso-7089-m8.glb",
+      "bytes": 24552
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m10",
+    "name": {
+     "en": "M10",
+     "ru": "M10",
+     "pl": "M10"
+    },
+    "sizeMm": [
+     20.0,
+     20.0,
+     2.0
+    ],
+    "massKg": 0.0036,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/washer-iso-7089/m10/washer-iso-7089-m10.step",
+      "bytes": 4495
+     },
+     "stl": {
+      "key": "downloads/washer-iso-7089/m10/washer-iso-7089-m10.stl",
+      "bytes": 32484
+     },
+     "3mf": {
+      "key": "downloads/washer-iso-7089/m10/washer-iso-7089-m10.3mf",
+      "bytes": 15364
+     },
+     "glb": {
+      "key": "downloads/washer-iso-7089/m10/washer-iso-7089-m10.glb",
+      "bytes": 24560
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m12",
+    "name": {
+     "en": "M12",
+     "ru": "M12",
+     "pl": "M12"
+    },
+    "sizeMm": [
+     24.0,
+     24.0,
+     2.5
+    ],
+    "massKg": 0.0063,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/washer-iso-7089/m12/washer-iso-7089-m12.step",
+      "bytes": 4496
+     },
+     "stl": {
+      "key": "downloads/washer-iso-7089/m12/washer-iso-7089-m12.stl",
+      "bytes": 32684
+     },
+     "3mf": {
+      "key": "downloads/washer-iso-7089/m12/washer-iso-7089-m12.3mf",
+      "bytes": 16037
+     },
+     "glb": {
+      "key": "downloads/washer-iso-7089/m12/washer-iso-7089-m12.glb",
+      "bytes": 24704
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m14",
+    "name": {
+     "en": "M(14)",
+     "ru": "M(14)",
+     "pl": "M(14)"
+    },
+    "sizeMm": [
+     28.0,
+     28.0,
+     2.5
+    ],
+    "massKg": 0.0086,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/washer-iso-7089/m14/washer-iso-7089-m14.step",
+      "bytes": 4496
+     },
+     "stl": {
+      "key": "downloads/washer-iso-7089/m14/washer-iso-7089-m14.stl",
+      "bytes": 32684
+     },
+     "3mf": {
+      "key": "downloads/washer-iso-7089/m14/washer-iso-7089-m14.3mf",
+      "bytes": 16885
+     },
+     "glb": {
+      "key": "downloads/washer-iso-7089/m14/washer-iso-7089-m14.glb",
+      "bytes": 24704
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m16",
+    "name": {
+     "en": "M16",
+     "ru": "M16",
+     "pl": "M16"
+    },
+    "sizeMm": [
+     30.0,
+     30.0,
+     3.0
+    ],
+    "massKg": 0.0113,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/washer-iso-7089/m16/washer-iso-7089-m16.step",
+      "bytes": 4489
+     },
+     "stl": {
+      "key": "downloads/washer-iso-7089/m16/washer-iso-7089-m16.stl",
+      "bytes": 33084
+     },
+     "3mf": {
+      "key": "downloads/washer-iso-7089/m16/washer-iso-7089-m16.3mf",
+      "bytes": 17053
+     },
+     "glb": {
+      "key": "downloads/washer-iso-7089/m16/washer-iso-7089-m16.glb",
+      "bytes": 24988
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m18",
+    "name": {
+     "en": "M(18)",
+     "ru": "M(18)",
+     "pl": "M(18)"
+    },
+    "sizeMm": [
+     34.0,
+     34.0,
+     3.0
+    ],
+    "massKg": 0.0147,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/washer-iso-7089/m18/washer-iso-7089-m18.step",
+      "bytes": 4489
+     },
+     "stl": {
+      "key": "downloads/washer-iso-7089/m18/washer-iso-7089-m18.stl",
+      "bytes": 32884
+     },
+     "3mf": {
+      "key": "downloads/washer-iso-7089/m18/washer-iso-7089-m18.3mf",
+      "bytes": 18043
+     },
+     "glb": {
+      "key": "downloads/washer-iso-7089/m18/washer-iso-7089-m18.glb",
+      "bytes": 24844
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m20",
+    "name": {
+     "en": "M20",
+     "ru": "M20",
+     "pl": "M20"
+    },
+    "sizeMm": [
+     37.0,
+     37.0,
+     3.0
+    ],
+    "massKg": 0.0172,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/washer-iso-7089/m20/washer-iso-7089-m20.step",
+      "bytes": 4501
+     },
+     "stl": {
+      "key": "downloads/washer-iso-7089/m20/washer-iso-7089-m20.stl",
+      "bytes": 33084
+     },
+     "3mf": {
+      "key": "downloads/washer-iso-7089/m20/washer-iso-7089-m20.3mf",
+      "bytes": 18966
+     },
+     "glb": {
+      "key": "downloads/washer-iso-7089/m20/washer-iso-7089-m20.glb",
+      "bytes": 24988
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m22",
+    "name": {
+     "en": "M(22)",
+     "ru": "M(22)",
+     "pl": "M(22)"
+    },
+    "sizeMm": [
+     39.0,
+     39.0,
+     3.0
+    ],
+    "massKg": 0.0183,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/washer-iso-7089/m22/washer-iso-7089-m22.step",
+      "bytes": 4501
+     },
+     "stl": {
+      "key": "downloads/washer-iso-7089/m22/washer-iso-7089-m22.stl",
+      "bytes": 33284
+     },
+     "3mf": {
+      "key": "downloads/washer-iso-7089/m22/washer-iso-7089-m22.3mf",
+      "bytes": 19752
+     },
+     "glb": {
+      "key": "downloads/washer-iso-7089/m22/washer-iso-7089-m22.glb",
+      "bytes": 25132
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m24",
+    "name": {
+     "en": "M24",
+     "ru": "M24",
+     "pl": "M24"
+    },
+    "sizeMm": [
+     44.0,
+     44.0,
+     4.0
+    ],
+    "massKg": 0.0323,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/washer-iso-7089/m24/washer-iso-7089-m24.step",
+      "bytes": 4495
+     },
+     "stl": {
+      "key": "downloads/washer-iso-7089/m24/washer-iso-7089-m24.stl",
+      "bytes": 33084
+     },
+     "3mf": {
+      "key": "downloads/washer-iso-7089/m24/washer-iso-7089-m24.3mf",
+      "bytes": 20515
+     },
+     "glb": {
+      "key": "downloads/washer-iso-7089/m24/washer-iso-7089-m24.glb",
+      "bytes": 24988
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m27",
+    "name": {
+     "en": "M(27)",
+     "ru": "M(27)",
+     "pl": "M(27)"
+    },
+    "sizeMm": [
+     50.0,
+     50.0,
+     4.0
+    ],
+    "massKg": 0.0423,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/washer-iso-7089/m27/washer-iso-7089-m27.step",
+      "bytes": 4489
+     },
+     "stl": {
+      "key": "downloads/washer-iso-7089/m27/washer-iso-7089-m27.stl",
+      "bytes": 32884
+     },
+     "3mf": {
+      "key": "downloads/washer-iso-7089/m27/washer-iso-7089-m27.3mf",
+      "bytes": 21974
+     },
+     "glb": {
+      "key": "downloads/washer-iso-7089/m27/washer-iso-7089-m27.glb",
+      "bytes": 24844
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m30",
+    "name": {
+     "en": "M30",
+     "ru": "M30",
+     "pl": "M30"
+    },
+    "sizeMm": [
+     56.0,
+     56.0,
+     4.0
+    ],
+    "massKg": 0.0536,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/washer-iso-7089/m30/washer-iso-7089-m30.step",
+      "bytes": 4495
+     },
+     "stl": {
+      "key": "downloads/washer-iso-7089/m30/washer-iso-7089-m30.stl",
+      "bytes": 32884
+     },
+     "3mf": {
+      "key": "downloads/washer-iso-7089/m30/washer-iso-7089-m30.3mf",
+      "bytes": 22968
+     },
+     "glb": {
+      "key": "downloads/washer-iso-7089/m30/washer-iso-7089-m30.glb",
+      "bytes": 24844
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m33",
+    "name": {
+     "en": "M(33)",
+     "ru": "M(33)",
+     "pl": "M(33)"
+    },
+    "sizeMm": [
+     60.0,
+     60.0,
+     5.0
+    ],
+    "massKg": 0.0753,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/washer-iso-7089/m33/washer-iso-7089-m33.step",
+      "bytes": 4489
+     },
+     "stl": {
+      "key": "downloads/washer-iso-7089/m33/washer-iso-7089-m33.stl",
+      "bytes": 33084
+     },
+     "3mf": {
+      "key": "downloads/washer-iso-7089/m33/washer-iso-7089-m33.3mf",
+      "bytes": 23920
+     },
+     "glb": {
+      "key": "downloads/washer-iso-7089/m33/washer-iso-7089-m33.glb",
+      "bytes": 24988
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m36",
+    "name": {
+     "en": "M36",
+     "ru": "M36",
+     "pl": "M36"
+    },
+    "sizeMm": [
+     66.0,
+     66.0,
+     5.0
+    ],
+    "massKg": 0.092,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/washer-iso-7089/m36/washer-iso-7089-m36.step",
+      "bytes": 4495
+     },
+     "stl": {
+      "key": "downloads/washer-iso-7089/m36/washer-iso-7089-m36.stl",
+      "bytes": 32884
+     },
+     "3mf": {
+      "key": "downloads/washer-iso-7089/m36/washer-iso-7089-m36.3mf",
+      "bytes": 25224
+     },
+     "glb": {
+      "key": "downloads/washer-iso-7089/m36/washer-iso-7089-m36.glb",
+      "bytes": 24844
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m39",
+    "name": {
+     "en": "M(39)",
+     "ru": "M(39)",
+     "pl": "M(39)"
+    },
+    "sizeMm": [
+     72.0,
+     72.0,
+     6.0
+    ],
+    "massKg": 0.1265,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/washer-iso-7089/m39/washer-iso-7089-m39.step",
+      "bytes": 4489
+     },
+     "stl": {
+      "key": "downloads/washer-iso-7089/m39/washer-iso-7089-m39.stl",
+      "bytes": 33284
+     },
+     "3mf": {
+      "key": "downloads/washer-iso-7089/m39/washer-iso-7089-m39.3mf",
+      "bytes": 26335
+     },
+     "glb": {
+      "key": "downloads/washer-iso-7089/m39/washer-iso-7089-m39.glb",
+      "bytes": 25132
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m42",
+    "name": {
+     "en": "M42",
+     "ru": "M42",
+     "pl": "M42"
+    },
+    "sizeMm": [
+     78.0,
+     78.0,
+     8.0
+    ],
+    "massKg": 0.2001,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/washer-iso-7089/m42/washer-iso-7089-m42.step",
+      "bytes": 4495
+     },
+     "stl": {
+      "key": "downloads/washer-iso-7089/m42/washer-iso-7089-m42.stl",
+      "bytes": 33084
+     },
+     "3mf": {
+      "key": "downloads/washer-iso-7089/m42/washer-iso-7089-m42.3mf",
+      "bytes": 27407
+     },
+     "glb": {
+      "key": "downloads/washer-iso-7089/m42/washer-iso-7089-m42.glb",
+      "bytes": 24988
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m45",
+    "name": {
+     "en": "M(45)",
+     "ru": "M(45)",
+     "pl": "M(45)"
+    },
+    "sizeMm": [
+     85.0,
+     85.0,
+     8.0
+    ],
+    "massKg": 0.2426,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/washer-iso-7089/m45/washer-iso-7089-m45.step",
+      "bytes": 4495
+     },
+     "stl": {
+      "key": "downloads/washer-iso-7089/m45/washer-iso-7089-m45.stl",
+      "bytes": 33084
+     },
+     "3mf": {
+      "key": "downloads/washer-iso-7089/m45/washer-iso-7089-m45.3mf",
+      "bytes": 28222
+     },
+     "glb": {
+      "key": "downloads/washer-iso-7089/m45/washer-iso-7089-m45.glb",
+      "bytes": 24988
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m48",
+    "name": {
+     "en": "M48",
+     "ru": "M48",
+     "pl": "M48"
+    },
+    "sizeMm": [
+     92.0,
+     91.9,
+     8.0
+    ],
+    "massKg": 0.284,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/washer-iso-7089/m48/washer-iso-7089-m48.step",
+      "bytes": 4489
+     },
+     "stl": {
+      "key": "downloads/washer-iso-7089/m48/washer-iso-7089-m48.stl",
+      "bytes": 33084
+     },
+     "3mf": {
+      "key": "downloads/washer-iso-7089/m48/washer-iso-7089-m48.3mf",
+      "bytes": 29612
+     },
+     "glb": {
+      "key": "downloads/washer-iso-7089/m48/washer-iso-7089-m48.glb",
+      "bytes": 24988
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m52",
+    "name": {
+     "en": "M(52)",
+     "ru": "M(52)",
+     "pl": "M(52)"
+    },
+    "sizeMm": [
+     98.0,
+     97.9,
+     8.0
+    ],
+    "massKg": 0.3189,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/washer-iso-7089/m52/washer-iso-7089-m52.step",
+      "bytes": 4489
+     },
+     "stl": {
+      "key": "downloads/washer-iso-7089/m52/washer-iso-7089-m52.stl",
+      "bytes": 33084
+     },
+     "3mf": {
+      "key": "downloads/washer-iso-7089/m52/washer-iso-7089-m52.3mf",
+      "bytes": 30577
+     },
+     "glb": {
+      "key": "downloads/washer-iso-7089/m52/washer-iso-7089-m52.glb",
+      "bytes": 24988
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m56",
+    "name": {
+     "en": "M56",
+     "ru": "M56",
+     "pl": "M56"
+    },
+    "sizeMm": [
+     105.0,
+     104.9,
+     10.0
+    ],
+    "massKg": 0.4425,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/washer-iso-7089/m56/washer-iso-7089-m56.step",
+      "bytes": 4502
+     },
+     "stl": {
+      "key": "downloads/washer-iso-7089/m56/washer-iso-7089-m56.stl",
+      "bytes": 33284
+     },
+     "3mf": {
+      "key": "downloads/washer-iso-7089/m56/washer-iso-7089-m56.3mf",
+      "bytes": 31388
+     },
+     "glb": {
+      "key": "downloads/washer-iso-7089/m56/washer-iso-7089-m56.glb",
+      "bytes": 25128
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m60",
+    "name": {
+     "en": "M(60)",
+     "ru": "M(60)",
+     "pl": "M(60)"
+    },
+    "sizeMm": [
+     110.0,
+     109.9,
+     10.0
+    ],
+    "massKg": 0.4772,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/washer-iso-7089/m60/washer-iso-7089-m60.step",
+      "bytes": 4496
+     },
+     "stl": {
+      "key": "downloads/washer-iso-7089/m60/washer-iso-7089-m60.stl",
+      "bytes": 33484
+     },
+     "3mf": {
+      "key": "downloads/washer-iso-7089/m60/washer-iso-7089-m60.3mf",
+      "bytes": 31861
+     },
+     "glb": {
+      "key": "downloads/washer-iso-7089/m60/washer-iso-7089-m60.glb",
+      "bytes": 25276
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m64",
+    "name": {
+     "en": "M64",
+     "ru": "M64",
+     "pl": "M64"
+    },
+    "sizeMm": [
+     115.0,
+     114.9,
+     10.0
+    ],
+    "massKg": 0.513,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/washer-iso-7089/m64/washer-iso-7089-m64.step",
+      "bytes": 4502
+     },
+     "stl": {
+      "key": "downloads/washer-iso-7089/m64/washer-iso-7089-m64.stl",
+      "bytes": 33484
+     },
+     "3mf": {
+      "key": "downloads/washer-iso-7089/m64/washer-iso-7089-m64.3mf",
+      "bytes": 32220
+     },
+     "glb": {
+      "key": "downloads/washer-iso-7089/m64/washer-iso-7089-m64.glb",
+      "bytes": 25276
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m8-300-hv",
+    "name": {
+     "en": "M8 · 300 HV",
+     "ru": "M8 · 300 HV",
+     "pl": "M8 · 300 HV"
+    },
+    "sizeMm": [
+     16.0,
+     16.0,
+     1.6
+    ],
+    "massKg": 0.0018,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/washer-iso-7089/m8-300-hv/washer-iso-7089-m8-300-hv.step",
+      "bytes": 4485
+     },
+     "stl": {
+      "key": "downloads/washer-iso-7089/m8-300-hv/washer-iso-7089-m8-300-hv.stl",
+      "bytes": 32484
+     },
+     "3mf": {
+      "key": "downloads/washer-iso-7089/m8-300-hv/washer-iso-7089-m8-300-hv.3mf",
+      "bytes": 14647
+     },
+     "glb": {
+      "key": "downloads/washer-iso-7089/m8-300-hv/washer-iso-7089-m8-300-hv.glb",
+      "bytes": 24552
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m8-a2",
+    "name": {
+     "en": "M8 · A2",
+     "ru": "M8 · A2",
+     "pl": "M8 · A2"
+    },
+    "sizeMm": [
+     16.0,
+     16.0,
+     1.6
+    ],
+    "massKg": 0.0018,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/washer-iso-7089/m8-a2/washer-iso-7089-m8-a2.step",
+      "bytes": 4510
+     },
+     "stl": {
+      "key": "downloads/washer-iso-7089/m8-a2/washer-iso-7089-m8-a2.stl",
+      "bytes": 32484
+     },
+     "3mf": {
+      "key": "downloads/washer-iso-7089/m8-a2/washer-iso-7089-m8-a2.3mf",
+      "bytes": 14652
+     },
+     "glb": {
+      "key": "downloads/washer-iso-7089/m8-a2/washer-iso-7089-m8-a2.glb",
+      "bytes": 24568
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m8-a4",
+    "name": {
+     "en": "M8 · A4",
+     "ru": "M8 · A4",
+     "pl": "M8 · A4"
+    },
+    "sizeMm": [
+     16.0,
+     16.0,
+     1.6
+    ],
+    "massKg": 0.0018,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/washer-iso-7089/m8-a4/washer-iso-7089-m8-a4.step",
+      "bytes": 4510
+     },
+     "stl": {
+      "key": "downloads/washer-iso-7089/m8-a4/washer-iso-7089-m8-a4.stl",
+      "bytes": 32484
+     },
+     "3mf": {
+      "key": "downloads/washer-iso-7089/m8-a4/washer-iso-7089-m8-a4.3mf",
+      "bytes": 14652
+     },
+     "glb": {
+      "key": "downloads/washer-iso-7089/m8-a4/washer-iso-7089-m8-a4.glb",
+      "bytes": 24564
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   }
+  ]
+ },
+ "screw-iso-4762": {
+  "checked": "2026-11-21",
+  "version": "0.15.197",
+  "configs": [
+   {
+    "id": "m1_6-x-5",
+    "name": {
+     "en": "M1.6 × 5",
+     "ru": "M1.6 × 5",
+     "pl": "M1.6 × 5"
+    },
+    "sizeMm": [
+     6.6,
+     3.0,
+     3.0
+    ],
+    "massKg": 0.0002,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/screw-iso-4762/m1_6-x-5/screw-iso-4762-m1_6-x-5.step",
+      "bytes": 57060
+     },
+     "stl": {
+      "key": "downloads/screw-iso-4762/m1_6-x-5/screw-iso-4762-m1_6-x-5.stl",
+      "bytes": 36684
+     },
+     "3mf": {
+      "key": "downloads/screw-iso-4762/m1_6-x-5/screw-iso-4762-m1_6-x-5.3mf",
+      "bytes": 40725
+     },
+     "glb": {
+      "key": "downloads/screw-iso-4762/m1_6-x-5/screw-iso-4762-m1_6-x-5.glb",
+      "bytes": 24308
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m2-x-6",
+    "name": {
+     "en": "M2 × 6",
+     "ru": "M2 × 6",
+     "pl": "M2 × 6"
+    },
+    "sizeMm": [
+     8.0,
+     3.8,
+     3.8
+    ],
+    "massKg": 0.0003,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/screw-iso-4762/m2-x-6/screw-iso-4762-m2-x-6.step",
+      "bytes": 56588
+     },
+     "stl": {
+      "key": "downloads/screw-iso-4762/m2-x-6/screw-iso-4762-m2-x-6.stl",
+      "bytes": 33884
+     },
+     "3mf": {
+      "key": "downloads/screw-iso-4762/m2-x-6/screw-iso-4762-m2-x-6.3mf",
+      "bytes": 37830
+     },
+     "glb": {
+      "key": "downloads/screw-iso-4762/m2-x-6/screw-iso-4762-m2-x-6.glb",
+      "bytes": 23344
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m2_5-x-8",
+    "name": {
+     "en": "M2.5 × 8",
+     "ru": "M2.5 × 8",
+     "pl": "M2.5 × 8"
+    },
+    "sizeMm": [
+     10.5,
+     4.5,
+     4.5
+    ],
+    "massKg": 0.0006,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/screw-iso-4762/m2_5-x-8/screw-iso-4762-m2_5-x-8.step",
+      "bytes": 57160
+     },
+     "stl": {
+      "key": "downloads/screw-iso-4762/m2_5-x-8/screw-iso-4762-m2_5-x-8.stl",
+      "bytes": 37084
+     },
+     "3mf": {
+      "key": "downloads/screw-iso-4762/m2_5-x-8/screw-iso-4762-m2_5-x-8.3mf",
+      "bytes": 37902
+     },
+     "glb": {
+      "key": "downloads/screw-iso-4762/m2_5-x-8/screw-iso-4762-m2_5-x-8.glb",
+      "bytes": 25368
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m3-x-8",
+    "name": {
+     "en": "M3 × 8",
+     "ru": "M3 × 8",
+     "pl": "M3 × 8"
+    },
+    "sizeMm": [
+     11.0,
+     5.5,
+     5.5
+    ],
+    "massKg": 0.0009,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/screw-iso-4762/m3-x-8/screw-iso-4762-m3-x-8.step",
+      "bytes": 56793
+     },
+     "stl": {
+      "key": "downloads/screw-iso-4762/m3-x-8/screw-iso-4762-m3-x-8.stl",
+      "bytes": 41084
+     },
+     "3mf": {
+      "key": "downloads/screw-iso-4762/m3-x-8/screw-iso-4762-m3-x-8.3mf",
+      "bytes": 39479
+     },
+     "glb": {
+      "key": "downloads/screw-iso-4762/m3-x-8/screw-iso-4762-m3-x-8.glb",
+      "bytes": 27964
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m4-x-12",
+    "name": {
+     "en": "M4 × 12",
+     "ru": "M4 × 12",
+     "pl": "M4 × 12"
+    },
+    "sizeMm": [
+     16.0,
+     7.0,
+     7.0
+    ],
+    "massKg": 0.0022,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/screw-iso-4762/m4-x-12/screw-iso-4762-m4-x-12.step",
+      "bytes": 56842
+     },
+     "stl": {
+      "key": "downloads/screw-iso-4762/m4-x-12/screw-iso-4762-m4-x-12.stl",
+      "bytes": 54684
+     },
+     "3mf": {
+      "key": "downloads/screw-iso-4762/m4-x-12/screw-iso-4762-m4-x-12.3mf",
+      "bytes": 39419
+     },
+     "glb": {
+      "key": "downloads/screw-iso-4762/m4-x-12/screw-iso-4762-m4-x-12.glb",
+      "bytes": 35368
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m5-x-16",
+    "name": {
+     "en": "M5 × 16",
+     "ru": "M5 × 16",
+     "pl": "M5 × 16"
+    },
+    "sizeMm": [
+     21.0,
+     8.5,
+     8.5
+    ],
+    "massKg": 0.0044,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/screw-iso-4762/m5-x-16/screw-iso-4762-m5-x-16.step",
+      "bytes": 57037
+     },
+     "stl": {
+      "key": "downloads/screw-iso-4762/m5-x-16/screw-iso-4762-m5-x-16.stl",
+      "bytes": 47484
+     },
+     "3mf": {
+      "key": "downloads/screw-iso-4762/m5-x-16/screw-iso-4762-m5-x-16.3mf",
+      "bytes": 39535
+     },
+     "glb": {
+      "key": "downloads/screw-iso-4762/m5-x-16/screw-iso-4762-m5-x-16.glb",
+      "bytes": 32004
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m6-x-16",
+    "name": {
+     "en": "M6 × 16",
+     "ru": "M6 × 16",
+     "pl": "M6 × 16"
+    },
+    "sizeMm": [
+     22.0,
+     10.0,
+     10.0
+    ],
+    "massKg": 0.0067,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/screw-iso-4762/m6-x-16/screw-iso-4762-m6-x-16.step",
+      "bytes": 56522
+     },
+     "stl": {
+      "key": "downloads/screw-iso-4762/m6-x-16/screw-iso-4762-m6-x-16.stl",
+      "bytes": 57484
+     },
+     "3mf": {
+      "key": "downloads/screw-iso-4762/m6-x-16/screw-iso-4762-m6-x-16.3mf",
+      "bytes": 39576
+     },
+     "glb": {
+      "key": "downloads/screw-iso-4762/m6-x-16/screw-iso-4762-m6-x-16.glb",
+      "bytes": 36996
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m8-x-25",
+    "name": {
+     "en": "M8 × 25",
+     "ru": "M8 × 25",
+     "pl": "M8 × 25"
+    },
+    "sizeMm": [
+     33.0,
+     13.0,
+     13.0
+    ],
+    "massKg": 0.0171,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/screw-iso-4762/m8-x-25/screw-iso-4762-m8-x-25.step",
+      "bytes": 57016
+     },
+     "stl": {
+      "key": "downloads/screw-iso-4762/m8-x-25/screw-iso-4762-m8-x-25.stl",
+      "bytes": 47484
+     },
+     "3mf": {
+      "key": "downloads/screw-iso-4762/m8-x-25/screw-iso-4762-m8-x-25.3mf",
+      "bytes": 39604
+     },
+     "glb": {
+      "key": "downloads/screw-iso-4762/m8-x-25/screw-iso-4762-m8-x-25.glb",
+      "bytes": 32000
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m10-x-30",
+    "name": {
+     "en": "M10 × 30",
+     "ru": "M10 × 30",
+     "pl": "M10 × 30"
+    },
+    "sizeMm": [
+     40.0,
+     16.0,
+     16.0
+    ],
+    "massKg": 0.0318,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/screw-iso-4762/m10-x-30/screw-iso-4762-m10-x-30.step",
+      "bytes": 56866
+     },
+     "stl": {
+      "key": "downloads/screw-iso-4762/m10-x-30/screw-iso-4762-m10-x-30.stl",
+      "bytes": 51084
+     },
+     "3mf": {
+      "key": "downloads/screw-iso-4762/m10-x-30/screw-iso-4762-m10-x-30.3mf",
+      "bytes": 33350
+     },
+     "glb": {
+      "key": "downloads/screw-iso-4762/m10-x-30/screw-iso-4762-m10-x-30.glb",
+      "bytes": 33732
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m12-x-35",
+    "name": {
+     "en": "M12 × 35",
+     "ru": "M12 × 35",
+     "pl": "M12 × 35"
+    },
+    "sizeMm": [
+     47.0,
+     18.0,
+     18.0
+    ],
+    "massKg": 0.0505,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/screw-iso-4762/m12-x-35/screw-iso-4762-m12-x-35.step",
+      "bytes": 57086
+     },
+     "stl": {
+      "key": "downloads/screw-iso-4762/m12-x-35/screw-iso-4762-m12-x-35.stl",
+      "bytes": 50284
+     },
+     "3mf": {
+      "key": "downloads/screw-iso-4762/m12-x-35/screw-iso-4762-m12-x-35.3mf",
+      "bytes": 33110
+     },
+     "glb": {
+      "key": "downloads/screw-iso-4762/m12-x-35/screw-iso-4762-m12-x-35.glb",
+      "bytes": 33156
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m14-x-40",
+    "name": {
+     "en": "M(14) × 40",
+     "ru": "M(14) × 40",
+     "pl": "M(14) × 40"
+    },
+    "sizeMm": [
+     54.0,
+     21.0,
+     21.0
+    ],
+    "massKg": 0.0788,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/screw-iso-4762/m14-x-40/screw-iso-4762-m14-x-40.step",
+      "bytes": 56850
+     },
+     "stl": {
+      "key": "downloads/screw-iso-4762/m14-x-40/screw-iso-4762-m14-x-40.stl",
+      "bytes": 51484
+     },
+     "3mf": {
+      "key": "downloads/screw-iso-4762/m14-x-40/screw-iso-4762-m14-x-40.3mf",
+      "bytes": 34470
+     },
+     "glb": {
+      "key": "downloads/screw-iso-4762/m14-x-40/screw-iso-4762-m14-x-40.glb",
+      "bytes": 34024
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m16-x-50",
+    "name": {
+     "en": "M16 × 50",
+     "ru": "M16 × 50",
+     "pl": "M16 × 50"
+    },
+    "sizeMm": [
+     66.0,
+     24.0,
+     24.0
+    ],
+    "massKg": 0.1241,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/screw-iso-4762/m16-x-50/screw-iso-4762-m16-x-50.step",
+      "bytes": 56834
+     },
+     "stl": {
+      "key": "downloads/screw-iso-4762/m16-x-50/screw-iso-4762-m16-x-50.stl",
+      "bytes": 47084
+     },
+     "3mf": {
+      "key": "downloads/screw-iso-4762/m16-x-50/screw-iso-4762-m16-x-50.3mf",
+      "bytes": 34462
+     },
+     "glb": {
+      "key": "downloads/screw-iso-4762/m16-x-50/screw-iso-4762-m16-x-50.glb",
+      "bytes": 31716
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m20-x-60",
+    "name": {
+     "en": "M20 × 60",
+     "ru": "M20 × 60",
+     "pl": "M20 × 60"
+    },
+    "sizeMm": [
+     80.0,
+     30.0,
+     30.0
+    ],
+    "massKg": 0.2375,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/screw-iso-4762/m20-x-60/screw-iso-4762-m20-x-60.step",
+      "bytes": 57173
+     },
+     "stl": {
+      "key": "downloads/screw-iso-4762/m20-x-60/screw-iso-4762-m20-x-60.stl",
+      "bytes": 48284
+     },
+     "3mf": {
+      "key": "downloads/screw-iso-4762/m20-x-60/screw-iso-4762-m20-x-60.3mf",
+      "bytes": 35618
+     },
+     "glb": {
+      "key": "downloads/screw-iso-4762/m20-x-60/screw-iso-4762-m20-x-60.glb",
+      "bytes": 32292
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m24-x-70",
+    "name": {
+     "en": "M24 × 70",
+     "ru": "M24 × 70",
+     "pl": "M24 × 70"
+    },
+    "sizeMm": [
+     94.0,
+     36.0,
+     36.0
+    ],
+    "massKg": 0.4077,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/screw-iso-4762/m24-x-70/screw-iso-4762-m24-x-70.step",
+      "bytes": 57235
+     },
+     "stl": {
+      "key": "downloads/screw-iso-4762/m24-x-70/screw-iso-4762-m24-x-70.stl",
+      "bytes": 48284
+     },
+     "3mf": {
+      "key": "downloads/screw-iso-4762/m24-x-70/screw-iso-4762-m24-x-70.3mf",
+      "bytes": 37886
+     },
+     "glb": {
+      "key": "downloads/screw-iso-4762/m24-x-70/screw-iso-4762-m24-x-70.glb",
+      "bytes": 32292
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m30-x-90",
+    "name": {
+     "en": "M30 × 90",
+     "ru": "M30 × 90",
+     "pl": "M30 × 90"
+    },
+    "sizeMm": [
+     120.0,
+     45.0,
+     45.0
+    ],
+    "massKg": 0.8173,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/screw-iso-4762/m30-x-90/screw-iso-4762-m30-x-90.step",
+      "bytes": 57560
+     },
+     "stl": {
+      "key": "downloads/screw-iso-4762/m30-x-90/screw-iso-4762-m30-x-90.stl",
+      "bytes": 47084
+     },
+     "3mf": {
+      "key": "downloads/screw-iso-4762/m30-x-90/screw-iso-4762-m30-x-90.3mf",
+      "bytes": 40603
+     },
+     "glb": {
+      "key": "downloads/screw-iso-4762/m30-x-90/screw-iso-4762-m30-x-90.glb",
+      "bytes": 31712
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m36-x-110",
+    "name": {
+     "en": "M36 × 110",
+     "ru": "M36 × 110",
+     "pl": "M36 × 110"
+    },
+    "sizeMm": [
+     146.0,
+     54.0,
+     54.0
+    ],
+    "massKg": 1.4227,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/screw-iso-4762/m36-x-110/screw-iso-4762-m36-x-110.step",
+      "bytes": 57679
+     },
+     "stl": {
+      "key": "downloads/screw-iso-4762/m36-x-110/screw-iso-4762-m36-x-110.stl",
+      "bytes": 47084
+     },
+     "3mf": {
+      "key": "downloads/screw-iso-4762/m36-x-110/screw-iso-4762-m36-x-110.3mf",
+      "bytes": 43732
+     },
+     "glb": {
+      "key": "downloads/screw-iso-4762/m36-x-110/screw-iso-4762-m36-x-110.glb",
+      "bytes": 31720
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m8-x-60-thread-over-b",
+    "name": {
+     "en": "M8 × 60 (thread over b)",
+     "ru": "M8 × 60 (резьба длиннее b)",
+     "pl": "M8 × 60 (gwint dłuższy niż b)"
+    },
+    "sizeMm": [
+     68.0,
+     13.0,
+     13.0
+    ],
+    "massKg": 0.0308,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/screw-iso-4762/m8-x-60-thread-over-b/screw-iso-4762-m8-x-60-thread-over-b.step",
+      "bytes": 57016
+     },
+     "stl": {
+      "key": "downloads/screw-iso-4762/m8-x-60-thread-over-b/screw-iso-4762-m8-x-60-thread-over-b.stl",
+      "bytes": 35084
+     },
+     "3mf": {
+      "key": "downloads/screw-iso-4762/m8-x-60-thread-over-b/screw-iso-4762-m8-x-60-thread-over-b.3mf",
+      "bytes": 39604
+     },
+     "glb": {
+      "key": "downloads/screw-iso-4762/m8-x-60-thread-over-b/screw-iso-4762-m8-x-60-thread-over-b.glb",
+      "bytes": 24224
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m12-x-100-thread-over-b",
+    "name": {
+     "en": "M12 × 100 (thread over b)",
+     "ru": "M12 × 100 (резьба длиннее b)",
+     "pl": "M12 × 100 (gwint dłuższy niż b)"
+    },
+    "sizeMm": [
+     112.0,
+     18.0,
+     18.0
+    ],
+    "massKg": 0.1078,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/screw-iso-4762/m12-x-100-thread-over-b/screw-iso-4762-m12-x-100-thread-over-b.step",
+      "bytes": 57188
+     },
+     "stl": {
+      "key": "downloads/screw-iso-4762/m12-x-100-thread-over-b/screw-iso-4762-m12-x-100-thread-over-b.stl",
+      "bytes": 29084
+     },
+     "3mf": {
+      "key": "downloads/screw-iso-4762/m12-x-100-thread-over-b/screw-iso-4762-m12-x-100-thread-over-b.3mf",
+      "bytes": 33139
+     },
+     "glb": {
+      "key": "downloads/screw-iso-4762/m12-x-100-thread-over-b/screw-iso-4762-m12-x-100-thread-over-b.glb",
+      "bytes": 20968
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m8-x-30-12_9",
+    "name": {
+     "en": "M8 × 30 · 12.9",
+     "ru": "M8 × 30 · 12.9",
+     "pl": "M8 × 30 · 12.9"
+    },
+    "sizeMm": [
+     38.0,
+     13.0,
+     13.0
+    ],
+    "massKg": 0.019,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/screw-iso-4762/m8-x-30-12_9/screw-iso-4762-m8-x-30-12_9.step",
+      "bytes": 57021
+     },
+     "stl": {
+      "key": "downloads/screw-iso-4762/m8-x-30-12_9/screw-iso-4762-m8-x-30-12_9.stl",
+      "bytes": 44284
+     },
+     "3mf": {
+      "key": "downloads/screw-iso-4762/m8-x-30-12_9/screw-iso-4762-m8-x-30-12_9.3mf",
+      "bytes": 39605
+     },
+     "glb": {
+      "key": "downloads/screw-iso-4762/m8-x-30-12_9/screw-iso-4762-m8-x-30-12_9.glb",
+      "bytes": 29988
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m8-x-30-a2-70",
+    "name": {
+     "en": "M8 × 30 · A2-70",
+     "ru": "M8 × 30 · A2-70",
+     "pl": "M8 × 30 · A2-70"
+    },
+    "sizeMm": [
+     38.0,
+     13.0,
+     13.0
+    ],
+    "massKg": 0.019,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/screw-iso-4762/m8-x-30-a2-70/screw-iso-4762-m8-x-30-a2-70.step",
+      "bytes": 57026
+     },
+     "stl": {
+      "key": "downloads/screw-iso-4762/m8-x-30-a2-70/screw-iso-4762-m8-x-30-a2-70.stl",
+      "bytes": 44284
+     },
+     "3mf": {
+      "key": "downloads/screw-iso-4762/m8-x-30-a2-70/screw-iso-4762-m8-x-30-a2-70.3mf",
+      "bytes": 39606
+     },
+     "glb": {
+      "key": "downloads/screw-iso-4762/m8-x-30-a2-70/screw-iso-4762-m8-x-30-a2-70.glb",
+      "bytes": 29988
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "m30-x-100-a4-50",
+    "name": {
+     "en": "M30 × 100 · A4-50",
+     "ru": "M30 × 100 · A4-50",
+     "pl": "M30 × 100 · A4-50"
+    },
+    "sizeMm": [
+     130.0,
+     45.0,
+     45.0
+    ],
+    "massKg": 0.8726,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/screw-iso-4762/m30-x-100-a4-50/screw-iso-4762-m30-x-100-a4-50.step",
+      "bytes": 57672
+     },
+     "stl": {
+      "key": "downloads/screw-iso-4762/m30-x-100-a4-50/screw-iso-4762-m30-x-100-a4-50.stl",
+      "bytes": 46684
+     },
+     "3mf": {
+      "key": "downloads/screw-iso-4762/m30-x-100-a4-50/screw-iso-4762-m30-x-100-a4-50.3mf",
+      "bytes": 40598
+     },
+     "glb": {
+      "key": "downloads/screw-iso-4762/m30-x-100-a4-50/screw-iso-4762-m30-x-100-a4-50.glb",
+      "bytes": 31428
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "exact-thread",
+    "name": {
+     "en": "M8 × 60 · exact thread",
+     "ru": "M8 × 60 · настоящая резьба",
+     "pl": "M8 × 60 · gwint rzeczywisty"
+    },
+    "sizeMm": [
+     68.0,
+     13.0,
+     13.0
+    ],
+    "massKg": 0.0287,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/screw-iso-4762/exact-thread/screw-iso-4762-exact-thread.step",
+      "bytes": 1249713
+     },
+     "stl": {
+      "key": "downloads/screw-iso-4762/exact-thread/screw-iso-4762-exact-thread.stl",
+      "bytes": 539284
+     },
+     "3mf": {
+      "key": "downloads/screw-iso-4762/exact-thread/screw-iso-4762-exact-thread.3mf",
+      "bytes": 655313
+     },
+     "glb": {
+      "key": "downloads/screw-iso-4762/exact-thread/screw-iso-4762-exact-thread.glb",
+      "bytes": 356636
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   }
+  ]
+ },
+ "bearing-iso-15": {
+  "checked": "2026-11-21",
+  "version": "0.15.197",
+  "configs": [
+   {
+    "id": "6204-2z",
+    "name": {
+     "en": "6204-2Z",
+     "ru": "6204-2Z",
+     "pl": "6204-2Z"
+    },
+    "sizeMm": [
+     47.0,
+     47.0,
+     14.0
+    ],
+    "massKg": 0.1531,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/bearing-iso-15/6204-2z/bearing-iso-15-6204-2z.step",
+      "bytes": 14669
+     },
+     "stl": {
+      "key": "downloads/bearing-iso-15/6204-2z/bearing-iso-15-6204-2z.stl",
+      "bytes": 322684
+     },
+     "3mf": {
+      "key": "downloads/bearing-iso-15/6204-2z/bearing-iso-15-6204-2z.3mf",
+      "bytes": 160234
+     },
+     "glb": {
+      "key": "downloads/bearing-iso-15/6204-2z/bearing-iso-15-6204-2z.glb",
+      "bytes": 235052
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "6204-2rs-with-balls",
+    "name": {
+     "en": "6204-2RS with balls",
+     "ru": "6204-2RS с шариками",
+     "pl": "6204-2RS z kulkami"
+    },
+    "sizeMm": [
+     47.0,
+     47.0,
+     14.0
+    ],
+    "massKg": 0.1057,
+    "bodies": 12,
+    "files": {
+     "step": {
+      "key": "downloads/bearing-iso-15/6204-2rs-with-balls/bearing-iso-15-6204-2rs-with-balls.step",
+      "bytes": 30710
+     },
+     "stl": {
+      "key": "downloads/bearing-iso-15/6204-2rs-with-balls/bearing-iso-15-6204-2rs-with-balls.stl",
+      "bytes": 2641284
+     },
+     "3mf": {
+      "key": "downloads/bearing-iso-15/6204-2rs-with-balls/bearing-iso-15-6204-2rs-with-balls.3mf",
+      "bytes": 630509
+     },
+     "glb": {
+      "key": "downloads/bearing-iso-15/6204-2rs-with-balls/bearing-iso-15-6204-2rs-with-balls.glb",
+      "bytes": 1501356
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": false
+    }
+   },
+   {
+    "id": "6205-open-with-balls",
+    "name": {
+     "en": "6205 open with balls",
+     "ru": "6205 открытый с шариками",
+     "pl": "6205 otwarte z kulkami"
+    },
+    "sizeMm": [
+     52.0,
+     52.0,
+     15.0
+    ],
+    "massKg": 0.1256,
+    "bodies": 11,
+    "files": {
+     "step": {
+      "key": "downloads/bearing-iso-15/6205-open-with-balls/bearing-iso-15-6205-open-with-balls.step",
+      "bytes": 25785
+     },
+     "stl": {
+      "key": "downloads/bearing-iso-15/6205-open-with-balls/bearing-iso-15-6205-open-with-balls.stl",
+      "bytes": 2808284
+     },
+     "3mf": {
+      "key": "downloads/bearing-iso-15/6205-open-with-balls/bearing-iso-15-6205-open-with-balls.3mf",
+      "bytes": 644236
+     },
+     "glb": {
+      "key": "downloads/bearing-iso-15/6205-open-with-balls/bearing-iso-15-6205-open-with-balls.glb",
+      "bytes": 1568300
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": false
+    }
+   },
+   {
+    "id": "6000-2z-smallest",
+    "name": {
+     "en": "6000-2Z (smallest)",
+     "ru": "6000-2Z (наименьший)",
+     "pl": "6000-2Z (najmniejsze)"
+    },
+    "sizeMm": [
+     26.0,
+     26.0,
+     8.0
+    ],
+    "massKg": 0.0279,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/bearing-iso-15/6000-2z-smallest/bearing-iso-15-6000-2z-smallest.step",
+      "bytes": 14663
+     },
+     "stl": {
+      "key": "downloads/bearing-iso-15/6000-2z-smallest/bearing-iso-15-6000-2z-smallest.stl",
+      "bytes": 317284
+     },
+     "3mf": {
+      "key": "downloads/bearing-iso-15/6000-2z-smallest/bearing-iso-15-6000-2z-smallest.3mf",
+      "bytes": 128375
+     },
+     "glb": {
+      "key": "downloads/bearing-iso-15/6000-2z-smallest/bearing-iso-15-6000-2z-smallest.glb",
+      "bytes": 231168
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "6320-largest",
+    "name": {
+     "en": "6320 (largest)",
+     "ru": "6320 (наибольший)",
+     "pl": "6320 (największe)"
+    },
+    "sizeMm": [
+     215.0,
+     214.9,
+     47.0
+    ],
+    "massKg": 10.4156,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/bearing-iso-15/6320-largest/bearing-iso-15-6320-largest.step",
+      "bytes": 14668
+     },
+     "stl": {
+      "key": "downloads/bearing-iso-15/6320-largest/bearing-iso-15-6320-largest.stl",
+      "bytes": 329684
+     },
+     "3mf": {
+      "key": "downloads/bearing-iso-15/6320-largest/bearing-iso-15-6320-largest.3mf",
+      "bytes": 381376
+     },
+     "glb": {
+      "key": "downloads/bearing-iso-15/6320-largest/bearing-iso-15-6320-largest.glb",
+      "bytes": 240080
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "6304-2rs",
+    "name": {
+     "en": "6304-2RS",
+     "ru": "6304-2RS",
+     "pl": "6304-2RS"
+    },
+    "sizeMm": [
+     52.0,
+     52.0,
+     15.0
+    ],
+    "massKg": 0.2091,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/bearing-iso-15/6304-2rs/bearing-iso-15-6304-2rs.step",
+      "bytes": 14706
+     },
+     "stl": {
+      "key": "downloads/bearing-iso-15/6304-2rs/bearing-iso-15-6304-2rs.stl",
+      "bytes": 318084
+     },
+     "3mf": {
+      "key": "downloads/bearing-iso-15/6304-2rs/bearing-iso-15-6304-2rs.3mf",
+      "bytes": 230861
+     },
+     "glb": {
+      "key": "downloads/bearing-iso-15/6304-2rs/bearing-iso-15-6304-2rs.glb",
+      "bytes": 231748
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   }
+  ]
+ },
+ "lock-nut-din-981": {
+  "checked": "2026-11-21",
+  "version": "0.15.197",
+  "configs": [
+   {
+    "id": "km4-m20-x-1",
+    "name": {
+     "en": "KM4 (M20 × 1)",
+     "ru": "KM4 (M20 × 1)",
+     "pl": "KM4 (M20 × 1)"
+    },
+    "sizeMm": [
+     31.7,
+     31.7,
+     6.0
+    ],
+    "massKg": 0.0225,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/lock-nut-din-981/km4-m20-x-1/lock-nut-din-981-km4-m20-x-1.step",
+      "bytes": 52046
+     },
+     "stl": {
+      "key": "downloads/lock-nut-din-981/km4-m20-x-1/lock-nut-din-981-km4-m20-x-1.stl",
+      "bytes": 59884
+     },
+     "3mf": {
+      "key": "downloads/lock-nut-din-981/km4-m20-x-1/lock-nut-din-981-km4-m20-x-1.3mf",
+      "bytes": 30119
+     },
+     "glb": {
+      "key": "downloads/lock-nut-din-981/km4-m20-x-1/lock-nut-din-981-km4-m20-x-1.glb",
+      "bytes": 41704
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "km4-exact-thread",
+    "name": {
+     "en": "KM4 exact thread",
+     "ru": "KM4 настоящая резьба",
+     "pl": "KM4 gwint rzeczywisty"
+    },
+    "sizeMm": [
+     31.7,
+     31.7,
+     6.0
+    ],
+    "massKg": 0.0218,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/lock-nut-din-981/km4-exact-thread/lock-nut-din-981-km4-exact-thread.step",
+      "bytes": 1617987
+     },
+     "stl": {
+      "key": "downloads/lock-nut-din-981/km4-exact-thread/lock-nut-din-981-km4-exact-thread.stl",
+      "bytes": 330184
+     },
+     "3mf": {
+      "key": "downloads/lock-nut-din-981/km4-exact-thread/lock-nut-din-981-km4-exact-thread.3mf",
+      "bytes": 121748
+     },
+     "glb": {
+      "key": "downloads/lock-nut-din-981/km4-exact-thread/lock-nut-din-981-km4-exact-thread.glb",
+      "bytes": 217620
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "km0-m10-x-0_75",
+    "name": {
+     "en": "KM0 (M10 × 0.75)",
+     "ru": "KM0 (M10 × 0.75)",
+     "pl": "KM0 (M10 × 0.75)"
+    },
+    "sizeMm": [
+     17.7,
+     17.7,
+     4.0
+    ],
+    "massKg": 0.0048,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/lock-nut-din-981/km0-m10-x-0_75/lock-nut-din-981-km0-m10-x-0_75.step",
+      "bytes": 56152
+     },
+     "stl": {
+      "key": "downloads/lock-nut-din-981/km0-m10-x-0_75/lock-nut-din-981-km0-m10-x-0_75.stl",
+      "bytes": 64084
+     },
+     "3mf": {
+      "key": "downloads/lock-nut-din-981/km0-m10-x-0_75/lock-nut-din-981-km0-m10-x-0_75.3mf",
+      "bytes": 28537
+     },
+     "glb": {
+      "key": "downloads/lock-nut-din-981/km0-m10-x-0_75/lock-nut-din-981-km0-m10-x-0_75.glb",
+      "bytes": 43152
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "km10-m50-x-1_5",
+    "name": {
+     "en": "KM10 (M50 × 1.5)",
+     "ru": "KM10 (M50 × 1.5)",
+     "pl": "KM10 (M50 × 1.5)"
+    },
+    "sizeMm": [
+     69.7,
+     69.7,
+     11.0
+    ],
+    "massKg": 0.166,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/lock-nut-din-981/km10-m50-x-1_5/lock-nut-din-981-km10-m50-x-1_5.step",
+      "bytes": 49558
+     },
+     "stl": {
+      "key": "downloads/lock-nut-din-981/km10-m50-x-1_5/lock-nut-din-981-km10-m50-x-1_5.stl",
+      "bytes": 55084
+     },
+     "3mf": {
+      "key": "downloads/lock-nut-din-981/km10-m50-x-1_5/lock-nut-din-981-km10-m50-x-1_5.3mf",
+      "bytes": 40382
+     },
+     "glb": {
+      "key": "downloads/lock-nut-din-981/km10-m50-x-1_5/lock-nut-din-981-km10-m50-x-1_5.glb",
+      "bytes": 39936
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "km20-m100-x-2",
+    "name": {
+     "en": "KM20 (M100 × 2)",
+     "ru": "KM20 (M100 × 2)",
+     "pl": "KM20 (M100 × 2)"
+    },
+    "sizeMm": [
+     129.6,
+     129.6,
+     18.0
+    ],
+    "massKg": 0.7785,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/lock-nut-din-981/km20-m100-x-2/lock-nut-din-981-km20-m100-x-2.step",
+      "bytes": 51777
+     },
+     "stl": {
+      "key": "downloads/lock-nut-din-981/km20-m100-x-2/lock-nut-din-981-km20-m100-x-2.stl",
+      "bytes": 57384
+     },
+     "3mf": {
+      "key": "downloads/lock-nut-din-981/km20-m100-x-2/lock-nut-din-981-km20-m100-x-2.3mf",
+      "bytes": 51895
+     },
+     "glb": {
+      "key": "downloads/lock-nut-din-981/km20-m100-x-2/lock-nut-din-981-km20-m100-x-2.glb",
+      "bytes": 41512
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   }
+  ]
+ },
+ "shaft": {
+  "checked": "2026-11-21",
+  "version": "0.15.197",
+  "configs": [
+   {
+    "id": "drive-shaft-d24-x-111-bearings",
+    "name": {
+     "en": "Drive shaft Ø24 × 111 (bearings k6, hub m6, keyways, ring groove)",
+     "ru": "Приводной вал Ø24 × 111 (подшипники k6, ступица m6, шпонки, канавка под кольцо)",
+     "pl": "Wał napędowy Ø24 × 111 (łożyska k6, piasta m6, wpusty, rowek pod pierścień)"
+    },
+    "sizeMm": [
+     111.0,
+     24.0,
+     24.0
+    ],
+    "massKg": 0.2679,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/shaft/drive-shaft-d24-x-111-bearings/shaft-drive-shaft-d24-x-111-bearings.step",
+      "bytes": 169549
+     },
+     "stl": {
+      "key": "downloads/shaft/drive-shaft-d24-x-111-bearings/shaft-drive-shaft-d24-x-111-bearings.stl",
+      "bytes": 451484
+     },
+     "3mf": {
+      "key": "downloads/shaft/drive-shaft-d24-x-111-bearings/shaft-drive-shaft-d24-x-111-bearings.3mf",
+      "bytes": 304554
+     },
+     "glb": {
+      "key": "downloads/shaft/drive-shaft-d24-x-111-bearings/shaft-drive-shaft-d24-x-111-bearings.glb",
+      "bytes": 273264
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "bearing-shaft-d42-x-90-undercuts",
+    "name": {
+     "en": "Bearing shaft Ø42 × 90 (undercuts F, key 10 × 8)",
+     "ru": "Вал под подшипники Ø42 × 90 (канавки F, шпонка 10 × 8)",
+     "pl": "Wał łożyskowy Ø42 × 90 (podcięcia F, wpust 10 × 8)"
+    },
+    "sizeMm": [
+     90.0,
+     42.0,
+     42.0
+    ],
+    "massKg": 0.6528,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/shaft/bearing-shaft-d42-x-90-undercuts/shaft-bearing-shaft-d42-x-90-undercuts.step",
+      "bytes": 91621
+     },
+     "stl": {
+      "key": "downloads/shaft/bearing-shaft-d42-x-90-undercuts/shaft-bearing-shaft-d42-x-90-undercuts.stl",
+      "bytes": 401084
+     },
+     "3mf": {
+      "key": "downloads/shaft/bearing-shaft-d42-x-90-undercuts/shaft-bearing-shaft-d42-x-90-undercuts.3mf",
+      "bytes": 263688
+     },
+     "glb": {
+      "key": "downloads/shaft/bearing-shaft-d42-x-90-undercuts/shaft-bearing-shaft-d42-x-90-undercuts.glb",
+      "bytes": 244968
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "hinge-axle-d12-f7-x-60",
+    "name": {
+     "en": "Hinge axle Ø12 f7 × 60 (two ring grooves)",
+     "ru": "Ось шарнира Ø12 f7 × 60 (две канавки под кольца)",
+     "pl": "Oś zawiasu Ø12 f7 × 60 (dwa rowki pod pierścienie)"
+    },
+    "sizeMm": [
+     60.0,
+     12.0,
+     12.0
+    ],
+    "massKg": 0.0529,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/shaft/hinge-axle-d12-f7-x-60/shaft-hinge-axle-d12-f7-x-60.step",
+      "bytes": 11335
+     },
+     "stl": {
+      "key": "downloads/shaft/hinge-axle-d12-f7-x-60/shaft-hinge-axle-d12-f7-x-60.stl",
+      "bytes": 69384
+     },
+     "3mf": {
+      "key": "downloads/shaft/hinge-axle-d12-f7-x-60/shaft-hinge-axle-d12-f7-x-60.3mf",
+      "bytes": 57168
+     },
+     "glb": {
+      "key": "downloads/shaft/hinge-axle-d12-f7-x-60/shaft-hinge-axle-d12-f7-x-60.glb",
+      "bytes": 51424
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "stepped-axle-d20-h9-undercut-e",
+    "name": {
+     "en": "Stepped axle Ø20 h9 (undercut E)",
+     "ru": "Ступенчатая ось Ø20 h9 (канавка E)",
+     "pl": "Oś stopniowa Ø20 h9 (podcięcie E)"
+    },
+    "sizeMm": [
+     60.0,
+     20.0,
+     20.0
+    ],
+    "massKg": 0.1297,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/shaft/stepped-axle-d20-h9-undercut-e/shaft-stepped-axle-d20-h9-undercut-e.step",
+      "bytes": 10350
+     },
+     "stl": {
+      "key": "downloads/shaft/stepped-axle-d20-h9-undercut-e/shaft-stepped-axle-d20-h9-undercut-e.stl",
+      "bytes": 96584
+     },
+     "3mf": {
+      "key": "downloads/shaft/stepped-axle-d20-h9-undercut-e/shaft-stepped-axle-d20-h9-undercut-e.3mf",
+      "bytes": 56743
+     },
+     "glb": {
+      "key": "downloads/shaft/stepped-axle-d20-h9-undercut-e/shaft-stepped-axle-d20-h9-undercut-e.glb",
+      "bytes": 71344
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "stainless-shaft-d14-js6-seats-key",
+    "name": {
+     "en": "Stainless shaft Ø14 (js6 seats, key 5 × 5)",
+     "ru": "Вал из нержавейки Ø14 (посадки js6, шпонка 5 × 5)",
+     "pl": "Wał nierdzewny Ø14 (pasowania js6, wpust 5 × 5)"
+    },
+    "sizeMm": [
+     54.0,
+     14.0,
+     14.0
+    ],
+    "massKg": 0.0487,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/shaft/stainless-shaft-d14-js6-seats-key/shaft-stainless-shaft-d14-js6-seats-key.step",
+      "bytes": 81816
+     },
+     "stl": {
+      "key": "downloads/shaft/stainless-shaft-d14-js6-seats-key/shaft-stainless-shaft-d14-js6-seats-key.stl",
+      "bytes": 236184
+     },
+     "3mf": {
+      "key": "downloads/shaft/stainless-shaft-d14-js6-seats-key/shaft-stainless-shaft-d14-js6-seats-key.3mf",
+      "bytes": 119982
+     },
+     "glb": {
+      "key": "downloads/shaft/stainless-shaft-d14-js6-seats-key/shaft-stainless-shaft-d14-js6-seats-key.glb",
+      "bytes": 130344
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "shaft-d50-for-fatigue-strength-undercut",
+    "name": {
+     "en": "Shaft Ø50 for fatigue strength (undercut F R1.2 × 0.2)",
+     "ru": "Вал Ø50 на усталостную прочность (канавка F R1.2 × 0.2)",
+     "pl": "Wał Ø50 na wytrzymałość zmęczeniową (podcięcie F R1.2 × 0.2)"
+    },
+    "sizeMm": [
+     50.0,
+     50.0,
+     45.0
+    ],
+    "massKg": 0.524,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/shaft/shaft-d50-for-fatigue-strength-undercut/shaft-shaft-d50-for-fatigue-strength-undercut.step",
+      "bytes": 11399
+     },
+     "stl": {
+      "key": "downloads/shaft/shaft-d50-for-fatigue-strength-undercut/shaft-shaft-d50-for-fatigue-strength-undercut.stl",
+      "bytes": 141784
+     },
+     "3mf": {
+      "key": "downloads/shaft/shaft-d50-for-fatigue-strength-undercut/shaft-shaft-d50-for-fatigue-strength-undercut.3mf",
+      "bytes": 106819
+     },
+     "glb": {
+      "key": "downloads/shaft/shaft-d50-for-fatigue-strength-undercut/shaft-shaft-d50-for-fatigue-strength-undercut.glb",
+      "bytes": 103940
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "shaft-with-a-threaded-end-m16",
+    "name": {
+     "en": "Shaft with a threaded end M16 (exact thread)",
+     "ru": "Вал с резьбовым концом M16 (настоящая резьба)",
+     "pl": "Wał z gwintowanym końcem M16 (gwint rzeczywisty)"
+    },
+    "sizeMm": [
+     85.0,
+     26.0,
+     26.0
+    ],
+    "massKg": 0.2191,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/shaft/shaft-with-a-threaded-end-m16/shaft-shaft-with-a-threaded-end-m16.step",
+      "bytes": 540084
+     },
+     "stl": {
+      "key": "downloads/shaft/shaft-with-a-threaded-end-m16/shaft-shaft-with-a-threaded-end-m16.stl",
+      "bytes": 427084
+     },
+     "3mf": {
+      "key": "downloads/shaft/shaft-with-a-threaded-end-m16/shaft-shaft-with-a-threaded-end-m16.3mf",
+      "bytes": 368293
+     },
+     "glb": {
+      "key": "downloads/shaft/shaft-with-a-threaded-end-m16/shaft-shaft-with-a-threaded-end-m16.glb",
+      "bytes": 269828
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   },
+   {
+    "id": "bearing-shaft-with-a-lock-nut",
+    "name": {
+     "en": "Bearing shaft with a lock-nut thread M20 × 1 (KM4)",
+     "ru": "Вал под подшипник с резьбой под гайку M20 × 1 (KM4)",
+     "pl": "Wał łożyskowy z gwintem pod nakrętkę M20 × 1 (KM4)"
+    },
+    "sizeMm": [
+     66.0,
+     28.0,
+     28.0
+    ],
+    "massKg": 0.2012,
+    "bodies": 1,
+    "files": {
+     "step": {
+      "key": "downloads/shaft/bearing-shaft-with-a-lock-nut/shaft-bearing-shaft-with-a-lock-nut.step",
+      "bytes": 11054
+     },
+     "stl": {
+      "key": "downloads/shaft/bearing-shaft-with-a-lock-nut/shaft-bearing-shaft-with-a-lock-nut.stl",
+      "bytes": 108684
+     },
+     "3mf": {
+      "key": "downloads/shaft/bearing-shaft-with-a-lock-nut/shaft-bearing-shaft-with-a-lock-nut.3mf",
+      "bytes": 67369
+     },
+     "glb": {
+      "key": "downloads/shaft/bearing-shaft-with-a-lock-nut/shaft-bearing-shaft-with-a-lock-nut.glb",
+      "bytes": 80060
+     }
+    },
+    "checks": {
+     "kernel": true,
+     "step": true,
+     "stl": true
+    }
+   }
+  ]
+ }
+}

@@ -169,6 +169,7 @@ export const pl: Dict = {
       { date: '17–18 lis 2026', rev: '0.15.186', text: 'Kratownice wewnątrz części (12 rodzajów), mapa grubości ścianek, kontrola druku warstwa po warstwie; plan linii gładkiej formy.' },
       { date: '19–20 lis 2026', rev: '0.15.193', text: 'Dokładny loft i przejścia w wierzchołkach: zaokrąglenia schodzą się w narożnikach kadłuba rakiety; egzamin zaokrągleń — 98 ze 100, a gdzie bryły nie ma — uczciwa odmowa.' },
       { date: '20 lis 2026', rev: '0.15.196', text: 'Pręty zbrojeniowe wg EN 10080 i Eurokodu 2 — z rzeczywistymi żebrami i wykazem gięcia.' },
+      { date: '21 lis 2026', rev: '0.15.197', text: 'Pobieranie biblioteki: 165 gotowych wariantów w STEP, STL, 3MF i GLB, każdy sprawdzony przez jądro; pliki do druku z osią Z w górę.' },
     ],
     nextTitle: 'Dalej',
     next: [
@@ -224,7 +225,7 @@ export const pl: Dict = {
   },
   library: {
     title: 'Biblioteka Monge',
-    lead: 'Części parametryczne, które Monge buduje według tablic norm ISO, DIN i EN. Każdą można obracać w 3D w przeglądarce; tablice norm są otwarte w całości.',
+    lead: 'Części parametryczne, które Monge buduje według tablic norm ISO, DIN i EN. Każdą można obracać w 3D i pobrać jako STEP, STL, 3MF i GLB — bezpłatnie, bez rejestracji; tablice norm są otwarte w całości.',
     stats: { generators: 'generatorów części', configs: 'gotowych wariantów', tables: 'tablic norm', rows: 'wierszy wymiarów' },
     all: 'Wszystkie',
     categories: { reinforcement: 'Zbrojenie', fasteners: 'Elementy złączne', bearings: 'Łożyska', shafts: 'Wały i osie' },
@@ -278,6 +279,15 @@ export const pl: Dict = {
     params: 'Parametry',
     configs: 'Gotowych wariantów',
     standards: 'Normy',
+    dl: {
+      title: 'Pobierz model',
+      config: 'Wariant',
+      size: 'Wymiary gabarytowe',
+      mass: 'Masa, stal',
+      checks: { kernel: 'bryła sprawdzona przez jądro Monge', step: 'STEP odczytany ponownie bez rozbieżności', stl: 'siatka STL zamknięta, bez dziur' },
+      formats: { step: 'CAD — dokładna geometria', stl: 'druk i CNC', '3mf': 'druk: Bambu, Prusa, Cura', glb: 'podgląd, gry, AR' },
+      axes: 'Milimetry; STL i 3MF — oś Z w górę. Bez rejestracji.',
+    },
   },
   kpi: {
     tests: 'testów przy każdej zmianie, nie przeszło {failed}',
@@ -366,6 +376,7 @@ export const pl: Dict = {
     lead: 'Testy bety, pilotaż w zakładzie, modele na zamówienie lub pytanie o Monge — napisz, odpowiemy w ciągu 1–2 dni roboczych.',
   },
   privacy: { title: 'Polityka prywatności' },
+  license: { title: 'Licencja na modele', short: 'Licencja', note: 'Bezpłatnie, także do projektów komercyjnych; nie wolno odsprzedawać samych plików.' },
   footer: {
     tagline: 'Monge — CAD z AI dla produkcji na własnym precyzyjnym jądrze. Nazwa na cześć Gasparda Monge’a, twórcy geometrii wykreślnej.',
     program: 'Monge',

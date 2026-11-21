@@ -7,7 +7,7 @@ import { languageAlternates, SITE_URL } from '@/lib/seo';
 export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const pages = ['', '/kernel', '/about', '/library', '/library/standards', '/download', '/contact', '/privacy'];
+  const pages = ['', '/kernel', '/about', '/library', '/library/standards', '/download', '/contact', '/privacy', '/license'];
   const items = await getItems();
   const paths = [...pages.map((p) => ({ p, d: undefined as string | undefined })), ...items.map((i) => ({ p: `/library/${i.slug}`, d: i.updated })), ...standards.map((s) => ({ p: `/library/standards/${s.slug}`, d: s.checked ?? undefined }))];
   return paths.flatMap(({ p, d }) =>
