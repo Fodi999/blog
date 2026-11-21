@@ -60,6 +60,15 @@ npm run deploy
 `vendor/three` и `<slug>.glb`, открыть через локальный сервер `index.html?m=<slug>.glb&yaw=-30&pitch=22&rot=0,0,0`
 и снять headless Chrome (`--screenshot --default-background-color=00000000`), затем `cwebp -q 86 -alpha_q 90`.
 
+## Скачивание моделей библиотеки
+
+Каждое готовое исполнение генераторов Monge — файлы STEP, STL, 3MF (ось Z вверх, мм) и GLB в R2 под
+`downloads/<slug>/<id>/`. Карточка детали показывает их конфигуратором (`components/PartConfigurator.tsx`,
+данные — `data/downloads.json`). Обновить после новой версии библиотеки: запустить тестовое окно Monge (порт 9899),
+затем `scripts/monge/export_library.py` → `scripts/monge/check_files.py` → `scripts/downloads-json.py` → загрузка
+`scripts/monge/put_r2.sh` (порядок и аргументы — в начале `export_library.py`). Публикуется только то, что прошло
+все проверки. Скачивания считаются в D1 `downloads` (`migrations/0003_downloads.sql`).
+
 ## Как добавить модель
 
 1. В Monge: экспорт STEP (и превью GLB/рендер).
