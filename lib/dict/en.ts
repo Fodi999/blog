@@ -331,6 +331,7 @@ export const en: Dict = {
     legend: { clean: 'prints without support', support: 'needs support', thin: 'thread too fine for a 0.4 nozzle' },
     note: 'The check is geometric: it does not know your printer or plastic. Print the first part of a size as a test.',
   },
+  live: { online: 'on the site now', downloads: 'model downloads', item: 'downloaded {n} times', page: 'this size downloaded {n} times' },
   libraryHome: {
     title: 'A library by the standards',
     lead: 'Reinforcement by EN 10080, ISO fasteners, bearings and shafts: Monge builds them from the standards’ tables instead of drawing them. Pick a size — get an exact body with its mass, its hole and its line in the schedule.',

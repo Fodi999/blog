@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { countDownload } from '@/components/LiveStats';
 import { ModelViewer, type ViewerLabels } from '@/components/ModelViewer';
 import { fileKey, FORMATS, text, type DlPage } from '@/lib/downloads';
 import { fill, type Dict, type Locale } from '@/lib/i18n';
@@ -189,6 +190,7 @@ export function PartConfigurator({ locale, slug, pages, pageId, navigate = false
                 <a
                   href={`/api/files/${fileKey(slug, page.id, opt.id, f)}?download=1`}
                   download
+                  onClick={countDownload}
                   className="group flex items-center justify-between gap-3 rounded-lg border border-hairline-ink-strong px-3.5 py-2.5 transition-colors hover:border-signal hover:bg-signal/[.06]"
                   data-ga-event="file_download"
                   data-ga-item-id={slug}

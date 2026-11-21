@@ -3,11 +3,12 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { LiveStats, Presence } from '@/components/LiveStats';
 import { Logo } from '@/components/Logo';
 import { siteButtonVariants } from '@/components/site/Button';
 import { localeNames, locales, localPath, type Dict, type Locale } from '@/lib/i18n';
 
-type Props = { locale: Locale; nav: Dict['nav'] };
+type Props = { locale: Locale; nav: Dict['nav']; live: Dict['live'] };
 
 function switchLocale(pathname: string, to: Locale): string {
   const parts = pathname.split('/');
@@ -16,7 +17,7 @@ function switchLocale(pathname: string, to: Locale): string {
   return parts.join('/') || `/${to}`;
 }
 
-export function Header({ locale, nav }: Props) {
+export function Header({ locale, nav, live }: Props) {
   const pathname = usePathname() || `/${locale}`;
   const [scrolled, setScrolled] = useState(false);
   // The menu belongs to the page it was opened on: navigating closes it.
@@ -81,6 +82,8 @@ export function Header({ locale, nav }: Props) {
         </nav>
 
         <div className="flex items-center gap-2">
+          <Presence />
+          <LiveStats locale={locale} t={live} compact className="mr-2 hidden xl:flex" />
           <div className="hidden items-center gap-0.5 sm:flex" aria-label={nav.language}>
             {locales.map((l) => (
               <Link

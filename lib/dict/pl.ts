@@ -331,6 +331,7 @@ export const pl: Dict = {
     legend: { clean: 'drukuje się bez podpór', support: 'potrzebne podpory', thin: 'cienki gwint dla dyszy 0,4' },
     note: 'Kontrola jest geometryczna: nie zna Twojej drukarki ani tworzywa. Pierwszą część danego rozmiaru wydrukuj na próbę.',
   },
+  live: { online: 'teraz na stronie', downloads: 'pobrań modeli', item: 'pobrano {n} razy', page: 'ten rozmiar pobrano {n} razy' },
   libraryHome: {
     title: 'Biblioteka według norm',
     lead: 'Zbrojenie wg EN 10080, elementy złączne ISO, łożyska i wały: Monge buduje je z tablic norm, a nie rysuje. Wybierasz rozmiar — dostajesz dokładną bryłę z masą, otworem i wierszem w zestawieniu.',

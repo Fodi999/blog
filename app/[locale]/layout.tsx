@@ -62,7 +62,7 @@ export default async function LocaleLayout({ children, params }: Readonly<{ chil
         <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[200] focus:rounded-full focus:bg-signal focus:px-4 focus:py-2 focus:text-ink">
           Skip to content
         </a>
-        <Header locale={locale} nav={t.nav} />
+        <Header locale={locale} nav={t.nav} live={t.live} />
         <main id="main">{children}</main>
         <Footer locale={locale} />
         <RevealObserver />

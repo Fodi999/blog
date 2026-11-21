@@ -48,6 +48,8 @@ export type LibraryItem = {
   shown?: L10n;
   /** Short name for the pages of sizes («Болт ISO 4017»). */
   short?: L10n;
+  /** How many times its files were downloaded (D1 `downloads`), set where shown. */
+  downloads?: number;
   /** The size the download panel opens on (a page id of data/downloads.json). */
   defaultPage?: string;
 };

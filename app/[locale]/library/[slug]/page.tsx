@@ -5,11 +5,12 @@ import { LibraryCard } from '@/components/LibraryCard';
 import { ModelViewer } from '@/components/ModelViewer';
 import { Eyebrow } from '@/components/sections';
 import { siteButtonVariants } from '@/components/site/Button';
-import { getDict, isLocale, locales, localPath } from '@/lib/i18n';
+import { fill, getDict, isLocale, locales, localPath } from '@/lib/i18n';
 import { formatsOf, getItem, getItems, seedItems } from '@/lib/library';
 import { pageMetadata, SITE_URL } from '@/lib/seo';
 import { standardById, standardTitle } from '@/lib/standards';
 import { downloadsOf, text as dlText } from '@/lib/downloads';
+import { downloadsBySlug } from '@/lib/stats';
 import { PartConfigurator } from '@/components/PartConfigurator';
 
 export const revalidate = 600;
@@ -38,6 +39,7 @@ export default async function ItemPage({ params }: { params: Promise<{ locale: s
   const related = [...others.filter((i) => i.category === item.category), ...others.filter((i) => i.category !== item.category)].slice(0, 3);
   const stds = (item.standards ?? []).map(standardById).filter((s) => s !== undefined);
   const dl = downloadsOf(item.slug);
+  const times = (await downloadsBySlug())[item.slug] ?? 0;
 
   const specs: [string, string][] = [
     [t.item.material, item.material[locale]],
@@ -78,6 +80,7 @@ export default async function ItemPage({ params }: { params: Promise<{ locale: s
             {item.configs ? (
               <span className="font-mono text-[12.5px] text-on-ink-muted">
                 {t.item.configs}: <span className="text-on-ink">{item.configs}</span>
+                {times ? <span className="ml-3">↓ {fill(t.live.item, { n: new Intl.NumberFormat(locale).format(times) })}</span> : null}
               </span>
             ) : null}
           </div>

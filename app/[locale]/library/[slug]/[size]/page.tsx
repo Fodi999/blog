@@ -7,11 +7,12 @@ import { allPages, downloadsOf, fileKey, FORMATS, pageOf, text, type DlPage } fr
 import { fill, getDict, isLocale, locales, localPath, type Locale } from '@/lib/i18n';
 import { getItem } from '@/lib/library';
 import { pageMetadata, SITE_URL } from '@/lib/seo';
+import { downloadsOfPage } from '@/lib/stats';
 import { columnLabel, formatCell, standardById, standardTitle, unitOf, type StandardTable } from '@/lib/standards';
 
 /* One size of a library part — its own address, e.g. /ru/library/bolt-iso-4017/m12-x-60: the size's row of each
    standard, the 3D view, the four files of each option, the other sizes. Rendered on first visit and cached. */
-export const revalidate = 86400;
+export const revalidate = 3600;
 export const dynamicParams = true;
 
 // One size of each part per language is built ahead (an empty list made every size answer 404 in production); the
@@ -80,6 +81,7 @@ export default async function SizePage({ params }: { params: Promise<Params> }) 
     .map((s) => ({ s, r: rowOf(s, page.row) }))
     .filter((x) => x.r);
   const opt = page.options.find((o) => o.id === 'exact') ?? page.options[0];
+  const times = (await downloadsOfPage(slug, page.id)) ?? 0;
   const url = `${SITE_URL}/${locale}/library/${slug}/${page.id}`;
   const ld = {
     '@context': 'https://schema.org',
@@ -139,6 +141,7 @@ export default async function SizePage({ params }: { params: Promise<Params> }) 
             {name} <span className="text-steel">{label}</span>
           </h1>
           <p className="mt-4 text-[15.5px] leading-relaxed text-on-ink-muted">{item.summary[locale]}</p>
+          {times ? <p className="mt-2 font-mono text-[12.5px] text-on-ink-muted">↓ {fill(t.live.page, { n: new Intl.NumberFormat(locale).format(times) })}</p> : null}
           {tables.length ? (
             <div className="mt-6">
               <h2 className="text-[13px] font-medium text-on-ink-muted">{t.item.dl.dims}</h2>

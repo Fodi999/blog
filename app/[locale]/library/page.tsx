@@ -10,6 +10,8 @@ import { getItems } from '@/lib/library';
 import { pageMetadata } from '@/lib/seo';
 import { fmtNum } from '@/lib/status';
 import { standards, totalRows } from '@/lib/standards';
+import { downloadsBySlug } from '@/lib/stats';
+import { LiveStats } from '@/components/LiveStats';
 
 export const revalidate = 600;
 
@@ -24,7 +26,8 @@ export default async function LibraryPage({ params }: { params: Promise<{ locale
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   const t = getDict(locale);
-  const items = await getItems();
+  const counts = await downloadsBySlug();
+  const items = (await getItems()).map((i) => ({ ...i, downloads: counts[i.slug] ?? 0 }));
   const generators = items.filter((i) => i.standards?.length);
   const stats: [string, string][] = [
     [fmtNum(locale, generators.length), t.library.stats.generators],
@@ -51,6 +54,7 @@ export default async function LibraryPage({ params }: { params: Promise<{ locale
               </div>
             ))}
           </dl>
+          <LiveStats locale={locale} t={t.live} className="mt-4" />
         </div>
       </section>
 

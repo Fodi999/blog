@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { CookieSettingsLink } from '@/components/CookieSettingsLink';
+import { LiveStats } from '@/components/LiveStats';
 import { Logo } from '@/components/Logo';
 import { fill, getDict, localPath, type Locale } from '@/lib/i18n';
 import { INSTAGRAM_URL, TELEGRAM_URL, YOUTUBE_URL } from '@/lib/seo';
@@ -30,6 +31,7 @@ export function Footer({ locale }: { locale: Locale }) {
         <div className="max-w-sm">
           <Logo />
           <p className="mt-5 text-[15px] leading-relaxed text-on-ink-muted">{t.footer.tagline}</p>
+          <LiveStats locale={locale} t={t.live} className="mt-5" />
         </div>
         <div>
           <h2 className="text-[14px] font-medium text-on-ink-muted">{t.footer.program}</h2>

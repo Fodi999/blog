@@ -49,7 +49,14 @@ export function LibraryCard({ item, locale, categoryLabel, openLabel, configsLab
             ))}
             {more ? <span className="px-1 py-0.5 font-mono text-[10.5px] text-on-ink-muted">+{more}</span> : null}
           </div>
-          <span className="shrink-0 text-[14px] font-semibold text-on-ink transition-colors group-hover:text-signal">{openLabel} →</span>
+          <span className="flex shrink-0 items-center gap-3">
+            {item.downloads ? (
+              <span className="font-mono text-[11.5px] text-on-ink-muted tabular-nums" title="↓">
+                ↓ {new Intl.NumberFormat(locale).format(item.downloads)}
+              </span>
+            ) : null}
+            <span className="text-[14px] font-semibold text-on-ink transition-colors group-hover:text-signal">{openLabel} →</span>
+          </span>
         </div>
       </div>
     </Link>
