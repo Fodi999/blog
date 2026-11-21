@@ -10,7 +10,8 @@ import { ogLocale, SITE_URL } from '@/lib/seo';
 import '../globals.css';
 
 // Typefaces are self-hosted (public/fonts, @font-face in globals.css): the build needs no font service.
-export const dynamicParams = false;
+// No dynamicParams = false here: it kept every page not built ahead (the sizes of the library) at 404 in production;
+// an unknown locale is a 404 by isLocale below.
 
 export const viewport: Viewport = {
   width: 'device-width',
