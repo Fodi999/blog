@@ -9,7 +9,7 @@ import { getDict, isLocale, locales, localPath } from '@/lib/i18n';
 import { formatsOf, getItem, getItems, seedItems } from '@/lib/library';
 import { pageMetadata, SITE_URL } from '@/lib/seo';
 import { standardById, standardTitle } from '@/lib/standards';
-import { downloadsOf } from '@/lib/downloads';
+import { downloadsOf, text as dlText } from '@/lib/downloads';
 import { PartConfigurator } from '@/components/PartConfigurator';
 
 export const revalidate = 600;
@@ -127,8 +127,9 @@ export default async function ItemPage({ params }: { params: Promise<{ locale: s
         {dl ? (
           <PartConfigurator
             locale={locale}
-            configs={dl.configs}
-            defaultId={item.defaultConfig}
+            slug={item.slug}
+            pages={dl.pages}
+            pageId={item.defaultPage}
             title={item.title[locale]}
             poster={item.image}
             finish={item.finish}
@@ -208,6 +209,32 @@ export default async function ItemPage({ params }: { params: Promise<{ locale: s
           </div>
         )}
       </section>
+
+      {dl && dl.pages.length > 1 ? (
+        <section aria-labelledby="sizes-title" className="content-frame mt-20">
+          <h2 id="sizes-title" className="font-display text-[24px] font-semibold text-on-ink">
+            {t.item.dl.allSizes} <span className="font-mono text-[14px] font-normal text-on-ink-muted">{dl.pages.length}</span>
+          </h2>
+          <div className="mt-6 grid gap-x-8 gap-y-4 md:grid-cols-2 xl:grid-cols-3">
+            {Array.from(new Set(dl.pages.map((p) => dlText(p.group, locale)))).map((g) => (
+              <div key={g} className="border-t border-hairline-ink pt-3">
+                <h3 className="font-mono text-[13px] text-steel">{g || item.short?.[locale]}</h3>
+                <ul className="mt-2 flex flex-wrap gap-1.5">
+                  {dl.pages
+                    .filter((p) => dlText(p.group, locale) === g)
+                    .map((p) => (
+                      <li key={p.id}>
+                        <Link href={localPath(locale, `/library/${item.slug}/${p.id}`)} className="inline-block rounded-md border border-hairline-ink px-2 py-0.5 font-mono text-[12px] text-on-ink-muted transition-colors hover:border-signal hover:text-signal">
+                          {dlText(p.label, locale)}
+                        </Link>
+                      </li>
+                    ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       {related.length > 0 ? (
         <section className="content-frame mt-24">

@@ -98,7 +98,12 @@
       "pl": "Ø16 B500B, prosty 160 mm, rzeczywiste żebra",
       "en": "Ø16 B500B, straight 160 mm, real ribs"
     },
-    "defaultConfig": "d12-l-400-x-600"
+    "short": {
+      "ru": "Арматура EN 10080",
+      "pl": "Pręt EN 10080",
+      "en": "Rebar EN 10080"
+    },
+    "defaultPage": "d16-ribbed-300"
   },
   {
     "slug": "bolt-joint-iso-4017",
@@ -220,7 +225,12 @@
       0,
       -15
     ],
-    "defaultConfig": "exact-thread"
+    "short": {
+      "ru": "Болтовое соединение",
+      "pl": "Połączenie śrubowe",
+      "en": "Bolted joint"
+    },
+    "defaultPage": "m12-x-25"
   },
   {
     "slug": "bolt-iso-4017",
@@ -323,7 +333,12 @@
       0,
       -70
     ],
-    "defaultConfig": "exact-thread"
+    "short": {
+      "ru": "Болт ISO 4017",
+      "pl": "Śruba ISO 4017",
+      "en": "Bolt ISO 4017"
+    },
+    "defaultPage": "m12-x-60"
   },
   {
     "slug": "nut-iso-4032",
@@ -413,7 +428,12 @@
       "pl": "M12, klasa 8, gwint rzeczywisty",
       "en": "M12, class 8, real thread"
     },
-    "defaultConfig": "exact-thread"
+    "short": {
+      "ru": "Гайка ISO 4032",
+      "pl": "Nakrętka ISO 4032",
+      "en": "Nut ISO 4032"
+    },
+    "defaultPage": "m12"
   },
   {
     "slug": "washer-iso-7089",
@@ -490,7 +510,12 @@
       "pl": "M12, 200 HV",
       "en": "M12, 200 HV"
     },
-    "defaultConfig": "m12"
+    "short": {
+      "ru": "Шайба ISO 7089",
+      "pl": "Podkładka ISO 7089",
+      "en": "Washer ISO 7089"
+    },
+    "defaultPage": "m12"
   },
   {
     "slug": "screw-iso-4762",
@@ -593,7 +618,12 @@
       0,
       -70
     ],
-    "defaultConfig": "exact-thread"
+    "short": {
+      "ru": "Винт ISO 4762",
+      "pl": "Śruba ISO 4762",
+      "en": "Cap screw ISO 4762"
+    },
+    "defaultPage": "m10-x-40"
   },
   {
     "slug": "bearing-iso-15",
@@ -681,7 +711,12 @@
       0,
       0
     ],
-    "defaultConfig": "6205-open-with-balls"
+    "short": {
+      "ru": "Подшипник",
+      "pl": "Łożysko",
+      "en": "Bearing"
+    },
+    "defaultPage": "6205"
   },
   {
     "slug": "lock-nut-din-981",
@@ -752,7 +787,12 @@
       "pl": "KM4, gwint rzeczywisty",
       "en": "KM4, real thread"
     },
-    "defaultConfig": "km4-exact-thread"
+    "short": {
+      "ru": "Гайка DIN 981",
+      "pl": "Nakrętka DIN 981",
+      "en": "Lock nut DIN 981"
+    },
+    "defaultPage": "km4"
   },
   {
     "slug": "shaft",
@@ -851,6 +891,10 @@
       0,
       -75
     ],
-    "defaultConfig": "drive-shaft-d24-x-111-bearings"
+    "short": {
+      "ru": "Вал",
+      "pl": "Wał",
+      "en": "Shaft"
+    }
   }
 ]

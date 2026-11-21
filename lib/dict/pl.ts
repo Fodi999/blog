@@ -169,7 +169,7 @@ export const pl: Dict = {
       { date: '17–18 lis 2026', rev: '0.15.186', text: 'Kratownice wewnątrz części (12 rodzajów), mapa grubości ścianek, kontrola druku warstwa po warstwie; plan linii gładkiej formy.' },
       { date: '19–20 lis 2026', rev: '0.15.193', text: 'Dokładny loft i przejścia w wierzchołkach: zaokrąglenia schodzą się w narożnikach kadłuba rakiety; egzamin zaokrągleń — 98 ze 100, a gdzie bryły nie ma — uczciwa odmowa.' },
       { date: '20 lis 2026', rev: '0.15.196', text: 'Pręty zbrojeniowe wg EN 10080 i Eurokodu 2 — z rzeczywistymi żebrami i wykazem gięcia.' },
-      { date: '21 lis 2026', rev: '0.15.197', text: 'Pobieranie biblioteki: 165 gotowych wariantów w STEP, STL, 3MF i GLB, każdy sprawdzony przez jądro; pliki do druku z osią Z w górę.' },
+      { date: '21 lis 2026', rev: '0.15.197', text: 'Pobieranie biblioteki: 758 rozmiarów według tablic norm, 1 562 modele w STEP, STL, 3MF i GLB — każdy sprawdzony przez jądro; gwint umowny lub rzeczywisty; pliki do druku z osią Z w górę.' },
     ],
     nextTitle: 'Dalej',
     next: [
@@ -226,7 +226,7 @@ export const pl: Dict = {
   library: {
     title: 'Biblioteka Monge',
     lead: 'Części parametryczne, które Monge buduje według tablic norm ISO, DIN i EN. Każdą można obracać w 3D i pobrać jako STEP, STL, 3MF i GLB — bezpłatnie, bez rejestracji; tablice norm są otwarte w całości.',
-    stats: { generators: 'generatorów części', configs: 'gotowych wariantów', tables: 'tablic norm', rows: 'wierszy wymiarów' },
+    stats: { generators: 'generatorów części', configs: 'rozmiarów do pobrania', tables: 'tablic norm', rows: 'wierszy wymiarów' },
     all: 'Wszystkie',
     categories: { reinforcement: 'Zbrojenie', fasteners: 'Elementy złączne', bearings: 'Łożyska', shafts: 'Wały i osie' },
     standardsTitle: 'Tablice norm',
@@ -238,7 +238,7 @@ export const pl: Dict = {
     empty: 'W tej kategorii nie ma jeszcze modeli.',
     open: 'Otwórz',
     formats: 'Formaty',
-    configs: 'wariantów',
+    configs: 'rozmiarów',
   },
   standards: {
     title: 'Tablice norm Monge',
@@ -277,7 +277,7 @@ export const pl: Dict = {
     generator: 'Generator parametryczny',
     shown: 'W 3D',
     params: 'Parametry',
-    configs: 'Gotowych wariantów',
+    configs: 'Rozmiarów',
     standards: 'Normy',
     dl: {
       title: 'Pobierz model',
@@ -287,6 +287,16 @@ export const pl: Dict = {
       checks: { kernel: 'bryła sprawdzona przez jądro Monge', step: 'STEP odczytany ponownie bez rozbieżności', stl: 'siatka STL zamknięta, bez dziur' },
       formats: { step: 'CAD — dokładna geometria', stl: 'druk i CNC', '3mf': 'druk: Bambu, Prusa, Cura', glb: 'podgląd, gry, AR' },
       axes: 'Milimetry; STL i 3MF — oś Z w górę. Bez rejestracji.',
+      size_: 'Rozmiar',
+      variant: 'Wariant',
+      option: 'Wykonanie',
+      sizePage: 'Strona rozmiaru',
+      allSizes: 'Wszystkie rozmiary',
+      dims: 'Wymiary wg normy',
+      other: 'Inne warianty',
+      pageTitle: '{name} {size} — STEP, STL, 3MF',
+      pageDesc: '{name} {size}: {dims}masa ≈ {mass}. Pobierz bezpłatnie STEP, STL, 3MF i GLB{thread}. Model Monge sprawdzony przez jądro.',
+      threadNote: ', gwint umowny lub rzeczywisty',
     },
   },
   kpi: {

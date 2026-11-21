@@ -1,6 +1,7 @@
 import { getEnv } from '@/lib/cf';
 import type { Locale } from '@/lib/i18n';
 import seedJson from '@/data/library.json';
+import { downloadsOf } from '@/lib/downloads';
 import type { Dimension } from '@/components/ModelViewer';
 
 export type Category = 'reinforcement' | 'fasteners' | 'bearings' | 'shafts';
@@ -45,13 +46,16 @@ export type LibraryItem = {
   configs?: number;
   /** Which configuration the 3D model and the render show. */
   shown?: L10n;
-  /** The configuration the download panel opens on (an id of data/downloads.json). */
-  defaultConfig?: string;
+  /** Short name for the pages of sizes («Болт ISO 4017»). */
+  short?: L10n;
+  /** The size the download panel opens on (a page id of data/downloads.json). */
+  defaultPage?: string;
 };
 
 /* Built-in catalogue (data/library.json). It is also the seed of the D1 table
    (npm run db:seed) and the fallback while the database is empty or unreachable. */
-export const seedItems = seedJson as unknown as LibraryItem[];
+/** A generator's count is the number of its sizes to download (pages of data/downloads.json). */
+export const seedItems = (seedJson as unknown as LibraryItem[]).map((i) => ({ ...i, configs: downloadsOf(i.slug)?.pages.length ?? i.configs }));
 
 type Row = { slug: string; data: string; published: number };
 
@@ -68,7 +72,7 @@ export async function getItems(): Promise<LibraryItem[]> {
       for (const seed of seedItems) {
         const r = rows.get(seed.slug);
         if (!r) items.push(seed);
-        else if (r.published === 1) items.push({ ...seed, ...(JSON.parse(r.data) as LibraryItem) });
+        else if (r.published === 1) items.push({ ...seed, ...(JSON.parse(r.data) as LibraryItem), configs: seed.configs });
       }
       return items;
     } catch (error) {

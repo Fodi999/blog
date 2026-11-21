@@ -41,8 +41,9 @@ def glb(path):
     return {'ok': b[:4] == b'glTF' and struct.unpack('<I', b[4:8])[0] == 2}
 r = json.load(open(f'{OUT}/results.json'))
 for key, rec in r.items():
-    if not rec.get('files'): continue
-    d = f"{OUT}/{key}"; base = f"{d}/{rec['slug']}-{rec['id']}"
+    if not rec.get('files') or rec.get('file_checks'): continue
+    d = f"{OUT}/{key}"
+    base = f"{d}/{rec['slug']}-{rec['page']}-{rec['opt']}" if 'page' in rec else f"{d}/{rec['slug']}-{rec['id']}"
     c = {'stl': stl(base + '.stl'), '3mf': mf3(base + '.3mf'), 'glb': glb(base + '.glb')}
     s = c['stl']
     if s.get('volume') and rec.get('volume_cm3'):

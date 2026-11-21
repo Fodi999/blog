@@ -169,7 +169,7 @@ export const en: Dict = {
       { date: '17–18 Nov 2026', rev: '0.15.186', text: 'Lattices inside parts (12 kinds), a wall-thickness map, a layer-by-layer print check; the lines plan of a smooth form.' },
       { date: '19–20 Nov 2026', rev: '0.15.193', text: 'Exact loft and vertex blends: fillets meet at the corners of a rocket hull; fillet exam — 98 of 100, and an honest refusal where no body exists.' },
       { date: '20 Nov 2026', rev: '0.15.196', text: 'Reinforcing bars by EN 10080 and Eurocode 2 — with real ribs and a bending schedule.' },
-      { date: '21 Nov 2026', rev: '0.15.197', text: 'Library downloads: 165 ready configurations as STEP, STL, 3MF and GLB, each checked by the kernel; printing files Z up.' },
+      { date: '21 Nov 2026', rev: '0.15.197', text: 'Library downloads: 758 sizes by the standards’ tables, 1,562 models as STEP, STL, 3MF and GLB — each checked by the kernel; cosmetic or real thread; printing files Z up.' },
     ],
     nextTitle: 'Next',
     next: [
@@ -226,7 +226,7 @@ export const en: Dict = {
   library: {
     title: 'Monge library',
     lead: 'Parametric parts Monge builds by tables of ISO, DIN and EN standards. Spin each in 3D and download it as STEP, STL, 3MF or GLB — free, no sign-up; the standards tables are open in full.',
-    stats: { generators: 'part generators', configs: 'ready configurations', tables: 'standards tables', rows: 'rows of sizes' },
+    stats: { generators: 'part generators', configs: 'sizes to download', tables: 'standards tables', rows: 'rows of sizes' },
     all: 'All',
     categories: { reinforcement: 'Reinforcement', fasteners: 'Fasteners', bearings: 'Bearings', shafts: 'Shafts and axles' },
     standardsTitle: 'Standards tables',
@@ -238,7 +238,7 @@ export const en: Dict = {
     empty: 'No models in this category yet.',
     open: 'Open',
     formats: 'Formats',
-    configs: 'configurations',
+    configs: 'sizes',
   },
   standards: {
     title: 'Monge standards tables',
@@ -277,7 +277,7 @@ export const en: Dict = {
     generator: 'Parametric generator',
     shown: 'In 3D',
     params: 'Parameters',
-    configs: 'Ready configurations',
+    configs: 'Sizes',
     standards: 'Standards',
     dl: {
       title: 'Download the model',
@@ -287,6 +287,16 @@ export const en: Dict = {
       checks: { kernel: 'body checked by the Monge kernel', step: 'STEP read back with no difference', stl: 'STL mesh closed, no holes' },
       formats: { step: 'CAD — exact geometry', stl: 'printing and CNC', '3mf': 'printing: Bambu, Prusa, Cura', glb: 'viewing, games, AR' },
       axes: 'Millimetres; STL and 3MF are Z up. No sign-up.',
+      size_: 'Size',
+      variant: 'Variant',
+      option: 'Option',
+      sizePage: 'Page of size',
+      allSizes: 'All sizes',
+      dims: 'Dimensions by the standard',
+      other: 'Other variants',
+      pageTitle: '{name} {size} — STEP, STL, 3MF',
+      pageDesc: '{name} {size}: {dims}mass ≈ {mass}. Free STEP, STL, 3MF and GLB download{thread}. A Monge model checked by its kernel.',
+      threadNote: ', cosmetic or real thread',
     },
   },
   kpi: {
