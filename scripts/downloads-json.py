@@ -21,19 +21,28 @@ for slug, pages in plan.items():
             if not (rec and rec.get('ok') and stl_fine and fc.get('3mf', {}).get('ok') and fc.get('glb', {}).get('ok')):
                 left_out.append(key); continue
             base = f"{slug}-{pg['id']}-{op['id']}"
-            for ext in ['step', 'stl', '3mf', 'glb']:
+            exts = [e for e in ['step', 'stl', '3mf', 'glb'] if e in rec['files']]
+            for ext in exts:
                 upload.append((f"{src}/{key}/{base}.{ext}", f"downloads/{key}/{base}.{ext}"))
-            opts.append({'id': op['id'], 'label': op['label'],
-                         'bytes': [rec['files'][e] for e in ['step', 'stl', '3mf', 'glb']],
-                         'sizeMm': sorted((round(x, 1) for x in stl['size']), reverse=True),
-                         'massKg': round(stl['volume'] * 7850e-9, 5), 'bodies': rec['bodies'],
-                         'checks': [rec['kernel_ok'], rec['roundtrip_ok'], bool(stl.get('ok')) and rec['bodies'] == 1]})
+            o = {'id': op['id'], 'label': op['label'],
+                 # sizes in the order step, stl, 3mf, glb; null — no such file (the print option has no STEP)
+                 'bytes': [rec['files'].get(e) for e in ['step', 'stl', '3mf', 'glb']],
+                 'sizeMm': sorted((round(x, 1) for x in stl['size']), reverse=True),
+                 'massKg': round(stl['volume'] * 7850e-9, 5), 'bodies': rec['bodies'],
+                 'checks': [rec['kernel_ok'], bool(rec.get('roundtrip_ok')), bool(stl.get('ok')) and rec['bodies'] == 1]}
+            if 'print' in rec:
+                pr = rec['print']
+                # the plastic's mass (PLA 1.24 g/cm³) and how it lies: head down / as it stands
+                o['print'] = {'ok': pr['ok'], 'up': rec['up'], 'wall': pr['wall_min'], 'reach': pr['reach_max'], 'overMm2': round(pr['over_mm2'], 1),
+                              'pla': round(stl['volume'] * 1.24e-3, 2)}
+            opts.append(o)
         if opts:
             pages_out.append({'id': pg['id'], 'group': pg['group'], 'label': pg['label'], 'std': pg.get('std'), 'row': pg.get('row'), 'options': opts})
     if pages_out:
         data[slug] = {'checked': checked, 'version': version, 'pages': pages_out}
 json.dump(data, open(out, 'w'), ensure_ascii=False, separators=(',', ':'))
 open(f'{src}/upload.tsv', 'w').write(''.join(f'{a}\t{b}\n' for a, b in upload))
+open(f'{src}/upload_print.tsv', 'w').write(''.join(f'{a}\t{b}\n' for a, b in upload if '/print/' in b))
 n_p = sum(len(v['pages']) for v in data.values()); n_o = sum(len(p['options']) for v in data.values() for p in v['pages'])
-mb = sum(b for v in data.values() for p in v['pages'] for o in p['options'] for b in o['bytes']) / 1e6
+mb = sum(b or 0 for v in data.values() for p in v['pages'] for o in p['options'] for b in o['bytes']) / 1e6
 print(f'{n_p} pages, {n_o} geometries, {len(upload)} files, {mb:.0f} MB; left out {len(left_out)}: {left_out[:12]}')

@@ -5,12 +5,12 @@ import type { Locale } from '@/lib/i18n';
    Texts around the numbers live in lib/dict/*. */
 export const status = {
   /** The newest build of the program and its date (the app's «Что нового»). */
-  version: '0.15.197',
+  version: '0.15.198',
   versionDate: '2026-11-21',
   /** When the numbers below were taken. */
   checked: '2026-11-21',
   /** The full kernel check: every test of the kernel, the document, materials and saved failures. */
-  tests: { passed: 1392, failed: 0, seconds: 205 },
+  tests: { passed: 1392, failed: 0, seconds: 292 },
   /** Kernel failures saved from real work: fixed ones are replayed on every check; open ones wait (the inbox of
       `python3 tools/cases.py`): fillets and chamfers, Booleans (boolean, subtract, perforate), everything else. */
   cases: { fixed: 251, open: 75, openRounding: 41, openBoolean: 19, openOther: 15 },

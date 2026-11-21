@@ -55,7 +55,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const t = getDict(locale);
   const name = item.short?.[locale] ?? item.title[locale];
   const label = text(page.label, locale);
-  const opt = page.options[page.options.length - 1];
+  const opt = page.options.find((o) => o.id === 'exact') ?? page.options[0];
   const title = fill(t.item.dl.pageTitle, { name, size: label });
   const desc = fill(t.item.dl.pageDesc, { name, size: label, dims: dimsLine(locale, page), mass: massText(locale, opt.massKg), thread: page.options.some((o) => o.id === 'exact') ? t.item.dl.threadNote : '' });
   return pageMetadata(locale, `/library/${slug}/${size}`, title, desc, item.image);
@@ -79,7 +79,7 @@ export default async function SizePage({ params }: { params: Promise<Params> }) 
     .filter((s) => s !== undefined)
     .map((s) => ({ s, r: rowOf(s, page.row) }))
     .filter((x) => x.r);
-  const opt = page.options[page.options.length - 1];
+  const opt = page.options.find((o) => o.id === 'exact') ?? page.options[0];
   const url = `${SITE_URL}/${locale}/library/${slug}/${page.id}`;
   const ld = {
     '@context': 'https://schema.org',

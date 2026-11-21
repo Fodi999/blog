@@ -170,6 +170,7 @@ export const pl: Dict = {
       { date: '19–20 lis 2026', rev: '0.15.193', text: 'Dokładny loft i przejścia w wierzchołkach: zaokrąglenia schodzą się w narożnikach kadłuba rakiety; egzamin zaokrągleń — 98 ze 100, a gdzie bryły nie ma — uczciwa odmowa.' },
       { date: '20 lis 2026', rev: '0.15.196', text: 'Pręty zbrojeniowe wg EN 10080 i Eurokodu 2 — z rzeczywistymi żebrami i wykazem gięcia.' },
       { date: '21 lis 2026', rev: '0.15.197', text: 'Pobieranie biblioteki: 758 rozmiarów według tablic norm, 1 562 modele w STEP, STL, 3MF i GLB — każdy sprawdzony przez jądro; gwint umowny lub rzeczywisty; pliki do druku z osią Z w górę.' },
+      { date: '21 lis 2026', rev: '0.15.198', text: 'Gwint do druku 3D: śruby i nakrętki z luzem 0,15 mm na stronę, ułożone na stole najlepiej i sprawdzone przez Monge dla FDM — dział „Do druku 3D”.' },
     ],
     nextTitle: 'Dalej',
     next: [
@@ -296,7 +297,18 @@ export const pl: Dict = {
       other: 'Inne warianty',
       pageTitle: '{name} {size} — STEP, STL, 3MF',
       pageDesc: '{name} {size}: {dims}masa ≈ {mass}. Pobierz bezpłatnie STEP, STL, 3MF i GLB{thread}. Model Monge sprawdzony przez jądro.',
-      threadNote: ', gwint umowny lub rzeczywisty',
+      threadNote: ', gwint umowny, rzeczywisty lub do druku 3D',
+      print: {
+        title: 'Druk FDM',
+        profile: 'Kontrola Monge dla dyszy 0,4 mm i warstwy 0,2 mm: bez podpór drukują się nawisy do 45° i wysięg do 3 mm.',
+        lies: { '-y': 'leży łbem na stole', y: 'stoi jak w złożeniu' },
+        ok: 'podpory niepotrzebne',
+        needs: 'potrzebne podpory: wysięg do {reach} mm',
+        thin: 'cienkie miejsce {wall} mm — cieńsze niż 0,8 mm: dyszą 0,4 się nie wydrukuje, potrzebna dysza 0,2 lub żywica',
+        wall: 'najcieńsza ścianka {wall} mm',
+        pla: 'PLA ≈ {pla} g',
+        clearance: 'Gwint z luzem 0,15 mm na stronę: wydrukowana śruba i nakrętka z biblioteki skręcają się.',
+      },
     },
   },
   kpi: {
@@ -304,6 +316,20 @@ export const pl: Dict = {
     booleans: 'losowych operacji boolowskich — zepsutych brył {invalid}',
     fillets: 'zaokrągleń i faz z egzaminu zbudowanych poprawnie',
     tables: 'tablic norm ISO, DIN i EN w bibliotece',
+  },
+  printPage: {
+    title: 'Do druku 3D',
+    lead: 'Śruby i nakrętki ISO, które skręcają się po wydruku: gwint z luzem 0,15 mm na stronę, część już leży na stole tak, jak drukuje się najlepiej, i jest sprawdzona przez Monge dla drukarki FDM. STL i 3MF — oś Z w górę, milimetry.',
+    stats: { sizes: 'rozmiarów do druku', clean: 'bez podpór i cienkich miejsc', support: 'z podporami', thin: 'drobny gwint: dysza 0,2 lub żywica' },
+    howTitle: 'Jak to zrobiono',
+    how: [
+      ['Luz w gwincie', 'Gwint jest rzeczywisty, śrubowy, ale śruba jest cieńsza o 0,15 mm na promieniu, a nakrętka szersza o 0,15 mm. Tworzywo po wydruku lekko „rozlewa się” — z tym luzem para się skręca. Łeb i sześciokąt — dokładnie wg normy.'],
+      ['Położenie na stole', 'Monge sprawdza druk w każdym położeniu, w jakim część może leżeć, i wybiera najlepsze: bez podpór, a jeśli się nie da — z najmniejszą powierzchnią nawisów. Śruba zwykle leży łbem w dół, nakrętka — na płasko.'],
+      ['Kontrola druku', 'Warstwa po warstwie: gdzie materiał zaczyna się w powietrzu, gdzie nawisy są bardziej płaskie niż 45° lub wystają ponad 3 mm, gdzie ścianka jest cieńsza niż dwa przejścia dyszy 0,4 mm. Wynik — na stronie rozmiaru.'],
+    ],
+    listTitle: 'Wszystkie rozmiary do druku',
+    legend: { clean: 'drukuje się bez podpór', support: 'potrzebne podpory', thin: 'cienki gwint dla dyszy 0,4' },
+    note: 'Kontrola jest geometryczna: nie zna Twojej drukarki ani tworzywa. Pierwszą część danego rozmiaru wydrukuj na próbę.',
   },
   libraryHome: {
     title: 'Biblioteka według norm',

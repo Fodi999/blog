@@ -15,8 +15,8 @@ type Text = string | Record<Locale, string>;
 export type DlOption = {
   id: string;
   label: Record<Locale, string>;
-  /** File sizes in FORMATS order. */
-  bytes: number[];
+  /** File sizes in FORMATS order; null — no such file (the print option has no STEP). */
+  bytes: (number | null)[];
   /** Overall size as printed (Z up), mm, largest first. */
   sizeMm: number[];
   /** Steel 7850 kg/m³ × the mesh volume. */
@@ -24,6 +24,9 @@ export type DlOption = {
   bodies: number;
   /** The kernel's report of every body; STEP read back and the same; the STL closed (one body). */
   checks: [boolean, boolean, boolean];
+  /** The 3D-printing option: Monge's print check for FDM (nozzle 0.4, layer 0.2, overhangs to 45° / 3 mm) in the way
+      it lies on the bed (up "-y" — head down, "y" — as it stands); the least wall, the longest overhang, PLA grams. */
+  print?: { ok: boolean; up: string; wall: number; reach: number; overMm2: number; pla: number };
 };
 
 export type DlPage = {

@@ -55,6 +55,16 @@ export default async function LibraryPage({ params }: { params: Promise<{ locale
       </section>
 
       <section className="content-frame">
+        <Link
+          href={localPath(locale, '/library/print')}
+          className="group mb-8 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-signal/35 bg-[linear-gradient(100deg,rgba(196,255,77,.08),transparent_60%)] px-5 py-4 transition-colors hover:border-signal"
+        >
+          <span>
+            <span className="block font-display text-[20px] font-semibold text-on-ink">{t.printPage.title}</span>
+            <span className="mt-1 block max-w-[80ch] text-[14px] text-on-ink-muted">{t.printPage.how[0][1]}</span>
+          </span>
+          <span className="font-semibold text-on-ink group-hover:text-signal">{t.library.open} →</span>
+        </Link>
         <LibraryGrid items={items} locale={locale} t={t.library} />
       </section>
 

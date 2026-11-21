@@ -170,6 +170,7 @@ export const en: Dict = {
       { date: '19–20 Nov 2026', rev: '0.15.193', text: 'Exact loft and vertex blends: fillets meet at the corners of a rocket hull; fillet exam — 98 of 100, and an honest refusal where no body exists.' },
       { date: '20 Nov 2026', rev: '0.15.196', text: 'Reinforcing bars by EN 10080 and Eurocode 2 — with real ribs and a bending schedule.' },
       { date: '21 Nov 2026', rev: '0.15.197', text: 'Library downloads: 758 sizes by the standards’ tables, 1,562 models as STEP, STL, 3MF and GLB — each checked by the kernel; cosmetic or real thread; printing files Z up.' },
+      { date: '21 Nov 2026', rev: '0.15.198', text: 'Threads for 3D printing: bolts, screws and nuts with 0.15 mm allowance per side, laid on the bed the best way and checked by Monge for FDM — the “For 3D printing” section.' },
     ],
     nextTitle: 'Next',
     next: [
@@ -296,7 +297,18 @@ export const en: Dict = {
       other: 'Other variants',
       pageTitle: '{name} {size} — STEP, STL, 3MF',
       pageDesc: '{name} {size}: {dims}mass ≈ {mass}. Free STEP, STL, 3MF and GLB download{thread}. A Monge model checked by its kernel.',
-      threadNote: ', cosmetic or real thread',
+      threadNote: ', cosmetic, real or 3D-printing thread',
+      print: {
+        title: 'FDM printing',
+        profile: 'Monge’s check for a 0.4 mm nozzle and 0.2 mm layers: overhangs up to 45° and reaching up to 3 mm print without support.',
+        lies: { '-y': 'lies head down on the bed', y: 'stands as in the assembly' },
+        ok: 'no support needed',
+        needs: 'support needed: overhang reaching {reach} mm',
+        thin: 'a thin spot of {wall} mm — under 0.8 mm: a 0.4 nozzle will not print it; use a 0.2 nozzle or resin',
+        wall: 'thinnest wall {wall} mm',
+        pla: 'PLA ≈ {pla} g',
+        clearance: 'Thread with 0.15 mm allowance per side: a printed bolt and nut of the library screw together.',
+      },
     },
   },
   kpi: {
@@ -304,6 +316,20 @@ export const en: Dict = {
     booleans: 'random Boolean operations — {invalid} spoiled bodies',
     fillets: 'exam fillets and chamfers built right',
     tables: 'ISO, DIN and EN standards tables in the library',
+  },
+  printPage: {
+    title: 'For 3D printing',
+    lead: 'ISO bolts, screws and nuts that screw together after printing: a thread with 0.15 mm allowance per side, the part already lying on the bed the way it prints best, and checked by Monge for an FDM printer. STL and 3MF, Z up, millimetres.',
+    stats: { sizes: 'sizes to print', clean: 'no support, no thin spots', support: 'need support', thin: 'fine thread: 0.2 nozzle or resin' },
+    howTitle: 'How it is done',
+    how: [
+      ['Allowance in the thread', 'The thread is real and helical, but the bolt is 0.15 mm thinner on the radius and the nut 0.15 mm wider. Plastic spreads a little when printed — with this allowance the pair screws together. The head and the hexagon are exactly as the standard gives them.'],
+      ['Lying on the bed', 'Monge checks the print in every way the part can lie and takes the best: no support, or if that cannot be — the least overhang. A bolt and a cap screw usually lie head down, a nut flat.'],
+      ['Print check', 'Layer by layer: where material starts in the air, where overhangs are flatter than 45° or reach past 3 mm, where a wall is thinner than two passes of a 0.4 mm nozzle. The result is on the size’s page.'],
+    ],
+    listTitle: 'Every size to print',
+    legend: { clean: 'prints without support', support: 'needs support', thin: 'thread too fine for a 0.4 nozzle' },
+    note: 'The check is geometric: it does not know your printer or plastic. Print the first part of a size as a test.',
   },
   libraryHome: {
     title: 'A library by the standards',

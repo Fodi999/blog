@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { ModelViewer, type ViewerLabels } from '@/components/ModelViewer';
 import { fileKey, FORMATS, text, type DlPage } from '@/lib/downloads';
-import type { Dict, Locale } from '@/lib/i18n';
+import { fill, type Dict, type Locale } from '@/lib/i18n';
 
 type Props = {
   locale: Locale;
@@ -44,7 +44,9 @@ export function PartConfigurator({ locale, slug, pages, pageId, navigate = false
   const router = useRouter();
   const [pid, setPid] = useState(pageId && pages.some((p) => p.id === pageId) ? pageId : pages[0].id);
   const page = pages.find((p) => p.id === pid) ?? pages[0];
-  const [oid, setOid] = useState(page.options[page.options.length - 1].id);
+  // opens on the real thread (the print option is chosen on purpose), else the last option
+  const first = (p: DlPage) => (p.options.find((o) => o.id === 'exact') ?? p.options.filter((o) => o.id !== 'print').pop() ?? p.options[0]).id;
+  const [oid, setOid] = useState(first(page));
   const opt = page.options.find((o) => o.id === oid) ?? page.options[0];
   const d = t.dl;
   const nf = (n: number, digits = 1) => new Intl.NumberFormat(locale, { maximumFractionDigits: digits }).format(n);
@@ -57,7 +59,7 @@ export function PartConfigurator({ locale, slug, pages, pageId, navigate = false
 
   const pick = (next: DlPage) => {
     // keep the option when the new size has it (the thread stays real when the length changes)
-    if (!next.options.some((o) => o.id === oid)) setOid(next.options[next.options.length - 1].id);
+    if (!next.options.some((o) => o.id === oid)) setOid(first(next));
     if (navigate) router.push(`/${locale}/library/${slug}/${next.id}`, { scroll: false });
     else setPid(next.id);
   };
@@ -159,8 +161,30 @@ export function PartConfigurator({ locale, slug, pages, pageId, navigate = false
             {opt.checks[2] ? <li className="flex items-center gap-2">{tick}{d.checks.stl}</li> : null}
           </ul>
 
+          {opt.print ? (
+            <div className={`mt-4 rounded-lg border p-3 text-[13px] leading-snug ${opt.print.ok && opt.print.wall >= 0.8 ? 'border-signal/40 bg-signal/[.05]' : 'border-hairline-ink-strong bg-ink'}`}>
+              <p className="font-medium text-on-ink">
+                {d.print.title}: {d.print.lies[opt.print.up as '-y' | 'y'] ?? ''}
+              </p>
+              <ul className="mt-1.5 grid gap-1 text-on-ink-muted">
+                <li className="flex items-start gap-2">
+                  {opt.print.ok ? tick : <span className="mt-1 size-2 shrink-0 rounded-full bg-[#ffb648]" aria-hidden="true" />}
+                  {opt.print.ok ? d.print.ok : fill(d.print.needs, { reach: nf(opt.print.reach, 1) })}
+                </li>
+                <li className="flex items-start gap-2">
+                  {opt.print.wall >= 0.8 ? tick : <span className="mt-1 size-2 shrink-0 rounded-full bg-[#ffb648]" aria-hidden="true" />}
+                  {opt.print.wall >= 0.8 ? fill(d.print.wall, { wall: nf(opt.print.wall, 2) }) : fill(d.print.thin, { wall: nf(opt.print.wall, 2) })}
+                </li>
+                <li className="pl-5 font-mono text-[12.5px] text-on-ink">{fill(d.print.pla, { pla: nf(opt.print.pla, 1) })}</li>
+              </ul>
+              <p className="mt-2 text-[12px] text-on-ink-muted">
+                {d.print.clearance} {d.print.profile}
+              </p>
+            </div>
+          ) : null}
+
           <ul className="mt-5 grid gap-2">
-            {FORMATS.map((f, i) => (
+            {FORMATS.map((f, i) => opt.bytes[i] == null ? null : (
               <li key={f}>
                 <a
                   href={`/api/files/${fileKey(slug, page.id, opt.id, f)}?download=1`}
@@ -175,7 +199,7 @@ export function PartConfigurator({ locale, slug, pages, pageId, navigate = false
                     <span className="text-[13.5px] text-on-ink-muted group-hover:text-on-ink">{d.formats[f]}</span>
                   </span>
                   <span className="flex items-center gap-2 font-mono text-[12px] text-on-ink-muted">
-                    {size(locale, opt.bytes[i])}
+                    {size(locale, opt.bytes[i] ?? 0)}
                     <span className="text-[15px] text-on-ink group-hover:text-signal" aria-hidden="true">
                       ↓
                     </span>
