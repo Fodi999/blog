@@ -12,6 +12,8 @@ const TYPES: Record<string, string> = {
   pdf: 'application/pdf',
   png: 'image/png',
   webp: 'image/webp',
+  jpg: 'image/jpeg',
+  jpeg: 'image/jpeg',
   dmg: 'application/x-apple-diskimage',
 };
 
@@ -71,8 +73,10 @@ async function serve(request: Request, params: Promise<{ key: string[] }>, head:
 
   const ext = key.split('.').pop()?.toLowerCase() ?? '';
   const headers = new Headers(open ? OPEN_CORS : {});
-  // the type from the object's metadata (not writeHttpMetadata: the dev proxy of the bucket cannot pass a Headers)
-  const type = meta.httpMetadata?.contentType || TYPES[ext];
+  // a known extension decides the type (an object uploaded without one is stored as application/octet-stream, and an
+  // <img> or a chat client will not show a WebP served so); else the object's metadata (not writeHttpMetadata: the
+  // dev proxy of the bucket cannot pass a Headers)
+  const type = TYPES[ext] || meta.httpMetadata?.contentType;
   if (type) headers.set('content-type', type);
   headers.set('etag', meta.httpEtag);
   headers.set('accept-ranges', 'bytes');
