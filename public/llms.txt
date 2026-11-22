@@ -14,6 +14,13 @@
 - [Catalogue index](https://dima-fomin.pl/api/v1/catalog): families; `?family=<id>` — its sizes
 - [Documentation](https://dima-fomin.pl/en/developers)
 
+## MCP server (Model Context Protocol)
+
+- Address: `https://dima-fomin.pl/mcp` — Streamable HTTP, public, no key, read-only; protocol 2024-11-05 … 2025-11-25
+  (initialize) and 2026-07-28 (stateless). Tools: `search_models` (exact match or `not_found` with the nearest apart —
+  nothing substituted), `get_model`, `get_download_links` (STEP, STL, 3MF, GLB with size and SHA-256).
+- [How to connect](https://dima-fomin.pl/en/mcp): Claude, ChatGPT, VS Code, Cursor, MCP Inspector
+
 ## Pages
 
 - [Library](https://dima-fomin.pl/en/library): every part family, search

@@ -22,6 +22,7 @@ export function Footer({ locale }: { locale: Locale }) {
     { href: localPath(locale, '/contact'), label: t.nav.contact },
     { href: localPath(locale, '/license'), label: t.license.title },
     { href: localPath(locale, '/developers'), label: t.developers.title },
+    { href: localPath(locale, '/mcp'), label: 'Monge MCP' },
     { href: localPath(locale, '/privacy'), label: t.footer.privacy },
   ];
   const link = 'text-[15px] text-on-ink transition-colors hover:text-steel';

@@ -113,6 +113,10 @@ curl -OJ "${SITE_URL}/api/files/downloads/bolt-iso-4017/m12-x-60/exact/bolt-iso-
           <a href="/llms.txt" className="text-on-ink underline underline-offset-2 hover:text-signal">
             /llms.txt
           </a>
+          {' · '}
+          <a href={`/${locale}/mcp`} className="text-on-ink underline underline-offset-2 hover:text-signal">
+            Monge MCP ({SITE_URL}/mcp)
+          </a>
         </p>
       </section>
     </>

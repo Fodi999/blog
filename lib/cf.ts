@@ -59,6 +59,10 @@ export type SiteEnv = {
   LEAD_EMAIL_FROM?: string;
   /** Token of the Monge app for the private template API (secret MONGE_API_TOKEN). */
   MONGE_API_TOKEN?: string;
+  /** Workers rate limiter of the MCP server (wrangler `ratelimits` binding "MCP_LIMIT"): requests per client address. */
+  MCP_LIMIT?: { limit(o: { key: string }): Promise<{ success: boolean }> };
+  /** Extra browser origins allowed to call /mcp, comma-separated (wrangler var); no Origin header is always allowed. */
+  MCP_ALLOWED_ORIGINS?: string;
 };
 
 /** The worker bindings, or {} when running outside Cloudflare (next build, plain next dev). */

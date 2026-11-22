@@ -1,0 +1,14 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "pl.dima-fomin/monge",
+  "title": "Monge MCP",
+  "description": "CAD models of ISO/DIN/EN standard parts: search by size; STEP, STL, 3MF, GLB with SHA-256.",
+  "version": "1.0.0",
+  "websiteUrl": "https://dima-fomin.pl/en/mcp",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://dima-fomin.pl/mcp"
+    }
+  ]
+}
