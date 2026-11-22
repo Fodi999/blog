@@ -4,11 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "node scripts/catalog-version.mjs && opennextjs-cloudflare build",
+    "build": "node scripts/catalog-version.mjs && npm run build:mcp-viewer && opennextjs-cloudflare build",
     "build:next": "next build",
     "start": "next start",
     "lint": "eslint",
-    "deploy": "npm run catalog:upload && opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "deploy": "npm run catalog:upload && npm run build:mcp-viewer && opennextjs-cloudflare build && opennextjs-cloudflare deploy",
     "catalog:upload": "wrangler r2 object put monge-files/$(node scripts/catalog-version.mjs) --file data/downloads.json --content-type application/json --cache-control 'public, max-age=31536000, immutable' --remote",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
@@ -16,7 +16,8 @@
     "db:seed": "node scripts/seed-sql.mjs && wrangler d1 execute monge --remote --file migrations/0002_seed.sql",
     "files:upload": "bash scripts/upload-r2.sh",
     "typecheck": "tsc --noEmit",
-    "warm": "node scripts/warm.mjs"
+    "warm": "node scripts/warm.mjs",
+    "build:mcp-viewer": "node scripts/build-mcp-viewer.mjs"
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",

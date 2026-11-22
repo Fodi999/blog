@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Monge 3D model viewer</title>
+<style>
+:root {
+  --bg: var(--color-background-primary, #15171b);
+  --panel: var(--color-background-secondary, #1d2026);
+  --line: var(--color-border-primary, #2c3038);
+  --text: var(--color-text-primary, #eef0f3);
+  --muted: var(--color-text-secondary, #9aa1ab);
+  --gold: #d4aa4e;
+  --gold-ink: #1a1408;
+  --stage-a: #262a31;
+  --stage-b: #121418;
+  --font: var(--font-sans, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif);
+  --mono: var(--font-mono, ui-monospace, "SF Mono", Menlo, Consolas, monospace);
+  color-scheme: dark;
+}
+:root[data-theme="light"] {
+  --bg: var(--color-background-primary, #ffffff);
+  --panel: var(--color-background-secondary, #f5f4f0);
+  --line: var(--color-border-primary, #e2dfd6);
+  --text: var(--color-text-primary, #17181b);
+  --muted: var(--color-text-secondary, #5d636c);
+  --gold: #9a6f1c;
+  --gold-ink: #ffffff;
+  --stage-a: #f4f2ec;
+  --stage-b: #dcd8cd;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.45 var(--font); }
+body { padding: 14px; }
+button { font: inherit; color: inherit; }
+.top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.title { margin: 0; font-size: 17px; font-weight: 650; letter-spacing: -.01em; }
+.sub { margin-top: 3px; color: var(--muted); font-size: 12.5px; }
+.brand { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 11.5px; white-space: nowrap; }
+.brand svg { width: 18px; height: 18px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.chip { border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; font-size: 12.5px; background: transparent; cursor: pointer; }
+.chip[aria-pressed="true"] { border-color: var(--gold); background: var(--gold); color: var(--gold-ink); }
+.chip.static { cursor: default; }
+.layout { margin-top: 10px; display: grid; gap: 12px; }
+.stage { position: relative; height: 380px; border-radius: 12px; overflow: hidden; border: 1px solid var(--line);
+  background: radial-gradient(ellipse at 50% 40%, var(--stage-a), var(--stage-b) 75%); touch-action: none; }
+.stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; outline: none; }
+.poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; padding: 18px; }
+.poster.hidden { display: none; }
+body.no3d .tools, body.no3d .hint { display: none; }
+.badge { position: absolute; left: 10px; top: 10px; max-width: calc(100% - 120px); border-radius: 8px; padding: 4px 9px; font-size: 12px;
+  background: color-mix(in srgb, var(--bg) 82%, transparent); border: 1px solid var(--line); }
+.badge.warn { border-color: #c98a2e; }
+.tools { position: absolute; right: 10px; top: 10px; display: flex; gap: 6px; }
+.tool { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 8px; border: 1px solid var(--line); cursor: pointer;
+  background: color-mix(in srgb, var(--bg) 82%, transparent); }
+.tool:hover { border-color: var(--gold); }
+.tool svg { width: 16px; height: 16px; }
+.hint { position: absolute; left: 0; right: 0; bottom: 8px; text-align: center; color: var(--muted); font-size: 11.5px; pointer-events: none; }
+.status { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); font-size: 13px; text-align: center; padding: 20px; pointer-events: none; }
+.label3d { position: absolute; transform: translate(-50%, -100%); font-size: 11.5px; padding: 2px 7px; border-radius: 6px; white-space: nowrap; pointer-events: none;
+  background: color-mix(in srgb, var(--bg) 85%, transparent); border: 1px solid var(--line); }
+.specs { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin: 0; }
+.specs div { background: var(--panel); padding: 7px 10px; }
+.specs dt { color: var(--muted); font-size: 11.5px; }
+.specs dd { margin: 2px 0 0; font-family: var(--mono); font-size: 12.5px; }
+.specs .group { grid-column: 1 / -1; font-weight: 600; font-size: 12.5px; padding: 8px 10px 6px; }
+.files { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 6px; }
+.file { display: flex; justify-content: space-between; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; cursor: pointer; background: transparent; text-align: left; }
+.file:hover { border-color: var(--gold); }
+.file b { font-family: var(--mono); font-size: 12px; white-space: nowrap; }
+.file span { white-space: nowrap; }
+.file span { color: var(--muted); font-family: var(--mono); font-size: 11.5px; }
+.note { color: var(--muted); font-size: 12px; margin: 0; }
+.links { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12.5px; }
+.link { background: none; border: 0; padding: 0; color: var(--gold); cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+.fallback { display: none; }
+body.no3d .fallback { display: block; }
+/* full screen: the stage fills the left, the data runs down the right */
+body.fs { padding: 0; height: 100vh; overflow: hidden; }
+body.fs .top { padding: 12px 14px 0; }
+body.fs .layout { grid-template-columns: 1fr 340px; height: calc(100vh - 92px); margin-top: 8px; }
+body.fs .stage { height: 100%; border-radius: 0; border-width: 1px 1px 0 0; }
+body.fs .side { overflow: auto; padding: 0 14px 14px 0; }
+.side { display: grid; gap: 12px; align-content: start; }
+@media (max-width: 640px) { body.fs .layout { grid-template-columns: 1fr; } body.fs .stage { height: 60vh; } }
+</style>
+</head>
+<body>
+<div class="top">
+  <div>
+    <h1 class="title" id="title">Monge</h1>
+    <div class="sub" id="sub"></div>
+  </div>
+  <div class="brand"><svg viewBox="0 0 1024 1024" aria-hidden="true"><rect width="1024" height="1024" rx="200" fill="#1c1f24"/><path fill="#d4aa4e" d="M272,732 L272,316 L296,292 L372,292 L512,500 L652,292 L728,292 L752,316 L752,732 L664,732 L664,452 L536,642 L488,642 L360,452 L360,732 Z"/></svg>Monge CAD</div>
+</div>
+<div class="chips" id="models" hidden></div>
+<div class="layout">
+  <div class="stage" id="stage">
+    <img class="poster" id="poster" alt="" hidden>
+    <div class="badge" id="badge" hidden></div>
+    <div class="tools">
+      <button class="tool" id="reset" type="button" title="Reset view"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2.5 8a5.5 5.5 0 1 0 1.6-3.9"/><path d="M2.5 2.5v3h3"/></svg></button>
+      <button class="tool" id="full" type="button" title="Full screen"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 6V2h4M14 6V2h-4M2 10v4h4M14 10v4h-4"/></svg></button>
+    </div>
+    <div class="status" id="status">…</div>
+    <div class="hint" id="hint"></div>
+  </div>
+  <div class="side">
+    <div class="chips" id="options" hidden></div>
+    <p class="note fallback" id="fallback"></p>
+    <dl class="specs" id="specs"></dl>
+    <p class="note" id="imgnote" hidden></p>
+    <div class="files" id="files"></div>
+    <div class="links" id="links"></div>
+  </div>
+</div>
+<!--APP_JS-->
+</body>
+</html>

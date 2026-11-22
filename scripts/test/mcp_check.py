@@ -50,6 +50,10 @@ def http(method="POST", body=None, headers=None, raw=None):
         if status == 503 and attempt < 2:
             time.sleep(2)
             continue
+        if status == 429 and attempt < 2 and not (headers or {}).get("x-expect-429"):
+            # the server's own limit (about 60 a minute): wait as it says, like a well-behaved client
+            time.sleep(int(hdrs.get("Retry-After") or hdrs.get("retry-after") or 60) + 1)
+            continue
         break
     try:
         js = json.loads(text) if text else None
@@ -95,10 +99,10 @@ s, _, js = legacy("ping")
 check("ping", s == 200 and js.get("result") == {}, js)
 s, _, js = legacy("tools/list")
 tools = {t["name"]: t for t in (js or {}).get("result", {}).get("tools", [])}
-check("tools/list: three tools", set(tools) == {"search_models", "get_model", "get_download_links"}, list(tools))
+check("tools/list: four tools", list(tools) == ["search_models", "get_model", "get_download_links", "render_model_viewer"], list(tools))
 check("tools read-only", all(t["annotations"]["readOnlyHint"] and not t["annotations"]["destructiveHint"] for t in tools.values()))
 check("tools have outputSchema", all(t.get("outputSchema", {}).get("type") == "object" for t in tools.values()))
-s, _, js = legacy("resources/list")
+s, _, js = legacy("prompts/list")
 check("unknown method → -32601", js and js.get("error", {}).get("code") == -32601, js)
 s, _, js = legacy("tools/list", version="1999-01-01")
 check("unsupported MCP-Protocol-Version header → 400", s == 400, (s, js))
@@ -176,13 +180,51 @@ if step:
     check("Repr-Digest matches", digest == "sha-256=:" + base64.b64encode(bytes.fromhex(sha)).decode() + ":", digest)
     print(f"     STEP {len(data)} B sha256 {sha}")
 
+# ── MCP Apps: the 3D viewer ──
+VIEWER = "ui://monge/model-viewer.html"
+vt = tools.get("render_model_viewer", {})
+check("viewer tool: _meta.ui.resourceUri + visibility + openai/outputTemplate", vt.get("_meta", {}).get("ui", {}).get("resourceUri") == VIEWER and "model" in vt["_meta"]["ui"].get("visibility", []) and vt["_meta"].get("openai/outputTemplate") == VIEWER, vt.get("_meta"))
+check("viewer tool read-only", vt.get("annotations", {}).get("readOnlyHint") is True)
+s, _, js = legacy("initialize", {"protocolVersion": "2025-11-25", "capabilities": {}, "clientInfo": {"name": "t", "version": "1"}})
+check("initialize advertises resources and the ui extension", "resources" in js["result"]["capabilities"] and "io.modelcontextprotocol/ui" in js["result"]["capabilities"].get("extensions", {}), js["result"]["capabilities"])
+s, _, js = legacy("resources/list")
+res = (js or {}).get("result", {}).get("resources", [])
+check("resources/list: the viewer, text/html;profile=mcp-app", [(r["uri"], r["mimeType"]) for r in res] == [(VIEWER, "text/html;profile=mcp-app")], res)
+s, _, js = legacy("resources/read", {"uri": VIEWER})
+c = ((js or {}).get("result", {}).get("contents") or [{}])[0]
+csp = c.get("_meta", {}).get("ui", {}).get("csp", {})
+check("resources/read: html, mime, csp only dima-fomin.pl", c.get("mimeType") == "text/html;profile=mcp-app" and c.get("text", "").startswith("<!doctype html>") and "ui/initialize" in c.get("text", "") and csp == {"connectDomains": ["https://dima-fomin.pl"], "resourceDomains": ["https://dima-fomin.pl"]}, (c.get("mimeType"), csp, len(c.get("text", ""))))
+check("viewer html loads no external script", "<script src" not in c.get("text", "").lower())
+s, _, js = legacy("resources/read", {"uri": "ui://other"})
+check("resources/read unknown uri → error", js and "error" in js, js)
+s, r, _ = call("render_model_viewer", {"id": "bolt-iso-4017--m12-x-60", "compare_with": ["nut-iso-4032--m12--exact"], "layout": "side_by_side"})
+ms = r.get("structuredContent", {}).get("models", [])
+check("viewer: size id → the real-thread option; nut added", [m["id"] for m in ms] == ["bolt-iso-4017--m12-x-60--exact", "nut-iso-4032--m12--exact"] and r["structuredContent"]["layout"] == "side_by_side", [m.get("id") for m in ms])
+b = ms[0] if ms else {}
+check("viewer: GLB of that option, standard, pitch, thread type", b.get("glb", {}).get("url", "").endswith("/exact/bolt-iso-4017-m12-x-60-exact.glb") and b.get("standard", {}).get("id") == "ISO 4017" and b.get("thread", {}).get("pitch_mm") == 1.75 and b.get("thread", {}).get("type") == "exact", b.get("glb"))
+check("viewer: image is this option's (exact)", b.get("image", {}).get("option") == "exact" and b["image"]["shows_this_option"] is True and b["image"]["note"] is None, b.get("image"))
+check("viewer: STEP STL 3MF GLB links", sorted(f["format"] for f in b.get("files", [])) == ["3mf", "glb", "step", "stl"])
+check("viewer: text fallback has the site 3D view, WebP and files", "?option=exact" in r["content"][0]["text"] and ".webp" in r["content"][0]["text"] and ".step" in r["content"][0]["text"])
+s, r, _ = call("render_model_viewer", {"id": "bolt-iso-4017--m12-x-60--cosmetic"})
+im = r.get("structuredContent", {}).get("models", [{}])[0].get("image", {})
+check("viewer: cosmetic → picture marked as the default option", im.get("shows_this_option") is False and "default option" in (im.get("note") or ""), im)
+s, r, _ = call("render_model_viewer", {"id": "bolt-iso-4017--m12-x-61--exact"})
+check("viewer: unknown id → tool error, no models", r.get("isError") is True and "structuredContent" not in r, r)
+s, r, _ = call("render_model_viewer", {"id": "bolt-iso-4017--m12-x-60", "compare_with": ["a", "b", "c", "d"]})
+check("viewer: more than four models → tool error", r.get("isError") is True, r)
+for u in (b.get("glb", {}).get("url"), b.get("image", {}).get("url")):
+    if not u: continue
+    req = urllib.request.Request(u, method="HEAD", headers={"user-agent": UA, "origin": "null"})
+    with urllib.request.urlopen(req, timeout=60) as resp:
+        check(f"CORS for the sandbox: {u.rsplit('.', 1)[-1]}", resp.headers.get("access-control-allow-origin") == "*" and resp.headers.get("content-type") in ("model/gltf-binary", "image/webp"), (resp.headers.get("access-control-allow-origin"), resp.headers.get("content-type")))
+
 # ── modern era (2026-07-28) ──
 s, _, js = modern("server/discover")
 r = (js or {}).get("result", {})
 check("server/discover", s == 200 and r.get("supportedVersions") == [MODERN] and r.get("resultType") == "complete" and r.get("_meta", {}).get("io.modelcontextprotocol/serverInfo", {}).get("name") == "monge-mcp", js)
 s, _, js = modern("tools/list")
 r = (js or {}).get("result", {})
-check("modern tools/list: ttlMs, cacheScope, resultType", len(r.get("tools", [])) == 3 and r.get("ttlMs", 0) > 0 and r.get("cacheScope") == "public" and r.get("resultType") == "complete", js)
+check("modern tools/list: ttlMs, cacheScope, resultType", len(r.get("tools", [])) == 4 and r.get("ttlMs", 0) > 0 and r.get("cacheScope") == "public" and r.get("resultType") == "complete", js)
 s, _, js = modern("tools/call", {"name": "search_models", "arguments": {"query": "ISO 4017 M12x60 real thread"}}, name="search_models")
 check("modern tools/call", s == 200 and js["result"]["structuredContent"]["results"][0]["id"] == WANT and js["result"]["resultType"] == "complete", js)
 s, _, js = modern("tools/call", {"name": "search_models", "arguments": {"size": "M12"}}, name="=?base64?" + base64.b64encode(b"search_models").decode() + "?=")
@@ -198,7 +240,7 @@ check("protocol header ≠ _meta → 400 -32020", s == 400 and js["error"]["code
 p = {"_meta": {"io.modelcontextprotocol/protocolVersion": "2030-01-01", "io.modelcontextprotocol/clientCapabilities": {}}}
 s, _, js = http(body={"jsonrpc": "2.0", "id": 3, "method": "tools/list", "params": p}, headers={"mcp-protocol-version": "2030-01-01", "mcp-method": "tools/list"})
 check("unsupported modern version → 400 -32022 with supported", s == 400 and js["error"]["code"] == -32022 and js["error"]["data"]["supported"] == [MODERN], (s, js))
-s, _, js = modern("resources/list")
+s, _, js = modern("prompts/list")
 check("modern unknown method → 404 -32601", s == 404 and js["error"]["code"] == -32601, (s, js))
 
 # ── HTTP rules ──

@@ -18,7 +18,8 @@
 
 - Address: `https://dima-fomin.pl/mcp` — Streamable HTTP, public, no key, read-only; protocol 2024-11-05 … 2025-11-25
   (initialize) and 2026-07-28 (stateless). Tools: `search_models` (exact match or `not_found` with the nearest apart —
-  nothing substituted), `get_model`, `get_download_links` (STEP, STL, 3MF, GLB with size and SHA-256).
+  nothing substituted), `get_model`, `get_download_links` (STEP, STL, 3MF, GLB with size and SHA-256),
+  `render_model_viewer` (an interactive 3D view in MCP Apps clients — resource ui://monge/model-viewer.html; text fallback elsewhere).
 - [How to connect](https://dima-fomin.pl/en/mcp): Claude, ChatGPT, VS Code, Cursor, MCP Inspector
 
 ## Pages

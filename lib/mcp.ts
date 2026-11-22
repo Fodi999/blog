@@ -4,6 +4,7 @@ import { getEnv } from '@/lib/cf';
 import { CatalogUnavailable, ensureDownloads } from '@/lib/downloads';
 import { seedItems } from '@/lib/library';
 import { SITE_URL } from '@/lib/seo';
+import { readViewer, resolveModel, VIEWER_MIME, VIEWER_RESOURCE, VIEWER_URI, viewerModel, viewerText } from '@/lib/mcp-viewer';
 
 /* MONGE MCP — the Monge library catalogue as a public, read-only MCP server (Streamable HTTP, POST /mcp).
 
@@ -43,6 +44,7 @@ const INSTRUCTIONS = [
   'Monge MCP is the catalogue of the Monge CAD library: standard parts built from the tables of their standards and checked by the Monge kernel, with STEP, STL, 3MF and GLB files — ISO 4017 hex bolts (M1.6–M64) and ISO 4762 socket head cap screws (M1.6–M36) in the lengths of their tables, ISO 4032 nuts and ISO 7089 washers (M1.6–M64), ISO 15 deep groove ball bearings of the 60, 62 and 63 series (6000–6020, 6200–6220, 6300–6320), DIN 981 lock nuts (KM0–KM20), EN 10080 rebar, bolted joints and example shafts. Not every size of every standard is here: the search says what exists.',
   'Use search_models with what the person asked (standard, size, length, thread); match "exact" means every result has all of it. match "not_found" means no geometry has everything asked: `results` is then empty and `nearest` lists other geometries with what `differs` — never present one of them as the part asked for; tell the person what differs and let them choose.',
   'Thread types: "exact" is a real helical thread, "cosmetic" a plain cylinder at the nominal diameter (lighter files), "print" a real thread with an allowance for FDM printing.',
+  'render_model_viewer shows a model (or up to four, to compare — e.g. a bolt and its nut) in an interactive 3D view in the chat, from its own GLB file; use it when the person wants to see a part. Hosts without interactive views get the same data as text with a link to the 3D view on the Monge site.',
   'get_model gives everything known of one model; get_download_links its files with size and SHA-256. Give people the model page (url) and the direct file links. Files are free to use, including commercially; they may not be resold or redistributed as files.',
 ].join('\n');
 
@@ -195,6 +197,41 @@ export const TOOLS = [
     },
     annotations: { title: 'Get download links', ...READ_ONLY },
   },
+  {
+    name: 'render_model_viewer',
+    title: 'Show a Monge model in 3D',
+    description:
+      'Shows a Monge library model in an interactive 3D viewer inside the chat (rotate, zoom, pan, reset view, full screen), loaded from the model\'s own GLB file, with its standard, size, thread pitch, thread type and links to STEP, STL, 3MF and GLB. Give the id from search_models; a size id without its option (e.g. "bolt-iso-4017--m12-x-60") shows the real-thread option. compare_with adds up to three more models (e.g. the matching nut) to switch between or view side by side. Hosts without interactive views get the same data as text with a link to the 3D view on the Monge site.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        id: { type: 'string', maxLength: 160, description: 'Model id from search_models (<part>--<size>--<option>), or a size id (<part>--<size>) for its real-thread option' },
+        compare_with: { type: 'array', items: { type: 'string', maxLength: 160 }, maxItems: 3, uniqueItems: true, description: 'Up to three more model ids to show alongside (switch or side by side)' },
+        layout: { type: 'string', enum: ['switch', 'side_by_side'], default: 'switch', description: 'With several models: "switch" shows one at a time with tabs; "side_by_side" shows them together at true scale' },
+        locale: { type: 'string', enum: LOCALE_ENUM, default: 'en' },
+      },
+      required: ['id'],
+      additionalProperties: false,
+    },
+    outputSchema: {
+      type: 'object',
+      properties: {
+        models: { type: 'array', items: { type: 'object', properties: { id: { type: 'string' }, name: { type: 'string' }, url: { type: 'string' }, viewer_url: { type: 'string' }, glb: { type: ['object', 'null'] }, image: { type: 'object' }, files: { type: 'array', items: fileSchema } }, required: ['id', 'name', 'url'] } },
+        locale: { type: 'string' },
+        layout: { type: 'string', enum: ['switch', 'side_by_side'] },
+        catalog: { type: 'string' },
+      },
+      required: ['models'],
+    },
+    annotations: { title: 'Show a Monge model in 3D', ...READ_ONLY },
+    _meta: {
+      ui: { resourceUri: VIEWER_URI, visibility: ['model', 'app'] },
+      'openai/outputTemplate': VIEWER_URI,
+      'openai/widgetAccessible': true,
+      'openai/toolInvocation/invoking': 'Opening the 3D model…',
+      'openai/toolInvocation/invoked': '3D model ready',
+    },
+  },
 ];
 
 type Args = Record<string, unknown>;
@@ -335,7 +372,22 @@ function getDownloadLinks(a: Args): ToolResult {
   return ok(out, lead);
 }
 
-const RUN: Record<string, (a: Args) => ToolResult> = { search_models: searchModels, get_model: getModel, get_download_links: getDownloadLinks };
+function renderModelViewer(a: Args): ToolResult {
+  const ids = [String(a.id).trim(), ...((Array.isArray(a.compare_with) ? a.compare_with : []) as string[]).map((x) => String(x).trim())];
+  const bad = ids.find((i) => !ID_RE.test(i));
+  if (bad) return toolError(`id «${bad}»: <part>--<size>--<option>, e.g. bolt-iso-4017--m12-x-60--exact`, { code: 'bad_id' });
+  const locale = localeArg(a);
+  const models = [];
+  for (const i of ids) {
+    const r = resolveModel(i);
+    if ('error' in r) return toolError(r.error, { code: 'not_found', ...(r.options ? { options_of_this_size: r.options } : {}) });
+    models.push(viewerModel(r.entry, locale));
+  }
+  const out = { models, locale, layout: a.layout === 'side_by_side' && models.length > 1 ? 'side_by_side' : 'switch', catalog: CATALOG.version };
+  return { content: [{ type: 'text', text: viewerText(models, locale) }], structuredContent: out };
+}
+
+const RUN: Record<string, (a: Args) => ToolResult> = { search_models: searchModels, get_model: getModel, get_download_links: getDownloadLinks, render_model_viewer: renderModelViewer };
 
 async function callTool(params: Args): Promise<ToolResult | { rpcError: { code: number; message: string } }> {
   const name = str(params.name);
@@ -516,7 +568,7 @@ export async function handleMcp(request: Request): Promise<Response> {
   const reply = (result: Record<string, unknown>) =>
     send(200, { jsonrpc: '2.0', id, result: modern ? { ...result, resultType: 'complete', _meta: { ...((result._meta as object) ?? {}), 'io.modelcontextprotocol/serverInfo': MCP_SERVER } } : result });
   const notFound = () => rpcError(modern ? 404 : 200, id, METHOD_NOT_FOUND, `Method not found: ${method}`);
-  const capabilities = { tools: { listChanged: false } };
+  const capabilities = { tools: { listChanged: false }, resources: { listChanged: false }, extensions: { 'io.modelcontextprotocol/ui': { mimeTypes: [VIEWER_MIME] } } };
   const listCache = modern ? { ttlMs: 3_600_000, cacheScope: 'public' } : {};
 
   try {
@@ -533,6 +585,15 @@ export async function handleMcp(request: Request): Promise<Response> {
         return reply({});
       case 'tools/list':
         return reply({ tools: TOOLS, ...listCache });
+      case 'resources/list':
+        return reply({ resources: [VIEWER_RESOURCE], ...listCache });
+      case 'resources/templates/list':
+        return reply({ resourceTemplates: [], ...listCache });
+      case 'resources/read': {
+        const uri = str(params.uri);
+        if (uri !== VIEWER_URI) return rpcError(modern ? 400 : 200, id, modern ? INVALID_PARAMS : -32002, `Resource not found: ${uri ?? '(none)'}`, { uri });
+        return reply({ ...readViewer(), ...listCache });
+      }
       case 'tools/call': {
         const r = await callTool(params);
         if ('rpcError' in r) return rpcError(modern ? 400 : 200, id, r.rpcError.code, r.rpcError.message);
