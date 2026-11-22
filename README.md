@@ -69,6 +69,19 @@ npm run deploy
 `scripts/monge/put_r2.sh` (порядок и аргументы — в начале `export_library.py`). Публикуется только то, что прошло
 все проверки. Скачивания считаются в D1 `downloads` (`migrations/0003_downloads.sql`).
 
+## Monge Catalog API и машиночитаемый каталог
+
+- `lib/catalog.ts` — записи моделей (одна на геометрию: часть--размер--исполнение) из `data/library.json`,
+  `data/downloads.json` и таблиц стандартов; поиск с разбором обозначений (M12x60, 6204-2RS, Ø16) на трёх языках.
+- `/api/v1`, `/api/v1/models?q=…`, `/api/v1/models/{id}`, `/api/v1/catalog` — только чтение, CORS открыт, кэш 5 мин.
+- `/api/files/…`: GET и HEAD, Content-Length, Range (206/416), CORS для `downloads/`, `Repr-Digest` (SHA-256 из
+  каталога); `?download=1` — скачивание и счётчик; просмотр GLB и HEAD не считаются.
+- Изображение каждого размера — рендер его геометрии: `downloads/<slug>/<size>/<slug>-<size>.webp`.
+- Документация — `/[locale]/developers`, карта для языковых моделей — `public/llms.txt`.
+- Роботы — `app/robots.ts`: страницы, `/api/v1/` и файлы открыты всем; роботы для обучения моделей закрыты
+  (`ALLOW_TRAINING`).
+- Проверка на запросах: `python3 scripts/test/catalog_queries.py https://dima-fomin.pl`.
+
 ## Как добавить модель
 
 1. В Monge: экспорт STEP (и превью GLB/рендер).

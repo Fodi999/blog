@@ -12,6 +12,7 @@ import { fmtNum } from '@/lib/status';
 import { standards, totalRows } from '@/lib/standards';
 import { downloadsBySlug } from '@/lib/stats';
 import { LiveStats } from '@/components/LiveStats';
+import { LibrarySearch } from '@/components/LibrarySearch';
 
 export const revalidate = 600;
 
@@ -59,6 +60,7 @@ export default async function LibraryPage({ params }: { params: Promise<{ locale
       </section>
 
       <section className="content-frame">
+        <LibrarySearch locale={locale} t={t.search} />
         <Link
           href={localPath(locale, '/library/print')}
           className="group mb-8 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-signal/35 bg-[linear-gradient(100deg,rgba(196,255,77,.08),transparent_60%)] px-5 py-4 transition-colors hover:border-signal"

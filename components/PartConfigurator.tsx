@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { countDownload } from '@/components/LiveStats';
 import { ModelViewer, type ViewerLabels } from '@/components/ModelViewer';
 import { fileKey, FORMATS, text, type DlPage } from '@/lib/downloads';
@@ -48,6 +48,13 @@ export function PartConfigurator({ locale, slug, pages, pageId, navigate = false
   // opens on the real thread (the print option is chosen on purpose), else the last option
   const first = (p: DlPage) => (p.options.find((o) => o.id === 'exact') ?? p.options.filter((o) => o.id !== 'print').pop() ?? p.options[0]).id;
   const [oid, setOid] = useState(first(page));
+  // a link to one option (?option=exact — the catalogue's url of a model) opens on it
+  useEffect(() => {
+    const want = new URLSearchParams(window.location.search).get('option');
+    if (want && page.options.some((o) => o.id === want)) setOid(want);
+    // only on arrival
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const opt = page.options.find((o) => o.id === oid) ?? page.options[0];
   const d = t.dl;
   const nf = (n: number, digits = 1) => new Intl.NumberFormat(locale, { maximumFractionDigits: digits }).format(n);

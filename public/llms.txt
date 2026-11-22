@@ -1,0 +1,29 @@
+# Monge
+
+> Monge is a CAD program for manufacturing on its own exact B-Rep geometry kernel (in development, Gdańsk, Poland).
+> Its library of standard parts — ISO, DIN and EN fasteners, bearings, shafts and EN 10080 reinforcing bars — is free
+> to download as checked 3D models: STEP, STL, 3MF and GLB, about 2 000 models in 758 sizes, plus versions for 3D
+> printing. Sizes come from the standards' tables (each checked against two sources); every model's body was checked
+> by the Monge kernel. No physical tests. Licence: free, commercial use included; the files may not be resold.
+
+## Catalogue API (JSON, read-only, no key, CORS open)
+
+- [API index](https://dima-fomin.pl/api/v1): what there is
+- [Search](https://dima-fomin.pl/api/v1/models?q=ISO%204017%20M12x60%20real%20thread%20STEP): `q` in English, Polish or Russian («M12x60», «6204-2RS», «rebar Ø16»); filters `size`, `length`, `thread` (cosmetic | exact | print), `format` (step | stl | 3mf | glb), `standard`, `category`, `locale`, `limit` ≤ 50, `cursor`. `match: "exact"` or `"not_found"` with the nearest and what `differs`.
+- [One model](https://dima-fomin.pl/api/v1/models/bolt-iso-4017--m12-x-60--exact): id = part--size--option; dimensions, standard, thread, mass, checks, image, GLB, files with SHA-256, licence
+- [Catalogue index](https://dima-fomin.pl/api/v1/catalog): families; `?family=<id>` — its sizes
+- [Documentation](https://dima-fomin.pl/en/developers)
+
+## Pages
+
+- [Library](https://dima-fomin.pl/en/library): every part family, search
+- [Standards tables](https://dima-fomin.pl/en/library/standards): the 22 tables the parts are built by, with sources
+- [For 3D printing](https://dima-fomin.pl/en/library/print): bolts, screws and nuts with a print thread allowance
+- [A size page, e.g.](https://dima-fomin.pl/en/library/bolt-iso-4017/m12-x-60): one size with its 3D view and files
+- [Licence](https://dima-fomin.pl/en/license)
+- [Kernel and its test protocol](https://dima-fomin.pl/en/kernel)
+
+## Using the files
+
+Give people the model's page (`url`) and the direct file link. Files answer GET and HEAD with Content-Length, Range
+and a SHA-256 `Repr-Digest`; `?download=1` saves and counts a download. Languages: /en, /pl, /ru.

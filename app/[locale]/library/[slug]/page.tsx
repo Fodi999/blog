@@ -9,7 +9,7 @@ import { fill, getDict, isLocale, locales, localPath } from '@/lib/i18n';
 import { formatsOf, getItem, getItems, seedItems } from '@/lib/library';
 import { pageMetadata, SITE_URL } from '@/lib/seo';
 import { standardById, standardTitle } from '@/lib/standards';
-import { downloadsOf, text as dlText } from '@/lib/downloads';
+import { clientPages, downloadsOf, text as dlText } from '@/lib/downloads';
 import { downloadsBySlug } from '@/lib/stats';
 import { PartConfigurator } from '@/components/PartConfigurator';
 
@@ -131,7 +131,7 @@ export default async function ItemPage({ params }: { params: Promise<{ locale: s
           <PartConfigurator
             locale={locale}
             slug={item.slug}
-            pages={dl.pages}
+            pages={clientPages(dl.pages)}
             pageId={item.defaultPage}
             title={item.title[locale]}
             poster={item.image}

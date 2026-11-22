@@ -16,20 +16,27 @@ export interface D1PreparedStatement {
 export interface D1Database {
   prepare(query: string): D1PreparedStatement;
 }
-export interface R2ObjectBody {
-  body: ReadableStream;
+export interface R2Object {
+  key: string;
   size: number;
   httpEtag: string;
   httpMetadata?: { contentType?: string };
+  /** present on a ranged get: what part of the object the body is */
+  range?: { offset?: number; length?: number; suffix?: number };
   writeHttpMetadata(headers: Headers): void;
 }
+export interface R2ObjectBody extends R2Object {
+  body: ReadableStream;
+}
+export type R2Range = { offset?: number; length?: number; suffix?: number };
 export interface R2ObjectInfo {
   key: string;
   size: number;
   uploaded: Date;
 }
 export interface R2Bucket {
-  get(key: string): Promise<R2ObjectBody | null>;
+  get(key: string, options?: { range?: R2Range }): Promise<R2ObjectBody | null>;
+  head(key: string): Promise<R2Object | null>;
   put(key: string, value: ReadableStream | ArrayBuffer | string, options?: { httpMetadata?: { contentType?: string } }): Promise<R2ObjectInfo | null>;
   list(options?: { prefix?: string; delimiter?: string; cursor?: string; limit?: number }): Promise<{
     objects: R2ObjectInfo[];

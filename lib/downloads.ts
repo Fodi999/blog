@@ -36,6 +36,8 @@ export type DlPage = {
   /** The standard whose row this size is, and the row's key (size, name or diameter). */
   std?: string | null;
   row?: string | null;
+  /** Size in bytes of the render of this size's own geometry (downloads/<slug>/<page>/<slug>-<page>.webp); none — only the family's image. */
+  image?: number;
   options: DlOption[];
 };
 
@@ -51,6 +53,17 @@ export function pageOf(slug: string, id: string): DlPage | undefined {
 
 export function allPages(): { slug: string; page: DlPage }[] {
   return Object.entries(all).flatMap(([slug, v]) => v.pages.map((page) => ({ slug, page })));
+}
+
+/** The pages as the browser's configurator needs them: no parameters, facts or checksums (those are for the API). */
+export function clientPages(pages: DlPage[]): DlPage[] {
+  return pages.map((p) => ({
+    id: p.id,
+    group: p.group,
+    label: p.label,
+    ...(p.image ? { image: p.image } : {}),
+    options: p.options.map((o) => ({ id: o.id, label: o.label, bytes: o.bytes, sizeMm: o.sizeMm, massKg: o.massKg, bodies: o.bodies, checks: o.checks, ...(o.print ? { print: o.print } : {}) })),
+  }));
 }
 
 export function text(v: Text, locale: Locale): string {

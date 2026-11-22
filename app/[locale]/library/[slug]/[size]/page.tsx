@@ -3,7 +3,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { PartConfigurator } from '@/components/PartConfigurator';
 import { Eyebrow } from '@/components/sections';
-import { allPages, downloadsOf, fileKey, FORMATS, pageOf, text, type DlPage } from '@/lib/downloads';
+import { allPages, clientPages, downloadsOf, pageOf, text, type DlPage } from '@/lib/downloads';
+import { record } from '@/lib/catalog';
 import { fill, getDict, isLocale, locales, localPath, type Locale } from '@/lib/i18n';
 import { getItem } from '@/lib/library';
 import { pageMetadata, SITE_URL } from '@/lib/seo';
@@ -59,7 +60,8 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const opt = page.options.find((o) => o.id === 'exact') ?? page.options[0];
   const title = fill(t.item.dl.pageTitle, { name, size: label });
   const desc = fill(t.item.dl.pageDesc, { name, size: label, dims: dimsLine(locale, page), mass: massText(locale, opt.massKg), thread: page.options.some((o) => o.id === 'exact') ? t.item.dl.threadNote : '' });
-  return pageMetadata(locale, `/library/${slug}/${size}`, title, desc, item.image);
+  const img = page.image ? `/api/files/downloads/${slug}/${page.id}/${slug}-${page.id}.webp` : item.image;
+  return pageMetadata(locale, `/library/${slug}/${size}`, title, desc, img);
 }
 
 export default async function SizePage({ params }: { params: Promise<Params> }) {
@@ -83,20 +85,44 @@ export default async function SizePage({ params }: { params: Promise<Params> }) 
   const opt = page.options.find((o) => o.id === 'exact') ?? page.options[0];
   const times = (await downloadsOfPage(slug, page.id)) ?? 0;
   const url = `${SITE_URL}/${locale}/library/${slug}/${page.id}`;
+  const poster = page.image ? `/api/files/downloads/${slug}/${page.id}/${slug}-${page.id}.webp` : item.image;
+  // the size's models as the catalogue gives them (the same records as /api/v1): one 3DModel per option
+  const recs = page.options.map((o) => record({ item, page, opt: o }, locale, false));
+  const main = recs.find((r) => r.option.id === opt.id) ?? recs[0];
+  const prop = (name: string, value: number | string | undefined, unit?: string) =>
+    value == null ? [] : [{ '@type': 'PropertyValue', name, value, ...(unit ? { unitCode: unit, unitText: unit === 'MMT' ? 'mm' : 'kg' } : {}) }];
+  const model = (r: (typeof recs)[number]) => ({
+    '@type': '3DModel',
+    '@id': `${url}#${r.option.id}`,
+    identifier: r.id,
+    name: r.name,
+    description: fill(t.item.dl.pageDesc, { name, size: label, dims: dimsLine(locale, page), mass: massText(locale, r.mass.kg), thread: '' }),
+    image: r.image.url,
+    url: r.url,
+    inLanguage: locale,
+    isAccessibleForFree: true,
+    license: r.license.url,
+    version: r.verification.geometry.monge_version,
+    dateModified: r.verification.geometry.checked,
+    creator: { '@type': 'Organization', name: 'Monge', url: SITE_URL },
+    isBasedOn: r.standards.map((st) => ({ '@type': 'CreativeWork', name: st.id, url: st.table_url })),
+    additionalProperty: [
+      ...prop('nominal diameter', r.dimensions.nominal_diameter_mm, 'MMT'),
+      ...prop('length', r.dimensions.length_mm, 'MMT'),
+      ...prop('thread pitch', r.dimensions.thread_pitch_mm, 'MMT'),
+      ...prop('outside diameter', r.dimensions.outside_diameter_mm, 'MMT'),
+      ...prop('width', r.dimensions.width_mm, 'MMT'),
+      ...prop('thread', r.thread?.type),
+      ...prop('estimated mass', r.mass.kg, 'KGM'),
+      ...prop('overall size', r.dimensions.overall_mm.join(' × ') + ' mm'),
+    ],
+    encoding: r.files.map((f) => ({ '@type': 'MediaObject', contentUrl: f.url, encodingFormat: f.media_type, contentSize: `${f.bytes} B`, ...('sha256' in f ? { sha256: f.sha256 } : {}) })),
+  });
   const ld = {
     '@context': 'https://schema.org',
     '@graph': [
-      {
-        '@type': '3DModel',
-        name: `${name} ${label}`,
-        description: fill(t.item.dl.pageDesc, { name, size: label, dims: dimsLine(locale, page), mass: massText(locale, opt.massKg), thread: '' }),
-        image: `${SITE_URL}${item.image}`,
-        url,
-        isAccessibleForFree: true,
-        license: `${SITE_URL}/${locale}/license`,
-        creator: { '@type': 'Organization', name: 'Monge' },
-        encoding: FORMATS.map((f) => ({ '@type': 'MediaObject', contentUrl: `${SITE_URL}/api/files/${fileKey(slug, page.id, opt.id, f)}`, encodingFormat: { step: 'model/step', stl: 'model/stl', '3mf': 'model/3mf', glb: 'model/gltf-binary' }[f] })),
-      },
+      model(main),
+      ...recs.filter((r) => r !== main).map(model),
       {
         '@type': 'BreadcrumbList',
         itemListElement: [
@@ -124,11 +150,11 @@ export default async function SizePage({ params }: { params: Promise<Params> }) 
         <PartConfigurator
           locale={locale}
           slug={slug}
-          pages={dl.pages}
+          pages={clientPages(dl.pages)}
           pageId={page.id}
           navigate
           title={item.title[locale]}
-          poster={item.image}
+          poster={poster}
           finish={item.finish}
           view={item.view}
           rotate={item.rotate}
