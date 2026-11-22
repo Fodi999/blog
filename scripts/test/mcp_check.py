@@ -214,6 +214,18 @@ s, r, _ = call("render_model_viewer", {"id": "bolt-iso-4017--m12-x-61--exact"})
 check("viewer: unknown id → tool error, no models", r.get("isError") is True and "structuredContent" not in r, r)
 s, r, _ = call("render_model_viewer", {"id": "bolt-iso-4017--m12-x-60", "compare_with": ["a", "b", "c", "d"]})
 check("viewer: more than four models → tool error", r.get("isError") is True, r)
+s, r, _ = call("render_model_viewer", {"id": "bolt-iso-4017--m12-x-60", "compare_with": ["washer-iso-7089--m12--std", "nut-iso-4032--m12--exact"], "grip_mm": 22})
+sc = r.get("structuredContent", {}); asm = sc.get("assembly") or {}
+check("grip 22 mm → M12 × 40 (need 37.05 mm), 4.7 mm out, assembly", asm.get("fits") is True and asm.get("bolt_length_mm") == 40 and asm.get("protrusion_mm") == 4.7 and sc.get("layout") == "assembly" and sc["models"][0]["id"] == "bolt-iso-4017--m12-x-40--exact", (asm, [m["id"] for m in sc.get("models", [])]))
+s, r, _ = call("render_model_viewer", {"id": "bolt-iso-4017--m12-x-60", "compare_with": ["nut-iso-4032--m12--exact"], "grip_mm": 200})
+sc = r.get("structuredContent", {}); asm = sc.get("assembly") or {}
+check("grip 200 mm → no length, no substitution", asm.get("fits") is False and "longest" in (asm.get("note") or "") and sc["models"][0]["id"] == "bolt-iso-4017--m12-x-60--exact", asm)
+s, r, _ = call("render_model_viewer", {"id": "bearing-iso-15--6204", "compare_with": ["nut-iso-4032--m12--exact"], "grip_mm": 10})
+check("grip on a set that is not a bolt + washer/nut → tool error", r.get("isError") is True, r)
+s, r, _ = call("render_model_viewer", {"id": "bolt-iso-4017--m12-x-60", "section": True})
+check("section: true → view.section", r.get("structuredContent", {}).get("view", {}).get("section") is True, r.get("structuredContent", {}).get("view"))
+s, r, _ = call("render_model_viewer", {"id": "bolt-iso-4017--m12-x-60", "grip_mm": -3})
+check("grip_mm ≤ 0 → tool error", r.get("isError") is True, r)
 for u in (b.get("glb", {}).get("url"), b.get("image", {}).get("url")):
     if not u: continue
     req = urllib.request.Request(u, method="HEAD", headers={"user-agent": UA, "origin": "null"})

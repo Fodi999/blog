@@ -14,9 +14,9 @@ import { SITE_URL } from '@/lib/seo';
    data as text: the characteristics, the WebP, the files and the model page with its 3D view on the site. */
 
 /** Versioned: a new URI whenever the page changes, so no host shows a cached older page. */
-export const VIEWER_URI = 'ui://monge/model-viewer-v5.html';
+export const VIEWER_URI = 'ui://monge/model-viewer-v6.html';
 /** Earlier URIs of the view — still answered (with the current page), for hosts that cached them. */
-export const VIEWER_URIS_OLD = ['ui://monge/model-viewer.html', 'ui://monge/model-viewer-v2.html', 'ui://monge/model-viewer-v3.html', 'ui://monge/model-viewer-v4.html'];
+export const VIEWER_URIS_OLD = ['ui://monge/model-viewer.html', 'ui://monge/model-viewer-v2.html', 'ui://monge/model-viewer-v3.html', 'ui://monge/model-viewer-v4.html', 'ui://monge/model-viewer-v5.html'];
 export const VIEWER_MIME = 'text/html;profile=mcp-app';
 const ORIGIN = new URL(SITE_URL).origin;
 const FREE_FILES = `${SITE_URL}/api/files/downloads/`;
@@ -158,6 +158,50 @@ export function viewerModel(e: Entry, locale: Locale) {
 }
 
 export type ViewerModel = ReturnType<typeof viewerModel>;
+
+const BOLT_FAMILIES = new Set(['bolt-iso-4017', 'screw-iso-4762']);
+const STACK_FAMILIES = new Set(['washer-iso-7089', 'nut-iso-4032']);
+
+/** A bolt or cap screw with washers and nuts of the same nominal size — the set the view can put together. */
+export function fastenerSet(entries: Entry[]) {
+  const bolts = entries.filter((e) => BOLT_FAMILIES.has(e.item.slug));
+  const rest = entries.filter((e) => !BOLT_FAMILIES.has(e.item.slug));
+  if (bolts.length !== 1 || !rest.length) return null;
+  const d = bolts[0].opt.facts?.d;
+  if (d == null || !rest.every((e) => STACK_FAMILIES.has(e.item.slug) && e.opt.facts?.d === d)) return null;
+  return { bolt: bolts[0], stack: rest, d };
+}
+
+/** The thickness of a washer or the height of a nut: the smallest overall size (they lie flat, axis along it). */
+const thickness = (e: Entry) => Math.min(...e.opt.sizeMm);
+
+export type Assembly = { grip_mm: number; stack_mm: number; need_mm: number; rule: string; fits: boolean; bolt_length_mm?: number; protrusion_mm?: number; note?: string };
+
+/* Picks the bolt length for a clamped thickness (grip): the shortest length of the standard's series in the library,
+   same family, size and thread option, that goes through the grip, the washers and the nuts with at least one thread
+   pitch standing out. None long enough → no substitution: the set stays and the reason is given. */
+export function fitBolt(entries: Entry[], gripMm: number): { entries: Entry[]; assembly: Assembly | null; error: string | null } {
+  const set = fastenerSet(entries);
+  if (!set) return { entries, assembly: null, error: 'grip_mm needs a bolt or cap screw with its washer and/or nut of the same size' };
+  const P = set.bolt.opt.facts?.pitch ?? 0;
+  const stackMm = set.stack.reduce((a, e) => a + thickness(e), 0);
+  const needMm = gripMm + stackMm + P;
+  const lengths = allEntries()
+    .filter((e) => e.item.slug === set.bolt.item.slug && e.opt.id === set.bolt.opt.id && e.opt.facts?.d === set.d && e.opt.facts?.l != null)
+    .sort((a, b) => (a.opt.facts!.l as number) - (b.opt.facts!.l as number));
+  const fit = lengths.find((e) => (e.opt.facts!.l as number) >= needMm - 1e-9);
+  const base = { grip_mm: gripMm, stack_mm: Math.round(stackMm * 100) / 100, need_mm: Math.round(needMm * 100) / 100, rule: 'the shortest length of the series in the library with at least one thread pitch out of the nut' };
+  if (!fit) {
+    const longest = lengths.at(-1)?.opt.facts?.l;
+    return { entries, assembly: { ...base, fits: false, note: `No ${set.bolt.item.short?.en ?? set.bolt.item.slug} M${set.d} of ${base.need_mm} mm or longer in the library${longest ? ` (the longest is ${longest} mm)` : ''}.` }, error: null };
+  }
+  const L = fit.opt.facts!.l as number;
+  return {
+    entries: entries.map((e) => (e === set.bolt ? fit : e)),
+    assembly: { ...base, fits: true, bolt_length_mm: L, protrusion_mm: Math.round((L - gripMm - stackMm) * 100) / 100 },
+    error: null,
+  };
+}
 
 /** The text a host without MCP Apps shows (and the model reads): characteristics, picture, files, the site's 3D view. */
 export function viewerText(models: ViewerModel[], locale: Locale): string {

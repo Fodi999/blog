@@ -4,7 +4,7 @@ import { getEnv } from '@/lib/cf';
 import { CatalogUnavailable, ensureDownloads } from '@/lib/downloads';
 import { seedItems } from '@/lib/library';
 import { SITE_URL } from '@/lib/seo';
-import { claudeUiDomain, readViewer, resolveModel, VIEWER_MIME, VIEWER_RESOURCE, VIEWER_URI, VIEWER_URIS_OLD, viewerModel, viewerText } from '@/lib/mcp-viewer';
+import { type Assembly, claudeUiDomain, fitBolt, readViewer, resolveModel, VIEWER_MIME, VIEWER_RESOURCE, VIEWER_URI, VIEWER_URIS_OLD, viewerModel, viewerText } from '@/lib/mcp-viewer';
 import { isProductionHost, readUiTest, runUiTest, UI_TEST_RESOURCE, UI_TEST_TOOL, UI_TEST_URI } from '@/lib/mcp-ui-test';
 
 /* MONGE MCP — the Monge library catalogue as a public, read-only MCP server (Streamable HTTP, POST /mcp).
@@ -209,6 +209,8 @@ export const TOOLS = [
         id: { type: 'string', maxLength: 160, description: 'Model id from search_models (<part>--<size>--<option>), or a size id (<part>--<size>) for its real-thread option' },
         compare_with: { type: 'array', items: { type: 'string', maxLength: 160 }, maxItems: 3, uniqueItems: true, description: 'Up to three more model ids to show alongside (switch or side by side)' },
         layout: { type: 'string', enum: ['side_by_side', 'assembly', 'switch'], default: 'side_by_side', description: 'With several models: "side_by_side" — together at true scale; "assembly" — a bolt or cap screw with its washer and nut (same M size) put together on the axis; ("switch" is kept as an alias of side_by_side)' },
+        grip_mm: { type: 'number', exclusiveMinimum: 0, maximum: 1000, description: 'Clamped thickness in mm (the parts the bolt holds together). With a bolt or cap screw plus its washer and/or nut: picks the shortest length of the series in the library with at least one thread pitch out of the nut, and shows the assembly' },
+        section: { type: 'boolean', description: 'Open the view cut through the parts\' axis (shows the thread profile)' },
         locale: { type: 'string', enum: LOCALE_ENUM, default: 'en' },
       },
       required: ['id'],
@@ -217,6 +219,7 @@ export const TOOLS = [
     outputSchema: {
       type: 'object',
       properties: {
+        assembly: { type: ['object', 'null'], description: 'With grip_mm: grip_mm, stack_mm, need_mm, fits, bolt_length_mm, protrusion_mm, rule, note' },
         models: { type: 'array', items: { type: 'object', properties: { id: { type: 'string' }, name: { type: 'string' }, url: { type: 'string' }, viewer_url: { type: 'string' }, glb: { type: ['object', 'null'] }, image: { type: 'object' }, files: { type: 'array', items: fileSchema } }, required: ['id', 'name', 'url'] } },
         locale: { type: 'string' },
         layout: { type: 'string', enum: ['side_by_side', 'assembly'] },
@@ -280,6 +283,8 @@ function checkArgs(tool: (typeof TOOLS)[number], a: Args): string | null {
   for (const [k, v] of Object.entries(a)) {
     if (v === undefined || v === null) continue;
     const s = props[k];
+    const exMin = (s as unknown as { exclusiveMinimum?: number }).exclusiveMinimum;
+    if (exMin != null && typeof v === 'number' && v <= exMin) return `«${k}» must be above ${exMin}`;
     if (s.type === 'string') {
       if (typeof v !== 'string') return `«${k}» must be a string`;
       if (s.maxLength && v.length > s.maxLength) return `«${k}»: at most ${s.maxLength} characters`;
@@ -289,6 +294,8 @@ function checkArgs(tool: (typeof TOOLS)[number], a: Args): string | null {
       if (s.minimum != null && v < s.minimum) return `«${k}»: at least ${s.minimum}`;
       if (s.maximum != null && v > s.maximum) return `«${k}»: at most ${s.maximum}`;
       if (k === 'length' && v <= 0) return '«length» must be above 0';
+    } else if (s.type === 'boolean') {
+      if (typeof v !== 'boolean') return `«${k}» must be true or false`;
     } else if (s.type === 'array') {
       if (!Array.isArray(v) || v.some((x) => typeof x !== 'string')) return `«${k}» must be a list of strings`;
       if (s.maxItems && v.length > s.maxItems) return `«${k}»: at most ${s.maxItems} items`;
@@ -378,14 +385,31 @@ function renderModelViewer(a: Args): ToolResult {
   const bad = ids.find((i) => !ID_RE.test(i));
   if (bad) return toolError(`id «${bad}»: <part>--<size>--<option>, e.g. bolt-iso-4017--m12-x-60--exact`, { code: 'bad_id' });
   const locale = localeArg(a);
-  const models = [];
+  let entries = [];
   for (const i of ids) {
     const r = resolveModel(i);
     if ('error' in r) return toolError(r.error, { code: 'not_found', ...(r.options ? { options_of_this_size: r.options } : {}) });
-    models.push(viewerModel(r.entry, locale));
+    entries.push(r.entry);
   }
-  const out = { models, locale, layout: models.length > 1 && a.layout === 'assembly' ? 'assembly' : 'side_by_side', catalog: CATALOG.version };
-  return { content: [{ type: 'text', text: viewerText(models, locale) }], structuredContent: out };
+  let assembly: Assembly | null = null;
+  if (typeof a.grip_mm === 'number') {
+    const f = fitBolt(entries, a.grip_mm);
+    if (f.error) return toolError(f.error, { code: 'bad_set' });
+    entries = f.entries;
+    assembly = f.assembly;
+  }
+  const models = entries.map((e) => viewerModel(e, locale));
+  const layout = models.length > 1 && (a.layout === 'assembly' || assembly) ? 'assembly' : 'side_by_side';
+  const out = { models, locale, layout, ...(assembly ? { assembly } : {}), ...(a.section === true ? { view: { section: true } } : {}), catalog: CATALOG.version };
+  const boltLabel = models.find((m) => /^(bolt|screw)-/.test(m.family_id))?.label ?? '';
+  const n = (v: number | undefined) => (v == null ? '' : new Intl.NumberFormat(locale, { maximumFractionDigits: 2 }).format(v));
+  const FIT = {
+    en: (x: Assembly) => x.fits ? `Grip ${n(x.grip_mm)} mm + washer/nut ${n(x.stack_mm)} mm + one pitch = ${n(x.need_mm)} mm → ${boltLabel}, ${n(x.protrusion_mm)} mm out of the nut.` : `${x.note} No other bolt was put in its place.`,
+    ru: (x: Assembly) => x.fits ? `Пакет ${n(x.grip_mm)} мм + шайба/гайка ${n(x.stack_mm)} мм + один шаг = ${n(x.need_mm)} мм → ${boltLabel}, из гайки выступает ${n(x.protrusion_mm)} мм.` : `${x.note} Другой болт не подставлен.`,
+    pl: (x: Assembly) => x.fits ? `Pakiet ${n(x.grip_mm)} mm + podkładka/nakrętka ${n(x.stack_mm)} mm + jeden skok = ${n(x.need_mm)} mm → ${boltLabel}, wystaje ${n(x.protrusion_mm)} mm z nakrętki.` : `${x.note} Nie podstawiono innej śruby.`,
+  };
+  const fitText = assembly ? `${FIT[locale](assembly)}\n\n` : '';
+  return { content: [{ type: 'text', text: fitText + viewerText(models, locale) }], structuredContent: out };
 }
 
 const RUN: Record<string, (a: Args) => ToolResult> = { search_models: searchModels, get_model: getModel, get_download_links: getDownloadLinks, render_model_viewer: renderModelViewer };

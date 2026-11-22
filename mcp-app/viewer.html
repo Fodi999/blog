@@ -75,6 +75,14 @@ button:focus-visible, select:focus-visible { outline: 2px solid var(--gold); out
 .chip { padding: 6px 14px; border-radius: 10px; font-size: 13px; color: var(--text); background: color-mix(in srgb, var(--stage-b) 60%, transparent); border: 1px solid var(--line); backdrop-filter: blur(6px); }
 .chip:hover { border-color: color-mix(in srgb, var(--text) 25%, transparent); }
 .glass { border: 1px solid var(--line); background: color-mix(in srgb, var(--stage-b) 60%, transparent); backdrop-filter: blur(6px); }
+.bc { left: 50%; bottom: 12px; transform: translateX(-50%); flex-direction: column; align-items: center; gap: 6px; }
+.ctl { display: flex; align-items: center; gap: 10px; padding: 5px 12px; border-radius: 10px; font-size: 12.5px; color: var(--muted); white-space: nowrap; }
+.ctl input[type="range"] { width: 150px; accent-color: var(--gold); }
+.ctl input[type="number"] { width: 58px; padding: 3px 6px; border-radius: 6px; border: 1px solid var(--line); background: var(--raise); color: var(--text); font: inherit; font-variant-numeric: tabular-nums; }
+.ctl b { color: var(--text); font-weight: 500; }
+.icon.on { color: var(--gold); }
+.fit { font-size: 12.5px; color: var(--muted); }
+.fit.bad { color: #e0a060; }
 .badge { position: absolute; left: 12px; top: 12px; font-size: 12px; padding: 3px 10px; border-radius: 8px; color: var(--text); background: color-mix(in srgb, var(--stage-b) 70%, transparent); }
 
 /* menus (option, download in a set) */
@@ -139,7 +147,12 @@ body.fs .foot { display: none; }
     <div class="badge" id="badge" hidden></div>
     <div class="corner tl"><div class="seg" id="layout" hidden></div></div>
     <div class="corner bl"><button class="chip" id="option" type="button" hidden></button></div>
-    <div class="corner br"><button class="icon glass" id="reset" type="button" title="Reset view"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 10a6 6 0 1 0 1.8-4.3"/><path d="M4 3.5v3.3h3.3"/></svg></button></div>
+    <div class="corner bc" id="controls">
+      <label class="ctl glass" id="gripRow" hidden><span id="gripLabel">Grip</span><input type="number" id="grip" min="0.5" max="500" step="0.5" inputmode="decimal"><span id="gripUnit">mm</span><span class="fit" id="fit"></span></label>
+      <label class="ctl glass" id="explodeRow" hidden><span id="explodeLabel">Explode</span><input type="range" id="explode" min="0" max="1" step="0.01" value="0"></label>
+      <label class="ctl glass" id="cutRow" hidden><span id="cutLabel">Section</span><input type="range" id="cut" min="-1" max="1" step="0.01" value="0"></label>
+    </div>
+    <div class="corner br"><button class="icon glass" id="section" type="button" title="Section" aria-pressed="false"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3.5" y="3.5" width="13" height="13" rx="2"/><path d="M3.5 16.5l13-13" stroke-dasharray="2 2"/></svg></button><button class="icon glass" id="reset" type="button" title="Reset view"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 10a6 6 0 1 0 1.8-4.3"/><path d="M4 3.5v3.3h3.3"/></svg></button></div>
     <div class="status" id="status">…</div>
   </div>
   <p class="note fallback" id="fallback"></p>

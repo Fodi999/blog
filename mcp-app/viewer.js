@@ -15,7 +15,7 @@ const T = {
     side: 'Side by side', assembly: 'Assembly', joint: 'Joint', fasteners: 'Fasteners', reset: 'Reset view', full: 'Full screen', exitFull: 'Exit full screen', info: 'Details',
     more: 'More', less: 'Less', download: 'Download', pitchWord: 'pitch', std: 'Standard', size: 'Size', pitch: 'Thread pitch', thread: 'Thread', length: 'Length', overall: 'Overall', mass: 'Mass ≈', checks: 'Kernel check', ok: 'passed',
     open: 'Open in Monge', license: 'Licence', imgDefault: (o) => `The picture is of this size's default option (${o}); the 3D shows the selected one.`,
-    unit: 'mm', g: 'g', kg: 'kg', imgFamily: 'The picture shows a representative size of the family.', picture: 'Picture', family: 'a size of the family', D: 'Outside Ø', B: 'Width', grip: 'Grip',
+    grip: 'Grip', explode: 'Explode', cut: 'Section', out: 'out of the nut', fitting: 'Picking the length…', unit: 'mm', g: 'g', kg: 'kg', imgFamily: 'The picture shows a representative size of the family.', picture: 'Picture', family: 'a size of the family', D: 'Outside Ø', B: 'Width', gripFact: 'Grip',
   },
   ru: {
     loading: 'Загружаю 3D-модель…', no3d: 'Здесь нельзя показать 3D (WebGL выключен или файл не загрузился). Данные — выбранной модели; на картинке — исполнение, указанное на ней. Откройте модель в 3D на сайте Monge.',
@@ -23,7 +23,7 @@ const T = {
     side: 'Рядом', assembly: 'Сборка', joint: 'Соединение', fasteners: 'Крепёж', reset: 'Сбросить вид', full: 'Во весь экран', exitFull: 'Выйти из полноэкранного режима', info: 'Характеристики',
     more: 'Подробнее', less: 'Скрыть', download: 'Скачать', pitchWord: 'шаг', std: 'Стандарт', size: 'Размер', pitch: 'Шаг резьбы', thread: 'Резьба', length: 'Длина', overall: 'Габарит', mass: 'Масса ≈', checks: 'Проверка ядром', ok: 'пройдена',
     open: 'Открыть в Monge', license: 'Лицензия', imgDefault: (o) => `Картинка — исполнение этого размера по умолчанию (${o}); в 3D — выбранное.`,
-    unit: 'мм', g: 'г', kg: 'кг', imgFamily: 'Картинка — типовой размер семейства.', picture: 'На картинке', family: 'типовой размер семейства', D: 'Наружный Ø', B: 'Ширина', grip: 'Пакет',
+    grip: 'Пакет', explode: 'Разнести', cut: 'Сечение', out: 'выступ', fitting: 'Подбираю длину…', unit: 'мм', g: 'г', kg: 'кг', imgFamily: 'Картинка — типовой размер семейства.', picture: 'На картинке', family: 'типовой размер семейства', D: 'Наружный Ø', B: 'Ширина', gripFact: 'Пакет',
   },
   pl: {
     loading: 'Wczytuję model 3D…', no3d: 'Tu nie da się pokazać 3D (WebGL wyłączony albo plik się nie wczytał). Dane dotyczą wybranego modelu; obraz pokazuje opcję podaną na nim. Otwórz model w 3D na stronie Monge.',
@@ -31,7 +31,7 @@ const T = {
     side: 'Obok siebie', assembly: 'Złożenie', joint: 'Połączenie', fasteners: 'Łączniki', reset: 'Resetuj widok', full: 'Pełny ekran', exitFull: 'Zamknij pełny ekran', info: 'Dane',
     more: 'Więcej', less: 'Mniej', download: 'Pobierz', pitchWord: 'skok', std: 'Norma', size: 'Rozmiar', pitch: 'Skok gwintu', thread: 'Gwint', length: 'Długość', overall: 'Wymiary', mass: 'Masa ≈', checks: 'Kontrola jądra', ok: 'zaliczona',
     open: 'Otwórz w Monge', license: 'Licencja', imgDefault: (o) => `Obraz to domyślna opcja tego rozmiaru (${o}); 3D pokazuje wybraną.`,
-    unit: 'mm', g: 'g', kg: 'kg', imgFamily: 'Obraz pokazuje typowy rozmiar rodziny.', picture: 'Na obrazie', family: 'typowy rozmiar rodziny', D: 'Ø zewn.', B: 'Szerokość', grip: 'Grubość pakietu',
+    grip: 'Pakiet', explode: 'Rozsuń', cut: 'Przekrój', out: 'wystaje', fitting: 'Dobieram długość…', unit: 'mm', g: 'g', kg: 'kg', imgFamily: 'Obraz pokazuje typowy rozmiar rodziny.', picture: 'Na obrazie', family: 'typowy rozmiar rodziny', D: 'Ø zewn.', B: 'Szerokość', gripFact: 'Grubość pakietu',
   },
 };
 
@@ -43,7 +43,7 @@ const el = (tag, cls, text) => {
   return e;
 };
 
-const S = { locale: 'en', models: [], active: 0, layout: 'side', wantLayout: null, optionOf: {}, caps: {}, ctx: {}, mode: 'inline', webgl: true, userMoved: false, format: 'step' };
+const S = { locale: 'en', models: [], active: 0, layout: 'side', wantLayout: null, optionOf: {}, caps: {}, ctx: {}, mode: 'inline', webgl: true, userMoved: false, format: 'step', section: false, cut: 0, explode: 0, assembly: null };
 let L = T.en;
 
 // ── MCP Apps bridge ─────────────────────────────────────────────────────────────────────────────────────────────
@@ -100,6 +100,11 @@ function setLocale(l) {
   $('downloadLabel').textContent = L.download;
   $('site').textContent = `${L.open} ↗`;
   $('license').textContent = L.license;
+  $('gripLabel').textContent = L.grip;
+  $('gripUnit').textContent = L.unit;
+  $('explodeLabel').textContent = L.explode;
+  $('cutLabel').textContent = L.cut;
+  $('section').title = L.cut;
 }
 
 async function start() {
@@ -178,6 +183,8 @@ function onInput(params) {
 function onResult(res) {
   const sc = res?.structuredContent;
   if (sc?.layout) S.wantLayout = sc.layout;
+  if (sc?.assembly !== undefined) S.assembly = sc.assembly;
+  if (sc?.view?.section) S.section = true;
   if (res?.isError || !sc?.models?.length) {
     const msg = res?.content?.find?.((c) => c.type === 'text')?.text || 'No model.';
     status(msg);
@@ -196,6 +203,10 @@ async function openLink(url) {
 
 // ── 3D ──────────────────────────────────────────────────────────────────────────────────────────────────────────
 let renderer, scene, camera, controls, root, home, raf = 0;
+/* The section: one plane through the parts' axes (all parts stand on z = 0), keeping z ≤ c. Off — pushed far away.
+   The cut faces show as the parts' back faces in a flat colour, so the thread's profile reads as a solid section. */
+const clip = new THREE.Plane(new THREE.Vector3(0, 0, -1), 1e6);
+const capMat = new THREE.MeshBasicMaterial({ color: 0xb08d4e, side: THREE.BackSide, clippingPlanes: [clip] });
 const loaded = new Map(); // glb url → Promise<Object3D>
 
 function initGL() {
@@ -211,6 +222,7 @@ function initGL() {
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.05;
+  renderer.localClippingEnabled = true;
   $('stage').prepend(renderer.domElement);
   renderer.domElement.setAttribute('role', 'img');
 
@@ -275,10 +287,10 @@ function resize() {
   if (root?.children.length && (needFrame || !S.userMoved)) frame();
 }
 
-const steel = () => new THREE.MeshPhysicalMaterial({ color: 0xd2d6db, metalness: 1, roughness: 0.24, clearcoat: 0.3, clearcoatRoughness: 0.25 });
+const steel = () => new THREE.MeshPhysicalMaterial({ color: 0xd2d6db, metalness: 1, roughness: 0.24, clearcoat: 0.3, clearcoatRoughness: 0.25, clippingPlanes: [clip] });
 const KIND = {
-  rubber: () => new THREE.MeshPhysicalMaterial({ color: 0x0b0c0e, metalness: 0, roughness: 0.85 }),
-  plastic: () => new THREE.MeshPhysicalMaterial({ color: 0x121418, metalness: 0, roughness: 0.45, clearcoat: 0.3, clearcoatRoughness: 0.4 }),
+  rubber: () => new THREE.MeshPhysicalMaterial({ color: 0x0b0c0e, metalness: 0, roughness: 0.85, clippingPlanes: [clip] }),
+  plastic: () => new THREE.MeshPhysicalMaterial({ color: 0x121418, metalness: 0, roughness: 0.45, clearcoat: 0.3, clearcoatRoughness: 0.4, clippingPlanes: [clip] }),
 };
 
 function loadGlb(url) {
@@ -332,11 +344,15 @@ async function show() {
   labels.forEach((l) => l.el.remove());
   labels = [];
   const boxes = objs.map((o) => new THREE.Box3().setFromObject(o));
-  const put = (i, x, y) => {
+  const put = (i, x, y, k = 0) => {
     const holder = new THREE.Group();
-    holder.add(objs[i].clone(true));
+    const inst = objs[i].clone(true);
+    const meshes = [];
+    inst.traverse((o) => { if (o.isMesh) meshes.push(o); });
+    for (const o of meshes) { const cap = new THREE.Mesh(o.geometry, capMat); cap.renderOrder = 1; o.add(cap); }
+    holder.add(inst);
     holder.position.set(x, y, 0);
-    holder.userData.model = i;
+    holder.userData = { model: i, baseY: y, k };
     root.add(holder);
     return holder;
   };
@@ -348,13 +364,13 @@ async function show() {
     const Lb = plan.bolt.dimensions.length_mm / 1000;
     const th = (m) => boxes[list.indexOf(m)].max.y - boxes[list.indexOf(m)].min.y;
     const stack = [...plan.washers, ...plan.nuts];
-    const clamp = Math.max(0, Lb - stack.reduce((a, m) => a + th(m), 0) - 2 * P);
-    put(bi, 0, 0);
+    const fitted = S.assembly?.fits ? S.assembly.grip_mm / 1000 : null;
+    const clamp = fitted ?? Math.max(0, Lb - stack.reduce((a, m) => a + th(m), 0) - 2 * P);
+    S.clampMm = Math.round(clamp * 10000) / 10;
+    put(bi, 0, 0, -1);
     let y = -clamp;
-    for (const m of stack) { y -= th(m); put(list.indexOf(m), 0, y - boxes[list.indexOf(m)].min.y); }
-    const lab = el('div', 'label3d on', L.joint);
-    $('stage').appendChild(lab);
-    labels.push({ el: lab, at: new THREE.Vector3(0, boxes[bi].min.y, 0), model: -1 });
+    stack.forEach((m, k) => { y -= th(m); put(list.indexOf(m), 0, y - boxes[list.indexOf(m)].min.y, k + 1); });
+    S.spread = Lb;
   } else {
     // side by side at true scale: every part on the floor, a gap of half the widest
     const widest = Math.max(...boxes.map((b) => b.getSize(new THREE.Vector3()).x));
@@ -378,10 +394,92 @@ async function show() {
   }
   if (assembled) root.position.x = 0;
   markActive();
+  renderControls();
+  applyExplode(false);
   frame();
+  applyCut();
   $('poster').classList.add('hidden');
   status('');
 }
+
+/* Explode the assembly along its axis: the bolt up, the washers and nuts down, each a little further. */
+function applyExplode(reframe = true) {
+  const t = S.layout === 'assembly' ? S.explode : 0;
+  for (const h of root.children) {
+    const k = h.userData.k ?? 0;
+    h.position.y = h.userData.baseY + (k < 0 ? 0.45 : -0.35 * k) * (S.spread || 0) * t;
+  }
+  for (const l of labels) if (l.model === -1 && l.base == null) l.base = l.at.y;
+  for (const l of labels) if (l.model === -1) l.at.y = l.base - 0.25 * (root.children.length - 1) * (S.spread || 0) * t;
+  if (reframe && !S.userMoved) frame();
+}
+
+function applyCut() {
+  if (!S.section || !root?.children.length) { clip.constant = 1e6; return; }
+  const box = new THREE.Box3().setFromObject(root);
+  const zr = Math.max(Math.abs(box.min.z), Math.abs(box.max.z)) * 0.98;
+  clip.constant = S.cut * zr;
+}
+
+const canCall = () => !!(S.caps.serverTools || window.openai?.callTool);
+async function callTool(name, args) {
+  if (S.caps.serverTools) return request('tools/call', { name, arguments: args }, 20000);
+  if (window.openai?.callTool) return window.openai.callTool(name, args);
+  throw new Error('no tool calls from this view');
+}
+
+/* «Grip»: the server picks the bolt length (the shortest of the series with a pitch out of the nut) and sends the set back. */
+let gripTimer = 0;
+async function fitGrip(v) {
+  const plan = assemblyPlan();
+  if (!plan || !(v > 0)) return;
+  $('fit').className = 'fit';
+  $('fit').textContent = L.fitting;
+  try {
+    const others = S.models.filter((m) => m !== plan.bolt).map((m) => m.id);
+    const r = await callTool('render_model_viewer', { id: plan.bolt.id, compare_with: others, layout: 'assembly', grip_mm: v, locale: S.locale });
+    const sc = r?.structuredContent;
+    if (!sc?.models) throw new Error('no models');
+    S.assembly = sc.assembly ?? null;
+    S.wantLayout = 'assembly';
+    setModels(sc.models, sc.locale);
+    const a = S.assembly;
+    if (a?.fits) {
+      const b = sc.models.find((m) => /^(bolt|screw)-/.test(m.family_id));
+      request('ui/update-model-context', { content: [{ type: 'text', text: `In the Monge viewer the user set a grip of ${a.grip_mm} mm: ${b.id} (length ${a.bolt_length_mm} mm, ${a.protrusion_mm} mm out of the nut).` }] }).catch(() => {});
+    }
+  } catch (e) {
+    $('fit').className = 'fit bad';
+    $('fit').textContent = String(e.message || e);
+  }
+}
+
+function renderControls() {
+  const asm = S.layout === 'assembly' && !!assemblyPlan();
+  $('explodeRow').hidden = !asm;
+  $('explode').value = String(S.explode);
+  $('gripRow').hidden = !(asm && canCall());
+  const g = $('grip');
+  if (document.activeElement !== g) g.value = String(S.assembly?.grip_mm ?? S.clampMm ?? '');
+  const a = S.assembly;
+  const fit = $('fit');
+  if (a && !a.fits) { fit.className = 'fit bad'; fit.textContent = a.note || ''; }
+  else if (a?.fits) {
+    const b = S.models.find((m) => /^(bolt|screw)-/.test(m.family_id));
+    fit.className = 'fit';
+    fit.textContent = `→ ${b?.tag ?? ''} · ${L.out} ${mm(a.protrusion_mm)}`;
+  } else { fit.className = 'fit'; fit.textContent = ''; }
+  $('cutRow').hidden = !S.section;
+  $('section').classList.toggle('on', S.section);
+  $('section').setAttribute('aria-pressed', String(S.section));
+  sendSize();
+}
+
+$('explode').oninput = (e) => { S.explode = Number(e.target.value); applyExplode(); };
+$('cut').oninput = (e) => { S.cut = Number(e.target.value); applyCut(); };
+$('section').onclick = () => { S.section = !S.section; renderControls(); if (!S.userMoved) frame(); applyCut(); };
+$('grip').oninput = (e) => { clearTimeout(gripTimer); const v = Number(String(e.target.value).replace(',', '.')); gripTimer = setTimeout(() => fitGrip(v), 600); };
+for (const id of ['controls']) $(id).addEventListener('pointerdown', (e) => e.stopPropagation());
 
 function markActive() {
   for (const l of labels) l.el.classList.toggle('on', l.model === -1 || l.model === S.active || S.models.length === 1);
@@ -411,8 +509,12 @@ function frame() {
   const vfov = (camera.fov * Math.PI) / 180;
   const hfov = 2 * Math.atan(Math.tan(vfov / 2) * camera.aspect);
   // room: the set fills ~78 % of the width and ~70 % of the height (labels below, the controls in the corners)
-  const fitH = (size.y / 0.70) / 2 / Math.tan(vfov / 2);
-  const fitW = (Math.max(size.x, size.z) / 0.78) / 2 / Math.tan(hfov / 2);
+  // the controls at the bottom (grip, explode, section) take room: lift the set above them
+  const ctl = $('controls').getBoundingClientRect();
+  const reserved = ctl.height > 0 ? ctl.height + 16 : 0;
+  camera.setViewOffset(r.width, r.height, 0, reserved / 2, r.width, r.height);
+  const fitH = (size.y / ((labels.length ? 0.74 : 0.86) - reserved / r.height)) / 2 / Math.tan(vfov / 2);
+  const fitW = (Math.max(size.x, size.z) / 0.8) / 2 / Math.tan(hfov / 2);
   const dist = Math.max(fitH, fitW) + size.z / 2;
   const dir = new THREE.Vector3(0.22, 0.26, 1).normalize();
   const target = center.clone();
@@ -493,7 +595,7 @@ function renderLayout() {
     const b = el('button', null, text);
     b.type = 'button';
     b.setAttribute('aria-pressed', String(S.layout === id));
-    b.onclick = () => { if (S.layout !== id) { S.layout = id; renderLayout(); show(); } };
+    b.onclick = () => { if (S.layout !== id) { S.layout = id; S.explode = 0; renderLayout(); show(); } };
     seg.append(b);
   }
 }
@@ -588,7 +690,7 @@ function facts(m) {
     [L.pitch, m.thread?.pitch_mm != null ? mm(m.thread.pitch_mm) : null],
     [L.thread, m.thread ? (own ? m.thread.label : optionLabel(m)) : null],
     [L.length, d.length_mm != null ? mm(d.length_mm) : null],
-    [L.grip, d.grip_mm != null ? mm(d.grip_mm) : null],
+    [L.gripFact, d.grip_mm != null ? mm(d.grip_mm) : null],
     [L.D, d.outside_diameter_mm != null ? mm(d.outside_diameter_mm) : null],
     [L.B, d.width_mm != null ? mm(d.width_mm) : null],
     [L.overall, Array.isArray(d.overall_mm) ? `${d.overall_mm.map((v) => nf(v, 1)).join(' × ')} ${L.unit}` : null],
