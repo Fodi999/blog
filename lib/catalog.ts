@@ -272,7 +272,9 @@ function compare(e: Entry, q: Query): { ok: boolean; diff: string[]; score: numb
   // without a thread asked: the real thread first, then cosmetic, the print option last
   if (!q.thread) score += f.thread === 'exact' ? 0.3 : f.thread === 'cosmetic' ? 0.2 : f.thread === 'print' ? 0 : 0.25;
   if (!q.seals && f.seals) score += f.seals === '2Z' ? 0.2 : 0;
-  return { ok: diff.length === 0, diff, score: score - diff.length * 5 };
+  // among the nearest: the closest size and length first (M12 × 61 → M12 × 60, M12 × 65; M13 × 60 → M12, M14)
+  const far = (q.d != null && f.d != null ? Math.abs(f.d - q.d) / 10 : 0) + (q.l != null && (f.l ?? f.grip) != null ? Math.abs((f.l ?? f.grip)! - q.l) / 100 : 0);
+  return { ok: diff.length === 0, diff, score: score - diff.length * 5 - far };
 }
 
 export type SearchResult = { match: 'exact' | 'not_found' | 'browse'; query: Query; total: number; results: { entry: Entry; diff: string[] }[]; notes: string[] };
