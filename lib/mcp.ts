@@ -202,13 +202,13 @@ export const TOOLS = [
     name: 'render_model_viewer',
     title: 'Show a Monge model in 3D',
     description:
-      'Shows a Monge library model in an interactive 3D viewer inside the chat (rotate, zoom, pan, reset view, full screen), loaded from the model\'s own GLB file, with its standard, size, thread pitch, thread type and links to STEP, STL, 3MF and GLB. Give the id from search_models; a size id without its option (e.g. "bolt-iso-4017--m12-x-60") shows the real-thread option. compare_with adds up to three more models (e.g. the matching nut) to switch between or view side by side. Hosts without interactive views get the same data as text with a link to the 3D view on the Monge site.',
+      'Shows a Monge library model in an interactive 3D viewer inside the chat (rotate, zoom, pan, reset view, full screen), loaded from the model\'s own GLB file, with its standard, size, thread pitch, thread type and links to STEP, STL, 3MF and GLB. Give the id from search_models; a size id without its option (e.g. "bolt-iso-4017--m12-x-60") shows the real-thread option. compare_with adds up to three more models to view side by side at true scale; with a bolt or cap screw plus its washer and nut of the same M size, layout "assembly" shows them put together on the axis. Hosts without interactive views get the same data as text with a link to the 3D view on the Monge site.',
     inputSchema: {
       type: 'object',
       properties: {
         id: { type: 'string', maxLength: 160, description: 'Model id from search_models (<part>--<size>--<option>), or a size id (<part>--<size>) for its real-thread option' },
         compare_with: { type: 'array', items: { type: 'string', maxLength: 160 }, maxItems: 3, uniqueItems: true, description: 'Up to three more model ids to show alongside (switch or side by side)' },
-        layout: { type: 'string', enum: ['switch', 'side_by_side'], default: 'switch', description: 'With several models: "switch" shows one at a time with tabs; "side_by_side" shows them together at true scale' },
+        layout: { type: 'string', enum: ['side_by_side', 'assembly', 'switch'], default: 'side_by_side', description: 'With several models: "side_by_side" — together at true scale; "assembly" — a bolt or cap screw with its washer and nut (same M size) put together on the axis; ("switch" is kept as an alias of side_by_side)' },
         locale: { type: 'string', enum: LOCALE_ENUM, default: 'en' },
       },
       required: ['id'],
@@ -219,7 +219,7 @@ export const TOOLS = [
       properties: {
         models: { type: 'array', items: { type: 'object', properties: { id: { type: 'string' }, name: { type: 'string' }, url: { type: 'string' }, viewer_url: { type: 'string' }, glb: { type: ['object', 'null'] }, image: { type: 'object' }, files: { type: 'array', items: fileSchema } }, required: ['id', 'name', 'url'] } },
         locale: { type: 'string' },
-        layout: { type: 'string', enum: ['switch', 'side_by_side'] },
+        layout: { type: 'string', enum: ['side_by_side', 'assembly'] },
         catalog: { type: 'string' },
       },
       required: ['models'],
@@ -384,7 +384,7 @@ function renderModelViewer(a: Args): ToolResult {
     if ('error' in r) return toolError(r.error, { code: 'not_found', ...(r.options ? { options_of_this_size: r.options } : {}) });
     models.push(viewerModel(r.entry, locale));
   }
-  const out = { models, locale, layout: a.layout === 'side_by_side' && models.length > 1 ? 'side_by_side' : 'switch', catalog: CATALOG.version };
+  const out = { models, locale, layout: models.length > 1 && a.layout === 'assembly' ? 'assembly' : 'side_by_side', catalog: CATALOG.version };
   return { content: [{ type: 'text', text: viewerText(models, locale) }], structuredContent: out };
 }
 

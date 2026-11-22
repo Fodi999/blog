@@ -14,9 +14,9 @@ import { SITE_URL } from '@/lib/seo';
    data as text: the characteristics, the WebP, the files and the model page with its 3D view on the site. */
 
 /** Versioned: a new URI whenever the page changes, so no host shows a cached older page. */
-export const VIEWER_URI = 'ui://monge/model-viewer-v4.html';
+export const VIEWER_URI = 'ui://monge/model-viewer-v5.html';
 /** Earlier URIs of the view — still answered (with the current page), for hosts that cached them. */
-export const VIEWER_URIS_OLD = ['ui://monge/model-viewer.html', 'ui://monge/model-viewer-v2.html', 'ui://monge/model-viewer-v3.html'];
+export const VIEWER_URIS_OLD = ['ui://monge/model-viewer.html', 'ui://monge/model-viewer-v2.html', 'ui://monge/model-viewer-v3.html', 'ui://monge/model-viewer-v4.html'];
 export const VIEWER_MIME = 'text/html;profile=mcp-app';
 const ORIGIN = new URL(SITE_URL).origin;
 const FREE_FILES = `${SITE_URL}/api/files/downloads/`;
@@ -120,6 +120,9 @@ export function viewerModel(e: Entry, locale: Locale) {
     short,
     tag,
     label: `${short} ${tag}`,
+    // one word for the 3D label («Болт», «Шайба», «Подшипник») and the family, so the view knows what fits together
+    role: short.replace(/\s+(ISO|DIN|EN)\b.*$/, ''),
+    family_id: e.item.slug,
     url: r.url,
     viewer_url: r.page_url,
     standard: r.standard ? { id: r.standard.id, title: r.standard.title } : null,
