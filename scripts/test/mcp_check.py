@@ -99,7 +99,8 @@ s, _, js = legacy("ping")
 check("ping", s == 200 and js.get("result") == {}, js)
 s, _, js = legacy("tools/list")
 tools = {t["name"]: t for t in (js or {}).get("result", {}).get("tools", [])}
-check("tools/list: four tools", list(tools) == ["search_models", "get_model", "get_download_links", "render_model_viewer"], list(tools))
+PROD = re.match(r"^https://(dima-fomin\.pl|blog\.fodi85999\.workers\.dev)", SITE) is not None
+check("tools/list: four tools (+ the UI test off production)", list(tools) == ["search_models", "get_model", "get_download_links", "render_model_viewer"] + ([] if PROD else ["monge_ui_test"]), list(tools))
 check("tools read-only", all(t["annotations"]["readOnlyHint"] and not t["annotations"]["destructiveHint"] for t in tools.values()))
 check("tools have outputSchema", all(t.get("outputSchema", {}).get("type") == "object" for t in tools.values()))
 s, _, js = legacy("prompts/list")
@@ -181,15 +182,16 @@ if step:
     print(f"     STEP {len(data)} B sha256 {sha}")
 
 # ── MCP Apps: the 3D viewer ──
-VIEWER = "ui://monge/model-viewer.html"
 vt = tools.get("render_model_viewer", {})
+VIEWER = vt.get("_meta", {}).get("ui", {}).get("resourceUri", "")
+check("viewer URI is versioned ui://", VIEWER.startswith("ui://monge/model-viewer") and VIEWER.endswith(".html"), VIEWER)
 check("viewer tool: _meta.ui.resourceUri + visibility + openai/outputTemplate", vt.get("_meta", {}).get("ui", {}).get("resourceUri") == VIEWER and "model" in vt["_meta"]["ui"].get("visibility", []) and vt["_meta"].get("openai/outputTemplate") == VIEWER, vt.get("_meta"))
 check("viewer tool read-only", vt.get("annotations", {}).get("readOnlyHint") is True)
 s, _, js = legacy("initialize", {"protocolVersion": "2025-11-25", "capabilities": {}, "clientInfo": {"name": "t", "version": "1"}})
 check("initialize advertises resources and the ui extension", "resources" in js["result"]["capabilities"] and "io.modelcontextprotocol/ui" in js["result"]["capabilities"].get("extensions", {}), js["result"]["capabilities"])
 s, _, js = legacy("resources/list")
 res = (js or {}).get("result", {}).get("resources", [])
-check("resources/list: the viewer, text/html;profile=mcp-app", [(r["uri"], r["mimeType"]) for r in res] == [(VIEWER, "text/html;profile=mcp-app")], res)
+check("resources/list: the viewer (+ the UI test off production), text/html;profile=mcp-app", [r["uri"] for r in res] == [VIEWER] + ([] if PROD else ["ui://monge/ui-test-v1.html"]) and all(r["mimeType"] == "text/html;profile=mcp-app" for r in res), res)
 s, _, js = legacy("resources/read", {"uri": VIEWER})
 c = ((js or {}).get("result", {}).get("contents") or [{}])[0]
 csp = c.get("_meta", {}).get("ui", {}).get("csp", {})
@@ -224,7 +226,7 @@ r = (js or {}).get("result", {})
 check("server/discover", s == 200 and r.get("supportedVersions") == [MODERN] and r.get("resultType") == "complete" and r.get("_meta", {}).get("io.modelcontextprotocol/serverInfo", {}).get("name") == "monge-mcp", js)
 s, _, js = modern("tools/list")
 r = (js or {}).get("result", {})
-check("modern tools/list: ttlMs, cacheScope, resultType", len(r.get("tools", [])) == 4 and r.get("ttlMs", 0) > 0 and r.get("cacheScope") == "public" and r.get("resultType") == "complete", js)
+check("modern tools/list: ttlMs, cacheScope, resultType", len(r.get("tools", [])) == (4 if PROD else 5) and r.get("ttlMs", 0) > 0 and r.get("cacheScope") == "public" and r.get("resultType") == "complete", js)
 s, _, js = modern("tools/call", {"name": "search_models", "arguments": {"query": "ISO 4017 M12x60 real thread"}}, name="search_models")
 check("modern tools/call", s == 200 and js["result"]["structuredContent"]["results"][0]["id"] == WANT and js["result"]["resultType"] == "complete", js)
 s, _, js = modern("tools/call", {"name": "search_models", "arguments": {"size": "M12"}}, name="=?base64?" + base64.b64encode(b"search_models").decode() + "?=")

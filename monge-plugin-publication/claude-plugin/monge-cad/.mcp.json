@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "monge-cad": {
+      "type": "http",
+      "url": "https://dima-fomin.pl/mcp"
+    }
+  }
+}

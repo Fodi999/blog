@@ -63,8 +63,9 @@ body.no3d .tools, body.no3d .hint { display: none; }
 .status { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); font-size: 13px; text-align: center; padding: 20px; pointer-events: none; }
 .label3d { position: absolute; transform: translate(-50%, -100%); font-size: 11.5px; padding: 2px 7px; border-radius: 6px; white-space: nowrap; pointer-events: none;
   background: color-mix(in srgb, var(--bg) 85%, transparent); border: 1px solid var(--line); }
-.specs { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin: 0; }
-.specs div { background: var(--panel); padding: 7px 10px; }
+.specs { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin: 0; }
+.specs div { background: var(--panel); padding: 7px 10px; outline: 1px solid var(--line); }
+/* the lines are each cell's outline: a row left short (7 facts in 8 places) stays the panel's colour, not a grey block */
 .specs dt { color: var(--muted); font-size: 11.5px; }
 .specs dd { margin: 2px 0 0; font-family: var(--mono); font-size: 12.5px; }
 .specs .group { grid-column: 1 / -1; font-weight: 600; font-size: 12.5px; padding: 8px 10px 6px; }

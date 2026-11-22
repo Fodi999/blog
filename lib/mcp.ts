@@ -4,7 +4,8 @@ import { getEnv } from '@/lib/cf';
 import { CatalogUnavailable, ensureDownloads } from '@/lib/downloads';
 import { seedItems } from '@/lib/library';
 import { SITE_URL } from '@/lib/seo';
-import { readViewer, resolveModel, VIEWER_MIME, VIEWER_RESOURCE, VIEWER_URI, viewerModel, viewerText } from '@/lib/mcp-viewer';
+import { claudeUiDomain, readViewer, resolveModel, VIEWER_MIME, VIEWER_RESOURCE, VIEWER_URI, VIEWER_URIS_OLD, viewerModel, viewerText } from '@/lib/mcp-viewer';
+import { isProductionHost, readUiTest, runUiTest, UI_TEST_RESOURCE, UI_TEST_TOOL, UI_TEST_URI } from '@/lib/mcp-ui-test';
 
 /* MONGE MCP — the Monge library catalogue as a public, read-only MCP server (Streamable HTTP, POST /mcp).
 
@@ -565,9 +566,14 @@ export async function handleMcp(request: Request): Promise<Response> {
     if (!LEGACY.includes(headerVersion)) return rpcError(400, id, INVALID_REQUEST, `Unsupported MCP-Protocol-Version ${headerVersion}; supported: ${[...MODERN, ...LEGACY].join(', ')}`);
   }
 
+  // what was called, by whom — never the arguments (the privacy policy says tool content is not logged)
+  const client = (method === 'initialize' ? (params.clientInfo as { name?: string })?.name : (meta['io.modelcontextprotocol/clientInfo'] as { name?: string } | undefined)?.name) ?? '';
+  console.log(`[mcp] ${method}${method === 'tools/call' ? ` ${str(params.name) ?? ''}` : method === 'resources/read' ? ` ${str(params.uri) ?? ''}` : ''}${client ? ` client=${client.slice(0, 40)}` : ''} ua=${(request.headers.get('user-agent') ?? '').slice(0, 60)}`);
   const reply = (result: Record<string, unknown>) =>
     send(200, { jsonrpc: '2.0', id, result: modern ? { ...result, resultType: 'complete', _meta: { ...((result._meta as object) ?? {}), 'io.modelcontextprotocol/serverInfo': MCP_SERVER } } : result });
   const notFound = () => rpcError(modern ? 404 : 200, id, METHOD_NOT_FOUND, `Method not found: ${method}`);
+  // the diagnostic UI test exists only off production (test and preview addresses)
+  const prod = isProductionHost(new URL(request.url).hostname);
   const capabilities = { tools: { listChanged: false }, resources: { listChanged: false }, extensions: { 'io.modelcontextprotocol/ui': { mimeTypes: [VIEWER_MIME] } } };
   const listCache = modern ? { ttlMs: 3_600_000, cacheScope: 'public' } : {};
 
@@ -584,17 +590,21 @@ export async function handleMcp(request: Request): Promise<Response> {
       case 'ping':
         return reply({});
       case 'tools/list':
-        return reply({ tools: TOOLS, ...listCache });
+        return reply({ tools: prod ? TOOLS : [...TOOLS, UI_TEST_TOOL], ...listCache });
       case 'resources/list':
-        return reply({ resources: [VIEWER_RESOURCE], ...listCache });
+        return reply({ resources: prod ? [VIEWER_RESOURCE] : [VIEWER_RESOURCE, UI_TEST_RESOURCE], ...listCache });
       case 'resources/templates/list':
         return reply({ resourceTemplates: [], ...listCache });
       case 'resources/read': {
         const uri = str(params.uri);
-        if (uri !== VIEWER_URI) return rpcError(modern ? 400 : 200, id, modern ? INVALID_PARAMS : -32002, `Resource not found: ${uri ?? '(none)'}`, { uri });
-        return reply({ ...readViewer(), ...listCache });
+        // the URL the client connected to: dima-fomin.pl/mcp in production (it reaches the Worker through Vercel), else this address
+        const domain = await claudeUiDomain(prod ? `${SITE_URL}/mcp` : `${new URL(request.url).origin}/mcp`);
+        if (uri === VIEWER_URI || (uri && VIEWER_URIS_OLD.includes(uri))) return reply({ ...readViewer(uri, domain), ...listCache });
+        if (uri === UI_TEST_URI && !prod) return reply({ ...readUiTest(domain), ...listCache });
+        return rpcError(modern ? 400 : 200, id, modern ? INVALID_PARAMS : -32002, `Resource not found: ${uri ?? '(none)'}`, { uri });
       }
       case 'tools/call': {
+        if (!prod && str(params.name) === UI_TEST_TOOL.name) return reply(runUiTest() as unknown as Record<string, unknown>);
         const r = await callTool(params);
         if ('rpcError' in r) return rpcError(modern ? 400 : 200, id, r.rpcError.code, r.rpcError.message);
         return reply(r as unknown as Record<string, unknown>);

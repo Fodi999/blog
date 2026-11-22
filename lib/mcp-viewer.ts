@@ -13,7 +13,10 @@ import { SITE_URL } from '@/lib/seo';
    Access-Control-Allow-Origin: *). Nothing is drawn that is not in the files. A host without MCP Apps gets the same
    data as text: the characteristics, the WebP, the files and the model page with its 3D view on the site. */
 
-export const VIEWER_URI = 'ui://monge/model-viewer.html';
+/** Versioned: a new URI whenever the page changes, so no host shows a cached older page. */
+export const VIEWER_URI = 'ui://monge/model-viewer-v3.html';
+/** Earlier URIs of the view — still answered (with the current page), for hosts that cached them. */
+export const VIEWER_URIS_OLD = ['ui://monge/model-viewer.html', 'ui://monge/model-viewer-v2.html'];
 export const VIEWER_MIME = 'text/html;profile=mcp-app';
 const ORIGIN = new URL(SITE_URL).origin;
 const FREE_FILES = `${SITE_URL}/api/files/downloads/`;
@@ -30,17 +33,25 @@ export const VIEWER_RESOURCE = {
   _meta: { ui: { csp: CSP, prefersBorder: true } },
 };
 
+/** Claude's sandbox origin for a server's MCP Apps views: the first 32 hex of SHA-256 of the server URL + .claudemcpcontent.com
+    (claude.com/docs/connectors/building/mcp-apps). */
+export async function claudeUiDomain(serverUrl: string): Promise<string> {
+  const d = new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(serverUrl)));
+  return Array.from(d, (b) => b.toString(16).padStart(2, '0')).join('').slice(0, 32) + '.claudemcpcontent.com';
+}
+
 /** resources/read of the UI resource. The CSP is declared for MCP Apps hosts and, in its own keys, for ChatGPT. */
-export function readViewer() {
+export function readViewer(uri: string = VIEWER_URI, domain?: string) {
   return {
     contents: [
       {
-        uri: VIEWER_URI,
+        uri,
         mimeType: VIEWER_MIME,
         text: VIEWER_HTML,
         _meta: {
-          ui: { csp: CSP, prefersBorder: true },
-          'openai/widgetCSP': { connect_domains: [ORIGIN], resource_domains: [ORIGIN] },
+          ui: { csp: CSP, prefersBorder: true, ...(domain ? { domain } : {}) },
+          // redirect_domains: ChatGPT trusts openExternal / ui/open-link only to these (the file links, the model page)
+          'openai/widgetCSP': { connect_domains: [ORIGIN], resource_domains: [ORIGIN], redirect_domains: [ORIGIN] },
           'openai/widgetPrefersBorder': true,
           'openai/widgetDescription': 'An interactive 3D view of the Monge model(s) just found, with their files.',
           'monge/viewerSha256': VIEWER_SHA,

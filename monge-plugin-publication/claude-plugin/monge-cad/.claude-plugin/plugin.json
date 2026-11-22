@@ -1,0 +1,26 @@
+{
+  "name": "monge-cad",
+  "displayName": "Monge CAD",
+  "version": "0.2.0",
+  "description": "Standard mechanical parts from the Monge CAD library — ISO/DIN/EN bolts, screws, nuts, washers, bearings, lock nuts, rebar — found by size, shown in an interactive 3D view in the chat, with STEP, STL, 3MF and GLB downloads and SHA-256 checksums.",
+  "author": {
+    "name": "Dmytro Fomin",
+    "url": "https://dima-fomin.pl"
+  },
+  "homepage": "https://dima-fomin.pl/en/mcp",
+  "keywords": [
+    "cad",
+    "iso",
+    "din",
+    "fasteners",
+    "bearings",
+    "step",
+    "3d",
+    "mechanical-engineering"
+  ],
+  "icon": "./logo.png",
+  "documentationUrl": "https://dima-fomin.pl/en/mcp",
+  "supportUrl": "https://dima-fomin.pl/en/contact",
+  "privacyPolicyUrl": "https://dima-fomin.pl/en/privacy",
+  "termsOfServiceUrl": "https://dima-fomin.pl/en/terms"
+}
