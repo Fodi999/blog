@@ -24,28 +24,39 @@ export async function siteStats(): Promise<SiteStats> {
   }
 }
 
-/** Downloads by part (slug → count) and, for one part, by size (page id → count). */
-export async function downloadsBySlug(): Promise<Record<string, number>> {
-  const { DB } = await getEnv();
-  if (!DB) return {};
-  try {
-    // key = downloads/<slug>/<page>/<option>/<file>
-    const { results } = await DB.prepare(
-      "SELECT substr(key, 11, instr(substr(key, 11), '/') - 1) AS slug, SUM(count) AS n FROM downloads WHERE key LIKE 'downloads/%' GROUP BY slug",
-    ).all<{ slug: string; n: number }>();
-    return Object.fromEntries(results.map((r) => [r.slug, r.n]));
-  } catch {
-    return {};
-  }
-}
-
-export async function downloadsOfPage(slug: string, page: string): Promise<number | null> {
+/* The downloads of every library file in one query, kept a minute per worker: the pages read their counts from it
+   instead of asking D1 each. */
+let counts: { at: number; byKey: Map<string, number> } | null = null;
+async function allCounts(): Promise<Map<string, number> | null> {
+  if (counts && Date.now() - counts.at < 60_000) return counts.byKey;
   const { DB } = await getEnv();
   if (!DB) return null;
   try {
-    const r = await DB.prepare('SELECT COALESCE(SUM(count), 0) AS n FROM downloads WHERE key LIKE ?').bind(`downloads/${slug}/${page}/%`).first<{ n: number }>();
-    return r?.n ?? 0;
+    const { results } = await DB.prepare("SELECT key, count FROM downloads WHERE key LIKE 'downloads/%'").all<{ key: string; count: number }>();
+    counts = { at: Date.now(), byKey: new Map(results.map((r) => [r.key, r.count])) };
+    return counts.byKey;
   } catch {
-    return null;
+    return counts?.byKey ?? null;
   }
+}
+
+/** Downloads by part (slug → count). */
+export async function downloadsBySlug(): Promise<Record<string, number>> {
+  const m = await allCounts();
+  const out: Record<string, number> = {};
+  for (const [k, n] of m ?? []) {
+    const slug = k.split('/')[1];
+    out[slug] = (out[slug] ?? 0) + n;
+  }
+  return out;
+}
+
+/** Downloads of one size (all its options and files). */
+export async function downloadsOfPage(slug: string, page: string): Promise<number | null> {
+  const m = await allCounts();
+  if (!m) return null;
+  const prefix = `downloads/${slug}/${page}/`;
+  let n = 0;
+  for (const [k, c] of m) if (k.startsWith(prefix)) n += c;
+  return n;
 }

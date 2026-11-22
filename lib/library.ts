@@ -66,9 +66,14 @@ type Row = { slug: string; data: string; published: number };
 /** Published items. The built-in catalogue (data/library.json) says WHICH items exist — only the parts of the Monge
     library; a D1 row may change an item's text or hide it (published = 0), but a row whose item left the catalogue
     is not shown. Without the database — the catalogue. */
+let cached: { at: number; items: LibraryItem[] } | null = null;
+
 export async function getItems(): Promise<LibraryItem[]> {
-  await ensureDownloads();
-  return withCounts(await listed());
+  // the catalogue and the D1 list at once; the list is kept for 5 minutes per worker (a page needs no D1 round trip)
+  const fresh = cached && Date.now() - cached.at < 300_000 ? cached.items : null;
+  const [, items] = await Promise.all([ensureDownloads(), fresh ?? listed()]);
+  if (!fresh) cached = { at: Date.now(), items };
+  return withCounts(items);
 }
 
 async function listed(): Promise<LibraryItem[]> {

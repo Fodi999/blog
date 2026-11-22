@@ -1,12 +1,14 @@
-import { json, localeOf, options, problem } from '@/lib/api';
+import { json, localeOf, options, problem, withCatalog } from '@/lib/api';
 import { allEntries, entryOf, modelId, parseId, record } from '@/lib/catalog';
-import { ensureDownloads } from '@/lib/downloads';
 
 /** GET /api/v1/models/{id} — one geometry: everything the catalogue knows of it, every file with its checksum, the
     other options of its size. id: <part>--<size>--<option>, e.g. bolt-iso-4017--m12-x-60--exact. */
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  await ensureDownloads();
+  return withCatalog(() => one(request, id));
+}
+
+function one(request: Request, id: string) {
   const locale = localeOf(new URL(request.url).searchParams.get('locale'));
   const e = entryOf(decodeURIComponent(id));
   if (!e) {

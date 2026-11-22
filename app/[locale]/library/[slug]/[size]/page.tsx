@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { PartConfigurator } from '@/components/PartConfigurator';
 import { Eyebrow } from '@/components/sections';
-import { allPages, clientPages, downloadsOf, ensureDownloads, pageOf, text, type DlPage } from '@/lib/downloads';
+import { allPages, downloadsOf, ensureDownloads, navPages, pageOf, text, type DlPage } from '@/lib/downloads';
 import { record } from '@/lib/catalog';
 import { fill, getDict, isLocale, locales, localPath, type Locale } from '@/lib/i18n';
 import { getItem } from '@/lib/library';
@@ -151,7 +151,7 @@ export default async function SizePage({ params }: { params: Promise<Params> }) 
         <PartConfigurator
           locale={locale}
           slug={slug}
-          pages={clientPages(dl.pages)}
+          pages={navPages(dl.pages, page.id)}
           pageId={page.id}
           navigate
           title={item.title[locale]}

@@ -7,6 +7,7 @@ import { Header } from '@/components/Header';
 import { RevealObserver } from '@/components/Reveal';
 import { getDict, isLocale, locales } from '@/lib/i18n';
 import { ogLocale, SITE_URL } from '@/lib/seo';
+import { CATALOG } from '@/lib/catalog-version';
 import '../globals.css';
 
 // Typefaces are self-hosted (public/fonts, @font-face in globals.css): the build needs no font service.
@@ -37,6 +38,8 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     applicationName: 'Monge',
     openGraph: { type: 'website', siteName: 'Monge', locale: ogLocale[locale], title: t.meta.title, description: t.meta.description, images: [{ url: '/og.png' }] },
     icons: { icon: '/icon.svg', apple: '/apple-icon.png' },
+    // the catalogue this page was built from (lib/catalog-version.ts) — the same as /api/v1 says it serves
+    other: { 'monge-catalog': CATALOG.version },
   };
 }
 

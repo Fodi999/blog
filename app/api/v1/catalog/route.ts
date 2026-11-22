@@ -1,13 +1,16 @@
-import { json, localeOf, options, problem } from '@/lib/api';
+import { json, localeOf, options, problem, withCatalog } from '@/lib/api';
 import { modelId } from '@/lib/catalog';
-import { downloadsOf, ensureDownloads, text } from '@/lib/downloads';
+import { downloadsOf, text } from '@/lib/downloads';
 import { seedItems } from '@/lib/library';
 import { SITE_URL } from '@/lib/seo';
 
 /** GET /api/v1/catalog — the families and how many sizes and models each has; ?family=<id> — its sizes, each with
     its page and the ids of its models. */
-export async function GET(request: Request) {
-  await ensureDownloads();
+export function GET(request: Request) {
+  return withCatalog(() => index(request));
+}
+
+function index(request: Request) {
   const u = new URL(request.url);
   const locale = localeOf(u.searchParams.get('locale'));
   const family = u.searchParams.get('family');

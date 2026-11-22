@@ -77,8 +77,16 @@ async function serve(request: Request, params: Promise<{ key: string[] }>, head:
   headers.set('etag', meta.httpEtag);
   headers.set('accept-ranges', 'bytes');
   headers.set('cache-control', 'public, max-age=86400, stale-while-revalidate=604800');
-  if (key.startsWith('downloads/')) await ensureDownloads();
-  const d = digest(key);
+  // the checksum comes from the catalogue; without it (unreachable) the file is still served, only without the digest
+  let d: string | null = null;
+  if (key.startsWith('downloads/')) {
+    try {
+      await ensureDownloads();
+      d = digest(key);
+    } catch {
+      d = null;
+    }
+  }
   if (d) headers.set('repr-digest', `sha-256=:${d}:`);
   const url = new URL(request.url);
   const save = url.searchParams.has('download');

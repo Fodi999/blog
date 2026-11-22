@@ -1,10 +1,10 @@
-import { ensureDownloads, totals } from '@/lib/downloads';
-import { API_VERSION, json, options } from '@/lib/api';
+import { catalogStatus, totals } from '@/lib/downloads';
+import { API_VERSION, json, options, withCatalog } from '@/lib/api';
 import { SITE_URL } from '@/lib/seo';
 
 /** GET /api/v1 — what the Monge Catalog API has and where. */
-export async function GET() {
-  await ensureDownloads();
+export function GET() {
+  return withCatalog(() => {
   const n = totals();
   return json({
     name: 'Monge Catalog API',
@@ -17,8 +17,10 @@ export async function GET() {
       model: `${SITE_URL}/api/v1/models/bolt-iso-4017--m12-x-60--exact`,
       catalog: `${SITE_URL}/api/v1/catalog`,
     },
+    catalog: catalogStatus(),
     docs: `${SITE_URL}/en/developers`,
     license: `${SITE_URL}/en/license`,
-  }, 200, 'public, max-age=3600');
+  }, 200, 'public, max-age=60');
+  });
 }
 export const OPTIONS = options;

@@ -1,4 +1,5 @@
 import { getEnv } from '@/lib/cf';
+import { CATALOG } from '@/lib/catalog-version';
 import type { Locale } from '@/lib/i18n';
 
 /* The library as downloadable files (R2, under downloads/). One PAGE per size — its own address
@@ -43,30 +44,71 @@ export type DlPage = {
 
 type Family = { checked: string; version: string; pages: DlPage[] };
 
-/* The data lives in R2 (catalog/downloads.json, put there by `npm run catalog:upload` before every deploy) — not in
-   the worker's code, which it would outgrow. A worker reads it once and keeps it for TTL; a failed re-read keeps
-   the copy it has. The build and a plain `next dev` read the same file from the repository. */
-export const CATALOG_KEY = 'catalog/downloads.json';
-const TTL = 5 * 60_000;
+/* The data lives in R2, content-addressed: catalog/downloads-<sha12>.json, put there by `npm run catalog:upload`
+   before every deploy (lib/catalog-version.ts names it — a deploy reads exactly the catalogue it was built with, a
+   rollback finds its own). It is read once per worker and checked against its SHA-256. Where it comes from, in
+   turn: memory → R2 (three tries) → the copy this Cloudflare location keeps in its cache → the repository's file
+   (the build, plain `next dev`). Nothing at all — `CatalogUnavailable`: pages answer an error (never an empty
+   catalogue that would turn every size into a 404 and be cached), the API answers 503. */
+export const CATALOG_KEY = CATALOG.key;
+
+export class CatalogUnavailable extends Error {
+  constructor(why: string) {
+    super(`catalogue ${CATALOG.version} unavailable: ${why}`);
+  }
+}
+
 let all: Record<string, Family> = {};
-let loadedAt = 0;
+let loaded: { source: 'r2' | 'edge-cache' | 'file'; at: string; ms: number } | null = null;
 let loading: Promise<void> | null = null;
+let failedAt = 0;
 /** Bumped on every load: what is built from the data (lib/catalog) is rebuilt when it changes. */
 export let generation = 0;
 
-async function read(): Promise<Record<string, Family> | null> {
-  try {
-    const { FILES } = await getEnv();
-    const o = FILES ? await FILES.get(CATALOG_KEY) : null;
-    if (o) return (await new Response(o.body).json()) as Record<string, Family>;
-  } catch (error) {
-    console.warn('[downloads] R2 unavailable', error);
+const EDGE_KEY = `https://catalog.monge.invalid/${CATALOG.sha256}`;
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+async function sha256(buf: ArrayBuffer): Promise<string> {
+  const d = new Uint8Array(await crypto.subtle.digest('SHA-256', buf));
+  return Array.from(d, (b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+type Edge = { match(k: string): Promise<Response | undefined>; put(k: string, r: Response): Promise<void> };
+const edge = (): Edge | null => ((globalThis as { caches?: { default?: Edge } }).caches?.default ?? null);
+
+async function fromR2(): Promise<ArrayBuffer | null> {
+  const { FILES } = await getEnv();
+  if (!FILES) return null;
+  const key = process.env.MONGE_CATALOG_KEY ?? CATALOG.key;
+  for (const wait of [0, 150, 400]) {
+    if (wait) await sleep(wait);
+    try {
+      const o = await FILES.get(key);
+      if (o) return await new Response(o.body).arrayBuffer();
+      return null; // not there: trying again will not put it there
+    } catch (error) {
+      console.warn('[catalogue] R2 read failed', error);
+    }
   }
+  return null;
+}
+
+async function fromEdge(): Promise<ArrayBuffer | null> {
+  try {
+    const r = await edge()?.match(EDGE_KEY);
+    return r ? await r.arrayBuffer() : null;
+  } catch {
+    return null;
+  }
+}
+
+async function fromFile(): Promise<ArrayBuffer | null> {
   try {
     // the repository's file (the build, plain next dev); the path is put together so the bundler leaves it out
     const fs = await import('node:fs/promises');
     const file = process.env.MONGE_CATALOG_FILE ?? [process.cwd(), 'data', 'downloads.json'].join('/');
-    return JSON.parse(await fs.readFile(file, 'utf8')) as Record<string, Family>;
+    const b = await fs.readFile(file);
+    return b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength) as ArrayBuffer;
   } catch {
     return null;
   }
@@ -74,20 +116,49 @@ async function read(): Promise<Record<string, Family> | null> {
 
 /** Every entry point calls this before it reads the catalogue (pages, API, files, sitemap). */
 export async function ensureDownloads(): Promise<void> {
-  if (loadedAt && Date.now() - loadedAt < TTL) return;
+  if (loaded) return;
+  if (failedAt && Date.now() - failedAt < 5_000) throw new CatalogUnavailable('failed moments ago');
   if (!loading) {
     loading = (async () => {
-      const d = await read();
-      if (d) {
-        all = d;
+      const t0 = Date.now();
+      const tried: string[] = [];
+      for (const [source, get] of [['r2', fromR2], ['edge-cache', fromEdge], ['file', fromFile]] as const) {
+        const buf = await get();
+        if (!buf) {
+          tried.push(`${source}: none`);
+          continue;
+        }
+        const sum = await sha256(buf);
+        if (sum !== CATALOG.sha256) {
+          tried.push(`${source}: sha256 ${sum.slice(0, 12)} ≠ ${CATALOG.sha256.slice(0, 12)}`);
+          continue;
+        }
+        all = JSON.parse(new TextDecoder().decode(buf)) as Record<string, Family>;
         generation++;
+        loaded = { source, at: new Date().toISOString(), ms: Date.now() - t0 };
+        failedAt = 0;
+        if (source === 'r2') {
+          // keep a copy at this location for the day R2 does not answer
+          try {
+            await edge()?.put(EDGE_KEY, new Response(buf, { headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=31536000, immutable' } }));
+          } catch {
+            // no cache here (next dev): fine
+          }
+        }
+        return;
       }
-      loadedAt = Date.now();
+      failedAt = Date.now();
+      throw new CatalogUnavailable(tried.join('; '));
     })().finally(() => {
       loading = null;
     });
   }
   await loading;
+}
+
+/** What the worker serves: the catalogue's version and where this worker got it from. */
+export function catalogStatus() {
+  return { version: CATALOG.version, sha256: CATALOG.sha256, bytes: CATALOG.bytes, key: CATALOG.key, monge: CATALOG.monge, models: CATALOG.models, sizes: CATALOG.sizes, loaded };
 }
 
 export function downloadsOf(slug: string) {
@@ -111,6 +182,12 @@ export function clientPages(pages: DlPage[]): DlPage[] {
     ...(p.image ? { image: p.image } : {}),
     options: p.options.map((o) => ({ id: o.id, label: o.label, bytes: o.bytes, sizeMm: o.sizeMm, massKg: o.massKg, bodies: o.bodies, checks: o.checks, ...(o.print ? { print: o.print } : {}) })),
   }));
+}
+
+/** For a size's own page: that size in full, every other size only as a choice (id, group, label, its options' ids
+    and names) — the browser needs no more to go to another size's address. */
+export function navPages(pages: DlPage[], current: string): DlPage[] {
+  return clientPages(pages).map((p) => (p.id === current ? p : ({ id: p.id, group: p.group, label: p.label, options: p.options.map((o) => ({ id: o.id, label: o.label })) } as unknown as DlPage)));
 }
 
 export function text(v: Text, locale: Locale): string {
