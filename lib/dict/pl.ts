@@ -394,11 +394,18 @@ export const pl: Dict = {
   },
   about: {
     title: 'Dima Fomin',
-    role: 'Autor i twórca Monge — technolog i inżynier. Ponad 20 lat jako szef kuchni i technolog produkcji spożywczej.',
+    role: 'Założyciel i twórca Monge — inżynierskiej platformy CAD z własnym jądrem geometrycznym i sztuczną inteligencją. Technolog produkcji z ponad 20-letnim doświadczeniem zawodowym.',
     text: [
-      'Od ponad 20 lat pracuję z produktem, ludźmi i procesami — w kuchniach i zakładach spożywczych w Polsce, na Litwie, w Estonii, Niemczech, Francji i Kanadzie. Byłem szefem kuchni w zakładzie produkcyjnym: rozwój nowych produktów, kontrola jakości, trwałość, zakupy, HACCP, szkolenie personelu.',
-      'W zakładzie widziałem, ile czasu zajmuje każdy niestandardowy wyrób: stół ma mieć nie 1500, lecz 1730 mm — i konstruktor znów przerysowuje model, rozwinięcia i rozkrój. Dlatego od początku 2026 roku tworzę Monge — CAD dla tych, którzy projektują i produkują urządzenia, z własnym precyzyjnym jądrem i AI, które buduje model według wymiarów.',
-      'Monge to mój własny projekt: jądro, program i biblioteka modeli. Kod jest zamknięty, wszelkie prawa zastrzeżone. Postęp prac i wyniki testów jądra publikuję tutaj, na stronie.',
+      'Moja droga nie zaczęła się od programowania, lecz od prawdziwej produkcji. Przez ponad 20 lat pracowałem jako szef kuchni i technolog produkcji spożywczej w Polsce, na Litwie, w Estonii, Niemczech, Francji i Kanadzie.',
+      'Moja praca obejmowała opracowywanie nowych produktów, organizację procesów produkcyjnych, kontrolę jakości, zakupy, zarządzanie zespołem, przestrzeganie standardów HACCP i wdrażanie rozwiązań technologicznych.',
+      'Przez lata pracy przekonałem się, że jednym z głównych problemów produkcji jest czas potrzebny na projektowanie i zmiany urządzeń. Nawet niewielka zmiana wymiarów nietypowej części często wymaga ponownego modelowania, przygotowania rysunków i przeglądu dokumentacji produkcyjnej.',
+      '**Właśnie dlatego na początku 2026 roku zacząłem tworzyć Monge.**',
+      'Moim celem jest uczynić projektowanie inżynierskie dokładniejszym, szybszym i bardziej dostępnym. Stworzyć narzędzie, w którym człowiek podaje zadanie techniczne i wymiary, a program pomaga zbudować potrzebną geometrię.',
+      'Dziś Monge to własne jądro geometryczne, program CAD z asystentem AI i otwarta biblioteka modeli inżynierskich.',
+      'Biblioteka zawiera już ponad 1 500 modeli części znormalizowanych według ISO, DIN i EN: elementy złączne, łożyska, wały, zbrojenie i inne komponenty. Modele są dostępne w formatach STEP, STL, 3MF i GLB. Osobny kierunek to przygotowanie modeli do druku 3D.',
+      '**Kolejnym celem Monge jest nie tylko udostępnianie gotowych modeli inżynierskich, ale też pomoc w tworzeniu nowych, nietypowych części i połączeń dla prawdziwej produkcji.**',
+      'Monge to moje niezależne, autorskie dzieło. Jądro geometryczne, program i biblioteka rozwijają się jako jeden system. Kod źródłowy programu jest zamknięty, a prawa do niego chronione.',
+      'Postęp prac, wyniki techniczne i testy jądra geometrycznego publikuję otwarcie na tej stronie.',
     ],
     facts: [
       ['Miasto', 'Gdańsk, Polska'],

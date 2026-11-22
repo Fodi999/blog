@@ -43,11 +43,18 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
       <PageHero eyebrow={t.developer.title} title={a.title} lead={a.role} />
       <section className="content-frame grid gap-12 border-t-2 border-on-ink/45 pt-10 lg:grid-cols-[1.7fr_1fr]">
         <div className="grid max-w-[66ch] content-start gap-6">
-          {a.text.map((p) => (
-            <p key={p} className="text-[18px] leading-relaxed text-on-ink">
-              {p}
-            </p>
-          ))}
+          {a.text.map((p) =>
+            // a paragraph written **so** is the story's turn: set apart, in the signal colour's rule
+            p.startsWith('**') && p.endsWith('**') ? (
+              <p key={p} className="border-l-2 border-signal pl-5 font-display text-[22px] leading-snug font-semibold text-on-ink">
+                {p.slice(2, -2)}
+              </p>
+            ) : (
+              <p key={p} className="text-[18px] leading-relaxed text-on-ink">
+                {p}
+              </p>
+            ),
+          )}
         </div>
         <aside>
           <figure className="mb-8 overflow-hidden rounded-xl border border-hairline-ink-strong bg-bone">

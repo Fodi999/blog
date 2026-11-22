@@ -394,11 +394,18 @@ export const en: Dict = {
   },
   about: {
     title: 'Dima Fomin',
-    role: 'The author and developer of Monge — technologist and engineer. Over 20 years as a chef and food production technologist.',
+    role: 'Founder and developer of Monge — an engineering CAD platform with its own geometry kernel and artificial intelligence. A production technologist with more than 20 years of professional experience.',
     text: [
-      'For more than 20 years I have worked with product, people and processes — in kitchens and food production in Poland, Lithuania, Estonia, Germany, France and Canada. I was the head chef of a production facility: new product development, quality control, shelf life, purchasing, HACCP, staff training.',
-      'On the production floor I saw how much time every non-standard product takes: the table has to be 1730 mm, not 1500 — and the designer redraws the model, the flat patterns and the cutting plan again. That is why since early 2026 I have been building Monge — CAD for people who design and make equipment, with its own exact kernel and an AI that builds the model from dimensions.',
-      'Monge is my own work: the kernel, the program and the model library. The code is closed and all rights are reserved. I publish progress and kernel test results here on the site.',
+      'My path did not start with programming but with real production. For more than 20 years I worked as a chef and a food production technologist in Poland, Lithuania, Estonia, Germany, France and Canada.',
+      'My work covered developing new products, organising production processes, quality control, purchasing, managing people, HACCP compliance and bringing in technological solutions.',
+      "Over the years I became convinced that one of production's main problems is the time it takes to design and change equipment. Even a small change in the size of a non-standard part often means remodelling it, redrawing the drawings and revising the production documents.",
+      '**That is why, at the beginning of 2026, I started building Monge.**',
+      'My goal is to make engineering design more precise, faster and more accessible. To create a tool where a person sets the technical task and the dimensions, and the program helps build the geometry needed.',
+      'Today Monge is its own geometry kernel, a CAD program with an AI assistant and an open library of engineering models.',
+      'The library already holds more than 1,500 models of standard parts to ISO, DIN and EN: fasteners, bearings, shafts, reinforcement and other components. The models come as STEP, STL, 3MF and GLB. A separate direction is preparing models for 3D printing.',
+      '**The next goal of Monge is not only to provide ready engineering models but to help create new, non-standard parts and joints for real production.**',
+      "Monge is my independent, original work. The geometry kernel, the program and the library grow as one system. The program's source code is closed and the rights to it are protected.",
+      'I openly publish the progress of the work, the technical results and the tests of the geometry kernel on this site.',
     ],
     facts: [
       ['City', 'Gdańsk, Poland'],
