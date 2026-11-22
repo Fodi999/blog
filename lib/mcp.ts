@@ -379,10 +379,35 @@ function cors(origin: string | null): Record<string, string> {
 }
 
 /* Two limits, both must allow: the Workers rate-limit binding (shared by the instances of a Cloudflare location) and a
-   count in this instance's memory (always there, also in next dev). `how` says what decided — for the logs. */
+   count in this instance's memory (always there, also in next dev). `how` says what decided — for the logs.
+   Neither keeps the address: the key is a SHA-256 of the address and the UTC day (a new value every day). The
+   instance's counts are dropped once their minute is over — swept at least every 10 s while it serves requests — and
+   vanish with the instance. */
 const windowHits = new Map<string, { start: number; n: number }>();
-async function allowed(key: string, binding: { limit(o: { key: string }): Promise<{ success: boolean }> } | undefined): Promise<{ ok: boolean; how: string }> {
-  const now = Date.now();
+let lastSweep = 0;
+const SWEEP_MS = 10_000;
+
+function sweep(now: number) {
+  if (now - lastSweep < SWEEP_MS) return;
+  lastSweep = now;
+  for (const [k, w] of windowHits) if (now - w.start > RATE.periodS * 1000) windowHits.delete(k);
+}
+
+export async function limitKey(address: string, now = Date.now()): Promise<string> {
+  const day = new Date(now).toISOString().slice(0, 10);
+  const bytes = new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(`monge-mcp|${day}|${address}`)));
+  return 'mcp:' + Array.from(bytes.slice(0, 12), (b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+/** For tests: how many counts the instance holds and the oldest one's age. */
+export function limiterState(now = Date.now()) {
+  let oldest = 0;
+  for (const w of windowHits.values()) oldest = Math.max(oldest, now - w.start);
+  return { entries: windowHits.size, oldestMs: oldest };
+}
+
+async function allowed(key: string, binding: { limit(o: { key: string }): Promise<{ success: boolean }> } | undefined, now = Date.now()): Promise<{ ok: boolean; how: string }> {
+  sweep(now);
   let w = windowHits.get(key);
   if (!w || now - w.start > RATE.periodS * 1000) {
     if (windowHits.size > 5000) windowHits.clear();
@@ -400,6 +425,9 @@ async function allowed(key: string, binding: { limit(o: { key: string }): Promis
     return { ok: true, how: 'binding-error' };
   }
 }
+
+/** For tests: one request's pass through the limiter at a given time, without the binding. */
+export const limiterCheck = (address: string, now: number) => limitKey(address, now).then((k) => allowed(k, undefined, now));
 
 type Id = string | number | null;
 function decodeHeader(v: string): string | null {
@@ -430,7 +458,7 @@ export async function handleMcp(request: Request): Promise<Response> {
     return send(405, { error: 'method_not_allowed', message: 'This is an MCP endpoint (Streamable HTTP): send JSON-RPC with POST. No SSE stream is offered.', docs: MCP_SERVER.websiteUrl }, { allow: 'POST, OPTIONS' });
 
   const ip = request.headers.get('cf-connecting-ip') ?? request.headers.get('x-forwarded-for')?.split(',')[0].trim() ?? 'local';
-  const gate = await allowed(`mcp:${ip}`, env.MCP_LIMIT);
+  const gate = await allowed(await limitKey(ip), env.MCP_LIMIT);
   base['x-mcp-limit'] = gate.how;
   if (!gate.ok) return rpcError(429, null, RATE_LIMITED, `Too many requests: at most ${RATE.limit} a minute per address`, undefined, { 'retry-after': String(RATE.periodS) });
 

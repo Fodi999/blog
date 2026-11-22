@@ -1,40 +1,18 @@
-# ЧЕРНОВИК — раздел политики конфиденциальности о MCP-сервере и API
+# Раздел политики конфиденциальности о MCP-сервере и API — ОПУБЛИКОВАН
 
-Добавить в `/privacy` после раздела «Hosting and files». Проверь перед публикацией; это не юридическая консультация.
-Факты в тексте соответствуют коду на 2026-11-22: `lib/mcp.ts`, `app/api/files`, `wrangler.jsonc` (observability включена).
+Опубликован на https://dima-fomin.pl/{en,ru,pl}/privacy (редакция 2026-11-22, вторая). Факты сверены с кодом и документацией Cloudflare:
+- что получает сервер — только аргументы, которые ИИ-клиент передал инструменту, и технические данные (`lib/mcp.ts`);
+- лимит — ключ = SHA-256(адрес + дата UTC), не адрес; записи старше минуты удаляются (тест `scripts/test/mcp_limiter.test.mts`);
+- журналы — Cloudflare Workers Logs, Workers Paid: хранение 7 дней (developers.cloudflare.com/workers/observability/logs/workers-logs, раздел Pricing; с 2026-12-01 Observability — тоже 7 дней по умолчанию).
 
----
+## English — Monge MCP and the catalogue API
 
-## English
+The MCP server (dima-fomin.pl/mcp) and the catalogue API (dima-fomin.pl/api/v1) answer AI assistants (such as ChatGPT) and programs; they need no account. Monge does not automatically receive your whole conversation with the assistant: it receives what the AI client passes to a Monge tool (usually search words, sizes and model ids) and technical data (IP address, user agent). Whatever the assistant puts into a tool request reaches us — do not ask it to pass personal data to Monge tools. The data are used only to answer the request. For the rate limit (about 60 requests a minute) the server counts requests under a one-way hash of the IP address that changes every day, not the address itself; counts are deleted once their minute is over. Cloudflare Workers Logs keep a record of each request for 7 days — time, URL, status and metadata, which can include the IP address and headers — for operation and security. The content of MCP tool requests travels in the request body and is not logged; catalogue API searches are part of the URL and are. We do not build profiles, do not sell data and do not use requests to train models.
 
-### Monge MCP and the catalogue API
+## Русский — Monge MCP и API каталога
 
-The MCP server (dima-fomin.pl/mcp) and the catalogue API (dima-fomin.pl/api/v1) answer AI assistants (such as ChatGPT) and programs. They need no account and do not ask for personal data.
+MCP-сервер (dima-fomin.pl/mcp) и API каталога (dima-fomin.pl/api/v1) отвечают ИИ-ассистентам (например, ChatGPT) и программам; они не требуют аккаунта. Monge не получает автоматически всю вашу переписку с ассистентом — он получает то, что ИИ-клиент передал инструменту Monge (обычно слова поиска, размеры и идентификаторы моделей), и технические данные (IP-адрес, user agent). Всё, что ассистент поместит в запрос к инструменту, дойдёт до нас, — не просите его передавать инструментам Monge персональные данные. Данные используются только для ответа на запрос. Для лимита запросов (около 60 в минуту) сервер считает запросы по одностороннему хэшу IP-адреса, который меняется каждый день, а не по самому адресу; счётчики удаляются, когда их минута прошла. Cloudflare Workers Logs хранят 7 дней запись о каждом запросе — время, URL, статус и метаданные, которые могут включать IP-адрес и заголовки, — для работы и защиты сервиса. Содержание запросов к инструментам MCP передаётся в теле запроса и в журналы не попадает; поиск через API каталога — часть URL и попадает. Мы не составляем профили, не продаём данные и не используем запросы для обучения моделей.
 
-What they receive: the request itself — the search words, sizes and model ids the assistant sends — and technical data (IP address, user agent). We do not receive your name, your account with the assistant or your conversation; the assistant decides what it sends.
+## Polski — Monge MCP i API katalogu
 
-How it is used: to answer the request. The IP address counts requests for the rate limit (about 60 a minute) — in Cloudflare's rate limiter and in the server's memory, for at most one minute. Cloudflare keeps technical request logs for operation and security for a few days. We do not build profiles, do not sell data and do not use requests to train models. A file downloaded with `?download=1` adds one to that file's download count — nothing else is recorded.
-
----
-
-## Русский
-
-### Monge MCP и API каталога
-
-MCP-сервер (dima-fomin.pl/mcp) и API каталога (dima-fomin.pl/api/v1) отвечают ИИ-ассистентам (например, ChatGPT) и программам. Они не требуют аккаунта и не запрашивают персональные данные.
-
-Что они получают: сам запрос — слова поиска, размеры и идентификаторы моделей, которые отправляет ассистент, — и технические данные (IP-адрес, user agent). Ваше имя, ваш аккаунт у ассистента и ваш разговор мы не получаем; что отправить, решает ассистент.
-
-Как это используется: чтобы ответить на запрос. IP-адрес служит для подсчёта запросов в рамках лимита (около 60 в минуту) — в ограничителе Cloudflare и в памяти сервера, не дольше минуты. Cloudflare хранит технические журналы запросов для работы и защиты сайта несколько дней. Мы не составляем профили, не продаём данные и не используем запросы для обучения моделей. Скачивание файла со ссылкой `?download=1` добавляет единицу к счётчику скачиваний этого файла — больше ничего не записывается.
-
----
-
-## Polski
-
-### Monge MCP i API katalogu
-
-Serwer MCP (dima-fomin.pl/mcp) i API katalogu (dima-fomin.pl/api/v1) odpowiadają asystentom AI (np. ChatGPT) i programom. Nie wymagają konta i nie proszą o dane osobowe.
-
-Co otrzymują: samo zapytanie — słowa wyszukiwania, rozmiary i identyfikatory modeli wysłane przez asystenta — oraz dane techniczne (adres IP, user agent). Nie otrzymujemy Twojego imienia, konta u asystenta ani rozmowy; o tym, co wysłać, decyduje asystent.
-
-Jak są używane: aby odpowiedzieć na zapytanie. Adres IP służy do liczenia zapytań w ramach limitu (około 60 na minutę) — w ograniczniku Cloudflare i w pamięci serwera, najdłużej przez minutę. Cloudflare przechowuje techniczne logi zapytań przez kilka dni w celu działania i ochrony strony. Nie tworzymy profili, nie sprzedajemy danych i nie używamy zapytań do trenowania modeli. Pobranie pliku z linkiem `?download=1` dodaje jeden do licznika pobrań tego pliku — nic więcej nie jest zapisywane.
+Serwer MCP (dima-fomin.pl/mcp) i API katalogu (dima-fomin.pl/api/v1) odpowiadają asystentom AI (np. ChatGPT) i programom; nie wymagają konta. Monge nie otrzymuje automatycznie całej Twojej rozmowy z asystentem — otrzymuje to, co klient AI przekaże narzędziu Monge (zwykle słowa wyszukiwania, rozmiary i identyfikatory modeli), oraz dane techniczne (adres IP, user agent). Wszystko, co asystent umieści w zapytaniu do narzędzia, trafia do nas — nie proś go o przekazywanie danych osobowych narzędziom Monge. Dane służą tylko do odpowiedzi na zapytanie. Do limitu zapytań (około 60 na minutę) serwer liczy zapytania pod jednokierunkowym skrótem (hash) adresu IP, zmienianym codziennie, a nie pod samym adresem; liczniki są usuwane po upływie ich minuty. Cloudflare Workers Logs przechowują przez 7 dni zapis każdego zapytania — czas, URL, status i metadane, które mogą obejmować adres IP i nagłówki — w celu działania i ochrony usługi. Treść zapytań do narzędzi MCP jest w treści żądania i nie trafia do logów; wyszukiwania w API katalogu są częścią URL, więc trafiają. Nie tworzymy profili, nie sprzedajemy danych i nie używamy zapytań do trenowania modeli.
