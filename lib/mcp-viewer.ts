@@ -14,9 +14,9 @@ import { SITE_URL } from '@/lib/seo';
    data as text: the characteristics, the WebP, the files and the model page with its 3D view on the site. */
 
 /** Versioned: a new URI whenever the page changes, so no host shows a cached older page. */
-export const VIEWER_URI = 'ui://monge/model-viewer-v3.html';
+export const VIEWER_URI = 'ui://monge/model-viewer-v4.html';
 /** Earlier URIs of the view — still answered (with the current page), for hosts that cached them. */
-export const VIEWER_URIS_OLD = ['ui://monge/model-viewer.html', 'ui://monge/model-viewer-v2.html'];
+export const VIEWER_URIS_OLD = ['ui://monge/model-viewer.html', 'ui://monge/model-viewer-v2.html', 'ui://monge/model-viewer-v3.html'];
 export const VIEWER_MIME = 'text/html;profile=mcp-app';
 const ORIGIN = new URL(SITE_URL).origin;
 const FREE_FILES = `${SITE_URL}/api/files/downloads/`;
@@ -108,10 +108,18 @@ export function viewerModel(e: Entry, locale: Locale) {
   const shows = sizeImage && imgOpt === e.opt.id;
   const optLabel = (id: string) => e.page.options.find((o) => o.id === id)?.label[locale] || id;
   const fam = (r.family as { name: string }).name;
+  // short labels for tabs and 3D labels: the family's short name and the size — or, when a size's label is a long
+  // description (the example shafts), its diameter and length from the overall size
+  const short = e.item.short?.[locale] ?? fam;
+  const ov = (r.dimensions as { overall_mm?: number[] }).overall_mm;
+  const tag = r.size.label.length <= 18 || !ov ? r.size.label : `Ø${Math.max(ov[1], ov[2])} × ${ov[0]}`;
   return {
     id: r.id,
     name: r.name,
     family: fam,
+    short,
+    tag,
+    label: `${short} ${tag}`,
     url: r.url,
     viewer_url: r.page_url,
     standard: r.standard ? { id: r.standard.id, title: r.standard.title } : null,

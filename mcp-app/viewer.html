@@ -6,114 +6,128 @@
 <title>Monge 3D model viewer</title>
 <style>
 :root {
-  --bg: var(--color-background-primary, #15171b);
-  --panel: var(--color-background-secondary, #1d2026);
-  --line: var(--color-border-primary, #2c3038);
-  --text: var(--color-text-primary, #eef0f3);
-  --muted: var(--color-text-secondary, #9aa1ab);
-  --gold: #d4aa4e;
-  --gold-ink: #1a1408;
-  --stage-a: #262a31;
-  --stage-b: #121418;
+  --bg: var(--color-background-primary, #17181b);
+  --raise: var(--color-background-secondary, #202227);
+  --line: color-mix(in srgb, var(--color-text-primary, #eef0f3) 11%, transparent);
+  --text: var(--color-text-primary, #eceef1);
+  --muted: var(--color-text-secondary, #969ba4);
+  --accent: #d4aa4e;
+  --stage-a: #24272d;
+  --stage-b: #121316;
   --font: var(--font-sans, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif);
-  --mono: var(--font-mono, ui-monospace, "SF Mono", Menlo, Consolas, monospace);
   color-scheme: dark;
 }
 :root[data-theme="light"] {
   --bg: var(--color-background-primary, #ffffff);
-  --panel: var(--color-background-secondary, #f5f4f0);
-  --line: var(--color-border-primary, #e2dfd6);
+  --raise: var(--color-background-secondary, #f4f4f2);
+  --line: color-mix(in srgb, var(--color-text-primary, #17181b) 11%, transparent);
   --text: var(--color-text-primary, #17181b);
-  --muted: var(--color-text-secondary, #5d636c);
-  --gold: #9a6f1c;
-  --gold-ink: #ffffff;
-  --stage-a: #f4f2ec;
-  --stage-b: #dcd8cd;
+  --muted: var(--color-text-secondary, #6b7079);
+  --accent: #9a6f1c;
+  --stage-a: #f3f2ee;
+  --stage-b: #dddad2;
   color-scheme: light;
 }
 * { box-sizing: border-box; }
-html, body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.45 var(--font); }
-body { padding: 14px; }
-button { font: inherit; color: inherit; }
+html, body { margin: 0; background: var(--bg); color: var(--text); font: 13.5px/1.45 var(--font); -webkit-font-smoothing: antialiased; }
+body { padding: 14px 16px 16px; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.num { font-variant-numeric: tabular-nums; }
+
+/* header */
 .top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
-.title { margin: 0; font-size: 17px; font-weight: 650; letter-spacing: -.01em; }
-.sub { margin-top: 3px; color: var(--muted); font-size: 12.5px; }
-.brand { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 11.5px; white-space: nowrap; }
-.brand svg { width: 18px; height: 18px; }
-.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
-.chip { border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; font-size: 12.5px; background: transparent; cursor: pointer; }
-.chip[aria-pressed="true"] { border-color: var(--gold); background: var(--gold); color: var(--gold-ink); }
-.chip.static { cursor: default; }
-.layout { margin-top: 10px; display: grid; gap: 12px; }
-.stage { position: relative; height: 380px; border-radius: 12px; overflow: hidden; border: 1px solid var(--line);
-  background: radial-gradient(ellipse at 50% 40%, var(--stage-a), var(--stage-b) 75%); touch-action: none; }
+.title { margin: 0; font-size: 15.5px; font-weight: 600; letter-spacing: -.005em; line-height: 1.3; }
+.sub { margin-top: 2px; color: var(--muted); font-size: 12.5px; }
+.mark { width: 18px; height: 18px; flex: none; opacity: .9; margin-top: 2px; }
+
+/* segmented controls: models, options */
+.seg { display: inline-flex; flex-wrap: wrap; gap: 2px; padding: 2px; border-radius: 8px; background: var(--raise); max-width: 100%; }
+.seg button { padding: 4px 10px; border-radius: 6px; font-size: 12.5px; color: var(--muted); white-space: nowrap; max-width: 220px; overflow: hidden; text-overflow: ellipsis; }
+.seg button:hover { color: var(--text); }
+.seg button[aria-pressed="true"] { background: var(--bg); color: var(--text); box-shadow: 0 0 0 1px var(--line); }
+.seg button:disabled { opacity: .4; cursor: default; }
+.bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin-top: 10px; }
+.bar:empty, .bar:has(> [hidden]:only-child) { display: none; }
+
+/* stage */
+.stage { position: relative; height: 360px; margin-top: 10px; border-radius: 12px; overflow: hidden;
+  background: radial-gradient(ellipse at 50% 38%, var(--stage-a), var(--stage-b) 78%); touch-action: none; }
 .stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; outline: none; }
-.poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; padding: 18px; }
+.poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; padding: 20px; }
 .poster.hidden { display: none; }
-body.no3d .tools, body.no3d .hint { display: none; }
-.badge { position: absolute; left: 10px; top: 10px; max-width: calc(100% - 120px); border-radius: 8px; padding: 4px 9px; font-size: 12px;
-  background: color-mix(in srgb, var(--bg) 82%, transparent); border: 1px solid var(--line); }
-.badge.warn { border-color: #c98a2e; }
-.tools { position: absolute; right: 10px; top: 10px; display: flex; gap: 6px; }
-.tool { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 8px; border: 1px solid var(--line); cursor: pointer;
-  background: color-mix(in srgb, var(--bg) 82%, transparent); }
-.tool:hover { border-color: var(--gold); }
-.tool svg { width: 16px; height: 16px; }
-.hint { position: absolute; left: 0; right: 0; bottom: 8px; text-align: center; color: var(--muted); font-size: 11.5px; pointer-events: none; }
-.status { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); font-size: 13px; text-align: center; padding: 20px; pointer-events: none; }
-.label3d { position: absolute; transform: translate(-50%, -100%); font-size: 11.5px; padding: 2px 7px; border-radius: 6px; white-space: nowrap; pointer-events: none;
-  background: color-mix(in srgb, var(--bg) 85%, transparent); border: 1px solid var(--line); }
-.specs { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin: 0; }
-.specs div { background: var(--panel); padding: 7px 10px; outline: 1px solid var(--line); }
-/* the lines are each cell's outline: a row left short (7 facts in 8 places) stays the panel's colour, not a grey block */
-.specs dt { color: var(--muted); font-size: 11.5px; }
-.specs dd { margin: 2px 0 0; font-family: var(--mono); font-size: 12.5px; }
-.specs .group { grid-column: 1 / -1; font-weight: 600; font-size: 12.5px; padding: 8px 10px 6px; }
-.files { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 6px; }
-.file { display: flex; justify-content: space-between; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; cursor: pointer; background: transparent; text-align: left; }
-.file:hover { border-color: var(--gold); }
-.file b { font-family: var(--mono); font-size: 12px; white-space: nowrap; }
-.file span { white-space: nowrap; }
-.file span { color: var(--muted); font-family: var(--mono); font-size: 11.5px; }
-.note { color: var(--muted); font-size: 12px; margin: 0; }
-.links { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12.5px; }
-.link { background: none; border: 0; padding: 0; color: var(--gold); cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+.tools { position: absolute; right: 8px; top: 8px; display: flex; gap: 2px; padding: 2px; border-radius: 8px;
+  background: color-mix(in srgb, var(--stage-b) 55%, transparent); backdrop-filter: blur(6px); }
+.tool { width: 28px; height: 28px; display: grid; place-items: center; border-radius: 6px; color: var(--muted); }
+.tool:hover { color: var(--text); background: color-mix(in srgb, var(--text) 10%, transparent); }
+.tool svg { width: 15px; height: 15px; }
+.hint { position: absolute; left: 0; right: 0; bottom: 8px; text-align: center; color: var(--muted); font-size: 11px; pointer-events: none; transition: opacity .6s; }
+.hint.gone { opacity: 0; }
+.status { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); font-size: 12.5px; text-align: center; padding: 20px; pointer-events: none; }
+.label3d { position: absolute; transform: translate(-50%, -100%); font-size: 11px; padding: 1px 7px; border-radius: 5px; white-space: nowrap; pointer-events: none;
+  color: var(--text); background: color-mix(in srgb, var(--stage-b) 70%, transparent); }
+.badge { position: absolute; left: 10px; top: 10px; font-size: 11.5px; padding: 2px 8px; border-radius: 6px; color: var(--text);
+  background: color-mix(in srgb, var(--stage-b) 70%, transparent); }
+
+/* data */
+.data { margin-top: 12px; width: 100%; border-collapse: collapse; font-size: 13px; }
+.data th, .data td { padding: 6px 0; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+.data th { color: var(--muted); font-weight: 400; width: 38%; padding-right: 12px; }
+.data td + td, .data th + td, .data thead th + th { padding-left: 14px; }
+.data thead th { color: var(--text); font-weight: 600; width: auto; }
+.data tr:last-child th, .data tr:last-child td { border-bottom: 0; }
+.data .na { color: var(--muted); }
+
+.note { margin: 8px 0 0; color: var(--muted); font-size: 12px; }
+.files { display: grid; gap: 6px; margin-top: 12px; }
+.files .row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.files .who { color: var(--muted); font-size: 12px; margin-right: 4px; }
+.file { display: inline-flex; align-items: baseline; gap: 6px; padding: 5px 10px; border-radius: 7px; background: var(--raise); font-size: 12.5px; }
+.file:hover { box-shadow: 0 0 0 1px var(--line); }
+.file b { font-weight: 600; letter-spacing: .02em; }
+.file span { color: var(--muted); font-size: 11.5px; }
+.links { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 12px; font-size: 12px; }
+.link { color: var(--muted); text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 3px; }
+.link:hover { color: var(--text); }
 .fallback { display: none; }
 body.no3d .fallback { display: block; }
-/* full screen: the stage fills the left, the data runs down the right */
+body.no3d .tools, body.no3d .hint { display: none; }
+
+/* full screen: the stage on the left, the data on the right */
 body.fs { padding: 0; height: 100vh; overflow: hidden; }
-body.fs .top { padding: 12px 14px 0; }
-body.fs .layout { grid-template-columns: 1fr 340px; height: calc(100vh - 92px); margin-top: 8px; }
-body.fs .stage { height: 100%; border-radius: 0; border-width: 1px 1px 0 0; }
-body.fs .side { overflow: auto; padding: 0 14px 14px 0; }
-.side { display: grid; gap: 12px; align-content: start; }
-@media (max-width: 640px) { body.fs .layout { grid-template-columns: 1fr; } body.fs .stage { height: 60vh; } }
+body.fs .layout { display: grid; grid-template-columns: 1fr 360px; height: 100vh; }
+body.fs .main { display: flex; flex-direction: column; padding: 14px 0 14px 16px; min-height: 0; }
+body.fs .stage { flex: 1; height: auto; }
+body.fs .side { overflow: auto; padding: 14px 16px; }
+@media (max-width: 680px) { body.fs .layout { grid-template-columns: 1fr; grid-template-rows: 62vh 1fr; } body.fs .main { padding-right: 16px; } }
 </style>
 </head>
 <body>
-<div class="top">
-  <div>
-    <h1 class="title" id="title">Monge</h1>
-    <div class="sub" id="sub"></div>
-  </div>
-  <div class="brand"><svg viewBox="0 0 1024 1024" aria-hidden="true"><rect width="1024" height="1024" rx="200" fill="#1c1f24"/><path fill="#d4aa4e" d="M272,732 L272,316 L296,292 L372,292 L512,500 L652,292 L728,292 L752,316 L752,732 L664,732 L664,452 L536,642 L488,642 L360,452 L360,732 Z"/></svg>Monge CAD</div>
-</div>
-<div class="chips" id="models" hidden></div>
 <div class="layout">
-  <div class="stage" id="stage">
-    <img class="poster" id="poster" alt="" hidden>
-    <div class="badge" id="badge" hidden></div>
-    <div class="tools">
-      <button class="tool" id="reset" type="button" title="Reset view"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2.5 8a5.5 5.5 0 1 0 1.6-3.9"/><path d="M2.5 2.5v3h3"/></svg></button>
-      <button class="tool" id="full" type="button" title="Full screen"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 6V2h4M14 6V2h-4M2 10v4h4M14 10v4h-4"/></svg></button>
+  <div class="main">
+    <div class="top">
+      <div>
+        <h1 class="title" id="title">Monge</h1>
+        <div class="sub" id="sub"></div>
+      </div>
+      <svg class="mark" viewBox="0 0 1024 1024" aria-label="Monge CAD"><rect width="1024" height="1024" rx="220" fill="#1c1f24"/><path fill="#d4aa4e" d="M272,732 L272,316 L296,292 L372,292 L512,500 L652,292 L728,292 L752,316 L752,732 L664,732 L664,452 L536,642 L488,642 L360,452 L360,732 Z"/></svg>
     </div>
-    <div class="status" id="status">…</div>
-    <div class="hint" id="hint"></div>
+    <div class="bar"><div class="seg" id="models" hidden></div></div>
+    <div class="stage" id="stage">
+      <img class="poster" id="poster" alt="" hidden>
+      <div class="badge" id="badge" hidden></div>
+      <div class="tools">
+        <button class="tool" id="reset" type="button" title="Reset view"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2.5 8a5.5 5.5 0 1 0 1.6-3.9"/><path d="M2.5 2.5v3h3"/></svg></button>
+        <button class="tool" id="full" type="button" title="Full screen"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 6V2h4M14 6V2h-4M2 10v4h4M14 10v4h-4"/></svg></button>
+      </div>
+      <div class="status" id="status">…</div>
+      <div class="hint" id="hint"></div>
+    </div>
   </div>
   <div class="side">
-    <div class="chips" id="options" hidden></div>
+    <div class="bar"><div class="seg" id="options" hidden></div></div>
     <p class="note fallback" id="fallback"></p>
-    <dl class="specs" id="specs"></dl>
+    <table class="data" id="data"></table>
     <p class="note" id="imgnote" hidden></p>
     <div class="files" id="files"></div>
     <div class="links" id="links"></div>

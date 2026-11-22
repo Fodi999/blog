@@ -10,26 +10,26 @@ const T = {
   en: {
     loading: 'Loading the 3D model…', no3d: 'This window cannot show 3D (WebGL is off or the file could not load). The data below are of the selected model; the picture shows the option named on it. Open the model in 3D on the Monge site.',
     glbFail: 'The 3D file could not be loaded here.', waiting: 'Waiting for the model…', cancelled: 'Cancelled.', standalone: 'Open this view from an MCP host (e.g. ChatGPT) — it shows the models a tool call returns.',
-    hint: 'Drag to rotate · scroll or pinch to zoom · right-drag or two fingers to pan', compare: 'Side by side', reset: 'Reset view', full: 'Full screen', exitFull: 'Exit full screen',
+    hint: 'Drag to rotate · scroll to zoom · right-drag to pan', compare: 'Side by side', reset: 'Reset view', full: 'Full screen', exitFull: 'Exit full screen',
     std: 'Standard', size: 'Size', pitch: 'Thread pitch', thread: 'Thread', length: 'Length', overall: 'Overall', mass: 'Mass ≈', checks: 'Kernel check', ok: 'passed',
     open: 'Open on the Monge site', license: 'Licence', imgDefault: (o) => `Picture: this size's default option (${o}). The 3D view shows the selected option.`,
-    imgFamily: 'Picture: a representative size of the family.', picture: 'Picture', family: 'a size of the family', showing: 'Showing', option: 'Option', d: 'Diameter', D: 'Outside Ø', B: 'Width', grip: 'Grip',
+    imgFamily: 'Picture: a representative size of the family.', picture: 'Picture', family: 'a size of the family', model: 'Model', showing: 'Showing', option: 'Option', d: 'Diameter', D: 'Outside Ø', B: 'Width', grip: 'Grip',
   },
   ru: {
     loading: 'Загружаю 3D-модель…', no3d: 'Здесь нельзя показать 3D (WebGL выключен или файл не загрузился). Данные ниже — выбранной модели; на картинке — исполнение, указанное на ней. Откройте модель в 3D на сайте Monge.',
     glbFail: 'Не удалось загрузить 3D-файл здесь.', waiting: 'Жду модель…', cancelled: 'Отменено.', standalone: 'Откройте этот просмотр из MCP-клиента (например, ChatGPT) — он показывает модели из ответа инструмента.',
-    hint: 'Тяните — вращение · колесо или щипок — масштаб · правая кнопка или два пальца — сдвиг', compare: 'Рядом', reset: 'Сбросить вид', full: 'Во весь экран', exitFull: 'Выйти из полноэкранного режима',
+    hint: 'Тяните — вращение · колесо — масштаб · правая кнопка — сдвиг', compare: 'Рядом', reset: 'Сбросить вид', full: 'Во весь экран', exitFull: 'Выйти из полноэкранного режима',
     std: 'Стандарт', size: 'Размер', pitch: 'Шаг резьбы', thread: 'Резьба', length: 'Длина', overall: 'Габарит', mass: 'Масса ≈', checks: 'Проверка ядром', ok: 'пройдена',
     open: 'Открыть на сайте Monge', license: 'Лицензия', imgDefault: (o) => `Картинка: исполнение этого размера по умолчанию (${o}). В 3D — выбранное исполнение.`,
-    imgFamily: 'Картинка: типовой размер семейства.', picture: 'На картинке', family: 'типовой размер семейства', showing: 'Показано', option: 'Исполнение', d: 'Диаметр', D: 'Наружный Ø', B: 'Ширина', grip: 'Пакет',
+    imgFamily: 'Картинка: типовой размер семейства.', picture: 'На картинке', family: 'типовой размер семейства', model: 'Модель', showing: 'Показано', option: 'Исполнение', d: 'Диаметр', D: 'Наружный Ø', B: 'Ширина', grip: 'Пакет',
   },
   pl: {
     loading: 'Wczytuję model 3D…', no3d: 'Tu nie da się pokazać 3D (WebGL wyłączony albo plik się nie wczytał). Dane poniżej dotyczą wybranego modelu; obraz pokazuje opcję podaną na nim. Otwórz model w 3D na stronie Monge.',
     glbFail: 'Nie udało się wczytać pliku 3D.', waiting: 'Czekam na model…', cancelled: 'Anulowano.', standalone: 'Otwórz ten podgląd z klienta MCP (np. ChatGPT) — pokazuje modele z odpowiedzi narzędzia.',
-    hint: 'Przeciągnij — obrót · kółko lub uszczypnięcie — zoom · prawy przycisk lub dwa palce — przesunięcie', compare: 'Obok siebie', reset: 'Resetuj widok', full: 'Pełny ekran', exitFull: 'Zamknij pełny ekran',
+    hint: 'Przeciągnij — obrót · kółko — zoom · prawy przycisk — przesunięcie', compare: 'Obok siebie', reset: 'Resetuj widok', full: 'Pełny ekran', exitFull: 'Zamknij pełny ekran',
     std: 'Norma', size: 'Rozmiar', pitch: 'Skok gwintu', thread: 'Gwint', length: 'Długość', overall: 'Wymiary', mass: 'Masa ≈', checks: 'Kontrola jądra', ok: 'zaliczona',
     open: 'Otwórz na stronie Monge', license: 'Licencja', imgDefault: (o) => `Obraz: domyślna opcja tego rozmiaru (${o}). Widok 3D pokazuje wybraną opcję.`,
-    imgFamily: 'Obraz: typowy rozmiar rodziny.', picture: 'Na obrazie', family: 'typowy rozmiar rodziny', showing: 'Pokazano', option: 'Opcja', d: 'Średnica', D: 'Ø zewn.', B: 'Szerokość', grip: 'Grubość pakietu',
+    imgFamily: 'Obraz: typowy rozmiar rodziny.', picture: 'Na obrazie', family: 'typowy rozmiar rodziny', model: 'Model', showing: 'Pokazano', option: 'Opcja', d: 'Średnica', D: 'Ø zewn.', B: 'Szerokość', grip: 'Grubość pakietu',
   },
 };
 
@@ -41,7 +41,7 @@ const el = (tag, cls, text) => {
   return e;
 };
 
-const S = { locale: 'en', models: [], active: 0, compare: false, optionOf: {}, caps: {}, ctx: {}, mode: 'inline', webgl: true };
+const S = { locale: 'en', models: [], active: 0, compare: false, optionOf: {}, caps: {}, ctx: {}, mode: 'inline', webgl: true, userMoved: false };
 let L = T.en;
 
 // ── MCP Apps bridge ─────────────────────────────────────────────────────────────────────────────────────────────
@@ -139,6 +139,8 @@ function measureAndSend() {
   const height = Math.ceil(html.getBoundingClientRect().height);
   html.style.height = was;
   const width = Math.ceil(window.innerWidth);
+  // a hidden frame measures 0 — never tell the host that (it would keep the view at zero height)
+  if (width < 40 || height < 40) return;
   const key = `${width}x${height}`;
   if (key !== lastSize) { lastSize = key; notify('ui/notifications/size-changed', { width, height }); }
 }
@@ -154,6 +156,10 @@ function watchSize() {
   const ro = new ResizeObserver(sendSize);
   ro.observe(document.documentElement);
   ro.observe(document.body);
+  // the frame's own width changing (a host that lays the view out late) also arrives as a window resize
+  window.addEventListener('resize', sendSize);
+  // and, since not every host delivers either to a nested frame, a once-a-second check (sends only on a change)
+  setInterval(measureAndSend, 1000);
   sendSize();
 }
 
@@ -225,6 +231,7 @@ function initGL() {
   controls.dampingFactor = 0.08;
   controls.enablePan = true;
   controls.screenSpacePanning = true;
+  controls.addEventListener('start', () => { S.userMoved = true; $('hint').classList.add('gone'); });
   root = new THREE.Group();
   scene.add(root);
 
@@ -246,6 +253,7 @@ function resize() {
   renderer.setSize(r.width, r.height, false);
   camera.aspect = r.width / Math.max(1, r.height);
   camera.updateProjectionMatrix();
+  if (root?.children.length && (needFrame || !S.userMoved)) frame();
 }
 
 const steel = () => new THREE.MeshPhysicalMaterial({ color: 0xd2d6db, metalness: 1, roughness: 0.24, clearcoat: 0.3, clearcoatRoughness: 0.25 });
@@ -287,6 +295,7 @@ async function show() {
     return fallback(L.glbFail);
   }
   root.clear();
+  S.userMoved = false;
   labels.forEach((l) => l.el.remove());
   labels = [];
   // side by side at true scale: each part stands on the floor, a gap of a third of the largest
@@ -305,7 +314,7 @@ async function show() {
     x += size.x + widest * 0.35;
     root.add(holder);
     if (list.length > 1) {
-      const lab = el('div', 'label3d', `${list[i].standard?.id ?? ''} ${list[i].size}`.trim());
+      const lab = el('div', 'label3d', list[i].tag || list[i].size);
       $('stage').appendChild(lab);
       labels.push({ el: lab, at: new THREE.Vector3(holder.position.x, size.y + widest * 0.08, 0) });
     }
@@ -327,7 +336,13 @@ function placeLabels() {
   }
 }
 
+/* Fits the camera to the models. Not while the stage has no size yet (a host may show the frame only after the
+   models arrive — framed at zero width the camera ends far away and the parts look like dots): then resize() does it. */
+let needFrame = false;
 function frame() {
+  const r = $('stage').getBoundingClientRect();
+  if (r.width < 40 || r.height < 40) { needFrame = true; return; }
+  needFrame = false;
   const box = new THREE.Box3().setFromObject(root);
   const sphere = box.getBoundingSphere(new THREE.Sphere());
   const fov = (camera.fov * Math.PI) / 180;
@@ -370,6 +385,7 @@ function fallback(why) {
   badge.className = 'badge warn';
   badge.textContent = `${L.picture}: ${S.posterLabel}`;
   $('fallback').textContent = why ? `${why} ${L.no3d}` : L.no3d;
+  if ($('imgnote').textContent) $('imgnote').hidden = false;
   $('poster').classList.remove('hidden');
   status('');
 }
@@ -383,68 +399,115 @@ function setModels(models, locale) {
   for (const m of models) S.optionOf[m.id] = S.optionOf[m.id] || m.option.id;
   const box = $('models');
   box.innerHTML = '';
+  box.hidden = models.length < 2;
   if (models.length > 1) {
-    box.hidden = false;
     models.forEach((m, i) => {
-      const b = el('button', 'chip', `${m.family} ${m.size}`);
+      const b = el('button', null, m.label || m.name);
       b.type = 'button';
+      b.title = m.name;
       b.onclick = () => { S.active = i; S.compare = false; render(); };
       box.appendChild(b);
     });
-    const c = el('button', 'chip', L.compare);
+    const c = el('button', null, L.compare);
     c.type = 'button';
     c.onclick = () => { S.compare = true; render(); };
     box.appendChild(c);
-  } else box.hidden = true;
+  }
   if (S.webgl && !renderer && !initGL()) fallback();
   render();
 }
 
-function specRows(m, optId, opt) {
+const mm = (v, d = 2) => `${nf(v, d)} mm`;
+const optionLabel = (m) => m.options?.find((o) => o.option === S.optionOf[m.id])?.label ?? m.option.label ?? '';
+
+/* The facts of a model as [label, value] — from its record; the option's own facts (thread type, mass, check) only
+   for the option the record is of. */
+function facts(m) {
   const d = m.dimensions || {};
-  const own = optId === m.option.id;
+  const own = S.optionOf[m.id] === m.option.id;
   return [
     [L.std, m.standard?.id],
-    [L.size, m.size],
-    [L.pitch, m.thread?.pitch_mm != null ? `${nf(m.thread.pitch_mm)} mm` : null],
-    [L.thread, m.thread ? (own ? m.thread.label : opt?.label) : null],
-    [L.length, d.length_mm != null ? `${nf(d.length_mm)} mm` : null],
-    [L.grip, d.grip_mm != null ? `${nf(d.grip_mm)} mm` : null],
-    [L.D, d.outside_diameter_mm != null ? `${nf(d.outside_diameter_mm)} mm` : null],
-    [L.B, d.width_mm != null ? `${nf(d.width_mm)} mm` : null],
+    [L.size, m.tag || m.size],
+    [L.pitch, m.thread?.pitch_mm != null ? mm(m.thread.pitch_mm) : null],
+    [L.thread, m.thread ? (own ? m.thread.label : optionLabel(m)) : null],
+    [L.length, d.length_mm != null ? mm(d.length_mm) : null],
+    [L.grip, d.grip_mm != null ? mm(d.grip_mm) : null],
+    [L.D, d.outside_diameter_mm != null ? mm(d.outside_diameter_mm) : null],
+    [L.B, d.width_mm != null ? mm(d.width_mm) : null],
     [L.overall, Array.isArray(d.overall_mm) ? `${d.overall_mm.map((v) => nf(v, 1)).join(' × ')} mm` : null],
     [L.mass, own && m.mass_kg != null ? (m.mass_kg >= 1 ? `${nf(m.mass_kg)} kg` : `${nf(m.mass_kg * 1000, 1)} g`) : null],
     [L.checks, own && m.checks?.kernel ? L.ok : null],
-  ].filter(([, v]) => v);
+  ];
+}
+
+/* One model: a two-column list. Several: one column per model, a row per fact any of them has ("—" where one lacks it). */
+function renderData(list) {
+  const table = $('data');
+  table.innerHTML = '';
+  const cols = list.map(facts);
+  if (list.length > 1) {
+    const head = el('thead');
+    const tr = el('tr');
+    tr.append(el('th', null, ''));
+    list.forEach((m) => { const th = el('th', null, m.label || m.name); th.title = m.name; tr.append(th); });
+    head.append(tr);
+    table.append(head);
+  }
+  const body = el('tbody');
+  cols[0].forEach(([label], r) => {
+    const values = cols.map((c) => c[r][1]);
+    if (values.every((v) => !v)) return;
+    const tr = el('tr');
+    tr.append(el('th', null, label));
+    for (const v of values) tr.append(el('td', v ? 'num' : 'na', v || '—'));
+    body.append(tr);
+  });
+  table.append(body);
+}
+
+function renderFiles(list) {
+  const files = $('files');
+  files.innerHTML = '';
+  for (const m of list) {
+    const own = S.optionOf[m.id] === m.option.id;
+    const opt = m.options?.find((o) => o.option === S.optionOf[m.id]);
+    const fl = own ? m.files : opt?.glb ? [{ format: 'glb', url: opt.glb }] : [];
+    const row = el('div', 'row');
+    if (list.length > 1) row.append(el('span', 'who', m.label || m.name));
+    for (const f of fl) {
+      const b = el('button', 'file');
+      b.type = 'button';
+      b.append(el('b', null, f.format.toUpperCase()), el('span', 'num', f.bytes ? bytes(f.bytes) : '↗'));
+      b.title = f.sha256 ? `SHA-256 ${f.sha256}` : f.url;
+      b.onclick = () => openLink(f.download_url || f.url);
+      row.append(b);
+    }
+    files.append(row);
+  }
 }
 
 function render() {
   const m = S.models[S.active];
   const optId = S.optionOf[m.id];
-  const opt = m.options?.find((o) => o.option === optId);
+  const list = S.compare ? S.models : [m];
   [...$('models').children].forEach((b, i) => b.setAttribute('aria-pressed', String(S.compare ? i === S.models.length : i === S.active)));
 
-  $('title').textContent = S.compare ? S.models.map((x) => `${x.family} ${x.size}`).join(' · ') : m.name.replace(/ — .*$/, '') + (opt ? ` — ${opt.label}` : '');
-  $('sub').textContent = S.compare ? '' : [m.standard ? `${m.standard.id} — ${m.standard.title}` : null].filter(Boolean).join('');
+  // header: what is on screen, short — the standard and the option on the second line
+  $('title').textContent = S.compare ? S.models.map((x) => x.label || x.name).join(' · ') : m.label || m.name;
+  $('sub').textContent = S.compare ? '' : [m.standard?.id, optionLabel(m)].filter(Boolean).join(' · ');
 
-  // the option chips of the active size (switch the GLB: real / cosmetic / print)
+  // options of the size (real / cosmetic / print): a small segmented control
   const ob = $('options');
   ob.innerHTML = '';
   ob.hidden = S.compare || !(m.options?.length > 1);
   if (!ob.hidden) for (const o of m.options) {
-    const b = el('button', 'chip', o.label);
+    const b = el('button', null, o.label);
     b.type = 'button';
     b.disabled = !o.glb;
     b.setAttribute('aria-pressed', String(o.option === optId));
     b.onclick = () => { S.optionOf[m.id] = o.option; render(); };
     ob.appendChild(b);
   }
-
-  // what the 3D shows, in words: the option of the GLB on screen
-  const badge = $('badge');
-  badge.hidden = S.compare;
-  badge.className = 'badge';
-  badge.textContent = `${L.showing}: ${opt?.label ?? m.option.label ?? ''}`;
 
   // the picture: the size's WebP — say so when it is another option than the one on screen
   const poster = $('poster');
@@ -455,37 +518,13 @@ function render() {
   const defLabel = m.options?.find((o) => o.option === m.image.option)?.label ?? m.image.option;
   const note = m.image.option ? (shows ? '' : L.imgDefault(defLabel)) : L.imgFamily;
   S.posterLabel = m.image.option ? defLabel : L.family;
-  $('imgnote').hidden = !note || S.compare;
+  $('imgnote').hidden = !note || S.compare || S.webgl;
   $('imgnote').textContent = note;
+  $('badge').hidden = true;
   if (!S.webgl) poster.classList.remove('hidden');
 
-  // the data (from each record) and the files: the active model, or — side by side — every model in turn
-  const specs = $('specs');
-  const files = $('files');
-  specs.innerHTML = '';
-  files.innerHTML = '';
-  for (const x of S.compare ? S.models : [m]) {
-    const xo = S.optionOf[x.id];
-    const xopt = x.options?.find((o) => o.option === xo);
-    if (S.compare) {
-      const h = el('div', 'group', x.name);
-      specs.appendChild(h);
-    }
-    for (const [k, v] of specRows(x, xo, xopt)) {
-      const w = el('div');
-      w.append(el('dt', null, k), el('dd', null, v));
-      specs.appendChild(w);
-    }
-    const fileList = xo === x.option.id ? x.files : (xopt?.glb ? [{ format: 'glb', url: xopt.glb }] : []);
-    for (const f of fileList) {
-      const b = el('button', 'file');
-      b.type = 'button';
-      b.append(el('b', null, (S.compare ? `${x.size} · ` : '') + f.format.toUpperCase()), el('span', null, f.bytes ? bytes(f.bytes) : '↗'));
-      b.title = f.sha256 ? `SHA-256 ${f.sha256}` : f.url;
-      b.onclick = () => openLink(f.download_url || f.url);
-      files.appendChild(b);
-    }
-  }
+  renderData(list);
+  renderFiles(list);
 
   const links = $('links');
   links.innerHTML = '';
