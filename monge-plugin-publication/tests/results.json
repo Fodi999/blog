@@ -1,0 +1,1123 @@
+{
+  "server": "https://dima-fomin.pl/mcp",
+  "run": "2026-11-22 18:03:30 CET",
+  "scenarios": [
+    {
+      "id": "P1",
+      "kind": "positive",
+      "prompt": "Find an ISO 4017 M12×60 hex bolt with a real thread and give me the STEP file.",
+      "calls": [
+        {
+          "tool": "search_models",
+          "arguments": {
+            "standard": "ISO 4017",
+            "size": "M12",
+            "length": 60,
+            "thread": "exact",
+            "format": "step"
+          },
+          "isError": false,
+          "structuredContent": {
+            "match": "exact",
+            "total": 1,
+            "results": [
+              {
+                "id": "bolt-iso-4017--m12-x-60--exact",
+                "name": "Bolt ISO 4017 M12 × 60 — real thread",
+                "url": "https://dima-fomin.pl/en/library/bolt-iso-4017/m12-x-60?option=exact",
+                "standard": "ISO 4017",
+                "size": "M12 × 60",
+                "option": "real thread",
+                "thread": "exact",
+                "dimensions": {
+                  "nominal_diameter_mm": 12,
+                  "thread_pitch_mm": 1.75,
+                  "length_mm": 60,
+                  "overall_mm": [
+                    67.5,
+                    20.8,
+                    18
+                  ]
+                },
+                "image": "https://dima-fomin.pl/api/files/downloads/bolt-iso-4017/m12-x-60/bolt-iso-4017-m12-x-60.webp",
+                "glb": "https://dima-fomin.pl/api/files/downloads/bolt-iso-4017/m12-x-60/exact/bolt-iso-4017-m12-x-60-exact.glb",
+                "formats": [
+                  "step",
+                  "stl",
+                  "3mf",
+                  "glb"
+                ],
+                "file": {
+                  "format": "step",
+                  "media_type": "model/step",
+                  "url": "https://dima-fomin.pl/api/files/downloads/bolt-iso-4017/m12-x-60/exact/bolt-iso-4017-m12-x-60-exact.step",
+                  "download_url": "https://dima-fomin.pl/api/files/downloads/bolt-iso-4017/m12-x-60/exact/bolt-iso-4017-m12-x-60-exact.step?download=1",
+                  "bytes": 1952632,
+                  "sha256": "3103e5c0be8ccdf1554b6524d4dcb2633394fff899d203a18e9b3c46a83324de"
+                }
+              }
+            ],
+            "interpreted": {
+              "families": [
+                "bolt-iso-4017"
+              ],
+              "d": 12,
+              "l": 60,
+              "thread": "exact",
+              "format": "step",
+              "standard": "ISO 4017"
+            },
+            "next_cursor": null,
+            "notes": [],
+            "catalog": "2026-11-22.9505be60"
+          },
+          "text": null
+        },
+        {
+          "tool": "get_download_links",
+          "arguments": {
+            "id": "bolt-iso-4017--m12-x-60--exact",
+            "formats": [
+              "step"
+            ]
+          },
+          "isError": false,
+          "structuredContent": {
+            "id": "bolt-iso-4017--m12-x-60--exact",
+            "name": "Bolt ISO 4017 M12 × 60 — real thread",
+            "url": "https://dima-fomin.pl/en/library/bolt-iso-4017/m12-x-60?option=exact",
+            "files": [
+              {
+                "format": "step",
+                "media_type": "model/step",
+                "url": "https://dima-fomin.pl/api/files/downloads/bolt-iso-4017/m12-x-60/exact/bolt-iso-4017-m12-x-60-exact.step",
+                "download_url": "https://dima-fomin.pl/api/files/downloads/bolt-iso-4017/m12-x-60/exact/bolt-iso-4017-m12-x-60-exact.step?download=1",
+                "bytes": 1952632,
+                "sha256": "3103e5c0be8ccdf1554b6524d4dcb2633394fff899d203a18e9b3c46a83324de"
+              }
+            ],
+            "license": {
+              "url": "https://dima-fomin.pl/en/license",
+              "summary": "Free, commercial use included; the files themselves may not be resold or redistributed."
+            },
+            "verify": "sha256 is the SHA-256 of the file bytes (hex). Check it after download (shasum -a 256 <file>); the file response also carries it as Repr-Digest: sha-256=:<base64>:.",
+            "catalog": "2026-11-22.9505be60"
+          },
+          "text": null
+        }
+      ],
+      "pass": true,
+      "observed": "match exact, ['bolt-iso-4017--m12-x-60--exact']; STEP 1952632 B, SHA-256 3103e5c0be8ccdf1554b6524d4dcb2633394fff899d203a18e9b3c46a83324de = server"
+    },
+    {
+      "id": "P2",
+      "kind": "positive",
+      "prompt": "I need an M8 nut to 3D print. Give me the 3MF and its checksum.",
+      "calls": [
+        {
+          "tool": "search_models",
+          "arguments": {
+            "query": "M8 nut",
+            "thread": "print",
+            "format": "3mf"
+          },
+          "isError": false,
+          "structuredContent": {
+            "match": "exact",
+            "total": 1,
+            "results": [
+              {
+                "id": "nut-iso-4032--m8--print",
+                "name": "Nut ISO 4032 M8 — for 3D printing",
+                "url": "https://dima-fomin.pl/en/library/nut-iso-4032/m8?option=print",
+                "standard": "ISO 4032",
+                "size": "M8",
+                "option": "for 3D printing",
+                "thread": "print",
+                "dimensions": {
+                  "nominal_diameter_mm": 8,
+                  "thread_pitch_mm": 1.25,
+                  "overall_mm": [
+                    15,
+                    13,
+                    6.8
+                  ]
+                },
+                "image": "https://dima-fomin.pl/api/files/downloads/nut-iso-4032/m8/nut-iso-4032-m8.webp",
+                "glb": "https://dima-fomin.pl/api/files/downloads/nut-iso-4032/m8/print/nut-iso-4032-m8-print.glb",
+                "formats": [
+                  "stl",
+                  "3mf",
+                  "glb"
+                ],
+                "file": {
+                  "format": "3mf",
+                  "media_type": "model/3mf",
+                  "url": "https://dima-fomin.pl/api/files/downloads/nut-iso-4032/m8/print/nut-iso-4032-m8-print.3mf",
+                  "download_url": "https://dima-fomin.pl/api/files/downloads/nut-iso-4032/m8/print/nut-iso-4032-m8-print.3mf?download=1",
+                  "bytes": 421874,
+                  "sha256": "9e4d6d33dfb943589bf55206f846888ea320beb7c3f6eebaf62981d93c172a67"
+                }
+              }
+            ],
+            "interpreted": {
+              "families": [
+                "nut-iso-4032"
+              ],
+              "d": 8,
+              "thread": "print",
+              "format": "3mf"
+            },
+            "next_cursor": null,
+            "notes": [],
+            "catalog": "2026-11-22.9505be60"
+          },
+          "text": null
+        },
+        {
+          "tool": "get_download_links",
+          "arguments": {
+            "id": "nut-iso-4032--m8--print",
+            "formats": [
+              "3mf"
+            ]
+          },
+          "isError": false,
+          "structuredContent": {
+            "id": "nut-iso-4032--m8--print",
+            "name": "Nut ISO 4032 M8 — for 3D printing",
+            "url": "https://dima-fomin.pl/en/library/nut-iso-4032/m8?option=print",
+            "files": [
+              {
+                "format": "3mf",
+                "media_type": "model/3mf",
+                "url": "https://dima-fomin.pl/api/files/downloads/nut-iso-4032/m8/print/nut-iso-4032-m8-print.3mf",
+                "download_url": "https://dima-fomin.pl/api/files/downloads/nut-iso-4032/m8/print/nut-iso-4032-m8-print.3mf?download=1",
+                "bytes": 421874,
+                "sha256": "9e4d6d33dfb943589bf55206f846888ea320beb7c3f6eebaf62981d93c172a67"
+              }
+            ],
+            "license": {
+              "url": "https://dima-fomin.pl/en/license",
+              "summary": "Free, commercial use included; the files themselves may not be resold or redistributed."
+            },
+            "verify": "sha256 is the SHA-256 of the file bytes (hex). Check it after download (shasum -a 256 <file>); the file response also carries it as Repr-Digest: sha-256=:<base64>:.",
+            "catalog": "2026-11-22.9505be60"
+          },
+          "text": null
+        }
+      ],
+      "pass": true,
+      "observed": "['nut-iso-4032--m8--print']; 3MF 421874 B, SHA-256 matches"
+    },
+    {
+      "id": "P3",
+      "kind": "positive",
+      "prompt": "Which versions of the 6204 ball bearing are there? (open, shielded, sealed)",
+      "calls": [
+        {
+          "tool": "search_models",
+          "arguments": {
+            "size": "6204",
+            "category": "bearing-iso-15",
+            "limit": 10
+          },
+          "isError": false,
+          "structuredContent": {
+            "match": "exact",
+            "total": 4,
+            "results": [
+              {
+                "id": "bearing-iso-15--6204--2z",
+                "name": "Bearing 6204 — 2Z, shields",
+                "url": "https://dima-fomin.pl/en/library/bearing-iso-15/6204?option=2z",
+                "standard": "ISO 15",
+                "size": "6204",
+                "option": "2Z, shields",
+                "thread": null,
+                "dimensions": {
+                  "nominal_diameter_mm": 20,
+                  "outside_diameter_mm": 47,
+                  "width_mm": 14,
+                  "overall_mm": [
+                    47,
+                    47,
+                    14
+                  ]
+                },
+                "image": "https://dima-fomin.pl/api/files/downloads/bearing-iso-15/6204/bearing-iso-15-6204.webp",
+                "glb": "https://dima-fomin.pl/api/files/downloads/bearing-iso-15/6204/2z/bearing-iso-15-6204-2z.glb",
+                "formats": [
+                  "step",
+                  "stl",
+                  "3mf",
+                  "glb"
+                ]
+              },
+              {
+                "id": "bearing-iso-15--6204--2rs",
+                "name": "Bearing 6204 — 2RS, seals",
+                "url": "https://dima-fomin.pl/en/library/bearing-iso-15/6204?option=2rs",
+                "standard": "ISO 15",
+                "size": "6204",
+                "option": "2RS, seals",
+                "thread": null,
+                "dimensions": {
+                  "nominal_diameter_mm": 20,
+                  "outside_diameter_mm": 47,
+                  "width_mm": 14,
+                  "overall_mm": [
+                    47,
+                    47,
+                    14
+                  ]
+                },
+                "image": "https://dima-fomin.pl/api/files/downloads/bearing-iso-15/6204/bearing-iso-15-6204.webp",
+                "glb": "https://dima-fomin.pl/api/files/downloads/bearing-iso-15/6204/2rs/bearing-iso-15-6204-2rs.glb",
+                "formats": [
+                  "step",
+                  "stl",
+                  "3mf",
+                  "glb"
+                ]
+              },
+              {
+                "id": "bearing-iso-15--6204--open",
+                "name": "Bearing 6204 — open",
+                "url": "https://dima-fomin.pl/en/library/bearing-iso-15/6204?option=open",
+                "standard": "ISO 15",
+                "size": "6204",
+                "option": "open",
+                "thread": null,
+                "dimensions": {
+                  "nominal_diameter_mm": 20,
+                  "outside_diameter_mm": 47,
+                  "width_mm": 14,
+                  "overall_mm": [
+                    47,
+                    47,
+                    14
+                  ]
+                },
+                "image": "https://dima-fomin.pl/api/files/downloads/bearing-iso-15/6204/bearing-iso-15-6204.webp",
+                "glb": "https://dima-fomin.pl/api/files/downloads/bearing-iso-15/6204/open/bearing-iso-15-6204-open.glb",
+                "formats": [
+                  "step",
+                  "stl",
+                  "3mf",
+                  "glb"
+                ]
+              },
+              {
+                "id": "bearing-iso-15--6204--open-balls",
+                "name": "Bearing 6204 — open, rings and balls",
+                "url": "https://dima-fomin.pl/en/library/bearing-iso-15/6204?option=open-balls",
+                "standard": "ISO 15",
+                "size": "6204",
+                "option": "open, rings and balls",
+                "thread": null,
+                "dimensions": {
+                  "nominal_diameter_mm": 20,
+                  "outside_diameter_mm": 47,
+                  "width_mm": 14,
+                  "overall_mm": [
+                    47,
+                    47,
+                    14
+                  ]
+                },
+                "image": "https://dima-fomin.pl/api/files/downloads/bearing-iso-15/6204/bearing-iso-15-6204.webp",
+                "glb": "https://dima-fomin.pl/api/files/downloads/bearing-iso-15/6204/open-balls/bearing-iso-15-6204-open-balls.glb",
+                "formats": [
+                  "step",
+                  "stl",
+                  "3mf",
+                  "glb"
+                ]
+              }
+            ],
+            "interpreted": {
+              "families": [
+                "bearing-iso-15"
+              ],
+              "bearing": "6204"
+            },
+            "next_cursor": null,
+            "notes": [],
+            "catalog": "2026-11-22.9505be60"
+          },
+          "text": null
+        }
+      ],
+      "pass": true,
+      "observed": "exact: ['bearing-iso-15--6204--2rs', 'bearing-iso-15--6204--2z', 'bearing-iso-15--6204--open', 'bearing-iso-15--6204--open-balls']"
+    },
+    {
+      "id": "P4",
+      "kind": "positive",
+      "prompt": "Znajdź śrubę z łbem walcowym ISO 4762 M10×40 z prawdziwym gwintem i pokaż jej wymiary.",
+      "calls": [
+        {
+          "tool": "search_models",
+          "arguments": {
+            "query": "śruba z łbem walcowym ISO 4762 M10x40",
+            "thread": "exact",
+            "locale": "pl"
+          },
+          "isError": false,
+          "structuredContent": {
+            "match": "exact",
+            "total": 1,
+            "results": [
+              {
+                "id": "screw-iso-4762--m10-x-40--exact",
+                "name": "Śruba ISO 4762 M10 × 40 — gwint rzeczywisty",
+                "url": "https://dima-fomin.pl/pl/library/screw-iso-4762/m10-x-40?option=exact",
+                "standard": "ISO 4762",
+                "size": "M10 × 40",
+                "option": "gwint rzeczywisty",
+                "thread": "exact",
+                "dimensions": {
+                  "nominal_diameter_mm": 10,
+                  "thread_pitch_mm": 1.5,
+                  "length_mm": 40,
+                  "overall_mm": [
+                    50,
+                    16,
+                    16
+                  ]
+                },
+                "image": "https://dima-fomin.pl/api/files/downloads/screw-iso-4762/m10-x-40/screw-iso-4762-m10-x-40.webp",
+                "glb": "https://dima-fomin.pl/api/files/downloads/screw-iso-4762/m10-x-40/exact/screw-iso-4762-m10-x-40-exact.glb",
+                "formats": [
+                  "step",
+                  "stl",
+                  "3mf",
+                  "glb"
+                ]
+              }
+            ],
+            "interpreted": {
+              "families": [
+                "screw-iso-4762",
+                "shaft"
+              ],
+              "standard": "ISO 4762",
+              "d": 10,
+              "l": 40,
+              "thread": "exact"
+            },
+            "next_cursor": null,
+            "notes": [],
+            "catalog": "2026-11-22.9505be60"
+          },
+          "text": null
+        },
+        {
+          "tool": "get_model",
+          "arguments": {
+            "id": "screw-iso-4762--m10-x-40--exact",
+            "locale": "pl"
+          },
+          "isError": false,
+          "structuredContent": {
+            "id": "screw-iso-4762--m10-x-40--exact",
+            "name": "Śruba ISO 4762 M10 × 40 — gwint rzeczywisty",
+            "names": {
+              "en": "Cap screw ISO 4762 M10 × 40 — real thread",
+              "pl": "Śruba ISO 4762 M10 × 40 — gwint rzeczywisty",
+              "ru": "Винт ISO 4762 M10 × 40 — настоящая резьба"
+            },
+            "url": "https://dima-fomin.pl/pl/library/screw-iso-4762/m10-x-40?option=exact",
+            "page_url": "https://dima-fomin.pl/pl/library/screw-iso-4762/m10-x-40",
+            "urls": {
+              "en": "https://dima-fomin.pl/en/library/screw-iso-4762/m10-x-40",
+              "pl": "https://dima-fomin.pl/pl/library/screw-iso-4762/m10-x-40",
+              "ru": "https://dima-fomin.pl/ru/library/screw-iso-4762/m10-x-40"
+            },
+            "family": {
+              "id": "screw-iso-4762",
+              "name": "Śruba z łbem walcowym ISO 4762",
+              "url": "https://dima-fomin.pl/pl/library/screw-iso-4762",
+              "category": "fasteners"
+            },
+            "size": {
+              "id": "m10-x-40",
+              "label": "M10 × 40",
+              "group": "M10"
+            },
+            "option": {
+              "id": "exact",
+              "label": "gwint rzeczywisty"
+            },
+            "standard": {
+              "id": "ISO 4762",
+              "title": "Śruby z łbem walcowym i gniazdem sześciokątnym",
+              "edition": "2026-11-14",
+              "checked": "2026-11-14",
+              "table_url": "https://dima-fomin.pl/pl/library/standards/iso-4762"
+            },
+            "standards": [
+              {
+                "id": "ISO 4762",
+                "table_url": "https://dima-fomin.pl/pl/library/standards/iso-4762"
+              },
+              {
+                "id": "ISO 261",
+                "table_url": "https://dima-fomin.pl/pl/library/standards/iso-261"
+              }
+            ],
+            "dimensions": {
+              "nominal_diameter_mm": 10,
+              "thread_pitch_mm": 1.5,
+              "length_mm": 40,
+              "overall_mm": [
+                50,
+                16,
+                16
+              ]
+            },
+            "thread": {
+              "type": "exact"
+            },
+            "material": "Stal; elementy złączne także ze stali nierdzewnej A2 i A4",
+            "mass": {
+              "kg": 0.03359,
+              "estimated": true,
+              "basis": "mesh volume × 7850 kg/m³ (steel)"
+            },
+            "bodies": 1,
+            "verification": {
+              "geometry": {
+                "kernel_body_report": true,
+                "step_read_back": true,
+                "stl_closed": true,
+                "method": "Monge kernel's validity report of every B-Rep body; the STEP written and read back by Monge with the same faces, edges, vertices and volume; the STL checked for open and doubled edges.",
+                "monge_version": "0.15.198",
+                "checked": "2026-11-22"
+              },
+              "standard_table": {
+                "standards": [
+                  "ISO 4762",
+                  "ISO 261"
+                ],
+                "method": "The dimensions come from Monge's tables of the standards, each checked against two published sources; the edition is pinned. Reference data — not a certificate of conformity."
+              },
+              "physical_tests": {
+                "done": false,
+                "note": "No physical part was made or tested."
+              }
+            },
+            "image": {
+              "url": "https://dima-fomin.pl/api/files/downloads/screw-iso-4762/m10-x-40/screw-iso-4762-m10-x-40.webp",
+              "of": "this size (its default option), rendered from its geometry by Monge",
+              "width": 1200,
+              "height": 900
+            },
+            "glb": "https://dima-fomin.pl/api/files/downloads/screw-iso-4762/m10-x-40/exact/screw-iso-4762-m10-x-40-exact.glb",
+            "viewer_url": "https://dima-fomin.pl/pl/library/screw-iso-4762/m10-x-40",
+            "files": [
+              {
+                "format": "step",
+                "media_type": "model/step",
+                "url": "https://dima-fomin.pl/api/files/downloads/screw-iso-4762/m10-x-40/exact/screw-iso-4762-m10-x-40-exact.step",
+                "download_url": "https://dima-fomin.pl/api/files/downloads/screw-iso-4762/m10-x-40/exact/screw-iso-4762-m10-x-40-exact.step?download=1",
+                "bytes": 1447019,
+                "sha256": "d972129dbba64835b194922b3448f135c8728aba1ae70405c0f6877648577c40"
+              },
+              {
+                "format": "stl",
+                "media_type": "model/stl",
+                "url": "https://dima-fomin.pl/api/files/downloads/screw-iso-4762/m10-x-40/exact/screw-iso-4762-m10-x-40-exact.stl",
+                "download_url": "https://dima-fomin.pl/api/files/downloads/screw-iso-4762/m10-x-40/exact/screw-iso-4762-m10-x-40-exact.stl?download=1",
+                "bytes": 1024284,
+                "sha256": "3a10f8db021d18a0e2f77d87656c81f809cd7ba7166c8869a737a0cd1e0bd60e"
+              },
+              {
+                "format": "3mf",
+                "media_type": "model/3mf",
+                "url": "https://dima-fomin.pl/api/files/downloads/screw-iso-4762/m10-x-40/exact/screw-iso-4762-m10-x-40-exact.3mf",
+                "download_url": "https://dima-fomin.pl/api/files/downloads/screw-iso-4762/m10-x-40/exact/screw-iso-4762-m10-x-40-exact.3mf?download=1",
+                "bytes": 767598,
+                "sha256": "e2a17d818ef4accc495b9ee12c23e8f7125ff20844cf6e95a9915b00e022c8c0"
+              },
+              {
+                "format": "glb",
+                "media_type": "model/gltf-binary",
+                "url": "https://dima-fomin.pl/api/files/downloads/screw-iso-4762/m10-x-40/exact/screw-iso-4762-m10-x-40-exact.glb",
+                "download_url": "https://dima-fomin.pl/api/files/downloads/screw-iso-4762/m10-x-40/exact/screw-iso-4762-m10-x-40-exact.glb?download=1",
+                "bytes": 624768,
+                "sha256": "084e0549149591d721a019f473a2f72110c2dac9841478d2c1d713d1ae1f34c7"
+              }
+            ],
+            "license": {
+              "url": "https://dima-fomin.pl/pl/license",
+              "summary": "Free, commercial use included; the files themselves may not be resold or redistributed."
+            },
+            "parameters": {
+              "size": "M10",
+              "length": 40,
+              "threads": "exact"
+            },
+            "other_options": [
+              {
+                "id": "screw-iso-4762--m10-x-40--cosmetic",
+                "label": "gwint umowny"
+              },
+              {
+                "id": "screw-iso-4762--m10-x-40--print",
+                "label": "do druku 3D"
+              }
+            ],
+            "catalog": "2026-11-22.9505be60"
+          },
+          "text": null
+        }
+      ],
+      "pass": true,
+      "observed": "['screw-iso-4762--m10-x-40--exact']; Śruba ISO 4762 M10 × 40 — gwint rzeczywisty, d 10, L 40, P 1.5"
+    },
+    {
+      "id": "P5",
+      "kind": "positive",
+      "prompt": "Какие варианты арматуры Ø16 по EN 10080 есть в библиотеке?",
+      "calls": [
+        {
+          "tool": "search_models",
+          "arguments": {
+            "query": "арматура Ø16 EN 10080",
+            "locale": "ru",
+            "limit": 10
+          },
+          "isError": false,
+          "structuredContent": {
+            "match": "exact",
+            "total": 4,
+            "results": [
+              {
+                "id": "rebar-en-10080--d16-straight-6000--std",
+                "name": "Арматура EN 10080 Ø16 · прямой 6000",
+                "url": "https://dima-fomin.pl/ru/library/rebar-en-10080/d16-straight-6000?option=std",
+                "standard": "EN 10080",
+                "size": "Ø16 · прямой 6000",
+                "option": null,
+                "thread": null,
+                "dimensions": {
+                  "nominal_diameter_mm": 16,
+                  "length_mm": 6000,
+                  "overall_mm": [
+                    6000,
+                    16,
+                    15.9
+                  ]
+                },
+                "image": "https://dima-fomin.pl/api/files/downloads/rebar-en-10080/d16-straight-6000/rebar-en-10080-d16-straight-6000.webp",
+                "glb": "https://dima-fomin.pl/api/files/downloads/rebar-en-10080/d16-straight-6000/std/rebar-en-10080-d16-straight-6000-std.glb",
+                "formats": [
+                  "step",
+                  "stl",
+                  "3mf",
+                  "glb"
+                ]
+              },
+              {
+                "id": "rebar-en-10080--d16-straight-12000--std",
+                "name": "Арматура EN 10080 Ø16 · прямой 12000",
+                "url": "https://dima-fomin.pl/ru/library/rebar-en-10080/d16-straight-12000?option=std",
+                "standard": "EN 10080",
+                "size": "Ø16 · прямой 12000",
+                "option": null,
+                "thread": null,
+                "dimensions": {
+                  "nominal_diameter_mm": 16,
+                  "length_mm": 12000,
+                  "overall_mm": [
+                    12000,
+                    16,
+                    15.9
+                  ]
+                },
+                "image": "https://dima-fomin.pl/api/files/downloads/rebar-en-10080/d16-straight-12000/rebar-en-10080-d16-straight-12000.webp",
+                "glb": "https://dima-fomin.pl/api/files/downloads/rebar-en-10080/d16-straight-12000/std/rebar-en-10080-d16-straight-12000-std.glb",
+                "formats": [
+                  "step",
+                  "stl",
+                  "3mf",
+                  "glb"
+                ]
+              },
+              {
+                "id": "rebar-en-10080--d16-ribbed-300--std",
+                "name": "Арматура EN 10080 Ø16 · с рёбрами, 300",
+                "url": "https://dima-fomin.pl/ru/library/rebar-en-10080/d16-ribbed-300?option=std",
+                "standard": "EN 10080",
+                "size": "Ø16 · с рёбрами, 300",
+                "option": null,
+                "thread": null,
+                "dimensions": {
+                  "nominal_diameter_mm": 16,
+                  "length_mm": 300,
+                  "overall_mm": [
+                    300,
+                    17.8,
+                    17.2
+                  ]
+                },
+                "image": "https://dima-fomin.pl/api/files/downloads/rebar-en-10080/d16-ribbed-300/rebar-en-10080-d16-ribbed-300.webp",
+                "glb": "https://dima-fomin.pl/api/files/downloads/rebar-en-10080/d16-ribbed-300/std/rebar-en-10080-d16-ribbed-300-std.glb",
+                "formats": [
+                  "step",
+                  "stl",
+                  "3mf",
+                  "glb"
+                ]
+              },
+              {
+                "id": "rebar-en-10080--d16-u-300-x-500-x-300--std",
+                "name": "Арматура EN 10080 Ø16 · П 300 × 500 × 300",
+                "url": "https://dima-fomin.pl/ru/library/rebar-en-10080/d16-u-300-x-500-x-300?option=std",
+                "standard": "EN 10080",
+                "size": "Ø16 · П 300 × 500 × 300",
+                "option": null,
+                "thread": null,
+                "dimensions": {
+                  "nominal_diameter_mm": 16,
+                  "a_mm": 300,
+                  "b_mm": 500,
+                  "c_mm": 300,
+                  "overall_mm": [
+                    499.9,
+                    299.9,
+                    16
+                  ]
+                },
+                "image": "https://dima-fomin.pl/api/files/downloads/rebar-en-10080/d16-u-300-x-500-x-300/rebar-en-10080-d16-u-300-x-500-x-300.webp",
+                "glb": "https://dima-fomin.pl/api/files/downloads/rebar-en-10080/d16-u-300-x-500-x-300/std/rebar-en-10080-d16-u-300-x-500-x-300-std.glb",
+                "formats": [
+                  "step",
+                  "stl",
+                  "3mf",
+                  "glb"
+                ]
+              }
+            ],
+            "interpreted": {
+              "families": [
+                "rebar-en-10080"
+              ],
+              "standard": "EN 10080",
+              "d": 16
+            },
+            "next_cursor": null,
+            "notes": [],
+            "catalog": "2026-11-22.9505be60"
+          },
+          "text": null
+        }
+      ],
+      "pass": true,
+      "observed": "exact total 4: ['rebar-en-10080--d16-straight-6000--std', 'rebar-en-10080--d16-straight-12000--std', 'rebar-en-10080--d16-ribbed-300--std', 'rebar-en-10080--d16-u-300-x-500-x-300--std']"
+    },
+    {
+      "id": "N1",
+      "kind": "negative",
+      "prompt": "Give me an ISO 4017 M12×61 bolt with a real thread.  (61 mm is not a length of the standard)",
+      "calls": [
+        {
+          "tool": "search_models",
+          "arguments": {
+            "standard": "ISO 4017",
+            "size": "M12",
+            "length": 61,
+            "thread": "exact"
+          },
+          "isError": false,
+          "structuredContent": {
+            "match": "not_found",
+            "total": 0,
+            "results": [],
+            "nearest": [
+              {
+                "id": "bolt-iso-4017--m12-x-60--exact",
+                "name": "Bolt ISO 4017 M12 × 60 — real thread",
+                "url": "https://dima-fomin.pl/en/library/bolt-iso-4017/m12-x-60?option=exact",
+                "standard": "ISO 4017",
+                "size": "M12 × 60",
+                "option": "real thread",
+                "thread": "exact",
+                "dimensions": {
+                  "nominal_diameter_mm": 12,
+                  "thread_pitch_mm": 1.75,
+                  "length_mm": 60,
+                  "overall_mm": [
+                    67.5,
+                    20.8,
+                    18
+                  ]
+                },
+                "image": "https://dima-fomin.pl/api/files/downloads/bolt-iso-4017/m12-x-60/bolt-iso-4017-m12-x-60.webp",
+                "glb": "https://dima-fomin.pl/api/files/downloads/bolt-iso-4017/m12-x-60/exact/bolt-iso-4017-m12-x-60-exact.glb",
+                "formats": [
+                  "step",
+                  "stl",
+                  "3mf",
+                  "glb"
+                ],
+                "differs": [
+                  "length 60 instead of 61"
+                ]
+              },
+              {
+                "id": "bolt-iso-4017--m12-x-65--exact",
+                "name": "Bolt ISO 4017 M12 × 65 — real thread",
+                "url": "https://dima-fomin.pl/en/library/bolt-iso-4017/m12-x-65?option=exact",
+                "standard": "ISO 4017",
+                "size": "M12 × 65",
+                "option": "real thread",
+                "thread": "exact",
+                "dimensions": {
+                  "nominal_diameter_mm": 12,
+                  "thread_pitch_mm": 1.75,
+                  "length_mm": 65,
+                  "overall_mm": [
+                    72.5,
+                    20.8,
+                    18
+                  ]
+                },
+                "image": "https://dima-fomin.pl/api/files/downloads/bolt-iso-4017/m12-x-65/bolt-iso-4017-m12-x-65.webp",
+                "glb": "https://dima-fomin.pl/api/files/downloads/bolt-iso-4017/m12-x-65/exact/bolt-iso-4017-m12-x-65-exact.glb",
+                "formats": [
+                  "step",
+                  "stl",
+                  "3mf",
+                  "glb"
+                ],
+                "differs": [
+                  "length 65 instead of 61"
+                ]
+              },
+              {
+                "id": "bolt-iso-4017--m12-x-55--exact",
+                "name": "Bolt ISO 4017 M12 × 55 — real thread",
+                "url": "https://dima-fomin.pl/en/library/bolt-iso-4017/m12-x-55?option=exact",
+                "standard": "ISO 4017",
+                "size": "M12 × 55",
+                "option": "real thread",
+                "thread": "exact",
+                "dimensions": {
+                  "nominal_diameter_mm": 12,
+                  "thread_pitch_mm": 1.75,
+                  "length_mm": 55,
+                  "overall_mm": [
+                    62.5,
+                    20.8,
+                    18
+                  ]
+                },
+                "image": "https://dima-fomin.pl/api/files/downloads/bolt-iso-4017/m12-x-55/bolt-iso-4017-m12-x-55.webp",
+                "glb": "https://dima-fomin.pl/api/files/downloads/bolt-iso-4017/m12-x-55/exact/bolt-iso-4017-m12-x-55-exact.glb",
+                "formats": [
+                  "step",
+                  "stl",
+                  "3mf",
+                  "glb"
+                ],
+                "differs": [
+                  "length 55 instead of 61"
+                ]
+              },
+              {
+                "id": "bolt-iso-4017--m12-x-70--exact",
+                "name": "Bolt ISO 4017 M12 × 70 — real thread",
+                "url": "https://dima-fomin.pl/en/library/bolt-iso-4017/m12-x-70?option=exact",
+                "standard": "ISO 4017",
+                "size": "M12 × 70",
+                "option": "real thread",
+                "thread": "exact",
+                "dimensions": {
+                  "nominal_diameter_mm": 12,
+                  "thread_pitch_mm": 1.75,
+                  "length_mm": 70,
+                  "overall_mm": [
+                    77.5,
+                    20.8,
+                    18
+                  ]
+                },
+                "image": "https://dima-fomin.pl/api/files/downloads/bolt-iso-4017/m12-x-70/bolt-iso-4017-m12-x-70.webp",
+                "glb": "https://dima-fomin.pl/api/files/downloads/bolt-iso-4017/m12-x-70/exact/bolt-iso-4017-m12-x-70-exact.glb",
+                "formats": [
+                  "step",
+                  "stl",
+                  "3mf",
+                  "glb"
+                ],
+                "differs": [
+                  "length 70 instead of 61"
+                ]
+              },
+              {
+                "id": "bolt-iso-4017--m12-x-50--exact",
+                "name": "Bolt ISO 4017 M12 × 50 — real thread",
+                "url": "https://dima-fomin.pl/en/library/bolt-iso-4017/m12-x-50?option=exact",
+                "standard": "ISO 4017",
+                "size": "M12 × 50",
+                "option": "real thread",
+                "thread": "exact",
+                "dimensions": {
+                  "nominal_diameter_mm": 12,
+                  "thread_pitch_mm": 1.75,
+                  "length_mm": 50,
+                  "overall_mm": [
+                    57.5,
+                    20.8,
+                    18
+                  ]
+                },
+                "image": "https://dima-fomin.pl/api/files/downloads/bolt-iso-4017/m12-x-50/bolt-iso-4017-m12-x-50.webp",
+                "glb": "https://dima-fomin.pl/api/files/downloads/bolt-iso-4017/m12-x-50/exact/bolt-iso-4017-m12-x-50-exact.glb",
+                "formats": [
+                  "step",
+                  "stl",
+                  "3mf",
+                  "glb"
+                ],
+                "differs": [
+                  "length 50 instead of 61"
+                ]
+              }
+            ],
+            "nearest_total": 15,
+            "interpreted": {
+              "families": [
+                "bolt-iso-4017"
+              ],
+              "d": 12,
+              "l": 61,
+              "thread": "exact",
+              "standard": "ISO 4017"
+            },
+            "next_cursor": "5",
+            "notes": [
+              "No geometry has everything asked. The nearest are listed with what differs — none of them is the one asked for.",
+              "Nothing was substituted. Do not offer a nearest model as the one asked for: say what differs and let the person choose."
+            ],
+            "catalog": "2026-11-22.9505be60"
+          },
+          "text": null
+        }
+      ],
+      "pass": true,
+      "observed": "not_found, results [], nearest [('bolt-iso-4017--m12-x-60--exact', ['length 60 instead of 61']), ('bolt-iso-4017--m12-x-65--exact', ['length 65 instead of 61']), ('bolt-iso-4017--m12-x-55--exact', ['length 55 instead of 61'])]"
+    },
+    {
+      "id": "N2",
+      "kind": "negative",
+      "prompt": "I need an ISO 4762 socket head cap screw M48×100.  (the library's ISO 4762 screws end at M36)",
+      "calls": [
+        {
+          "tool": "search_models",
+          "arguments": {
+            "standard": "ISO 4762",
+            "size": "M48",
+            "length": 100
+          },
+          "isError": false,
+          "structuredContent": {
+            "match": "not_found",
+            "total": 0,
+            "results": [],
+            "nearest": [
+              {
+                "id": "screw-iso-4762--m36-x-100--exact",
+                "name": "Cap screw ISO 4762 M36 × 100 — real thread",
+                "url": "https://dima-fomin.pl/en/library/screw-iso-4762/m36-x-100?option=exact",
+                "standard": "ISO 4762",
+                "size": "M36 × 100",
+                "option": "real thread",
+                "thread": "exact",
+                "dimensions": {
+                  "nominal_diameter_mm": 36,
+                  "thread_pitch_mm": 4,
+                  "length_mm": 100,
+                  "overall_mm": [
+                    136,
+                    54,
+                    54
+                  ]
+                },
+                "image": "https://dima-fomin.pl/api/files/downloads/screw-iso-4762/m36-x-100/screw-iso-4762-m36-x-100.webp",
+                "glb": "https://dima-fomin.pl/api/files/downloads/screw-iso-4762/m36-x-100/exact/screw-iso-4762-m36-x-100-exact.glb",
+                "formats": [
+                  "step",
+                  "stl",
+                  "3mf",
+                  "glb"
+                ],
+                "differs": [
+                  "diameter 36 instead of 48"
+                ]
+              },
+              {
+                "id": "screw-iso-4762--m36-x-100--cosmetic",
+                "name": "Cap screw ISO 4762 M36 × 100 — cosmetic thread",
+                "url": "https://dima-fomin.pl/en/library/screw-iso-4762/m36-x-100?option=cosmetic",
+                "standard": "ISO 4762",
+                "size": "M36 × 100",
+                "option": "cosmetic thread",
+                "thread": "cosmetic",
+                "dimensions": {
+                  "nominal_diameter_mm": 36,
+                  "thread_pitch_mm": 4,
+                  "length_mm": 100,
+                  "overall_mm": [
+                    136,
+                    54,
+                    54
+                  ]
+                },
+                "image": "https://dima-fomin.pl/api/files/downloads/screw-iso-4762/m36-x-100/screw-iso-4762-m36-x-100.webp",
+                "glb": "https://dima-fomin.pl/api/files/downloads/screw-iso-4762/m36-x-100/cosmetic/screw-iso-4762-m36-x-100-cosmetic.glb",
+                "formats": [
+                  "step",
+                  "stl",
+                  "3mf",
+                  "glb"
+                ],
+                "differs": [
+                  "diameter 36 instead of 48"
+                ]
+              },
+              {
+                "id": "screw-iso-4762--m36-x-100--print",
+                "name": "Cap screw ISO 4762 M36 × 100 — for 3D printing",
+                "url": "https://dima-fomin.pl/en/library/screw-iso-4762/m36-x-100?option=print",
+                "standard": "ISO 4762",
+                "size": "M36 × 100",
+                "option": "for 3D printing",
+                "thread": "print",
+                "dimensions": {
+                  "nominal_diameter_mm": 36,
+                  "thread_pitch_mm": 4,
+                  "length_mm": 100,
+                  "overall_mm": [
+                    136,
+                    54,
+                    54
+                  ]
+                },
+                "image": "https://dima-fomin.pl/api/files/downloads/screw-iso-4762/m36-x-100/screw-iso-4762-m36-x-100.webp",
+                "glb": "https://dima-fomin.pl/api/files/downloads/screw-iso-4762/m36-x-100/print/screw-iso-4762-m36-x-100-print.glb",
+                "formats": [
+                  "stl",
+                  "3mf",
+                  "glb"
+                ],
+                "differs": [
+                  "diameter 36 instead of 48"
+                ]
+              },
+              {
+                "id": "screw-iso-4762--m30-x-100--exact",
+                "name": "Cap screw ISO 4762 M30 × 100 — real thread",
+                "url": "https://dima-fomin.pl/en/library/screw-iso-4762/m30-x-100?option=exact",
+                "standard": "ISO 4762",
+                "size": "M30 × 100",
+                "option": "real thread",
+                "thread": "exact",
+                "dimensions": {
+                  "nominal_diameter_mm": 30,
+                  "thread_pitch_mm": 3.5,
+                  "length_mm": 100,
+                  "overall_mm": [
+                    130,
+                    45,
+                    45
+                  ]
+                },
+                "image": "https://dima-fomin.pl/api/files/downloads/screw-iso-4762/m30-x-100/screw-iso-4762-m30-x-100.webp",
+                "glb": "https://dima-fomin.pl/api/files/downloads/screw-iso-4762/m30-x-100/exact/screw-iso-4762-m30-x-100-exact.glb",
+                "formats": [
+                  "step",
+                  "stl",
+                  "3mf",
+                  "glb"
+                ],
+                "differs": [
+                  "diameter 30 instead of 48"
+                ]
+              },
+              {
+                "id": "screw-iso-4762--m30-x-100--cosmetic",
+                "name": "Cap screw ISO 4762 M30 × 100 — cosmetic thread",
+                "url": "https://dima-fomin.pl/en/library/screw-iso-4762/m30-x-100?option=cosmetic",
+                "standard": "ISO 4762",
+                "size": "M30 × 100",
+                "option": "cosmetic thread",
+                "thread": "cosmetic",
+                "dimensions": {
+                  "nominal_diameter_mm": 30,
+                  "thread_pitch_mm": 3.5,
+                  "length_mm": 100,
+                  "overall_mm": [
+                    130,
+                    45,
+                    45
+                  ]
+                },
+                "image": "https://dima-fomin.pl/api/files/downloads/screw-iso-4762/m30-x-100/screw-iso-4762-m30-x-100.webp",
+                "glb": "https://dima-fomin.pl/api/files/downloads/screw-iso-4762/m30-x-100/cosmetic/screw-iso-4762-m30-x-100-cosmetic.glb",
+                "formats": [
+                  "step",
+                  "stl",
+                  "3mf",
+                  "glb"
+                ],
+                "differs": [
+                  "diameter 30 instead of 48"
+                ]
+              }
+            ],
+            "nearest_total": 13,
+            "interpreted": {
+              "families": [
+                "screw-iso-4762"
+              ],
+              "d": 48,
+              "l": 100,
+              "standard": "ISO 4762"
+            },
+            "next_cursor": "5",
+            "notes": [
+              "No geometry has everything asked. The nearest are listed with what differs — none of them is the one asked for.",
+              "Nothing was substituted. Do not offer a nearest model as the one asked for: say what differs and let the person choose."
+            ],
+            "catalog": "2026-11-22.9505be60"
+          },
+          "text": null
+        }
+      ],
+      "pass": true,
+      "observed": "not_found, results [], nearest [('screw-iso-4762--m36-x-100--exact', ['diameter 36 instead of 48']), ('screw-iso-4762--m36-x-100--cosmetic', ['diameter 36 instead of 48'])]"
+    },
+    {
+      "id": "N3",
+      "kind": "negative",
+      "prompt": "Download links for model bolt-iso-4017--m12-x-61--exact.  (an id that does not exist — e.g. one an assistant made up)",
+      "calls": [
+        {
+          "tool": "get_download_links",
+          "arguments": {
+            "id": "bolt-iso-4017--m12-x-61--exact"
+          },
+          "isError": true,
+          "structuredContent": null,
+          "text": "{\"error\":\"No model «bolt-iso-4017--m12-x-61--exact».\",\"code\":\"not_found\"}"
+        }
+      ],
+      "pass": true,
+      "observed": "isError True: {\"error\":\"No model «bolt-iso-4017--m12-x-61--exact».\",\"code\":\"not_found\"}"
+    }
+  ]
+}

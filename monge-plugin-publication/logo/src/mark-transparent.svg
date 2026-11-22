@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs><linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E9C66E"/><stop offset="1" stop-color="#B08530"/></linearGradient></defs>
+  <g transform="translate(512 512) scale(1.22) translate(-512 -512)"><path d="M272,732 L272,316 L296,292 L372,292 L512,500 L652,292 L728,292 L752,316 L752,732 L664,732 L664,452 L536,642 L488,642 L360,452 L360,732 Z" fill="url(#gold)"/></g>
+</svg>
