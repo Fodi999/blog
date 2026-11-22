@@ -353,7 +353,7 @@ export const en: Dict = {
     checks: 'Three kinds of confirmation',
     checksText: 'verification.geometry — Monge’s geometry check (the kernel’s body report, STEP read back, STL closed). verification.standard_table — the dimensions come from standards tables checked against two sources; reference data, not a certificate. verification.physical_tests — no physical tests were made.',
     files: 'Files',
-    filesText: 'Every file is a direct public link: GET and HEAD, Content-Length, Range (206), CORS for any site, Repr-Digest with SHA-256. ?download=1 saves the file and counts as a download; a viewer loading a GLB and a HEAD do not. The image is a render of that size’s own geometry (WebP 1200 × 900).',
+    filesText: 'Every file is a direct public link: GET and HEAD, Range (206), the size in Content-Length of a HEAD and in the bytes field (GET is streamed), CORS for any site, Repr-Digest with SHA-256. ?download=1 saves the file and counts as a download; a viewer loading a GLB and a HEAD do not. The image is a render of that size’s own geometry (WebP 1200 × 900).',
     limits: 'Limits',
     limitsText: 'limit — at most 50, then cursor; q — up to 200 characters; answers are cached for 5 minutes. No key needed; please do not poll more often than you need.',
     ai: 'For AI assistants',

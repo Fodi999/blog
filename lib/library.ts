@@ -1,7 +1,7 @@
 import { getEnv } from '@/lib/cf';
 import type { Locale } from '@/lib/i18n';
 import seedJson from '@/data/library.json';
-import { downloadsOf, ensureDownloads } from '@/lib/downloads';
+import { downloadsOf, ensureDownloads, within } from '@/lib/downloads';
 import type { Dimension } from '@/components/ModelViewer';
 
 export type Category = 'reinforcement' | 'fasteners' | 'bearings' | 'shafts';
@@ -80,7 +80,7 @@ async function listed(): Promise<LibraryItem[]> {
   const { DB } = await getEnv();
   if (DB) {
     try {
-      const { results } = await DB.prepare('SELECT slug, data, published FROM items').all<Row>();
+      const { results } = await within(DB.prepare('SELECT slug, data, published FROM items').all<Row>(), 5_000, 'D1 items');
       const rows = new Map(results.map((r) => [r.slug, r]));
       const items: LibraryItem[] = [];
       for (const seed of seedItems) {

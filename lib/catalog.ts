@@ -288,6 +288,12 @@ export function search(q: Query): SearchResult {
   if (!asked) return { match: 'browse', query: q, total: 0, results: [], notes: ['Nothing in the query names a part or a size: try «ISO 4017 M12x60», «6204-2RS», «rebar Ø16».'] };
   let pool = allEntries();
   if (!q.families.length && q.d != null && !q.bearing && !q.km) pool = pool.filter((e) => SIZE_FAMILIES.includes(e.item.slug));
+  // a standard alone names the part it is the main standard of (ISO 4017 → the bolt, not the joint that also uses it);
+  // a standard that is no part's main one (ISO 261, ISO 7089 in a joint) still finds every part built by it
+  if (q.standard && !q.families.length) {
+    const main = pool.filter((e) => (e.item.standards?.[0] ?? '').replace(/\s+/g, ' ').toUpperCase() === q.standard);
+    if (main.length) pool = main;
+  }
   const scored = pool.map((e) => ({ entry: e, ...compare(e, q) })).filter((x) => x.score > -1e8);
   const exact = scored.filter((x) => x.ok).sort((a, b) => b.score - a.score);
   if (exact.length) return { match: 'exact', query: q, total: exact.length, results: exact.map((x) => ({ entry: x.entry, diff: [] })), notes };

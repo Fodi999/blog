@@ -353,7 +353,7 @@ export const pl: Dict = {
     checks: 'Trzy rodzaje potwierdzenia',
     checksText: 'verification.geometry — kontrola geometrii Monge (raport jądra o bryle, STEP odczytany ponownie, STL zamknięty). verification.standard_table — wymiary z tablic norm sprawdzonych w dwóch źródłach; dane informacyjne, nie certyfikat. verification.physical_tests — badań fizycznych nie było.',
     files: 'Pliki',
-    filesText: 'Każdy plik ma bezpośredni publiczny link: GET i HEAD, Content-Length, Range (206), CORS dla każdej strony, Repr-Digest z SHA-256. ?download=1 zapisuje plik i liczy się jako pobranie; wczytanie GLB w przeglądarce 3D i HEAD nie są pobraniami. Obraz — render geometrii tego rozmiaru (WebP 1200 × 900).',
+    filesText: 'Każdy plik ma bezpośredni publiczny link: GET i HEAD, Range (206), rozmiar w Content-Length odpowiedzi HEAD i w polu bytes (GET jest strumieniowany), CORS dla każdej strony, Repr-Digest z SHA-256. ?download=1 zapisuje plik i liczy się jako pobranie; wczytanie GLB w przeglądarce 3D i HEAD nie są pobraniami. Obraz — render geometrii tego rozmiaru (WebP 1200 × 900).',
     limits: 'Ograniczenia',
     limitsText: 'limit — najwyżej 50, dalej cursor; q — do 200 znaków; odpowiedzi są buforowane 5 minut. Klucz nie jest potrzebny; prosimy nie odpytywać API częściej, niż trzeba.',
     ai: 'Dla asystentów AI',

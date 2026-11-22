@@ -15,7 +15,8 @@
     "db:migrate": "wrangler d1 migrations apply monge --remote",
     "db:seed": "node scripts/seed-sql.mjs && wrangler d1 execute monge --remote --file migrations/0002_seed.sql",
     "files:upload": "bash scripts/upload-r2.sh",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "warm": "node scripts/warm.mjs"
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",

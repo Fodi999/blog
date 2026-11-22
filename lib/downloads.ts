@@ -60,13 +60,16 @@ export class CatalogUnavailable extends Error {
 
 let all: Record<string, Family> = {};
 let loaded: { source: 'r2' | 'edge-cache' | 'file'; at: string; ms: number } | null = null;
-let loading: Promise<void> | null = null;
 let failedAt = 0;
 /** Bumped on every load: what is built from the data (lib/catalog) is rebuilt when it changes. */
 export let generation = 0;
 
 const EDGE_KEY = `https://catalog.monge.invalid/${CATALOG.sha256}`;
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+/** A read that does not answer in `ms` counts as failed (a hung remote binding in a build must not hang the build). */
+export function within<T>(p: Promise<T>, ms: number, what: string): Promise<T> {
+  return Promise.race([p, new Promise<T>((_, reject) => setTimeout(() => reject(new Error(`${what}: no answer in ${ms} ms`)), ms))]);
+}
 
 async function sha256(buf: ArrayBuffer): Promise<string> {
   const d = new Uint8Array(await crypto.subtle.digest('SHA-256', buf));
@@ -83,8 +86,8 @@ async function fromR2(): Promise<ArrayBuffer | null> {
   for (const wait of [0, 150, 400]) {
     if (wait) await sleep(wait);
     try {
-      const o = await FILES.get(key);
-      if (o) return await new Response(o.body).arrayBuffer();
+      const o = await within(FILES.get(key), 5_000, 'R2 get');
+      if (o) return await within(new Response(o.body).arrayBuffer(), 10_000, 'R2 body');
       return null; // not there: trying again will not put it there
     } catch (error) {
       console.warn('[catalogue] R2 read failed', error);
@@ -114,46 +117,45 @@ async function fromFile(): Promise<ArrayBuffer | null> {
   }
 }
 
-/** Every entry point calls this before it reads the catalogue (pages, API, files, sitemap). */
+/** Every entry point calls this before it reads the catalogue (pages, API, files, sitemap).
+    Only the loaded catalogue is shared between requests — never a load in progress: on Workers a promise belongs
+    to the request that made it, and when that request ends (or is cut off for its CPU time) the promise never
+    settles, so every later request waiting on it would fail until the instance is gone. Two requests that meet an
+    empty instance at once each load it. */
 export async function ensureDownloads(): Promise<void> {
   if (loaded) return;
   if (failedAt && Date.now() - failedAt < 5_000) throw new CatalogUnavailable('failed moments ago');
-  if (!loading) {
-    loading = (async () => {
-      const t0 = Date.now();
-      const tried: string[] = [];
-      for (const [source, get] of [['r2', fromR2], ['edge-cache', fromEdge], ['file', fromFile]] as const) {
-        const buf = await get();
-        if (!buf) {
-          tried.push(`${source}: none`);
-          continue;
-        }
-        const sum = await sha256(buf);
-        if (sum !== CATALOG.sha256) {
-          tried.push(`${source}: sha256 ${sum.slice(0, 12)} ≠ ${CATALOG.sha256.slice(0, 12)}`);
-          continue;
-        }
-        all = JSON.parse(new TextDecoder().decode(buf)) as Record<string, Family>;
-        generation++;
-        loaded = { source, at: new Date().toISOString(), ms: Date.now() - t0 };
-        failedAt = 0;
-        if (source === 'r2') {
-          // keep a copy at this location for the day R2 does not answer
-          try {
-            await edge()?.put(EDGE_KEY, new Response(buf, { headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=31536000, immutable' } }));
-          } catch {
-            // no cache here (next dev): fine
-          }
-        }
-        return;
+  const t0 = Date.now();
+  const tried: string[] = [];
+  for (const [source, get] of [['r2', fromR2], ['edge-cache', fromEdge], ['file', fromFile]] as const) {
+    const buf = await get();
+    if (loaded) return; // another request finished first
+    if (!buf) {
+      tried.push(`${source}: none`);
+      continue;
+    }
+    const sum = await sha256(buf);
+    if (sum !== CATALOG.sha256) {
+      tried.push(`${source}: sha256 ${sum.slice(0, 12)} ≠ ${CATALOG.sha256.slice(0, 12)}`);
+      continue;
+    }
+    if (loaded) return;
+    all = JSON.parse(new TextDecoder().decode(buf)) as Record<string, Family>;
+    generation++;
+    loaded = { source, at: new Date().toISOString(), ms: Date.now() - t0 };
+    failedAt = 0;
+    if (source === 'r2') {
+      // keep a copy at this location for the day R2 does not answer
+      try {
+        await edge()?.put(EDGE_KEY, new Response(buf, { headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=31536000, immutable' } }));
+      } catch {
+        // no cache here (next dev): fine
       }
-      failedAt = Date.now();
-      throw new CatalogUnavailable(tried.join('; '));
-    })().finally(() => {
-      loading = null;
-    });
+    }
+    return;
   }
-  await loading;
+  failedAt = Date.now();
+  throw new CatalogUnavailable(tried.join('; '));
 }
 
 /** What the worker serves: the catalogue's version and where this worker got it from. */

@@ -9,7 +9,7 @@
 ## Catalogue API (JSON, read-only, no key, CORS open)
 
 - [API index](https://dima-fomin.pl/api/v1): what there is
-- [Search](https://dima-fomin.pl/api/v1/models?q=ISO%204017%20M12x60%20real%20thread%20STEP): `q` in English, Polish or Russian («M12x60», «6204-2RS», «rebar Ø16»); filters `size`, `length`, `thread` (cosmetic | exact | print), `format` (step | stl | 3mf | glb), `standard`, `category`, `locale`, `limit` ≤ 50, `cursor`. `match: "exact"` or `"not_found"` with the nearest and what `differs`.
+- [Search](https://dima-fomin.pl/api/v1/models?q=ISO%204017%20M12x60%20real%20thread%20STEP): `q` in English, Polish or Russian («M12x60», «6204-2RS», «rebar Ø16»); filters `size`, `length`, `thread` (cosmetic | exact | print), `format` (step | stl | 3mf | glb — each result then has that format's `file`), `standard` (a part's main standard: ISO 4017 → the bolt), `category`, `locale`, `limit` ≤ 50, `cursor`. `match: "exact"` or `"not_found"` with the nearest and what `differs`.
 - [One model](https://dima-fomin.pl/api/v1/models/bolt-iso-4017--m12-x-60--exact): id = part--size--option; dimensions, standard, thread, mass, checks, image, GLB, files with SHA-256, licence
 - [Catalogue index](https://dima-fomin.pl/api/v1/catalog): families; `?family=<id>` — its sizes
 - [Documentation](https://dima-fomin.pl/en/developers)
@@ -25,5 +25,5 @@
 
 ## Using the files
 
-Give people the model's page (`url`) and the direct file link. Files answer GET and HEAD with Content-Length, Range
-and a SHA-256 `Repr-Digest`; `?download=1` saves and counts a download. Languages: /en, /pl, /ru.
+Give people the model's page (`url`) and the direct file link. Files answer GET and HEAD with Range (206) and a SHA-256
+`Repr-Digest`; the size is in Content-Length of HEAD and in `bytes` of the record (GET is streamed); `?download=1` saves and counts a download. Languages: /en, /pl, /ru.

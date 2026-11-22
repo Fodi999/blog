@@ -1,4 +1,5 @@
 import { getEnv } from '@/lib/cf';
+import { within } from '@/lib/downloads';
 
 /* The public counters of the site: downloads of the library's files (D1 `downloads`: a number per file, nothing about
    the visitor) and who is on the site now (D1 `presence`: a random number per open page, seen in the last minute).
@@ -32,7 +33,7 @@ async function allCounts(): Promise<Map<string, number> | null> {
   const { DB } = await getEnv();
   if (!DB) return null;
   try {
-    const { results } = await DB.prepare("SELECT key, count FROM downloads WHERE key LIKE 'downloads/%'").all<{ key: string; count: number }>();
+    const { results } = await within(DB.prepare("SELECT key, count FROM downloads WHERE key LIKE 'downloads/%'").all<{ key: string; count: number }>(), 5_000, 'D1 downloads');
     counts = { at: Date.now(), byKey: new Map(results.map((r) => [r.key, r.count])) };
     return counts.byKey;
   } catch {

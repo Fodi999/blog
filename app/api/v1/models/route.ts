@@ -62,7 +62,12 @@ function search_(request: Request) {
     interpreted,
     match: r.match,
     total: r.total,
-    results: page.map((x) => ({ ...record(x.entry, locale), ...(x.diff.length ? { differs: x.diff } : {}) })),
+    // with format asked, `file` is that format's file of the result (all formats stay in `files`)
+    results: page.map((x) => {
+      const rec = record(x.entry, locale);
+      const file = query.format ? rec.files.find((f) => f.format === query.format) : undefined;
+      return { ...rec, ...(file ? { file } : {}), ...(x.diff.length ? { differs: x.diff } : {}) };
+    }),
     next_cursor: cursor + limit < r.total ? String(cursor + limit) : null,
     notes: r.notes,
   });
