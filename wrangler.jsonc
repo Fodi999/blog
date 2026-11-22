@@ -11,6 +11,10 @@
 		// Lead notifications (the Resend key is a secret: npx wrangler secret put RESEND_API_KEY)
 		"LEAD_EMAIL_TO": "fodi85999@gmail.com"
 	},
+	// Workers Paid (since 2026-11-22): CPU time per request. A page takes 50–600 ms, the free plan's 10 ms cut them off.
+	"limits": {
+		"cpu_ms": 30000
+	},
 	// The public MCP server (/mcp): requests per client address per minute
 	"ratelimits": [
 		{
