@@ -1,5 +1,5 @@
+import { getEnv } from '@/lib/cf';
 import type { Locale } from '@/lib/i18n';
-import data from '@/data/downloads.json';
 
 /* The library as downloadable files (R2, under downloads/). One PAGE per size — its own address
    /library/<slug>/<page> — and on it the OPTIONS that change the geometry (thread cosmetic / real, a bearing's
@@ -41,7 +41,54 @@ export type DlPage = {
   options: DlOption[];
 };
 
-const all = data as unknown as Record<string, { checked: string; version: string; pages: DlPage[] }>;
+type Family = { checked: string; version: string; pages: DlPage[] };
+
+/* The data lives in R2 (catalog/downloads.json, put there by `npm run catalog:upload` before every deploy) — not in
+   the worker's code, which it would outgrow. A worker reads it once and keeps it for TTL; a failed re-read keeps
+   the copy it has. The build and a plain `next dev` read the same file from the repository. */
+export const CATALOG_KEY = 'catalog/downloads.json';
+const TTL = 5 * 60_000;
+let all: Record<string, Family> = {};
+let loadedAt = 0;
+let loading: Promise<void> | null = null;
+/** Bumped on every load: what is built from the data (lib/catalog) is rebuilt when it changes. */
+export let generation = 0;
+
+async function read(): Promise<Record<string, Family> | null> {
+  try {
+    const { FILES } = await getEnv();
+    const o = FILES ? await FILES.get(CATALOG_KEY) : null;
+    if (o) return (await new Response(o.body).json()) as Record<string, Family>;
+  } catch (error) {
+    console.warn('[downloads] R2 unavailable', error);
+  }
+  try {
+    // the repository's file (the build, plain next dev); the path is put together so the bundler leaves it out
+    const fs = await import('node:fs/promises');
+    const file = process.env.MONGE_CATALOG_FILE ?? [process.cwd(), 'data', 'downloads.json'].join('/');
+    return JSON.parse(await fs.readFile(file, 'utf8')) as Record<string, Family>;
+  } catch {
+    return null;
+  }
+}
+
+/** Every entry point calls this before it reads the catalogue (pages, API, files, sitemap). */
+export async function ensureDownloads(): Promise<void> {
+  if (loadedAt && Date.now() - loadedAt < TTL) return;
+  if (!loading) {
+    loading = (async () => {
+      const d = await read();
+      if (d) {
+        all = d;
+        generation++;
+      }
+      loadedAt = Date.now();
+    })().finally(() => {
+      loading = null;
+    });
+  }
+  await loading;
+}
 
 export function downloadsOf(slug: string) {
   return all[slug];
@@ -74,7 +121,9 @@ export function fileKey(slug: string, page: string, option: string, f: DlFormat)
   return `downloads/${slug}/${page}/${option}/${slug}-${page}-${option}.${f}`;
 }
 
-export const totals = {
-  pages: Object.values(all).reduce((n, x) => n + x.pages.length, 0),
-  geometries: Object.values(all).reduce((n, x) => n + x.pages.reduce((m, p) => m + p.options.length, 0), 0),
-};
+export function totals() {
+  return {
+    pages: Object.values(all).reduce((n, x) => n + x.pages.length, 0),
+    geometries: Object.values(all).reduce((n, x) => n + x.pages.reduce((m, p) => m + p.options.length, 0), 0),
+  };
+}

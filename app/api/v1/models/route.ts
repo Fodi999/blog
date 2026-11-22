@@ -1,6 +1,6 @@
 import { json, localeOf, options, problem } from '@/lib/api';
 import { parseQuery, record, search, type Query } from '@/lib/catalog';
-import type { DlFormat } from '@/lib/downloads';
+import { ensureDownloads, type DlFormat } from '@/lib/downloads';
 
 const MAX_LIMIT = 50;
 const THREADS = ['cosmetic', 'exact', 'print'];
@@ -9,7 +9,8 @@ const FORMATS = ['step', 'stl', '3mf', 'glb'];
 /** GET /api/v1/models?q=&standard=&category=&size=&length=&thread=&format=&locale=&limit=&cursor=
     The geometries that have everything asked (match: "exact"), or — none — match: "not_found" and the nearest, each
     with what differs. Filters override what q says. */
-export function GET(request: Request) {
+export async function GET(request: Request) {
+  await ensureDownloads();
   const u = new URL(request.url);
   const p = (k: string) => u.searchParams.get(k)?.trim() || null;
   const q = p('q') ?? '';

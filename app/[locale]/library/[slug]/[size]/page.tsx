@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { PartConfigurator } from '@/components/PartConfigurator';
 import { Eyebrow } from '@/components/sections';
-import { allPages, clientPages, downloadsOf, pageOf, text, type DlPage } from '@/lib/downloads';
+import { allPages, clientPages, downloadsOf, ensureDownloads, pageOf, text, type DlPage } from '@/lib/downloads';
 import { record } from '@/lib/catalog';
 import { fill, getDict, isLocale, locales, localPath, type Locale } from '@/lib/i18n';
 import { getItem } from '@/lib/library';
@@ -18,7 +18,8 @@ export const dynamicParams = true;
 
 // One size of each part per language is built ahead (an empty list made every size answer 404 in production); the
 // others are rendered on their first visit and cached.
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  await ensureDownloads();
   const slugs = Array.from(new Set(allPages().map((p) => p.slug)));
   return locales.flatMap((locale) => slugs.map((slug) => ({ locale, slug, size: downloadsOf(slug)!.pages[0].id })));
 }

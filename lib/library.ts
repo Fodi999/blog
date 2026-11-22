@@ -1,7 +1,7 @@
 import { getEnv } from '@/lib/cf';
 import type { Locale } from '@/lib/i18n';
 import seedJson from '@/data/library.json';
-import { downloadsOf } from '@/lib/downloads';
+import { downloadsOf, ensureDownloads } from '@/lib/downloads';
 import type { Dimension } from '@/components/ModelViewer';
 
 export type Category = 'reinforcement' | 'fasteners' | 'bearings' | 'shafts';
@@ -56,8 +56,10 @@ export type LibraryItem = {
 
 /* Built-in catalogue (data/library.json). It is also the seed of the D1 table
    (npm run db:seed) and the fallback while the database is empty or unreachable. */
-/** A generator's count is the number of its sizes to download (pages of data/downloads.json). */
-export const seedItems = (seedJson as unknown as LibraryItem[]).map((i) => ({ ...i, configs: downloadsOf(i.slug)?.pages.length ?? i.configs }));
+export const seedItems = seedJson as unknown as LibraryItem[];
+
+/** A generator's count is the number of its sizes to download (pages of the catalogue's data). */
+const withCounts = (items: LibraryItem[]) => items.map((i) => ({ ...i, configs: downloadsOf(i.slug)?.pages.length ?? i.configs }));
 
 type Row = { slug: string; data: string; published: number };
 
@@ -65,6 +67,11 @@ type Row = { slug: string; data: string; published: number };
     library; a D1 row may change an item's text or hide it (published = 0), but a row whose item left the catalogue
     is not shown. Without the database — the catalogue. */
 export async function getItems(): Promise<LibraryItem[]> {
+  await ensureDownloads();
+  return withCounts(await listed());
+}
+
+async function listed(): Promise<LibraryItem[]> {
   const { DB } = await getEnv();
   if (DB) {
     try {
@@ -74,7 +81,7 @@ export async function getItems(): Promise<LibraryItem[]> {
       for (const seed of seedItems) {
         const r = rows.get(seed.slug);
         if (!r) items.push(seed);
-        else if (r.published === 1) items.push({ ...seed, ...(JSON.parse(r.data) as LibraryItem), configs: seed.configs });
+        else if (r.published === 1) items.push({ ...seed, ...(JSON.parse(r.data) as LibraryItem) });
       }
       return items;
     } catch (error) {

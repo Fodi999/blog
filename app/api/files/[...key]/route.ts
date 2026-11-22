@@ -1,5 +1,5 @@
 import { getEnv, type R2Range } from '@/lib/cf';
-import { FORMATS, downloadsOf } from '@/lib/downloads';
+import { FORMATS, downloadsOf, ensureDownloads } from '@/lib/downloads';
 import { getItems } from '@/lib/library';
 
 const TYPES: Record<string, string> = {
@@ -77,6 +77,7 @@ async function serve(request: Request, params: Promise<{ key: string[] }>, head:
   headers.set('etag', meta.httpEtag);
   headers.set('accept-ranges', 'bytes');
   headers.set('cache-control', 'public, max-age=86400, stale-while-revalidate=604800');
+  if (key.startsWith('downloads/')) await ensureDownloads();
   const d = digest(key);
   if (d) headers.set('repr-digest', `sha-256=:${d}:`);
   const url = new URL(request.url);

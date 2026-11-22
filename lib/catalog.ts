@@ -1,4 +1,4 @@
-import { downloadsOf, fileKey, FORMATS, text, type DlFormat, type DlOption, type DlPage } from '@/lib/downloads';
+import { downloadsOf, fileKey, FORMATS, generation, text, type DlFormat, type DlOption, type DlPage } from '@/lib/downloads';
 import type { Locale } from '@/lib/i18n';
 import { seedItems, type LibraryItem } from '@/lib/library';
 import { SITE_URL } from '@/lib/seo';
@@ -27,10 +27,12 @@ type Facts = { d?: number; pitch?: number; l?: number; grip?: number; D?: number
 export type Entry = { item: LibraryItem; page: DlPage; opt: DlOption & { facts?: Facts; sha?: (string | null)[]; params?: Record<string, unknown> } };
 
 let entries: Entry[] | null = null;
+let builtFor = -1;
 
-/** Every geometry of the library (built once per worker). */
+/** Every geometry of the library (built once per load of the data; call ensureDownloads first). */
 export function allEntries(): Entry[] {
-  if (entries) return entries;
+  if (entries && builtFor === generation) return entries;
+  builtFor = generation;
   entries = [];
   for (const item of seedItems) {
     const dl = downloadsOf(item.slug);

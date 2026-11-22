@@ -1,12 +1,13 @@
 import { json, localeOf, options, problem } from '@/lib/api';
 import { modelId } from '@/lib/catalog';
-import { downloadsOf, text } from '@/lib/downloads';
+import { downloadsOf, ensureDownloads, text } from '@/lib/downloads';
 import { seedItems } from '@/lib/library';
 import { SITE_URL } from '@/lib/seo';
 
 /** GET /api/v1/catalog — the families and how many sizes and models each has; ?family=<id> — its sizes, each with
     its page and the ids of its models. */
-export function GET(request: Request) {
+export async function GET(request: Request) {
+  await ensureDownloads();
   const u = new URL(request.url);
   const locale = localeOf(u.searchParams.get('locale'));
   const family = u.searchParams.get('family');
