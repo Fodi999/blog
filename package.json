@@ -17,7 +17,8 @@
     "files:upload": "bash scripts/upload-r2.sh",
     "typecheck": "tsc --noEmit",
     "warm": "node scripts/warm.mjs",
-    "build:mcp-viewer": "node scripts/build-mcp-viewer.mjs"
+    "build:mcp-viewer": "node scripts/build-mcp-viewer.mjs",
+    "plugin:claude": "bash scripts/build-claude-plugin.sh"
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",
