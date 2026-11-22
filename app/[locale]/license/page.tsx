@@ -2,9 +2,10 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { PageHero } from '@/components/sections';
 import { getDict, isLocale, type Locale } from '@/lib/i18n';
-import { pageMetadata } from '@/lib/seo';
+import { EMAIL, pageMetadata } from '@/lib/seo';
 
-const CONTACT = 'kontakt@dima-fomin.pl';
+// the author's mailbox (kontakt@dima-fomin.pl had no mail server)
+const CONTACT = EMAIL;
 
 /* The licence of the files downloaded from the Monge library (STEP, STL, 3MF, GLB). */
 const copy: Record<Locale, { lead: string; sections: { title: string; body: React.ReactNode }[] }> = {

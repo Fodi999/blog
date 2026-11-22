@@ -117,6 +117,10 @@ export default async function McpPage({ params }: { params: Promise<{ locale: st
               {localPath(locale, '/license')}
             </Link>{' '}
             ·{' '}
+            <Link href={localPath(locale, '/terms')} className={link}>
+              {localPath(locale, '/terms')}
+            </Link>{' '}
+            ·{' '}
             <Link href={localPath(locale, '/contact')} className={link}>
               {localPath(locale, '/contact')}
             </Link>

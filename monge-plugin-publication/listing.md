@@ -78,10 +78,10 @@ Tylko odczyt, bez konta. Pliki są bezpłatne, także do użytku komercyjnego; n
 | Authentication | none | — |
 | Website | https://dima-fomin.pl | live |
 | Documentation | https://dima-fomin.pl/en/mcp (also /ru/mcp, /pl/mcp) | live |
-| Privacy policy | https://dima-fomin.pl/en/privacy | live — **does not mention the MCP server yet**, see `legal/site-pages-check.md` |
+| Privacy policy | https://dima-fomin.pl/en/privacy | live, with a section on Monge MCP and the catalogue API |
 | Licence of the files | https://dima-fomin.pl/en/license | live |
-| Terms of use | — | **missing** (/terms is 404); draft in `legal/terms-draft.md` |
-| Support contact | see `legal/site-pages-check.md` | **kontakt@dima-fomin.pl does not receive mail** (no MX record) |
+| Terms of use | https://dima-fomin.pl/en/terms | live (also /ru/terms, /pl/terms) |
+| Support contact | the author's email from https://dima-fomin.pl/en/contact | the same address now on privacy, licence and terms |
 | Logo | `logo/monge-cad-1024.png`, `logo/monge-cad-128.png` | ready |
 | Suggested category | Productivity (or Design / Developer tools, whichever the form offers) | your choice |
 

@@ -28,6 +28,7 @@
 - [For 3D printing](https://dima-fomin.pl/en/library/print): bolts, screws and nuts with a print thread allowance
 - [A size page, e.g.](https://dima-fomin.pl/en/library/bolt-iso-4017/m12-x-60): one size with its 3D view and files
 - [Licence](https://dima-fomin.pl/en/license)
+- [Terms of use](https://dima-fomin.pl/en/terms) · [Privacy](https://dima-fomin.pl/en/privacy)
 - [Kernel and its test protocol](https://dima-fomin.pl/en/kernel)
 
 ## Using the files
