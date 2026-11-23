@@ -1,4 +1,5 @@
 import { getEnv } from '@/lib/cf';
+import { isProductionHost } from '@/lib/hosts';
 import { ONLINE_WINDOW, siteStats } from '@/lib/stats';
 
 export const dynamic = 'force-dynamic';
@@ -6,7 +7,8 @@ export const dynamic = 'force-dynamic';
 const ID = /^[0-9a-f-]{36}$/;
 
 /* POST {id}: an open page says it is open (its random id, made in its memory — not a cookie, not kept on the device,
-   no IP stored); the answer is the public counters: who is on the site in the last minute, downloads in all.
+   no IP stored); the answer is the public counters: who is on the site in the last minute, downloads in all. A page open
+   on a preview address or localhost is a test: it is not counted as someone on the site.
    GET: the counters only. */
 export async function POST(request: Request) {
   const { DB } = await getEnv();
@@ -16,7 +18,7 @@ export async function POST(request: Request) {
   } catch {
     // no body — just the counters
   }
-  if (DB && ID.test(id)) {
+  if (DB && ID.test(id) && isProductionHost(new URL(request.url).hostname)) {
     const now = Math.floor(Date.now() / 1000);
     try {
       await DB.prepare('INSERT INTO presence (id, seen) VALUES (?, ?) ON CONFLICT(id) DO UPDATE SET seen = excluded.seen').bind(id, now).run();

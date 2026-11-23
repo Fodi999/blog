@@ -1,6 +1,8 @@
 import { getEnv, type R2Range } from '@/lib/cf';
 import { FORMATS, downloadsOf, ensureDownloads } from '@/lib/downloads';
 import { getItems } from '@/lib/library';
+import { isProductionHost } from '@/lib/hosts';
+import { textureSha } from '@/lib/textures';
 
 const TYPES: Record<string, string> = {
   glb: 'model/gltf-binary',
@@ -15,12 +17,15 @@ const TYPES: Record<string, string> = {
   jpg: 'image/jpeg',
   jpeg: 'image/jpeg',
   dmg: 'application/x-apple-diskimage',
+  zip: 'application/zip',
 };
 
 const OPEN_CORS = { 'access-control-allow-origin': '*', 'access-control-allow-methods': 'GET, HEAD, OPTIONS', 'access-control-allow-headers': 'range', 'access-control-expose-headers': 'content-length, content-range, accept-ranges, etag, repr-digest' };
 
 /** SHA-256 of a library file (from the catalogue: downloads/<slug>/<page>/<option>/<file>), base64 for Repr-Digest. */
 function digest(key: string): string | null {
+  const tex = key.startsWith('textures/') ? textureSha(key) : undefined;
+  if (tex) return btoa(String.fromCharCode(...tex.match(/../g)!.map((h) => parseInt(h, 16))));
   const m = /^downloads\/([a-z0-9-]+)\/([a-z0-9_-]+)\/([a-z0-9-]+)\/[^/]+\.([a-z0-9]+)$/.exec(key);
   if (!m) return null;
   const page = downloadsOf(m[1])?.pages.find((p) => p.id === m[2]);
@@ -49,8 +54,8 @@ function rangeOf(h: string | null, size: number): { r: R2Range; start: number; e
   return { r: { offset: start, length: end - start + 1 }, start, end };
 }
 
-/* Files from the R2 bucket. Anything under "public/" or "downloads/" (the library's free models: STEP, STL, 3MF, GLB
-   and the renders of every size) and every library file marked "free" is served to everyone — GET, HEAD, ranges,
+/* Files from the R2 bucket. Anything under "public/", "downloads/" (the library's free models: STEP, STL, 3MF, GLB
+   and the renders of every size) or "textures/" (the texture library's archives and previews) and every library file marked "free" is served to everyone — GET, HEAD, ranges,
    CORS open; Pro files answer 402 until the licence service is connected. `?download=1` saves the file (attachment)
    and counts it in D1 `downloads` (key and a number — nothing about the visitor); a viewer loading a GLB, a HEAD or
    a range is not a download. */
@@ -59,7 +64,8 @@ async function serve(request: Request, params: Promise<{ key: string[] }>, head:
   const key = parts.map(decodeURIComponent).join('/');
   if (!key || key.includes('..')) return new Response('Not found', { status: 404 });
 
-  const open = key.startsWith('public/') || key.startsWith('downloads/');
+  // textures/: the texture library — Monge's own generated surfaces, free like the models
+  const open = key.startsWith('public/') || key.startsWith('downloads/') || key.startsWith('textures/');
   const file = open ? undefined : (await getItems()).flatMap((i) => i.files).find((f) => f.href === key || f.href === `/api/files/${key}`);
   const isPublic = open || file?.access === 'free';
   if (!isPublic) {
@@ -82,7 +88,7 @@ async function serve(request: Request, params: Promise<{ key: string[] }>, head:
   headers.set('accept-ranges', 'bytes');
   headers.set('cache-control', 'public, max-age=86400, stale-while-revalidate=604800');
   // the checksum comes from the catalogue; without it (unreachable) the file is still served, only without the digest
-  let d: string | null = null;
+  let d: string | null = key.startsWith('textures/') ? digest(key) : null;
   if (key.startsWith('downloads/')) {
     try {
       await ensureDownloads();
@@ -115,9 +121,15 @@ async function serve(request: Request, params: Promise<{ key: string[] }>, head:
   const object = await FILES.get(key);
   if (!object) return new Response('Not found', { status: 404, headers });
   headers.set('content-length', String(meta.size));
-  if (save && DB && key.startsWith('downloads/')) {
+  // models (downloads/) and textures (textures/) are counted; a download from a preview address or localhost is a test:
+  // it goes to downloads_test with its host, never into the site's counters
+  if (save && DB && (key.startsWith('downloads/') || key.startsWith('textures/'))) {
     try {
-      await DB.prepare("INSERT INTO downloads (key, count, last_at) VALUES (?, 1, datetime('now')) ON CONFLICT(key) DO UPDATE SET count = count + 1, last_at = excluded.last_at").bind(key).run();
+      if (isProductionHost(url.hostname)) {
+        await DB.prepare("INSERT INTO downloads (key, count, last_at) VALUES (?, 1, datetime('now')) ON CONFLICT(key) DO UPDATE SET count = count + 1, last_at = excluded.last_at").bind(key).run();
+      } else {
+        await DB.prepare("INSERT INTO downloads_test (key, host, count, last_at) VALUES (?, ?, 1, datetime('now')) ON CONFLICT(key, host) DO UPDATE SET count = count + 1, last_at = excluded.last_at").bind(key, url.hostname).run();
+      }
     } catch (error) {
       console.warn('[files] download not counted', error);
     }

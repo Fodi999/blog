@@ -1,0 +1,62 @@
+[
+ {
+  "slug": "monge-brushed-steel",
+  "version": "v2",
+  "files": [
+   {
+    "res": "1k",
+    "px": 1024,
+    "key": "textures/monge-brushed-steel/v2/monge-brushed-steel-1k.zip",
+    "bytes": 1075657,
+    "sha256": "a1c2b006ea9af512ed4c2d9be15e910075ab8f3188f426cdb3be987ecdc99d6d",
+    "octaves": 1,
+    "generate_ms": 45,
+    "write_ms": 15,
+    "rough_avg": 0.35,
+    "relief_um": 18.0
+   },
+   {
+    "res": "2k",
+    "px": 2048,
+    "key": "textures/monge-brushed-steel/v2/monge-brushed-steel-2k.zip",
+    "bytes": 2881215,
+    "sha256": "91f6cd2805f51dec3679cea5934731f480601ab26b918483963452ead0eb5fc5",
+    "octaves": 2,
+    "generate_ms": 108,
+    "write_ms": 38,
+    "rough_avg": 0.35,
+    "relief_um": 18.3
+   },
+   {
+    "res": "4k",
+    "px": 4096,
+    "key": "textures/monge-brushed-steel/v2/monge-brushed-steel-4k.zip",
+    "bytes": 7201891,
+    "sha256": "796a99035fc0887ad4448b633e20b74562c21a91e695d0b683b9710130e3b04c",
+    "octaves": 3,
+    "generate_ms": 493,
+    "write_ms": 148,
+    "rough_avg": 0.35,
+    "relief_um": 20.3
+   }
+  ],
+  "name": "Monge brushed steel",
+  "category": "metal",
+  "tile_mm": 40.0,
+  "base": [
+   0.5600000023841858,
+   0.5699999928474426,
+   0.5799999833106995
+  ],
+  "metal": 1.0,
+  "rough_avg": 0.35,
+  "normal_rms": 0.05,
+  "assets": {
+   "normal_gl": "textures/monge-brushed-steel/v2/live/normal_gl.png",
+   "roughness": "textures/monge-brushed-steel/v2/live/roughness.png",
+   "render_monge": "textures/monge-brushed-steel/v2/render-monge.webp",
+   "render_three": "textures/monge-brushed-steel/v2/render-three.webp",
+   "tile": "textures/monge-brushed-steel/v2/tile.webp"
+  }
+ }
+]

@@ -98,8 +98,5 @@ export function runUiTest() {
   };
 }
 
-/** The diagnostic tool and view exist only off production: production answers at dima-fomin.pl through the Worker's
-    own workers.dev name; tests use preview addresses (and localhost). */
-export function isProductionHost(hostname: string) {
-  return hostname === 'blog.fodi85999.workers.dev' || hostname === 'dima-fomin.pl' || hostname.endsWith('.dima-fomin.pl');
-}
+/** The diagnostic tool and view exist only off production (lib/hosts.ts). */
+export { isProductionHost } from '@/lib/hosts';
