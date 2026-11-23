@@ -1,0 +1,876 @@
+{
+  "keys": [
+    {
+      "key": "angle",
+      "meaning": "the least self-supporting angle of a down-facing surface, from the build plate",
+      "unit": "°"
+    },
+    {
+      "key": "angle_strut",
+      "meaning": "the least self-supporting angle of a thin lattice strut, from the build plate",
+      "unit": "°"
+    },
+    {
+      "key": "span",
+      "meaning": "the longest unsupported horizontal bridge between two supports (the print check's reach is half of it)",
+      "unit": "mm"
+    },
+    {
+      "key": "ledge",
+      "meaning": "the longest unsupported horizontal ledge off one support (the print check's reach is its width)",
+      "unit": "mm"
+    },
+    {
+      "key": "wall",
+      "meaning": "the thinnest wall",
+      "unit": "mm"
+    },
+    {
+      "key": "strut",
+      "meaning": "the thinnest strut diameter",
+      "unit": "mm"
+    },
+    {
+      "key": "channel",
+      "meaning": "the narrowest internal channel or lattice opening the powder or resin is removed through",
+      "unit": "mm"
+    },
+    {
+      "key": "drain",
+      "meaning": "the smallest escape hole",
+      "unit": "mm"
+    },
+    {
+      "key": "drains",
+      "meaning": "the least number of escape holes of a closed cavity",
+      "unit": "per cavity"
+    },
+    {
+      "key": "gap",
+      "meaning": "the smallest gap between features",
+      "unit": "mm"
+    },
+    {
+      "key": "layer",
+      "meaning": "a typical layer",
+      "unit": "mm"
+    }
+  ],
+  "made_by": "geometry_engine::print_profiles",
+  "profiles": [
+    {
+      "checked": "2026-11-23",
+      "id": "lpbf_metal",
+      "limits": [
+        {
+          "basis": "Machine-maker recommendation (Renishaw, Design for metal AM — a beginner's guide, 2017): 'Generally speaking, overhangs of less than 45 degrees to the build plate require support.' (confirmed 2026-11-23)",
+          "conditions": "a general rule for overhangs; no machine, alloy or layer named",
+          "key": "angle",
+          "material": "metals, no alloy named",
+          "range": "Protolabs, Materialise and Xometry: 45°; Fraunhofer: ~45°, by material and process, in its case studies more than 40° for 17-4 PH and more than 45° for a nickel alloy; VTT: 45° as a rule of thumb, 40° for good heat conductors, thin layers and small parts, 45° for large components; 3D Systems: Ti alloys 40–45°, steel, CoCr and aluminium alloys 50–55°, and by down-facing area (ProX DMP 320 experience) steel, stainless steel and Inconel large > 60°, medium > 50–55°, small > 45°, titanium and aluminium large > 50°, medium > 40–45°, small > 35°; Protolabs: 55° for 316L and CuNi2SiCr; Kranz et al. 2015 (secondary, cited by Lammers 2018): titanium below 50° must be supported; Lammers et al. 2018 (measured, SLM 250 HL and 280 HL): 316L 25–40°, AlSi10Mg 25°",
+          "source": "https://www.renishaw.com/resourcecentre/en/download/feature-article-design-for-metal-am-a-beginners-guide--111752",
+          "title": "Renishaw — Design for metal AM: a beginner's guide (2017)",
+          "unit": "°",
+          "value": 45.0
+        },
+        {
+          "basis": "Service-bureau recommendation (Protolabs, Designing for Metal 3D Printing, lattice structures): 'Maintain an angle greater than 45 degrees from the build plate' (confirmed 2026-11-23)",
+          "conditions": "lattice struts; no machine or layer named",
+          "key": "angle_strut",
+          "material": "metals, no alloy named (DMLS)",
+          "range": "Protolabs (lattice guidelines): 45°, 55° for 316L; Fraunhofer (titanium hip-stem lattice): no strut below 45°, lower possible by material and process; Alaña et al. 2021 (Ti6Al4V lattices): not lower than 45°; Vrána et al. 2018 (measured, AlSi10Mg): BCC struts at 35.26° are built, with a rougher down-skin; Hossain et al. 2021 (measured, 316L and Ti6Al4V micro-struts on a Renishaw AM250, point exposure): 0.25–0.35 mm struts built at 20°, rougher and less round at the lower angles",
+          "source": "https://www.protolabs.com/media/bn1dvyuy/pl_3dp_dmls_design_guide_en.pdf",
+          "title": "Protolabs — Designing for Metal 3D Printing (design guide)",
+          "unit": "°",
+          "value": 45.0
+        },
+        {
+          "basis": "Service-bureau recommendation (Protolabs, Designing for Metal 3D Printing): lattice 'bridge distances no larger than 0.08 in. (2mm)'; past the 2 mm unsupported distance, 'poor quality on the down-facing surfaces' (confirmed 2026-11-23)",
+          "conditions": "lattice bridges, past 2 mm poor down-facing surfaces; no machine or layer named",
+          "key": "span",
+          "material": "metals, no alloy named (DMLS)",
+          "range": "Xometry: 2 mm; 3D Systems (a bridge between two walls, ProX DMP 320 experience): supportless below 2 mm, support needed above 2 mm; Wits et al. 2025 (measured, 316L single-track struts scanned between two pillars, SLM 280 HL, 50 µm layers, tuned high-energy parameters): fully solidified spans at 4, 5 and 6 mm, fewer at each longer span (39 of 250 parameter combinations over 4–8 mm), none at 8 mm",
+          "source": "https://www.protolabs.com/media/bn1dvyuy/pl_3dp_dmls_design_guide_en.pdf",
+          "title": "Protolabs — Designing for Metal 3D Printing (design guide)",
+          "unit": "mm",
+          "value": 2.0
+        },
+        {
+          "basis": "Service-bureau recommendation (Protolabs, DMLS design tip): 'Any overhang greater than 0.020 in. (0.5mm) should have additional support' (confirmed 2026-11-23)",
+          "conditions": "any overhang; no machine or layer named",
+          "key": "ledge",
+          "material": "metals, no alloy named (DMLS)",
+          "range": "Xometry: 0.5 mm; 3D Systems (a ledge off one wall, ProX DMP 320 experience): supportless below 1.2 mm, support needed above 1.5 mm; Renishaw: 0.3–1 mm can self-support but is not recommended, over 1 mm definitely needs re-design or support; VTT (measured, SLM 125 HL): 1–2 mm; Lammers et al. 2018 (measured, overhang length in the xy-plane): 316L 2–3 mm, AlSi10Mg 2–5 mm",
+          "source": "https://www.protolabs.com/resources/design-tips/designing-for-direct-metal-laser-sintering/",
+          "title": "Protolabs — Designing for direct metal laser sintering (design tip)",
+          "unit": "mm",
+          "value": 0.5
+        },
+        {
+          "basis": "Research-institute guideline (Fraunhofer IWU, EMI and IFAM, Design for AM, 2017): 'in practice for both LBM and EBM a common value for minimum wall thickness is about 0.5 mm' (confirmed 2026-11-23)",
+          "conditions": "a common value in practice; no machine or layer named",
+          "key": "wall",
+          "material": "metals, no alloy named (laser and electron-beam melting)",
+          "range": "EOS data sheets (M 290): Ti64 0.3–0.4 mm, 316L-4441 0.3–0.4 mm at 20 µm and 0.1 mm at 40 µm (TRL 7), IN718 0.3–0.4 mm, CoCr 0.4 mm, AlSi10Mg 0.4 mm at 30 µm and 0.3 mm at 60 µm (TRL 3); Lammers et al. 2018 (measured): 316L 0.4 mm, AlSi10Mg 0.3–0.4 mm; 3D Systems: 0.20 mm gas-tight at any height, 0.18 mm below 5 mm height; VTT: design limit 2–3 laser focus diameters, 0.5 mm, and 0.15 mm achievable but slightly irregular; Fraunhofer (nickel-alloy case study): 0.5 mm; Materialise (titanium, aluminium): 0.5 mm Performance grade, 1 mm Standard grade, 2 mm structural; Xometry: 0.8 mm general, 1 mm supported, 1.2 mm unsupported; Protolabs: under 1 mm a high risk of build defects, aluminium 0.762–1.016 mm; Fraunhofer: at least 1.0 mm for a liquid-tight AlSi10Mg wall",
+          "source": "https://www.additiv.fraunhofer.de/content/dam/rapidprototyping/de/documents/Studien/Design-for-AM_Guidelines-and-case-studies-for-metal-applications.pdf",
+          "title": "Fraunhofer IWU, EMI and IFAM — Design for Additive Manufacturing: guidelines and case studies for metal applications (2017)",
+          "unit": "mm",
+          "value": 0.5
+        },
+        {
+          "basis": "Service-bureau recommendation (Protolabs, Designing for Metal 3D Printing, lattice structures): 'Minimum strut diameter is 0.015 in (0.38mm) for normal resolution' — normal is 30 or 60 µm layers (confirmed 2026-11-23)",
+          "conditions": "lattice struts at normal resolution, 30 or 60 µm layers",
+          "key": "strut",
+          "material": "metals, no alloy named (DMLS)",
+          "range": "Protolabs: 0.25 mm at high resolution (15 or 20 µm layers), recommended lattice member 1.27 mm (normal) and 0.76 mm (high); Fraunhofer (titanium hip stem): about 0.3 mm reached; 3D Systems: pillar 0.50 mm at any height, 0.18 mm only below 5 mm height; Vrána et al. 2022 (measured, AlSi10Mg BCC, SLM 280 HL): struts up to 0.8 mm in diameter deviated unexpectedly (the default parameters switch laser strategy there), within 5 % of nominal from 1.35 mm",
+          "source": "https://www.protolabs.com/media/bn1dvyuy/pl_3dp_dmls_design_guide_en.pdf",
+          "title": "Protolabs — Designing for Metal 3D Printing (design guide)",
+          "unit": "mm",
+          "value": 0.38
+        },
+        {
+          "basis": "Research-institute guideline (Fraunhofer IWU, EMI and IFAM, 2017): the length, complexity and shape of a cavity decide how well loose powder comes out; channels parallel to the platform or curved 'generally should have a minimum diameter of d = 1-3 mm' — the row takes the lower end; the source does not say which channels the lower end fits (confirmed 2026-11-23)",
+          "conditions": "channels parallel to the platform or curved; the source gives 1–3 mm by length, complexity and shape, the row takes the lower end",
+          "key": "channel",
+          "material": "metals, no alloy named",
+          "range": "Fraunhofer: 3 mm chosen for 17-4 PH powder in a case study, air passes 0.4 mm straight channels (perpendicular to the platform) and 0.6 mm curved ones (measured best case, tool steel); Materialise (titanium, aluminium): holes at least 2 mm to get the internal powder out, more for longer and more complex channels; Protolabs: negative spaces (holes, slots, channels, gaps) at least 0.635 mm, smaller holes may seal shut; VTT: Ø 1 mm the practical minimum hole, no small holes for long internal channels; Hao et al. 2011 (measured, 316L): gyroid and diamond cells of 2 mm released all loose powder; Seiffert et al. 2017 (measured, CP-Ti): 450 µm pores cleaned by high-intensity sound; IJAMT 2026 (measured, Ti-6Al-4V gyroids, from the abstract): vibration helps most at the smallest pores, 300 µm, and a dental-implant prototype with pores of about 280 µm needs design changes",
+          "source": "https://www.additiv.fraunhofer.de/content/dam/rapidprototyping/de/documents/Studien/Design-for-AM_Guidelines-and-case-studies-for-metal-applications.pdf",
+          "title": "Fraunhofer IWU, EMI and IFAM — Design for Additive Manufacturing: guidelines and case studies for metal applications (2017)",
+          "unit": "mm",
+          "value": 1.0
+        },
+        {
+          "basis": "Service-bureau recommendation (Materialise, aluminium guidelines; the titanium page says the same): 'keep at least one opening with a minimum diameter of 3 mm' (confirmed 2026-11-23)",
+          "conditions": "at least one opening per cavity; larger and complex cavities need more",
+          "key": "drain",
+          "material": "aluminium and titanium",
+          "range": "Materialise: larger and complex cavities need several holes, 'preferably 7 mm'; Xometry: escape holes 2–5 mm; Protolabs: 'plenty of places for powder to drain' (no size); 3D Systems: powder-removal relief holes at strategic locations, in its example at the bottom of a hollow part (no size)",
+          "source": "https://www.materialise.com/en/academy/industrial/design-am/aluminum",
+          "title": "Materialise — aluminium design guidelines (the titanium page the same)",
+          "unit": "mm",
+          "value": 3.0
+        },
+        {
+          "basis": "Research-institute guideline (Fraunhofer IWU, EMI and IFAM, 2017): a lattice inside a dense shell 'requires at least one powder outlet opening within the shell' (confirmed 2026-11-23)",
+          "conditions": "a lattice inside a dense shell",
+          "key": "drains",
+          "material": "metals, no alloy named",
+          "range": "Materialise: at least one opening, several for larger and complex cavities; Protolabs: 'plenty of places for powder to drain' (no number); 3D Systems: relief holes at strategic locations (no number)",
+          "source": "https://www.additiv.fraunhofer.de/content/dam/rapidprototyping/de/documents/Studien/Design-for-AM_Guidelines-and-case-studies-for-metal-applications.pdf",
+          "title": "Fraunhofer IWU, EMI and IFAM — Design for Additive Manufacturing: guidelines and case studies for metal applications (2017)",
+          "unit": "per cavity",
+          "value": 1.0
+        },
+        {
+          "basis": "Service-bureau recommendation (Xometry, DMLS design tips): 'Maintain at least 0.5 mm spacing between features' (confirmed 2026-11-23)",
+          "conditions": "spacing between features; no machine or layer named",
+          "key": "gap",
+          "material": "metals, no alloy named (DMLS)",
+          "range": "Lammers et al. 2018 (measured with a feeler gauge, SLM 250 HL and 280 HL, gaps of 0.05–0.3 mm tried): 0.15–0.3 mm by machine and parameter set; Protolabs: negative spaces (holes, slots, channels, gaps) at least 0.635 mm, 0.3048 mm between text digits at normal resolution, 0.1524 mm at high; Fraunhofer: wider than the melt pool (no number)",
+          "source": "https://xometry.pro/en-eu/articles/dmls-design-tips/",
+          "title": "Xometry — DMLS design tips",
+          "unit": "mm",
+          "value": 0.5
+        },
+        {
+          "basis": "Service-bureau specification (Protolabs, Designing for Metal 3D Printing): layer thickness 'Normal Resolution 0.0012 in. (30 microns)' (confirmed 2026-11-23)",
+          "conditions": "Protolabs' normal resolution",
+          "key": "layer",
+          "material": "metals, no alloy named (DMLS)",
+          "range": "Protolabs: 20 µm at high resolution (15 µm aluminium), 60 µm for IN718 and aluminium on a GE X Line 2000R; Renishaw (metal AM brochure, 2016): usually 30–100 µm; EOS M 290 data sheets: Ti64 30 and 60 µm, 316L 20, 40 and 80 µm, AlSi10Mg 30 and 60 µm, IN718, IN625 and CoCr 40 µm; Materialise: titanium 60 / 30 µm, aluminium 90 / 60 µm (Standard / Performance); Xometry: 20–80 µm",
+          "source": "https://www.protolabs.com/media/bn1dvyuy/pl_3dp_dmls_design_guide_en.pdf",
+          "title": "Protolabs — Designing for Metal 3D Printing (design guide)",
+          "unit": "mm",
+          "value": 0.03
+        }
+      ],
+      "note": "Laser powder bed fusion of any metal (SLM, DMLS, DMP), 30 µm layers, where the alloy has no row of its own. Powder left inside solidifies in the stress relief (Protolabs); remove it before the heat treatment (3D Systems).",
+      "process": "PBF-LB/M",
+      "supports": true,
+      "title": "Metal, laser powder bed fusion — any alloy",
+      "trapped": true
+    },
+    {
+      "checked": "2026-11-23",
+      "id": "lpbf_316l",
+      "limits": [
+        {
+          "basis": "Service-bureau recommendation (Protolabs, Designing for Metal 3D Printing): 'For 316L stainless steel, and Copper CuNi2SiCr the minimum self-supported angle is 55 degrees.' (confirmed 2026-11-23)",
+          "conditions": "the minimum self-supported angle; no machine or layer named",
+          "key": "angle",
+          "material": "stainless steel 316L (and copper CuNi2SiCr)",
+          "range": "3D Systems: steel, CoCr and aluminium alloys 50–55°, for steel, stainless steel and Inconel by down-facing area large > 60°, medium > 50–55°, small > 45°; the metal rule 45° (Renishaw; Protolabs for other metals); Lammers et al. 2018 (measured, 316L): 40° and 35° on an SLM 250 HL (two parameter sets), 25° on an SLM 280 HL",
+          "source": "https://www.protolabs.com/media/bn1dvyuy/pl_3dp_dmls_design_guide_en.pdf",
+          "title": "Protolabs — Designing for Metal 3D Printing (design guide)",
+          "unit": "°",
+          "value": 55.0
+        },
+        {
+          "basis": "Service-bureau recommendation (Protolabs, lattice structures, guidelines for self-supporting features): DMLS 'Min Angle (Deg)' '45*' with '55 for 316L' (confirmed 2026-11-23)",
+          "conditions": "self-supporting lattice features, DMLS; no machine or layer named",
+          "key": "angle_strut",
+          "material": "stainless steel 316L",
+          "range": "Protolabs: 45° for the other metals; Fraunhofer and Alaña et al. 2021 (titanium lattices): 45°; Hossain et al. 2021 (measured, 316L and Ti6Al4V micro-struts on a Renishaw AM250, point exposure): 0.25–0.35 mm struts built at 20°, rougher and less round at the lower angles",
+          "source": "https://www.protolabs.com/resources/design-tips/using-lattice-structures-in-3d-printing-for-strength-and-lightweighting/",
+          "title": "Protolabs — Using lattice structures in 3D printing (design tip)",
+          "unit": "°",
+          "value": 55.0
+        },
+        {
+          "basis": "Service-bureau recommendation (Protolabs, Designing for Metal 3D Printing): lattice 'bridge distances no larger than 0.08 in. (2mm)'; past the 2 mm unsupported distance, 'poor quality on the down-facing surfaces' (confirmed 2026-11-23)",
+          "conditions": "lattice bridges, past 2 mm poor down-facing surfaces; no machine or layer named",
+          "key": "span",
+          "material": "metals, no alloy named (DMLS)",
+          "range": "Xometry: 2 mm; 3D Systems (a bridge between two walls, ProX DMP 320 experience): supportless below 2 mm, support needed above 2 mm; Wits et al. 2025 (measured, 316L single-track struts scanned between two pillars, SLM 280 HL, 50 µm layers, tuned high-energy parameters): fully solidified spans at 4, 5 and 6 mm, fewer at each longer span (39 of 250 parameter combinations over 4–8 mm), none at 8 mm",
+          "source": "https://www.protolabs.com/media/bn1dvyuy/pl_3dp_dmls_design_guide_en.pdf",
+          "title": "Protolabs — Designing for Metal 3D Printing (design guide)",
+          "unit": "mm",
+          "value": 2.0
+        },
+        {
+          "basis": "Service-bureau recommendation (Protolabs, DMLS design tip): 'Any overhang greater than 0.020 in. (0.5mm) should have additional support' (confirmed 2026-11-23)",
+          "conditions": "any overhang; no machine or layer named",
+          "key": "ledge",
+          "material": "metals, no alloy named (DMLS)",
+          "range": "Xometry: 0.5 mm; 3D Systems (a ledge off one wall, ProX DMP 320 experience): supportless below 1.2 mm, support needed above 1.5 mm; Renishaw: 0.3–1 mm can self-support but is not recommended, over 1 mm definitely needs re-design or support; VTT (measured, SLM 125 HL): 1–2 mm; Lammers et al. 2018 (measured, overhang length in the xy-plane): 316L 2–3 mm, AlSi10Mg 2–5 mm",
+          "source": "https://www.protolabs.com/resources/design-tips/designing-for-direct-metal-laser-sintering/",
+          "title": "Protolabs — Designing for direct metal laser sintering (design tip)",
+          "unit": "mm",
+          "value": 0.5
+        },
+        {
+          "basis": "Measured (Lammers et al., Paderborn DMRC, SFF 2018; walls 0.1–1.0 mm in 0.1 mm steps on an SLM 250 HL and an SLM 280 HL): Table 11 limit '≥0,4 mm' for 316L on both machines and both parameter sets (confirmed 2026-11-23)",
+          "conditions": "measured on an SLM 250 HL and an SLM 280 HL, two parameter sets each; walls 0.1–1.0 mm in 0.1 mm steps",
+          "key": "wall",
+          "material": "stainless steel 316L",
+          "range": "EOS data sheets (316L-4441, M 290): 0.3–0.4 mm at 20 µm layers, 0.1 mm at 40 µm (TRL 7); Fraunhofer (any metal): about 0.5 mm; 3D Systems (any metal): 0.20 mm gas-tight",
+          "source": "https://utw10945.utweb.utexas.edu/sites/default/files/2018/046%20DesignGuidelinesforaSoftwareSupportedAdaptat.pdf",
+          "title": "Lammers et al., Paderborn DMRC — Solid Freeform Fabrication Symposium 2018 (paper 046)",
+          "unit": "mm",
+          "value": 0.4
+        },
+        {
+          "basis": "Service-bureau recommendation (Protolabs, Designing for Metal 3D Printing, lattice structures): 'Minimum strut diameter is 0.015 in (0.38mm) for normal resolution' — normal is 30 or 60 µm layers (confirmed 2026-11-23)",
+          "conditions": "lattice struts at normal resolution, 30 or 60 µm layers",
+          "key": "strut",
+          "material": "metals, no alloy named (DMLS)",
+          "range": "Protolabs: 0.25 mm at high resolution (15 or 20 µm layers), recommended lattice member 1.27 mm (normal) and 0.76 mm (high); Fraunhofer (titanium hip stem): about 0.3 mm reached; 3D Systems: pillar 0.50 mm at any height, 0.18 mm only below 5 mm height; Vrána et al. 2022 (measured, AlSi10Mg BCC, SLM 280 HL): struts up to 0.8 mm in diameter deviated unexpectedly (the default parameters switch laser strategy there), within 5 % of nominal from 1.35 mm",
+          "source": "https://www.protolabs.com/media/bn1dvyuy/pl_3dp_dmls_design_guide_en.pdf",
+          "title": "Protolabs — Designing for Metal 3D Printing (design guide)",
+          "unit": "mm",
+          "value": 0.38
+        },
+        {
+          "basis": "Research-institute guideline (Fraunhofer IWU, EMI and IFAM, 2017): the length, complexity and shape of a cavity decide how well loose powder comes out; channels parallel to the platform or curved 'generally should have a minimum diameter of d = 1-3 mm' — the row takes the lower end; the source does not say which channels the lower end fits (confirmed 2026-11-23)",
+          "conditions": "channels parallel to the platform or curved; the source gives 1–3 mm by length, complexity and shape, the row takes the lower end",
+          "key": "channel",
+          "material": "metals, no alloy named",
+          "range": "Fraunhofer: 3 mm chosen for 17-4 PH powder in a case study, air passes 0.4 mm straight channels (perpendicular to the platform) and 0.6 mm curved ones (measured best case, tool steel); Materialise (titanium, aluminium): holes at least 2 mm to get the internal powder out, more for longer and more complex channels; Protolabs: negative spaces (holes, slots, channels, gaps) at least 0.635 mm, smaller holes may seal shut; VTT: Ø 1 mm the practical minimum hole, no small holes for long internal channels; Hao et al. 2011 (measured, 316L): gyroid and diamond cells of 2 mm released all loose powder; Seiffert et al. 2017 (measured, CP-Ti): 450 µm pores cleaned by high-intensity sound; IJAMT 2026 (measured, Ti-6Al-4V gyroids, from the abstract): vibration helps most at the smallest pores, 300 µm, and a dental-implant prototype with pores of about 280 µm needs design changes",
+          "source": "https://www.additiv.fraunhofer.de/content/dam/rapidprototyping/de/documents/Studien/Design-for-AM_Guidelines-and-case-studies-for-metal-applications.pdf",
+          "title": "Fraunhofer IWU, EMI and IFAM — Design for Additive Manufacturing: guidelines and case studies for metal applications (2017)",
+          "unit": "mm",
+          "value": 1.0
+        },
+        {
+          "basis": "Service-bureau recommendation (Materialise, aluminium guidelines; the titanium page says the same): 'keep at least one opening with a minimum diameter of 3 mm' (confirmed 2026-11-23)",
+          "conditions": "at least one opening per cavity; larger and complex cavities need more",
+          "key": "drain",
+          "material": "aluminium and titanium",
+          "range": "Materialise: larger and complex cavities need several holes, 'preferably 7 mm'; Xometry: escape holes 2–5 mm; Protolabs: 'plenty of places for powder to drain' (no size); 3D Systems: powder-removal relief holes at strategic locations, in its example at the bottom of a hollow part (no size)",
+          "source": "https://www.materialise.com/en/academy/industrial/design-am/aluminum",
+          "title": "Materialise — aluminium design guidelines (the titanium page the same)",
+          "unit": "mm",
+          "value": 3.0
+        },
+        {
+          "basis": "Research-institute guideline (Fraunhofer IWU, EMI and IFAM, 2017): a lattice inside a dense shell 'requires at least one powder outlet opening within the shell' (confirmed 2026-11-23)",
+          "conditions": "a lattice inside a dense shell",
+          "key": "drains",
+          "material": "metals, no alloy named",
+          "range": "Materialise: at least one opening, several for larger and complex cavities; Protolabs: 'plenty of places for powder to drain' (no number); 3D Systems: relief holes at strategic locations (no number)",
+          "source": "https://www.additiv.fraunhofer.de/content/dam/rapidprototyping/de/documents/Studien/Design-for-AM_Guidelines-and-case-studies-for-metal-applications.pdf",
+          "title": "Fraunhofer IWU, EMI and IFAM — Design for Additive Manufacturing: guidelines and case studies for metal applications (2017)",
+          "unit": "per cavity",
+          "value": 1.0
+        },
+        {
+          "basis": "Service-bureau recommendation (Xometry, DMLS design tips): 'Maintain at least 0.5 mm spacing between features' (confirmed 2026-11-23)",
+          "conditions": "spacing between features; no machine or layer named",
+          "key": "gap",
+          "material": "metals, no alloy named (DMLS)",
+          "range": "Lammers et al. 2018 (measured with a feeler gauge, SLM 250 HL and 280 HL, gaps of 0.05–0.3 mm tried): 0.15–0.3 mm by machine and parameter set; Protolabs: negative spaces (holes, slots, channels, gaps) at least 0.635 mm, 0.3048 mm between text digits at normal resolution, 0.1524 mm at high; Fraunhofer: wider than the melt pool (no number)",
+          "source": "https://xometry.pro/en-eu/articles/dmls-design-tips/",
+          "title": "Xometry — DMLS design tips",
+          "unit": "mm",
+          "value": 0.5
+        },
+        {
+          "basis": "Service-bureau specification (Protolabs, Designing for Metal 3D Printing): layer thickness 'Normal Resolution 0.0012 in. (30 microns)' (confirmed 2026-11-23)",
+          "conditions": "Protolabs' normal resolution",
+          "key": "layer",
+          "material": "metals, no alloy named (DMLS)",
+          "range": "Protolabs: 20 µm at high resolution (15 µm aluminium), 60 µm for IN718 and aluminium on a GE X Line 2000R; Renishaw (metal AM brochure, 2016): usually 30–100 µm; EOS M 290 data sheets: Ti64 30 and 60 µm, 316L 20, 40 and 80 µm, AlSi10Mg 30 and 60 µm, IN718, IN625 and CoCr 40 µm; Materialise: titanium 60 / 30 µm, aluminium 90 / 60 µm (Standard / Performance); Xometry: 20–80 µm",
+          "source": "https://www.protolabs.com/media/bn1dvyuy/pl_3dp_dmls_design_guide_en.pdf",
+          "title": "Protolabs — Designing for Metal 3D Printing (design guide)",
+          "unit": "mm",
+          "value": 0.03
+        }
+      ],
+      "note": "Stainless steel 316L. Its own limits: the angle and the strut angle (Protolabs, 55° both) and the wall (Lammers 2018, measured); the others are those of the any-alloy profile (lpbf_metal).",
+      "process": "PBF-LB/M",
+      "supports": true,
+      "title": "Metal, laser powder bed fusion — stainless steel 316L",
+      "trapped": true
+    },
+    {
+      "checked": "2026-11-23",
+      "id": "lpbf_ti64",
+      "limits": [
+        {
+          "basis": "Service-bureau recommendation (Materialise, titanium guidelines): 'Walls or overhangs with angles measuring below 45° with reference to the build platform typically need to be supported' (confirmed 2026-11-23)",
+          "conditions": "walls and overhangs, from the build platform; no machine or layer named",
+          "key": "angle",
+          "material": "titanium",
+          "range": "3D Systems: Ti alloys 40–45°, by down-facing area large > 50°, medium > 40–45°, small > 35°, as low as 30° on roller-recoater machines; Kranz et al. 2015 (secondary, cited by Lammers 2018): below 50° must be supported",
+          "source": "https://www.materialise.com/en/academy/industrial/design-am/titanium",
+          "title": "Materialise — titanium design guidelines",
+          "unit": "°",
+          "value": 45.0
+        },
+        {
+          "basis": "Service-bureau recommendation (Protolabs, Designing for Metal 3D Printing, lattice structures): 'Maintain an angle greater than 45 degrees from the build plate' (confirmed 2026-11-23)",
+          "conditions": "lattice struts; no machine or layer named",
+          "key": "angle_strut",
+          "material": "metals, no alloy named (DMLS)",
+          "range": "Protolabs (lattice guidelines): 45°, 55° for 316L; Fraunhofer (titanium hip-stem lattice): no strut below 45°, lower possible by material and process; Alaña et al. 2021 (Ti6Al4V lattices): not lower than 45°; Vrána et al. 2018 (measured, AlSi10Mg): BCC struts at 35.26° are built, with a rougher down-skin; Hossain et al. 2021 (measured, 316L and Ti6Al4V micro-struts on a Renishaw AM250, point exposure): 0.25–0.35 mm struts built at 20°, rougher and less round at the lower angles",
+          "source": "https://www.protolabs.com/media/bn1dvyuy/pl_3dp_dmls_design_guide_en.pdf",
+          "title": "Protolabs — Designing for Metal 3D Printing (design guide)",
+          "unit": "°",
+          "value": 45.0
+        },
+        {
+          "basis": "Service-bureau recommendation (Protolabs, Designing for Metal 3D Printing): lattice 'bridge distances no larger than 0.08 in. (2mm)'; past the 2 mm unsupported distance, 'poor quality on the down-facing surfaces' (confirmed 2026-11-23)",
+          "conditions": "lattice bridges, past 2 mm poor down-facing surfaces; no machine or layer named",
+          "key": "span",
+          "material": "metals, no alloy named (DMLS)",
+          "range": "Xometry: 2 mm; 3D Systems (a bridge between two walls, ProX DMP 320 experience): supportless below 2 mm, support needed above 2 mm; Wits et al. 2025 (measured, 316L single-track struts scanned between two pillars, SLM 280 HL, 50 µm layers, tuned high-energy parameters): fully solidified spans at 4, 5 and 6 mm, fewer at each longer span (39 of 250 parameter combinations over 4–8 mm), none at 8 mm",
+          "source": "https://www.protolabs.com/media/bn1dvyuy/pl_3dp_dmls_design_guide_en.pdf",
+          "title": "Protolabs — Designing for Metal 3D Printing (design guide)",
+          "unit": "mm",
+          "value": 2.0
+        },
+        {
+          "basis": "Service-bureau recommendation (Protolabs, DMLS design tip): 'Any overhang greater than 0.020 in. (0.5mm) should have additional support' (confirmed 2026-11-23)",
+          "conditions": "any overhang; no machine or layer named",
+          "key": "ledge",
+          "material": "metals, no alloy named (DMLS)",
+          "range": "Xometry: 0.5 mm; 3D Systems (a ledge off one wall, ProX DMP 320 experience): supportless below 1.2 mm, support needed above 1.5 mm; Renishaw: 0.3–1 mm can self-support but is not recommended, over 1 mm definitely needs re-design or support; VTT (measured, SLM 125 HL): 1–2 mm; Lammers et al. 2018 (measured, overhang length in the xy-plane): 316L 2–3 mm, AlSi10Mg 2–5 mm",
+          "source": "https://www.protolabs.com/resources/design-tips/designing-for-direct-metal-laser-sintering/",
+          "title": "Protolabs — Designing for direct metal laser sintering (design tip)",
+          "unit": "mm",
+          "value": 0.5
+        },
+        {
+          "basis": "Machine-maker data sheet (EOS Titanium Ti64, EOS M 290, 30 µm layers; the 60 µm sheet states the same): 'Min. Wall Thickness 0.3 - 0.4 mm' — the row takes the upper end of the stated range (confirmed 2026-11-23)",
+          "conditions": "EOS M 290, 30 µm layers (the 60 µm sheet the same); the sheet gives 0.3–0.4 mm, the row takes the upper end",
+          "key": "wall",
+          "material": "Ti-6Al-4V (EOS Titanium Ti64)",
+          "range": "Fraunhofer (titanium hip-stem lattice): about 0.3 mm reached; Materialise (titanium): 0.5 mm Performance grade, 1 mm Standard grade, 2 mm for structural walls; Hossain et al. 2025 (review, secondary): 0.3–0.5 mm for Ti-6Al-4V and CoCr TPMS sheets; the metal row: about 0.5 mm (Fraunhofer)",
+          "source": "https://www.eos.info/metal-solutions/data-sheets/titanium/pds-eos-titanium-ti64-eos-m-290-30um",
+          "title": "EOS — Titanium Ti64 data sheet for the EOS M 290 (30 µm)",
+          "unit": "mm",
+          "value": 0.4
+        },
+        {
+          "basis": "Service-bureau recommendation (Protolabs, Designing for Metal 3D Printing, lattice structures): 'Minimum strut diameter is 0.015 in (0.38mm) for normal resolution' — normal is 30 or 60 µm layers (confirmed 2026-11-23)",
+          "conditions": "lattice struts at normal resolution, 30 or 60 µm layers",
+          "key": "strut",
+          "material": "metals, no alloy named (DMLS)",
+          "range": "Protolabs: 0.25 mm at high resolution (15 or 20 µm layers), recommended lattice member 1.27 mm (normal) and 0.76 mm (high); Fraunhofer (titanium hip stem): about 0.3 mm reached; 3D Systems: pillar 0.50 mm at any height, 0.18 mm only below 5 mm height; Vrána et al. 2022 (measured, AlSi10Mg BCC, SLM 280 HL): struts up to 0.8 mm in diameter deviated unexpectedly (the default parameters switch laser strategy there), within 5 % of nominal from 1.35 mm",
+          "source": "https://www.protolabs.com/media/bn1dvyuy/pl_3dp_dmls_design_guide_en.pdf",
+          "title": "Protolabs — Designing for Metal 3D Printing (design guide)",
+          "unit": "mm",
+          "value": 0.38
+        },
+        {
+          "basis": "Research-institute guideline (Fraunhofer IWU, EMI and IFAM, 2017): the length, complexity and shape of a cavity decide how well loose powder comes out; channels parallel to the platform or curved 'generally should have a minimum diameter of d = 1-3 mm' — the row takes the lower end; the source does not say which channels the lower end fits (confirmed 2026-11-23)",
+          "conditions": "channels parallel to the platform or curved; the source gives 1–3 mm by length, complexity and shape, the row takes the lower end",
+          "key": "channel",
+          "material": "metals, no alloy named",
+          "range": "Fraunhofer: 3 mm chosen for 17-4 PH powder in a case study, air passes 0.4 mm straight channels (perpendicular to the platform) and 0.6 mm curved ones (measured best case, tool steel); Materialise (titanium, aluminium): holes at least 2 mm to get the internal powder out, more for longer and more complex channels; Protolabs: negative spaces (holes, slots, channels, gaps) at least 0.635 mm, smaller holes may seal shut; VTT: Ø 1 mm the practical minimum hole, no small holes for long internal channels; Hao et al. 2011 (measured, 316L): gyroid and diamond cells of 2 mm released all loose powder; Seiffert et al. 2017 (measured, CP-Ti): 450 µm pores cleaned by high-intensity sound; IJAMT 2026 (measured, Ti-6Al-4V gyroids, from the abstract): vibration helps most at the smallest pores, 300 µm, and a dental-implant prototype with pores of about 280 µm needs design changes",
+          "source": "https://www.additiv.fraunhofer.de/content/dam/rapidprototyping/de/documents/Studien/Design-for-AM_Guidelines-and-case-studies-for-metal-applications.pdf",
+          "title": "Fraunhofer IWU, EMI and IFAM — Design for Additive Manufacturing: guidelines and case studies for metal applications (2017)",
+          "unit": "mm",
+          "value": 1.0
+        },
+        {
+          "basis": "Service-bureau recommendation (Materialise, aluminium guidelines; the titanium page says the same): 'keep at least one opening with a minimum diameter of 3 mm' (confirmed 2026-11-23)",
+          "conditions": "at least one opening per cavity; larger and complex cavities need more",
+          "key": "drain",
+          "material": "aluminium and titanium",
+          "range": "Materialise: larger and complex cavities need several holes, 'preferably 7 mm'; Xometry: escape holes 2–5 mm; Protolabs: 'plenty of places for powder to drain' (no size); 3D Systems: powder-removal relief holes at strategic locations, in its example at the bottom of a hollow part (no size)",
+          "source": "https://www.materialise.com/en/academy/industrial/design-am/aluminum",
+          "title": "Materialise — aluminium design guidelines (the titanium page the same)",
+          "unit": "mm",
+          "value": 3.0
+        },
+        {
+          "basis": "Research-institute guideline (Fraunhofer IWU, EMI and IFAM, 2017): a lattice inside a dense shell 'requires at least one powder outlet opening within the shell' (confirmed 2026-11-23)",
+          "conditions": "a lattice inside a dense shell",
+          "key": "drains",
+          "material": "metals, no alloy named",
+          "range": "Materialise: at least one opening, several for larger and complex cavities; Protolabs: 'plenty of places for powder to drain' (no number); 3D Systems: relief holes at strategic locations (no number)",
+          "source": "https://www.additiv.fraunhofer.de/content/dam/rapidprototyping/de/documents/Studien/Design-for-AM_Guidelines-and-case-studies-for-metal-applications.pdf",
+          "title": "Fraunhofer IWU, EMI and IFAM — Design for Additive Manufacturing: guidelines and case studies for metal applications (2017)",
+          "unit": "per cavity",
+          "value": 1.0
+        },
+        {
+          "basis": "Service-bureau recommendation (Xometry, DMLS design tips): 'Maintain at least 0.5 mm spacing between features' (confirmed 2026-11-23)",
+          "conditions": "spacing between features; no machine or layer named",
+          "key": "gap",
+          "material": "metals, no alloy named (DMLS)",
+          "range": "Lammers et al. 2018 (measured with a feeler gauge, SLM 250 HL and 280 HL, gaps of 0.05–0.3 mm tried): 0.15–0.3 mm by machine and parameter set; Protolabs: negative spaces (holes, slots, channels, gaps) at least 0.635 mm, 0.3048 mm between text digits at normal resolution, 0.1524 mm at high; Fraunhofer: wider than the melt pool (no number)",
+          "source": "https://xometry.pro/en-eu/articles/dmls-design-tips/",
+          "title": "Xometry — DMLS design tips",
+          "unit": "mm",
+          "value": 0.5
+        },
+        {
+          "basis": "Service-bureau specification (Protolabs, Designing for Metal 3D Printing): layer thickness 'Normal Resolution 0.0012 in. (30 microns)' (confirmed 2026-11-23)",
+          "conditions": "Protolabs' normal resolution",
+          "key": "layer",
+          "material": "metals, no alloy named (DMLS)",
+          "range": "Protolabs: 20 µm at high resolution (15 µm aluminium), 60 µm for IN718 and aluminium on a GE X Line 2000R; Renishaw (metal AM brochure, 2016): usually 30–100 µm; EOS M 290 data sheets: Ti64 30 and 60 µm, 316L 20, 40 and 80 µm, AlSi10Mg 30 and 60 µm, IN718, IN625 and CoCr 40 µm; Materialise: titanium 60 / 30 µm, aluminium 90 / 60 µm (Standard / Performance); Xometry: 20–80 µm",
+          "source": "https://www.protolabs.com/media/bn1dvyuy/pl_3dp_dmls_design_guide_en.pdf",
+          "title": "Protolabs — Designing for Metal 3D Printing (design guide)",
+          "unit": "mm",
+          "value": 0.03
+        }
+      ],
+      "note": "Titanium Ti-6Al-4V. Its own limits: the angle (Materialise, titanium) and the wall (EOS data sheet); the others are those of the any-alloy profile (lpbf_metal).",
+      "process": "PBF-LB/M",
+      "supports": true,
+      "title": "Metal, laser powder bed fusion — titanium Ti-6Al-4V",
+      "trapped": true
+    },
+    {
+      "checked": "2026-11-23",
+      "id": "lpbf_alsi10mg",
+      "limits": [
+        {
+          "basis": "Machine-maker recommendation (Renishaw, Design for metal AM — a beginner's guide, 2017): 'Generally speaking, overhangs of less than 45 degrees to the build plate require support.' (confirmed 2026-11-23)",
+          "conditions": "a general rule for overhangs; no machine, alloy or layer named",
+          "key": "angle",
+          "material": "metals, no alloy named",
+          "range": "Protolabs, Materialise and Xometry: 45°; Fraunhofer: ~45°, by material and process, in its case studies more than 40° for 17-4 PH and more than 45° for a nickel alloy; VTT: 45° as a rule of thumb, 40° for good heat conductors, thin layers and small parts, 45° for large components; 3D Systems: Ti alloys 40–45°, steel, CoCr and aluminium alloys 50–55°, and by down-facing area (ProX DMP 320 experience) steel, stainless steel and Inconel large > 60°, medium > 50–55°, small > 45°, titanium and aluminium large > 50°, medium > 40–45°, small > 35°; Protolabs: 55° for 316L and CuNi2SiCr; Kranz et al. 2015 (secondary, cited by Lammers 2018): titanium below 50° must be supported; Lammers et al. 2018 (measured, SLM 250 HL and 280 HL): 316L 25–40°, AlSi10Mg 25°",
+          "source": "https://www.renishaw.com/resourcecentre/en/download/feature-article-design-for-metal-am-a-beginners-guide--111752",
+          "title": "Renishaw — Design for metal AM: a beginner's guide (2017)",
+          "unit": "°",
+          "value": 45.0
+        },
+        {
+          "basis": "Service-bureau recommendation (Protolabs, Designing for Metal 3D Printing, lattice structures): 'Maintain an angle greater than 45 degrees from the build plate' (confirmed 2026-11-23)",
+          "conditions": "lattice struts; no machine or layer named",
+          "key": "angle_strut",
+          "material": "metals, no alloy named (DMLS)",
+          "range": "Protolabs (lattice guidelines): 45°, 55° for 316L; Fraunhofer (titanium hip-stem lattice): no strut below 45°, lower possible by material and process; Alaña et al. 2021 (Ti6Al4V lattices): not lower than 45°; Vrána et al. 2018 (measured, AlSi10Mg): BCC struts at 35.26° are built, with a rougher down-skin; Hossain et al. 2021 (measured, 316L and Ti6Al4V micro-struts on a Renishaw AM250, point exposure): 0.25–0.35 mm struts built at 20°, rougher and less round at the lower angles",
+          "source": "https://www.protolabs.com/media/bn1dvyuy/pl_3dp_dmls_design_guide_en.pdf",
+          "title": "Protolabs — Designing for Metal 3D Printing (design guide)",
+          "unit": "°",
+          "value": 45.0
+        },
+        {
+          "basis": "Service-bureau recommendation (Protolabs, Designing for Metal 3D Printing): lattice 'bridge distances no larger than 0.08 in. (2mm)'; past the 2 mm unsupported distance, 'poor quality on the down-facing surfaces' (confirmed 2026-11-23)",
+          "conditions": "lattice bridges, past 2 mm poor down-facing surfaces; no machine or layer named",
+          "key": "span",
+          "material": "metals, no alloy named (DMLS)",
+          "range": "Xometry: 2 mm; 3D Systems (a bridge between two walls, ProX DMP 320 experience): supportless below 2 mm, support needed above 2 mm; Wits et al. 2025 (measured, 316L single-track struts scanned between two pillars, SLM 280 HL, 50 µm layers, tuned high-energy parameters): fully solidified spans at 4, 5 and 6 mm, fewer at each longer span (39 of 250 parameter combinations over 4–8 mm), none at 8 mm",
+          "source": "https://www.protolabs.com/media/bn1dvyuy/pl_3dp_dmls_design_guide_en.pdf",
+          "title": "Protolabs — Designing for Metal 3D Printing (design guide)",
+          "unit": "mm",
+          "value": 2.0
+        },
+        {
+          "basis": "Service-bureau recommendation (Protolabs, DMLS design tip): 'Any overhang greater than 0.020 in. (0.5mm) should have additional support' (confirmed 2026-11-23)",
+          "conditions": "any overhang; no machine or layer named",
+          "key": "ledge",
+          "material": "metals, no alloy named (DMLS)",
+          "range": "Xometry: 0.5 mm; 3D Systems (a ledge off one wall, ProX DMP 320 experience): supportless below 1.2 mm, support needed above 1.5 mm; Renishaw: 0.3–1 mm can self-support but is not recommended, over 1 mm definitely needs re-design or support; VTT (measured, SLM 125 HL): 1–2 mm; Lammers et al. 2018 (measured, overhang length in the xy-plane): 316L 2–3 mm, AlSi10Mg 2–5 mm",
+          "source": "https://www.protolabs.com/resources/design-tips/designing-for-direct-metal-laser-sintering/",
+          "title": "Protolabs — Designing for direct metal laser sintering (design tip)",
+          "unit": "mm",
+          "value": 0.5
+        },
+        {
+          "basis": "Machine-maker data sheet (EOS Aluminium AlSi10Mg, EOS M 290, 30 µm layers, TRL 9): 'Min. Wall Thickness 0.4 mm' (confirmed 2026-11-23)",
+          "conditions": "EOS M 290, 30 µm layers, TRL 9",
+          "key": "wall",
+          "material": "AlSi10Mg (EOS Aluminium AlSi10Mg)",
+          "range": "EOS (60 µm sheet, TRL 3): 0.3 mm; Lammers et al. 2018 (measured, SLM 250 HL and 280 HL): 0.3–0.4 mm by machine and parameter set; Protolabs: 0.762–1.016 mm for aluminium walls; Fraunhofer: 0.5 mm buildable, at least 1.0 mm for a liquid-tight wall (Concept Laser M2); Materialise (aluminium): 0.5 mm Performance grade, 1 mm Standard grade, 2 mm structural",
+          "source": "https://www.eos.info/metal-solutions/data-sheets/aluminium/pds-eos-aluminium-alsi10mg-eos-m-290-30um",
+          "title": "EOS — Aluminium AlSi10Mg data sheet for the EOS M 290 (30 µm)",
+          "unit": "mm",
+          "value": 0.4
+        },
+        {
+          "basis": "Service-bureau specification (Protolabs, Designing for Metal 3D Printing): minimum feature size 'Normal Resolution (Aluminum only) 0.030 in. (0.762mm)' — its lattice strut minimum, 0.38 mm, names no material and equals its smallest feature in the other metals (0.381 mm) (confirmed 2026-11-23)",
+          "conditions": "the smallest feature at normal resolution, aluminium only; the guide's lattice strut minimum (0.38 mm) names no material",
+          "key": "strut",
+          "material": "aluminium",
+          "range": "Protolabs: 0.381 mm for aluminium built on a GE X Line 2000R (60 µm), lattice struts 0.38 mm with no material named; Vrána et al. 2022 (measured, AlSi10Mg BCC, SLM 280 HL): struts up to 0.8 mm in diameter deviated unexpectedly, within 5 % of nominal from 1.35 mm",
+          "source": "https://www.protolabs.com/media/bn1dvyuy/pl_3dp_dmls_design_guide_en.pdf",
+          "title": "Protolabs — Designing for Metal 3D Printing (design guide)",
+          "unit": "mm",
+          "value": 0.762
+        },
+        {
+          "basis": "Research-institute guideline (Fraunhofer IWU, EMI and IFAM, 2017): the length, complexity and shape of a cavity decide how well loose powder comes out; channels parallel to the platform or curved 'generally should have a minimum diameter of d = 1-3 mm' — the row takes the lower end; the source does not say which channels the lower end fits (confirmed 2026-11-23)",
+          "conditions": "channels parallel to the platform or curved; the source gives 1–3 mm by length, complexity and shape, the row takes the lower end",
+          "key": "channel",
+          "material": "metals, no alloy named",
+          "range": "Fraunhofer: 3 mm chosen for 17-4 PH powder in a case study, air passes 0.4 mm straight channels (perpendicular to the platform) and 0.6 mm curved ones (measured best case, tool steel); Materialise (titanium, aluminium): holes at least 2 mm to get the internal powder out, more for longer and more complex channels; Protolabs: negative spaces (holes, slots, channels, gaps) at least 0.635 mm, smaller holes may seal shut; VTT: Ø 1 mm the practical minimum hole, no small holes for long internal channels; Hao et al. 2011 (measured, 316L): gyroid and diamond cells of 2 mm released all loose powder; Seiffert et al. 2017 (measured, CP-Ti): 450 µm pores cleaned by high-intensity sound; IJAMT 2026 (measured, Ti-6Al-4V gyroids, from the abstract): vibration helps most at the smallest pores, 300 µm, and a dental-implant prototype with pores of about 280 µm needs design changes",
+          "source": "https://www.additiv.fraunhofer.de/content/dam/rapidprototyping/de/documents/Studien/Design-for-AM_Guidelines-and-case-studies-for-metal-applications.pdf",
+          "title": "Fraunhofer IWU, EMI and IFAM — Design for Additive Manufacturing: guidelines and case studies for metal applications (2017)",
+          "unit": "mm",
+          "value": 1.0
+        },
+        {
+          "basis": "Service-bureau recommendation (Materialise, aluminium guidelines; the titanium page says the same): 'keep at least one opening with a minimum diameter of 3 mm' (confirmed 2026-11-23)",
+          "conditions": "at least one opening per cavity; larger and complex cavities need more",
+          "key": "drain",
+          "material": "aluminium and titanium",
+          "range": "Materialise: larger and complex cavities need several holes, 'preferably 7 mm'; Xometry: escape holes 2–5 mm; Protolabs: 'plenty of places for powder to drain' (no size); 3D Systems: powder-removal relief holes at strategic locations, in its example at the bottom of a hollow part (no size)",
+          "source": "https://www.materialise.com/en/academy/industrial/design-am/aluminum",
+          "title": "Materialise — aluminium design guidelines (the titanium page the same)",
+          "unit": "mm",
+          "value": 3.0
+        },
+        {
+          "basis": "Research-institute guideline (Fraunhofer IWU, EMI and IFAM, 2017): a lattice inside a dense shell 'requires at least one powder outlet opening within the shell' (confirmed 2026-11-23)",
+          "conditions": "a lattice inside a dense shell",
+          "key": "drains",
+          "material": "metals, no alloy named",
+          "range": "Materialise: at least one opening, several for larger and complex cavities; Protolabs: 'plenty of places for powder to drain' (no number); 3D Systems: relief holes at strategic locations (no number)",
+          "source": "https://www.additiv.fraunhofer.de/content/dam/rapidprototyping/de/documents/Studien/Design-for-AM_Guidelines-and-case-studies-for-metal-applications.pdf",
+          "title": "Fraunhofer IWU, EMI and IFAM — Design for Additive Manufacturing: guidelines and case studies for metal applications (2017)",
+          "unit": "per cavity",
+          "value": 1.0
+        },
+        {
+          "basis": "Service-bureau recommendation (Xometry, DMLS design tips): 'Maintain at least 0.5 mm spacing between features' (confirmed 2026-11-23)",
+          "conditions": "spacing between features; no machine or layer named",
+          "key": "gap",
+          "material": "metals, no alloy named (DMLS)",
+          "range": "Lammers et al. 2018 (measured with a feeler gauge, SLM 250 HL and 280 HL, gaps of 0.05–0.3 mm tried): 0.15–0.3 mm by machine and parameter set; Protolabs: negative spaces (holes, slots, channels, gaps) at least 0.635 mm, 0.3048 mm between text digits at normal resolution, 0.1524 mm at high; Fraunhofer: wider than the melt pool (no number)",
+          "source": "https://xometry.pro/en-eu/articles/dmls-design-tips/",
+          "title": "Xometry — DMLS design tips",
+          "unit": "mm",
+          "value": 0.5
+        },
+        {
+          "basis": "Machine-maker data sheet (EOS Aluminium AlSi10Mg for the EOS M 290): 'Layer Thickness 30 µm' on the process data sheet whose minimum wall is 0.4 mm (confirmed 2026-11-23)",
+          "conditions": "EOS M 290; the process whose minimum wall is 0.4 mm",
+          "key": "layer",
+          "material": "AlSi10Mg (EOS Aluminium AlSi10Mg)",
+          "range": "EOS: a 60 µm sheet too (TRL 3, minimum wall 0.3 mm); Protolabs: 30 µm at normal and 15 µm at high resolution, 60 µm on a GE X Line 2000R; Materialise: 90 µm Standard grade, 60 µm Performance grade",
+          "source": "https://www.eos.info/metal-solutions/data-sheets/aluminium/pds-eos-aluminium-alsi10mg-eos-m-290-30um",
+          "title": "EOS — Aluminium AlSi10Mg data sheet for the EOS M 290 (30 µm)",
+          "unit": "mm",
+          "value": 0.03
+        }
+      ],
+      "note": "Aluminium AlSi10Mg. Its own limits: the wall and the layer (EOS data sheet) and the strut (Protolabs' smallest feature in aluminium); the others are those of the any-alloy profile (lpbf_metal). 3D Systems puts aluminium with steel (50–55°) on its orientation page and with titanium in its support table — see the angle's range. A liquid-tight wall needs at least 1.0 mm (Fraunhofer).",
+      "process": "PBF-LB/M",
+      "supports": true,
+      "title": "Metal, laser powder bed fusion — aluminium AlSi10Mg",
+      "trapped": true
+    },
+    {
+      "checked": "2026-11-23",
+      "id": "sla_resin",
+      "limits": [
+        {
+          "basis": "Machine-maker recommendation (Carbon, Designing for DLS technology): 'Unsupported angles over 40 degrees are safe for all materials.' (confirmed 2026-11-23)",
+          "conditions": "Carbon DLS printers",
+          "key": "angle",
+          "material": "all Carbon resins",
+          "range": "Protolabs (Carbon DLS): surfaces 45° and steeper from the draw plane usually need no supports; Formlabs Form 4 (Grey, 50 µm) and Form 3 (Clear, 100 µm): an overhang at 10° from level or less can break off (a 35 mm long test piece), Form 2: 19°; Hubs: an overhang under 1.0 mm long and at least 19° from level",
+          "source": "https://www.carbon3d.com/designing-for-dls-technology",
+          "title": "Carbon — Designing for DLS technology",
+          "unit": "°",
+          "value": 40.0
+        },
+        {
+          "basis": "Service-bureau recommendation (Protolabs, lattice structures, guidelines for self-supporting features): SLA 'Min Angle (Deg)' 45 (confirmed 2026-11-23)",
+          "conditions": "self-supporting lattice features, SLA; no machine or layer named",
+          "key": "angle_strut",
+          "material": "SLA resins, none named",
+          "range": "Carbon (DLS): over 40° safe for all materials, any surface",
+          "source": "https://www.protolabs.com/resources/design-tips/using-lattice-structures-in-3d-printing-for-strength-and-lightweighting/",
+          "title": "Protolabs — Using lattice structures in 3D printing (design tip)",
+          "unit": "°",
+          "value": 45.0
+        },
+        {
+          "basis": "Machine-maker recommendation (Formlabs Form 4 design guide, Grey Resin, 50 µm): a horizontal span (a beam 5 mm wide and 3 mm thick) longer than 29 mm is more likely to fail (confirmed 2026-11-23)",
+          "conditions": "Form 4, 50 µm layers; a test beam 5 mm wide and 3 mm thick",
+          "key": "span",
+          "material": "Formlabs Grey Resin",
+          "range": "Formlabs Form 2: 21 mm; Protolabs (SLA lattices): 'Max Bridge' 7.62 mm; Carbon: at most twice the resin's recommended overhang (not given in its text)",
+          "source": "https://formlabs.com/white-papers/form-4-design-guide/",
+          "title": "Formlabs — Form 4 design guide",
+          "unit": "mm",
+          "value": 29.0
+        },
+        {
+          "basis": "Machine-maker recommendation (Formlabs Form 4 design guide, Grey Resin, 50 µm): 'Horizontal overhangs beyond 5 mm do not completely form' (confirmed 2026-11-23)",
+          "conditions": "Form 4, 50 µm layers",
+          "key": "ledge",
+          "material": "Formlabs Grey Resin",
+          "range": "Formlabs Form 2: at most 3 mm",
+          "source": "https://formlabs.com/white-papers/form-4-design-guide/",
+          "title": "Formlabs — Form 4 design guide",
+          "unit": "mm",
+          "value": 5.0
+        },
+        {
+          "basis": "Machine-maker recommendation (Formlabs Form 4 design guide, Grey Resin, 50 µm): supported and unsupported walls 'Recommended: 0.2 mm/200 microns'; at 0.2 mm or less a wall may warp, an unsupported one also detach (confirmed 2026-11-23)",
+          "conditions": "Form 4, 50 µm layers; supported and unsupported walls",
+          "key": "wall",
+          "material": "Formlabs Grey Resin",
+          "range": "Formlabs Form 3 (Clear, 100 µm): 0.2 mm; Formlabs Form 2: 0.4 mm; Hubs: 0.4 mm supported, 0.6 mm unsupported (0.5 and 1.0 mm in its thin-walls article); Protolabs SLA: 0.254 mm normal, 0.1016 mm high, 0.0635 mm micro resolution, 0.5 mm on its Formlabs service; Protolabs (Carbon DLS): supported walls 1.0 mm, structural 2.5 mm",
+          "source": "https://formlabs.com/white-papers/form-4-design-guide/",
+          "title": "Formlabs — Form 4 design guide",
+          "unit": "mm",
+          "value": 0.2
+        },
+        {
+          "basis": "Machine-maker recommendation (Carbon, Lattice Parameters, strut diameter guidelines): minimum strut 0.4 mm in the rigid resins (EPX 82, EPX 150, FPU 50, MPU 100, RPU 70, RPU 130, UMA 90) (confirmed 2026-11-23)",
+          "conditions": "Carbon DLS printers",
+          "key": "strut",
+          "material": "Carbon rigid resins: EPX 82, EPX 150, FPU 50, MPU 100, RPU 70, RPU 130, UMA 90",
+          "range": "Carbon elastomers: EPU 45/46 0.5 mm, EPU Pro 90 0.6 mm, EPU 40/41/43 0.65 mm, EPU Pro 50 and SIL 30 0.8 mm; Carbon defaults 0.8–1.0 mm, 1.0 mm when the resin is not known; Protolabs: recommended SLA lattice member 0.76 mm; Formlabs Form 4: vertical wires 0.3 mm up to 7 mm tall, 0.6 mm up to 30 mm tall",
+          "source": "https://learn.carbon3d.com/software/lattice-parameters",
+          "title": "Carbon — Lattice parameters (strut diameter guidelines)",
+          "unit": "mm",
+          "value": 0.4
+        },
+        {
+          "basis": "Service-bureau recommendation (Protolabs, 7 mistakes to avoid when designing 3D-printed parts, SLA): 'Internal channels should be at least 0.025 in. (0.635mm)' (confirmed 2026-11-23)",
+          "conditions": "internal channels in SLA; no machine or layer named",
+          "key": "channel",
+          "material": "SLA resins, none named",
+          "range": "Formlabs Form 3 and Form 4: holes under 0.5 mm may close; Protolabs: least hole 0.635 / 0.508 / 0.381 mm at normal / high / micro resolution, holes under 0.508 mm may seal shut; Carbon: dense lattices with small openings may trap liquid resin (no number)",
+          "source": "https://www.protolabs.com/resources/design-tips/7-mistakes-to-avoid-when-designing-3d-printed-parts/",
+          "title": "Protolabs — 7 mistakes to avoid when designing 3D-printed parts",
+          "unit": "mm",
+          "value": 0.635
+        },
+        {
+          "basis": "Machine-maker recommendation (Formlabs design specifications, Form 3, Clear Resin, 100 µm): 'Without drain holes of at least 2.5 mm in diameter, the part may trap resin or air' (confirmed 2026-11-23)",
+          "conditions": "Form 3, 100 µm layers",
+          "key": "drain",
+          "material": "Formlabs Clear Resin",
+          "range": "Formlabs Form 4 guide (Grey, 50 µm): 0.75 mm, the same for the Form 3/3B in Grey at 50 µm; Formlabs Form 2 and Hubs: 3.5 mm; Carbon (DLS): 2–3 mm, 3–5 mm for viscous resins (EPU, SIL 30, RPU 130)",
+          "source": "https://formlabs.com/support/Design-specifications-for-3D-models-form-3/",
+          "title": "Formlabs — Design specifications for 3D models (Form 3)",
+          "unit": "mm",
+          "value": 2.5
+        },
+        {
+          "basis": "Machine-maker recommendation (Prusa knowledge base, SLA hollowing): 'We suggest adding at least two drainage holes.' — without them the uncured resin is trapped inside (confirmed 2026-11-23)",
+          "conditions": "hollowed parts on Prusa SLA printers",
+          "key": "drains",
+          "material": "SLA resins, none named",
+          "range": "Formlabs: one as close to the build platform as possible and at least one more, more wherever cupping can occur; Hubs: at least one per hollow section; Carbon (DLS): one vent per 1000 mm² of cross-section on M-series printers, per 500 mm² on the L1",
+          "source": "https://help.prusa3d.com/article/hollowing_117285",
+          "title": "Prusa knowledge base — Hollowing (SLA)",
+          "unit": "per cavity",
+          "value": 2.0
+        },
+        {
+          "basis": "Machine-maker recommendation (Formlabs Form 4 design guide, Grey Resin, 50 µm): parts 'may fuse if clearance is less than 0.4 mm' (confirmed 2026-11-23)",
+          "conditions": "Form 4, 50 µm layers; clearance between parts",
+          "key": "gap",
+          "material": "Formlabs Grey Resin",
+          "range": "Formlabs Form 3 (Clear, 100 µm) and Form 2: 0.5 mm, while the Form 4 guide gives 0.4 mm for the Form 3/3B in Grey at 50 µm; Protolabs (SLA): slots at least 0.381 mm",
+          "source": "https://formlabs.com/white-papers/form-4-design-guide/",
+          "title": "Formlabs — Form 4 design guide",
+          "unit": "mm",
+          "value": 0.4
+        },
+        {
+          "basis": "Service-bureau specification (Protolabs, stereolithography design guidelines): normal resolution, 0.1016 mm layers (confirmed 2026-11-23)",
+          "conditions": "Protolabs' normal resolution",
+          "key": "layer",
+          "material": "SLA resins, none named",
+          "range": "Protolabs: 0.0508 mm at high, 0.0254 mm at micro resolution, on its Formlabs service 0.10 mm normal and 0.05 mm high; Formlabs' design numbers hold at 100 µm (Form 3, Clear) and 50 µm (Form 4, Grey)",
+          "source": "https://www.protolabs.com/en-gb/services/3d-printing/stereolithography/design-guidelines",
+          "title": "Protolabs — Stereolithography design guidelines",
+          "unit": "mm",
+          "value": 0.1016
+        }
+      ],
+      "note": "Resin vat photopolymerisation: laser SLA (Formlabs), MSLA (Prusa), DLP and DLS (Carbon); each row names its own source. Drain holes go as close to the build platform as possible, against cupping (Formlabs, Carbon). A hollowed shell: at least 2 mm (Hubs); PrusaSlicer hollows no thinner than 1 mm.",
+      "process": "VPP (SLA/DLP)",
+      "supports": true,
+      "title": "Resin — SLA, MSLA and DLP",
+      "trapped": true
+    },
+    {
+      "checked": "2026-11-23",
+      "id": "sls_polymer",
+      "limits": [
+        {
+          "basis": "Machine-maker recommendation (HP MJF Handbook, 2019): 'the minimum recommended wall thickness is 0.3 mm for short walls oriented in the XY plane, and 0.5 mm for short walls oriented in the Z direction' — the row takes the upright (Z) wall (confirmed 2026-11-23)",
+          "conditions": "short walls standing in Z (0.3 mm for walls in the XY plane)",
+          "key": "wall",
+          "material": "HP Multi Jet Fusion materials, none named for the row",
+          "range": "HP: 2 mm for a hollow part; Formlabs Fuse: 0.6 mm vertical, 0.3 mm horizontal; EOS (2011 design-rules deck): 0.7 mm on the P395 / P760, 0.45 mm on the P100, 1.5 mm for reproducible properties; Protolabs: SLS 0.762 mm, MJF 0.508 mm (0.8 mm in its 2024 MJF blog); Stratasys Direct: SLS 1.0 mm, MJF 0.5 mm; Hubs: SLS 0.8 mm (PA 12) to 2.0 mm (carbon-filled), MJF 0.7 mm; Materialise: PA 12 1.0 mm, PA 12S 1.5 mm; UZH: 0.8 mm (1.0 mm for reproducible properties)",
+          "source": "https://www.protolabs.com/media/sq1l5it2/hp_mjf_handbook.pdf",
+          "title": "HP — Multi Jet Fusion handbook (2019)",
+          "unit": "mm",
+          "value": 0.5
+        },
+        {
+          "basis": "Measured (Josupeit et al., SFF 2016, reviewed paper; EOS P396, PA 2200, 0.12 mm layers): 'The rod width should be greater than the heat affected area of one laser path – her[e] more than approximately 0.7 mm' — its thinnest rod tested; some 0.7 mm lattices broke in post-processing (confirmed 2026-11-23)",
+          "conditions": "measured on an EOS P396, 0.12 mm layers; the thinnest rod tested, some 0.7 mm lattices broke in post-processing",
+          "key": "strut",
+          "material": "PA 2200 (EOS)",
+          "range": "3D Systems: lattice struts 'down to almost 0.5 mm'; Kummert et al. 2021 (measured, laser-sintered TPE, EOSINT P395): 0.6 mm always failed, at least 1.0 mm recommended; UZH: pins 0.5 mm, 1.8 mm for reproducible properties; HP: no strut figure, shafts 0.5 mm at 10 mm height; Formlabs Fuse: pins 0.8 mm; EOS (2011 design-rules deck): pins 0.8 mm, 1.8 mm for reproducible properties; Protolabs: recommended lattice member 3.16 mm",
+          "source": "https://utw10945.utweb.utexas.edu/sites/default/files/2016/166-Josupeit.pdf",
+          "title": "Josupeit et al. — Solid Freeform Fabrication Symposium 2016 (paper 166)",
+          "unit": "mm",
+          "value": 0.7
+        },
+        {
+          "basis": "Machine-maker recommendation (HP MJF Handbook, 2019): 'The minimum gap recommended in a lattice structure to ensure that the material inside the part can be removed is 5 mm' — otherwise leave the powder trapped or the lattice partially open (confirmed 2026-11-23)",
+          "conditions": "the least gap in a lattice for removing the material inside",
+          "key": "channel",
+          "material": "HP Multi Jet Fusion materials, none named for the row",
+          "range": "Formlabs Fuse: lattice gaps no smaller than 8 mm; Materialise (MJF PA 12): 1 mm between lattice beams, internal channels at least 3 mm; Josupeit et al. 2016 (measured, PA 2200): cells of at least 5 mm, 2.5 mm cells trapped powder; Kummert et al. 2021 (measured, TPE): Dode and Star cells need 10 mm, cube and FCCZ cells work at 5 mm, 2.5 mm cells cannot be made as their free volumes stay sealed; HP: ducts narrower than 5 mm need a flexible screw; 3D Systems: a clearance of 2 mm+ around an axle lets compressed air blow the powder out",
+          "source": "https://www.protolabs.com/media/sq1l5it2/hp_mjf_handbook.pdf",
+          "title": "HP — Multi Jet Fusion handbook (2019)",
+          "unit": "mm",
+          "value": 5.0
+        },
+        {
+          "basis": "Machine-maker recommendation (HP MJF Handbook, 2019, hollow parts): 'The minimum recommended diameter of the drain holes is 5 mm.' (confirmed 2026-11-23)",
+          "conditions": "hollow parts",
+          "key": "drain",
+          "material": "HP Multi Jet Fusion materials, none named for the row",
+          "range": "UZH: 4.0 mm; Formlabs Fuse and Hubs: 3.5 mm; Materialise (MJF PA 12): 2 mm; 3D Systems: a hole over 2 mm at the base of a blind boss",
+          "source": "https://www.protolabs.com/media/sq1l5it2/hp_mjf_handbook.pdf",
+          "title": "HP — Multi Jet Fusion handbook (2019)",
+          "unit": "mm",
+          "value": 5.0
+        },
+        {
+          "basis": "Machine-maker recommendation (HP MJF Handbook, 2019, hollow parts): 'add at least two drain holes on opposite faces of the part' (confirmed 2026-11-23)",
+          "conditions": "hollow parts, holes on opposite faces",
+          "key": "drains",
+          "material": "HP Multi Jet Fusion materials, none named for the row",
+          "range": "Formlabs Fuse: at least two per cavity; UZH: at least two, opposite; Materialise: two in MJF, one (two preferred) in SLS",
+          "source": "https://www.protolabs.com/media/sq1l5it2/hp_mjf_handbook.pdf",
+          "title": "HP — Multi Jet Fusion handbook (2019)",
+          "unit": "per cavity",
+          "value": 2.0
+        },
+        {
+          "basis": "Machine-maker specification (HP MJF Handbook, 2019, minimum specifications for parts): 'Minimum slit between walls/embossed details 0.5 mm' (confirmed 2026-11-23)",
+          "conditions": "the least slit between walls or embossed details",
+          "key": "gap",
+          "material": "HP Multi Jet Fusion materials, none named for the row",
+          "range": "HP: clearance 0.5 mm at 1 mm thickness, 0.4 mm between connecting parts, 0.7 mm for moving parts printed as assemblies; Materialise (PA 12): 0.5 mm (MJF), 0.5–0.6 mm (SLS) between parts printed together; UZH: 0.5 mm for moving parts built inside each other; 3D Systems: at least 0.3 mm between a button and its slot to prevent fusing, 0.3 mm between axle rails and tube, 0.2 mm in a sphere hinge, over 0.5 mm between chain-mail links; Protolabs (SLS and MJF): channel gap 0.762 mm",
+          "source": "https://www.protolabs.com/media/sq1l5it2/hp_mjf_handbook.pdf",
+          "title": "HP — Multi Jet Fusion handbook (2019)",
+          "unit": "mm",
+          "value": 0.5
+        },
+        {
+          "basis": "Machine-maker specification (HP MJF Handbook, 2019): 'HP Multi Jet Fusion (MJF) technology uses layers of only 80 μm (0.080 mm)' (confirmed 2026-11-23)",
+          "conditions": "HP Multi Jet Fusion",
+          "key": "layer",
+          "material": "HP Multi Jet Fusion materials, none named for the row",
+          "range": "Materialise: PA 12 0.08 mm (MJF) and 0.12 mm (SLS), PA 12S 0.09 mm; Stratasys Direct (MJF): 70 µm; EOS (2011 design-rules deck): typical 0.15 mm on the P390, 0.10 mm on the Formiga P100; Josupeit et al. 2016: 0.12 mm on an EOS P396",
+          "source": "https://www.protolabs.com/media/sq1l5it2/hp_mjf_handbook.pdf",
+          "title": "HP — Multi Jet Fusion handbook (2019)",
+          "unit": "mm",
+          "value": 0.08
+        }
+      ],
+      "note": "Polymer powder bed: laser sintering and HP Multi Jet Fusion, PA 12 class. The powder holds the part, so no supports and no overhang rows (Protolabs: bridge and angle 'n/a' for SLS and MJF lattices; HP's 20° for large up-facing areas is only against visible steps). HP allows leaving the powder inside a hollow part; the walls of a hollow part at least 2 mm (HP).",
+      "process": "PBF-LB/P (SLS) and MJF",
+      "supports": false,
+      "title": "Polymer powder — SLS and Multi Jet Fusion",
+      "trapped": true
+    },
+    {
+      "checked": "2026-11-23",
+      "id": "fdm",
+      "limits": [
+        {
+          "basis": "Machine-maker recommendation (UltiMaker, Design for FFF 3D printing): 'FDM 3D printed parts are self-supporting up to 45 degrees.' 'Overhangs below 45 degrees should be supported' (confirmed 2026-11-23)",
+          "conditions": "FDM / FFF in general",
+          "key": "angle",
+          "material": "filaments, none named",
+          "range": "Hubs: up to 45°; CATI (Stratasys reseller): about 45° from horizontal; Stratasys Insight (PADT, ULTEM 9085): defaults scale with contour width and layer and bottom out at 40° (0.33 mm layers) and 43° (0.254 mm), from horizontal; Cura: default support angle 50° from vertical (40° from the plate), 45° in UltiMaker's S3 and S5 definitions, 60° from vertical (30° from the plate) for the Factor 4; Bambu Studio: default threshold 30° from horizontal; PrusaSlicer: 0 (automatic detection) in its code, Prusa's own print profiles 30–50° from horizontal (60–80° with soluble supports); Prusa: 45–60°, up to 75° with Nextruder 360° cooling (axis not stated)",
+          "source": "https://ultimaker.com/learn/design-for-fff-3d-printing-maximize-your-success/",
+          "title": "UltiMaker — Design for FFF 3D printing",
+          "unit": "°",
+          "value": 45.0
+        },
+        {
+          "basis": "Machine-maker recommendation (UltiMaker, Design for FFF 3D printing): for most basic filaments FDM 'does not need support when bridging materials within a 10mm gap' (confirmed 2026-11-23)",
+          "conditions": "bridging",
+          "key": "span",
+          "material": "most basic filaments",
+          "range": "UltiMaker: 25 mm shown with Tough PLA and active cooling; Hubs: under 5 mm; Jiang et al. 2019 (PLA, 0.4 mm nozzle, 0.2 mm layers, a neural network trained on measured 1–6 mm bridges): 2.8 mm predicted for at most 0.2 mm sag, 2.2 mm bridges printed within it; He et al. 2026: 10 mm practical limit (citing industry design-rule posters, not its own measurement)",
+          "source": "https://ultimaker.com/learn/design-for-fff-3d-printing-maximize-your-success/",
+          "title": "UltiMaker — Design for FFF 3D printing",
+          "unit": "mm",
+          "value": 10.0
+        },
+        {
+          "basis": "Service-bureau specification (Protolabs, FDM 3D printing): 'Unsupported/Supported Walls: Minimum 0.0315 in. / Minimum 0.8mm' (confirmed 2026-11-23)",
+          "conditions": "unsupported and supported walls; Protolabs' FDM service",
+          "key": "wall",
+          "material": "filaments, none named",
+          "range": "Hubs: two to three times the nozzle, typically 0.8–1.2 mm; Prusa: profiles use at least two perimeters, a two-perimeter wall 0.86 mm suggested, thinner than one perimeter (about 0.45 mm with a 0.4 mm nozzle) not printable; Formlabs (comparison): 1 mm, 1.2 mm with a 0.4 mm nozzle; UltiMaker: a minimum wall of 0.5 mm, given beside its smallest nozzle, 0.25 mm; Stratasys Direct: about 4 × the slice thickness",
+          "source": "https://www.protolabs.com/services/3d-printing/fused-deposition-modeling/",
+          "title": "Protolabs — FDM 3D printing",
+          "unit": "mm",
+          "value": 0.8
+        },
+        {
+          "basis": "Machine-maker recommendation (UltiMaker, Design for FFF 3D printing): between parts printed together 'maintain a gap of 0.6 mm' (confirmed 2026-11-23)",
+          "conditions": "between parts printed together",
+          "key": "gap",
+          "material": "filaments, none named",
+          "range": "Prusa: at least 0.3 mm as a starting value for movable parts",
+          "source": "https://ultimaker.com/learn/design-for-fff-3d-printing-maximize-your-success/",
+          "title": "UltiMaker — Design for FFF 3D printing",
+          "unit": "mm",
+          "value": 0.6
+        },
+        {
+          "basis": "Service-bureau recommendation (Hubs, What is FDM 3D printing?): layers commonly 50 to 400 microns; 'A practical compromise is a 200 micron layer height.' (confirmed 2026-11-23)",
+          "conditions": "a practical compromise; layers are commonly 50–400 µm",
+          "key": "layer",
+          "material": "filaments, none named",
+          "range": "Protolabs FDM: 100 µm high, 200–254 µm normal, 300–330 µm low; Prusa: at most 70–80 % of the nozzle, not below 0.10 mm, first layer 0.20 mm; UltiMaker: above 0.06 mm",
+          "source": "https://www.hubs.com/knowledge-base/what-is-fdm-3d-printing/",
+          "title": "Hubs — What is FDM 3D printing?",
+          "unit": "mm",
+          "value": 0.2
+        }
+      ],
+      "note": "Material extrusion (FDM, FFF) with a 0.4 mm nozzle; a row tied to the nozzle is for 0.4 mm. A closed void holds only air: no channel or escape-hole rows. No source was found for a thin-strut angle, a horizontal ledge or a strut diameter in FDM, so those keys are left out.",
+      "process": "MEX (FDM)",
+      "supports": true,
+      "title": "Filament — FDM, 0.4 mm nozzle",
+      "trapped": false
+    }
+  ]
+}

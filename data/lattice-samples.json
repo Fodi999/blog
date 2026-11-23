@@ -1,0 +1,417 @@
+{
+ "demo": false,
+ "made_by": "Monge 0.15.198 (development build), doc.lattice + export_models, test window",
+ "made": "2026-11-23",
+ "note": "Real geometry: open sample cubes (no skin). The cut is chosen so no piece is loose. Nominal geometry, not as built.",
+ "version": "v1",
+ "samples": [
+  {
+   "kind": "gyroid",
+   "cube_mm": 22.0,
+   "cell_mm": 10.0,
+   "fit": false,
+   "wall_mm": 1.0,
+   "shell_mm": 0,
+   "share": 0.3,
+   "volume_cm3": 3.2,
+   "box_cm3": 10.6,
+   "triangles": 205614,
+   "pieces": 1,
+   "render": "lattices/gyroid/v1/render.webp",
+   "files": [
+    {
+     "format": "stl",
+     "key": "lattices/gyroid/v1/gyroid-sample.stl",
+     "bytes": 10280784,
+     "sha256": "c0f15cc1141e0dad326068b3864337981a2fba109b69d3ad1e32151a5f1f8e65"
+    },
+    {
+     "format": "3mf",
+     "key": "lattices/gyroid/v1/gyroid-sample.3mf",
+     "bytes": 1826314,
+     "sha256": "690f25fa07c6fddc3ea0cb29358229932b988c9b2d8fb2630002db0e70afc668"
+    },
+    {
+     "format": "glb",
+     "key": "lattices/gyroid/v1/gyroid-sample.glb",
+     "bytes": 5117280,
+     "sha256": "50a8526675828e8596768ad90781f7f335762351405a0672d63870dc0e8f9a7f"
+    }
+   ]
+  },
+  {
+   "kind": "diamond",
+   "cube_mm": 22.0,
+   "cell_mm": 10.0,
+   "fit": false,
+   "wall_mm": 1.0,
+   "shell_mm": 0,
+   "share": 0.37,
+   "volume_cm3": 3.9,
+   "box_cm3": 10.6,
+   "triangles": 245788,
+   "pieces": 1,
+   "render": "lattices/diamond/v1/render.webp",
+   "files": [
+    {
+     "format": "stl",
+     "key": "lattices/diamond/v1/diamond-sample.stl",
+     "bytes": 12289484,
+     "sha256": "6b2613cdea88dc14d742f93c01e46178f9975f96cc4f51a96602620cbe816e9e"
+    },
+    {
+     "format": "3mf",
+     "key": "lattices/diamond/v1/diamond-sample.3mf",
+     "bytes": 1999972,
+     "sha256": "8683ad19e1b5e08f02827a11bce4b8a928fed94e04124d797413beaad4886099"
+    },
+    {
+     "format": "glb",
+     "key": "lattices/diamond/v1/diamond-sample.glb",
+     "bytes": 6124692,
+     "sha256": "4f06af6d482fa898212c6ab0f44bf42a63767a2e14998e7dd5b10e2ada40d2ae"
+    }
+   ]
+  },
+  {
+   "kind": "schwarz_p",
+   "cube_mm": 22.0,
+   "cell_mm": 10.0,
+   "fit": false,
+   "wall_mm": 1.0,
+   "shell_mm": 0,
+   "share": 0.21,
+   "volume_cm3": 2.3,
+   "box_cm3": 10.6,
+   "triangles": 141536,
+   "pieces": 1,
+   "render": "lattices/schwarz_p/v1/render.webp",
+   "files": [
+    {
+     "format": "stl",
+     "key": "lattices/schwarz_p/v1/schwarz_p-sample.stl",
+     "bytes": 7076884,
+     "sha256": "00a135d27e2c87395f78a86003aa15f0c9952291ab904fdb64bf43f158a1c192"
+    },
+    {
+     "format": "3mf",
+     "key": "lattices/schwarz_p/v1/schwarz_p-sample.3mf",
+     "bytes": 1229459,
+     "sha256": "738107fbe7e55d732c7774a1ad98b4e5c69c7e01ea4a15800858739850f34860"
+    },
+    {
+     "format": "glb",
+     "key": "lattices/schwarz_p/v1/schwarz_p-sample.glb",
+     "bytes": 3475432,
+     "sha256": "e91e3d50ffbbf96ff34003da2137f95a09cf14b61bae18deea014bee1cc8b61f"
+    }
+   ]
+  },
+  {
+   "kind": "iwp",
+   "cube_mm": 22.0,
+   "cell_mm": 10.0,
+   "fit": false,
+   "wall_mm": 1.0,
+   "shell_mm": 0,
+   "share": 0.33,
+   "volume_cm3": 3.5,
+   "box_cm3": 10.6,
+   "triangles": 204624,
+   "pieces": 1,
+   "render": "lattices/iwp/v1/render.webp",
+   "files": [
+    {
+     "format": "stl",
+     "key": "lattices/iwp/v1/iwp-sample.stl",
+     "bytes": 10231284,
+     "sha256": "62bec4e15391eaa0a11ca2cdd055acdce62863273644882c26fc63636d9ff3ee"
+    },
+    {
+     "format": "3mf",
+     "key": "lattices/iwp/v1/iwp-sample.3mf",
+     "bytes": 1801605,
+     "sha256": "a9113e7a03ae3cc286173f1003a76dd82441b2cf1fe1ed61493c764443a7a60b"
+    },
+    {
+     "format": "glb",
+     "key": "lattices/iwp/v1/iwp-sample.glb",
+     "bytes": 5064768,
+     "sha256": "f5bbcbceabcb597431b2cd8bbc6ccea98d02e400aec8915c2590ed5bfdca6576"
+    }
+   ]
+  },
+  {
+   "kind": "neovius",
+   "cube_mm": 22.0,
+   "cell_mm": 10.0,
+   "fit": false,
+   "wall_mm": 0.8,
+   "shell_mm": 0,
+   "share": 0.28,
+   "volume_cm3": 3.0,
+   "box_cm3": 10.6,
+   "triangles": 316390,
+   "pieces": 1,
+   "render": "lattices/neovius/v1/render.webp",
+   "files": [
+    {
+     "format": "stl",
+     "key": "lattices/neovius/v1/neovius-sample.stl",
+     "bytes": 15819584,
+     "sha256": "100347f0f5cc0dc6984aef77a24aa023413449361c79a6536bd75c936dd1284b"
+    },
+    {
+     "format": "3mf",
+     "key": "lattices/neovius/v1/neovius-sample.3mf",
+     "bytes": 2905114,
+     "sha256": "0c65d9d135d6936e5b0919c5e07d56ff2e1785036f58ddfd20194f0378a4dd60"
+    },
+    {
+     "format": "glb",
+     "key": "lattices/neovius/v1/neovius-sample.glb",
+     "bytes": 7917736,
+     "sha256": "db41cde34e17e00f4ab9cd1cbe9fc2c27e6af384a77dacf71c84dcf0c572e076"
+    }
+   ]
+  },
+  {
+   "kind": "gyroid_net",
+   "cube_mm": 22.0,
+   "cell_mm": 10.0,
+   "fit": false,
+   "wall_mm": 1.5,
+   "shell_mm": 0,
+   "share": 0.09,
+   "volume_cm3": 0.9,
+   "box_cm3": 10.6,
+   "triangles": 61810,
+   "pieces": 1,
+   "render": "lattices/gyroid_net/v1/render.webp",
+   "files": [
+    {
+     "format": "stl",
+     "key": "lattices/gyroid_net/v1/gyroid_net-sample.stl",
+     "bytes": 3090584,
+     "sha256": "1d8c0b18618e9fb6540da151b68e62e9c1394583f1eb6d8002917b7747aae3b5"
+    },
+    {
+     "format": "3mf",
+     "key": "lattices/gyroid_net/v1/gyroid_net-sample.3mf",
+     "bytes": 622354,
+     "sha256": "f56a6f406fcc1ce83d91a23ca699406755ef66046c1d3a7baf63fa2e5962dfb7"
+    },
+    {
+     "format": "glb",
+     "key": "lattices/gyroid_net/v1/gyroid_net-sample.glb",
+     "bytes": 1556424,
+     "sha256": "8a69502fe2ec097b03ac08a65e4f0f44358833914bc7688dc9a29f1f657495e9"
+    }
+   ]
+  },
+  {
+   "kind": "diamond_net",
+   "cube_mm": 20.0,
+   "cell_mm": 10.0,
+   "fit": true,
+   "wall_mm": 1.5,
+   "shell_mm": 0,
+   "share": 0.17,
+   "volume_cm3": 1.4,
+   "box_cm3": 8.0,
+   "triangles": 66388,
+   "pieces": 1,
+   "render": "lattices/diamond_net/v1/render.webp",
+   "files": [
+    {
+     "format": "stl",
+     "key": "lattices/diamond_net/v1/diamond_net-sample.stl",
+     "bytes": 3319484,
+     "sha256": "f0767a4efb53fe6ad816b2b3a48e457229dc31c900e119f68bd0c553c8c53938"
+    },
+    {
+     "format": "3mf",
+     "key": "lattices/diamond_net/v1/diamond_net-sample.3mf",
+     "bytes": 638399,
+     "sha256": "15c96f42007ec892ee15ff172e0882626ea0760e1c06fd15c8e936761c506f8c"
+    },
+    {
+     "format": "glb",
+     "key": "lattices/diamond_net/v1/diamond_net-sample.glb",
+     "bytes": 1703388,
+     "sha256": "487507b84ec96a06f33899b2643383b843e9d501ccfa60540d7c6ea437b7d91f"
+    }
+   ]
+  },
+  {
+   "kind": "cubic",
+   "cube_mm": 22.0,
+   "cell_mm": 10.0,
+   "fit": false,
+   "wall_mm": 2.0,
+   "shell_mm": 0,
+   "share": 0.15,
+   "volume_cm3": 1.6,
+   "box_cm3": 10.6,
+   "triangles": 45668,
+   "pieces": 1,
+   "render": "lattices/cubic/v1/render.webp",
+   "files": [
+    {
+     "format": "stl",
+     "key": "lattices/cubic/v1/cubic-sample.stl",
+     "bytes": 2283484,
+     "sha256": "60afbc6287c99b80a4ff46990b474451718f53ba0eee9262cdd8b15af838c7c4"
+    },
+    {
+     "format": "3mf",
+     "key": "lattices/cubic/v1/cubic-sample.3mf",
+     "bytes": 363510,
+     "sha256": "e9e707db4e9ddfe1d0a35e86fd72eaa417b19363490458ae9e90842877ea85e7"
+    },
+    {
+     "format": "glb",
+     "key": "lattices/cubic/v1/cubic-sample.glb",
+     "bytes": 1147308,
+     "sha256": "27c712b3464f8907a3ad1670f40886599ba0f48e05895693dacfe81ffa2c89e8"
+    }
+   ]
+  },
+  {
+   "kind": "bcc",
+   "cube_mm": 22.0,
+   "cell_mm": 10.0,
+   "fit": false,
+   "wall_mm": 1.5,
+   "shell_mm": 0,
+   "share": 0.11,
+   "volume_cm3": 1.1,
+   "box_cm3": 10.6,
+   "triangles": 99570,
+   "pieces": 1,
+   "render": "lattices/bcc/v1/render.webp",
+   "files": [
+    {
+     "format": "stl",
+     "key": "lattices/bcc/v1/bcc-sample.stl",
+     "bytes": 4978584,
+     "sha256": "2a8fcaa24a7ee36794aec75c713767580486f5eee822a785d6675f13eac25f07"
+    },
+    {
+     "format": "3mf",
+     "key": "lattices/bcc/v1/bcc-sample.3mf",
+     "bytes": 1006452,
+     "sha256": "3456d9a98d27900743537b36e509ff89da283c81642ace4b3244b8b8e084d3cb"
+    },
+    {
+     "format": "glb",
+     "key": "lattices/bcc/v1/bcc-sample.glb",
+     "bytes": 2567508,
+     "sha256": "6d8294af465ea7de19e32b3767609df9c093fd85a71a1d39ce081293d5c386db"
+    }
+   ]
+  },
+  {
+   "kind": "fcc",
+   "cube_mm": 22.0,
+   "cell_mm": 10.0,
+   "fit": false,
+   "wall_mm": 1.2,
+   "shell_mm": 0,
+   "share": 0.11,
+   "volume_cm3": 1.2,
+   "box_cm3": 10.6,
+   "triangles": 179090,
+   "pieces": 1,
+   "render": "lattices/fcc/v1/render.webp",
+   "files": [
+    {
+     "format": "stl",
+     "key": "lattices/fcc/v1/fcc-sample.stl",
+     "bytes": 8954584,
+     "sha256": "95777c506b1e0dc020552a9b7f64a5337b9dfb8871c83eb60b579bf6b739f37c"
+    },
+    {
+     "format": "3mf",
+     "key": "lattices/fcc/v1/fcc-sample.3mf",
+     "bytes": 1645364,
+     "sha256": "96b62ccbd8659a96a5bfb6eaacba85da831cab0176e5390223dc961dadaec36b"
+    },
+    {
+     "format": "glb",
+     "key": "lattices/fcc/v1/fcc-sample.glb",
+     "bytes": 4596400,
+     "sha256": "d7b2299b427b9b973ba41ae07845ba69906e32cc04a0a93d1598a69942e8ce7c"
+    }
+   ]
+  },
+  {
+   "kind": "octet",
+   "cube_mm": 22.0,
+   "cell_mm": 10.0,
+   "fit": false,
+   "wall_mm": 1.0,
+   "shell_mm": 0,
+   "share": 0.13,
+   "volume_cm3": 1.3,
+   "box_cm3": 10.6,
+   "triangles": 365158,
+   "pieces": 1,
+   "render": "lattices/octet/v1/render.webp",
+   "files": [
+    {
+     "format": "stl",
+     "key": "lattices/octet/v1/octet-sample.stl",
+     "bytes": 18257984,
+     "sha256": "f99cd3671d86aaf783cb7b5b93c2662c4f8150a8b5de13e345c2d025e0a8ab91"
+    },
+    {
+     "format": "3mf",
+     "key": "lattices/octet/v1/octet-sample.3mf",
+     "bytes": 3159638,
+     "sha256": "c3ba26583ff7a1829ed37327678f81fbbe97e22f614bd9db30efb7655ccc4d63"
+    },
+    {
+     "format": "glb",
+     "key": "lattices/octet/v1/octet-sample.glb",
+     "bytes": 9608484,
+     "sha256": "5747e8242d7d1df4f409f80ac0492538ea4d4241b30aa49e5f88e7b441ff349d"
+    }
+   ]
+  },
+  {
+   "kind": "kelvin",
+   "cube_mm": 22.0,
+   "cell_mm": 10.0,
+   "fit": false,
+   "wall_mm": 1.5,
+   "shell_mm": 0,
+   "share": 0.14,
+   "volume_cm3": 1.4,
+   "box_cm3": 10.6,
+   "triangles": 118882,
+   "pieces": 1,
+   "render": "lattices/kelvin/v1/render.webp",
+   "files": [
+    {
+     "format": "stl",
+     "key": "lattices/kelvin/v1/kelvin-sample.stl",
+     "bytes": 5944184,
+     "sha256": "77d76dce66ad967076da28e5599703ebd7274a3c94dc1e8388af8c445d812226"
+    },
+    {
+     "format": "3mf",
+     "key": "lattices/kelvin/v1/kelvin-sample.3mf",
+     "bytes": 1166784,
+     "sha256": "007d26cb64886f0a6d338f6507cf870b0bfda991c4d4a102e9ed940a9dba2736"
+    },
+    {
+     "format": "glb",
+     "key": "lattices/kelvin/v1/kelvin-sample.glb",
+     "bytes": 3100300,
+     "sha256": "017bc3d3bdec2b13569cdbbb74a00869d6fc34ca05dd4ddda189ee7c84fdfc49"
+    }
+   ]
+  }
+ ]
+}

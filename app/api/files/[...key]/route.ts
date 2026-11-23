@@ -3,6 +3,12 @@ import { FORMATS, downloadsOf, ensureDownloads } from '@/lib/downloads';
 import { getItems } from '@/lib/library';
 import { isProductionHost } from '@/lib/hosts';
 import { textureSha } from '@/lib/textures';
+import samples from '@/data/lattice-samples.json';
+
+/** SHA-256 (hex) of a lattice sample file by its R2 key (data/lattice-samples.json). */
+function latticeSha(key: string): string | undefined {
+  return (samples as { samples: { files: { key: string; sha256: string }[] }[] }).samples.flatMap((x) => x.files).find((f) => f.key === key)?.sha256;
+}
 
 const TYPES: Record<string, string> = {
   glb: 'model/gltf-binary',
@@ -24,7 +30,7 @@ const OPEN_CORS = { 'access-control-allow-origin': '*', 'access-control-allow-me
 
 /** SHA-256 of a library file (from the catalogue: downloads/<slug>/<page>/<option>/<file>), base64 for Repr-Digest. */
 function digest(key: string): string | null {
-  const tex = key.startsWith('textures/') ? textureSha(key) : undefined;
+  const tex = key.startsWith('textures/') ? textureSha(key) : key.startsWith('lattices/') ? latticeSha(key) : undefined;
   if (tex) return btoa(String.fromCharCode(...tex.match(/../g)!.map((h) => parseInt(h, 16))));
   const m = /^downloads\/([a-z0-9-]+)\/([a-z0-9_-]+)\/([a-z0-9-]+)\/[^/]+\.([a-z0-9]+)$/.exec(key);
   if (!m) return null;
@@ -65,7 +71,8 @@ async function serve(request: Request, params: Promise<{ key: string[] }>, head:
   if (!key || key.includes('..')) return new Response('Not found', { status: 404 });
 
   // textures/: the texture library — Monge's own generated surfaces, free like the models
-  const open = key.startsWith('public/') || key.startsWith('downloads/') || key.startsWith('textures/');
+  // lattices/: the lattice library's sample cubes made by Monge (STL, 3MF, GLB, renders), free like the models
+  const open = key.startsWith('public/') || key.startsWith('downloads/') || key.startsWith('textures/') || key.startsWith('lattices/');
   const file = open ? undefined : (await getItems()).flatMap((i) => i.files).find((f) => f.href === key || f.href === `/api/files/${key}`);
   const isPublic = open || file?.access === 'free';
   if (!isPublic) {
@@ -88,7 +95,7 @@ async function serve(request: Request, params: Promise<{ key: string[] }>, head:
   headers.set('accept-ranges', 'bytes');
   headers.set('cache-control', 'public, max-age=86400, stale-while-revalidate=604800');
   // the checksum comes from the catalogue; without it (unreachable) the file is still served, only without the digest
-  let d: string | null = key.startsWith('textures/') ? digest(key) : null;
+  let d: string | null = key.startsWith('textures/') || key.startsWith('lattices/') ? digest(key) : null;
   if (key.startsWith('downloads/')) {
     try {
       await ensureDownloads();
@@ -123,7 +130,7 @@ async function serve(request: Request, params: Promise<{ key: string[] }>, head:
   headers.set('content-length', String(meta.size));
   // models (downloads/) and textures (textures/) are counted; a download from a preview address or localhost is a test:
   // it goes to downloads_test with its host, never into the site's counters
-  if (save && DB && (key.startsWith('downloads/') || key.startsWith('textures/'))) {
+  if (save && DB && (key.startsWith('downloads/') || key.startsWith('textures/') || key.startsWith('lattices/'))) {
     try {
       if (isProductionHost(url.hostname)) {
         await DB.prepare("INSERT INTO downloads (key, count, last_at) VALUES (?, 1, datetime('now')) ON CONFLICT(key) DO UPDATE SET count = count + 1, last_at = excluded.last_at").bind(key).run();

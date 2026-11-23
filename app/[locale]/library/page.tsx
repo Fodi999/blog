@@ -1,11 +1,13 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { DemoBadge } from '@/components/DemoBadge';
 import { LibraryGrid } from '@/components/LibraryGrid';
 import { SectionHeading } from '@/components/sections';
 import { siteButtonVariants } from '@/components/site/Button';
 import { StandardsFamilies } from '@/components/StandardsFamilies';
 import { getDict, isLocale, localPath } from '@/lib/i18n';
+import { isDemo as latticesDemo } from '@/lib/lattices';
 import { getItems } from '@/lib/library';
 import { pageMetadata } from '@/lib/seo';
 import { fmtNum } from '@/lib/status';
@@ -78,6 +80,19 @@ export default async function LibraryPage({ params }: { params: Promise<{ locale
           <span>
             <span className="block font-display text-[20px] font-semibold text-on-ink">{t.texturesPage.title}</span>
             <span className="mt-1 block max-w-[80ch] text-[14px] text-on-ink-muted">{t.texturesPage.cardLead}</span>
+          </span>
+          <span className="font-semibold text-on-ink group-hover:text-signal">{t.library.open} →</span>
+        </Link>
+        <Link
+          href={localPath(locale, '/library/lattices')}
+          className="group mb-8 -mt-4 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-hairline-ink-strong px-5 py-4 transition-colors hover:border-signal"
+        >
+          <span>
+            <span className="flex flex-wrap items-center gap-x-3 gap-y-1 font-display text-[20px] font-semibold text-on-ink">
+              {t.latticesPage.title}
+              {latticesDemo ? <DemoBadge label={t.latticesPage.demoShort} className="font-sans" /> : null}
+            </span>
+            <span className="mt-1 block max-w-[80ch] text-[14px] text-on-ink-muted">{t.latticesPage.cardLead}</span>
           </span>
           <span className="font-semibold text-on-ink group-hover:text-signal">{t.library.open} →</span>
         </Link>
