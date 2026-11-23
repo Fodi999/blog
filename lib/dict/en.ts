@@ -342,7 +342,8 @@ export const en: Dict = {
     renders: { monge: 'Monge Render: brushed plate and cylinder', three: 'three.js — the same files as you download them', tile: '2 × 2 tiles: no seam' },
     download: 'Download',
     files: 'ZIP: normal (OpenGL), roughness, height (16-bit), material.json, MaterialX',
-    facts: { tile: 'Tile', base: 'Base colour (linear)', metal: 'Metalness', rough: 'Roughness, average', normal: 'Normal relief (RMS slope)', made: 'Made by', madeValue: 'Monge procedural generator' },
+    filesColour: 'ZIP: colour (sRGB), normal (OpenGL), roughness, height (16-bit), material.json, MaterialX',
+    facts: { tile: 'Tile', base: 'Base colour (linear)', baseAvg: 'Colour, average (linear)', metal: 'Metalness', rough: 'Roughness, average', normal: 'Normal relief (RMS slope)', made: 'Made by', madeValue: 'Monge procedural generator' },
     measured: 'Measured on generation',
     table: { res: 'Size', octaves: 'Stroke octaves', time: 'Generated in', relief: 'Height range', size: 'ZIP' },
     honestTitle: 'What these files are — and are not',
@@ -355,7 +356,7 @@ export const en: Dict = {
     licence: 'Free to use in your own work, commercial included; do not resell or redistribute the files as files.',
     licenceLink: 'Licence',
     sha: 'SHA-256',
-    soon: 'Next: bead-blasted, cast, galvanized, knurl, matte plastic, carbon-fibre look — each made by Monge, one by one.',
+    soon: 'Next: phosphated, black zinc, bright drawn steel, rebar mill scale — then the surfaces machining and 3D printing leave: turning, face milling, FDM layers. Each made by Monge, one by one.',
   },
   live: { online: 'on the site now', downloads: 'model downloads', item: 'downloaded {n} times', page: 'this size downloaded {n} times' },
   search: {

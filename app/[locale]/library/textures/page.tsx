@@ -37,7 +37,8 @@ export default async function TexturesPage({ params }: { params: Promise<{ local
                 <img src={fileUrl(tx.assets.tile)} alt="" width={960} height={622} loading="lazy" className="aspect-[3/2] w-full object-cover" />
                 <span className="block p-5">
                   <span className="block font-display text-[20px] font-semibold text-on-ink group-hover:text-signal">{tx.name}</span>
-                  <span className="mt-1 block font-mono text-[12px] text-on-ink-muted">
+                  {tx.finish ? <span className="mt-1 block text-[13.5px] leading-snug text-on-ink-muted">{tx.finish[locale]}</span> : null}
+                  <span className="mt-2 block font-mono text-[12px] text-on-ink-muted">
                     {tx.slug} · {tx.files.map((f) => f.res.toUpperCase()).join(' / ')} · {fmtBytes(tx.files[0].bytes)}–{fmtBytes(tx.files[tx.files.length - 1].bytes)}
                   </span>
                 </span>

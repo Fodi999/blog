@@ -15,6 +15,8 @@ type Shape = 'ball' | 'plate';
 type Props = {
   normal: string;
   roughness: string;
+  /** colour map (sRGB), when the colour varies; then `base` is only its average */
+  colour?: string;
   /** linear RGB */
   base: [number, number, number];
   metal: number;
@@ -25,7 +27,7 @@ type Props = {
   poster?: string;
 };
 
-export function TexturePreview({ normal, roughness, base, metal, tileMm, alt, labels, poster }: Props) {
+export function TexturePreview({ normal, roughness, colour, base, metal, tileMm, alt, labels, poster }: Props) {
   const hostRef = useRef<HTMLDivElement>(null);
   const shapeRef = useRef<(s: Shape) => void>(() => {});
   const [shape, setShape] = useState<Shape>('ball');
@@ -77,20 +79,21 @@ export function TexturePreview({ normal, roughness, base, metal, tileMm, alt, la
         });
 
         const loader = new THREE.TextureLoader();
-        const load = async (url: string) => {
+        const load = async (url: string, srgb = false) => {
           const t = await loader.loadAsync(url);
           t.wrapS = t.wrapT = THREE.RepeatWrapping;
-          t.colorSpace = THREE.NoColorSpace;
+          t.colorSpace = srgb ? THREE.SRGBColorSpace : THREE.NoColorSpace;
           t.anisotropy = renderer.capabilities.getMaxAnisotropy();
           return t;
         };
-        const [nTex, rTex] = await Promise.all([load(normal), load(roughness)]);
+        const [nTex, rTex, cTex] = await Promise.all([load(normal), load(roughness), colour ? load(colour, true) : Promise.resolve(null)]);
         if (disposed) {
           renderer.dispose();
           return;
         }
         const material = new THREE.MeshStandardMaterial({ metalness: metal, roughness: 1, normalMap: nTex, roughnessMap: rTex });
-        material.color.setRGB(base[0], base[1], base[2], THREE.LinearSRGBColorSpace);
+        if (cTex) material.map = cTex;
+        else material.color.setRGB(base[0], base[1], base[2], THREE.LinearSRGBColorSpace);
 
         // metres; repeats so one tile = tileMm on the surface
         const R = 0.025;
@@ -114,7 +117,7 @@ export function TexturePreview({ normal, roughness, base, metal, tileMm, alt, la
           ball.visible = isBall;
           plate.visible = !isBall;
           const rep = isBall ? [(2 * Math.PI * R) / tile, (Math.PI * R) / tile] : [2, 2];
-          for (const t of [nTex, rTex]) t.repeat.set(rep[0], rep[1]);
+          for (const t of [nTex, rTex, cTex]) t?.repeat.set(rep[0], rep[1]);
           const d = isBall ? 0.2 : 0.26;
           const pitch = isBall ? 0.32 : 0.68;
           camera.position.set(0, Math.sin(pitch) * d, Math.cos(pitch) * d);
@@ -160,6 +163,7 @@ export function TexturePreview({ normal, roughness, base, metal, tileMm, alt, la
           material.dispose();
           nTex.dispose();
           rTex.dispose();
+          cTex?.dispose();
           envTex.dispose();
           pmrem.dispose();
           renderer.dispose();
@@ -186,7 +190,7 @@ export function TexturePreview({ normal, roughness, base, metal, tileMm, alt, la
       lazy.disconnect();
       cleanup?.();
     };
-  }, [normal, roughness, base, metal, tileMm, alt]);
+  }, [normal, roughness, colour, base, metal, tileMm, alt]);
 
   const pick = (s: Shape) => {
     setShape(s);

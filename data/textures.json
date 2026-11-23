@@ -40,6 +40,7 @@
     "relief_um": 20.3
    }
   ],
+  "colour": false,
   "name": "Monge brushed steel",
   "category": "metal",
   "tile_mm": 40.0,
@@ -57,6 +58,606 @@
    "render_monge": "textures/monge-brushed-steel/v2/render-monge.webp",
    "render_three": "textures/monge-brushed-steel/v2/render-three.webp",
    "tile": "textures/monge-brushed-steel/v2/tile.webp"
+  }
+ },
+ {
+  "slug": "monge-zinc-plated",
+  "version": "v1",
+  "files": [
+   {
+    "res": "1k",
+    "px": 1024,
+    "key": "textures/monge-zinc-plated/v1/monge-zinc-plated-1k.zip",
+    "bytes": 3273315,
+    "sha256": "fb9aa18b2ba16a52544b2d4d2f67066d7793e6393a5eef223d5d666835dfdcf2",
+    "octaves": 3,
+    "generate_ms": 134,
+    "write_ms": 17,
+    "rough_avg": 0.3,
+    "relief_um": 5.7
+   },
+   {
+    "res": "2k",
+    "px": 2048,
+    "key": "textures/monge-zinc-plated/v1/monge-zinc-plated-2k.zip",
+    "bytes": 11959392,
+    "sha256": "686aa564b431943f03c4a1d9bb0752f932940fef723423645b0a2e4f919b2ef6",
+    "octaves": 4,
+    "generate_ms": 449,
+    "write_ms": 66,
+    "rough_avg": 0.3,
+    "relief_um": 5.9
+   },
+   {
+    "res": "4k",
+    "px": 4096,
+    "key": "textures/monge-zinc-plated/v1/monge-zinc-plated-4k.zip",
+    "bytes": 44786186,
+    "sha256": "eadde53a96df8377dfd7f4c2b8a6e4b8a555d47a126c6626b9eb6237432ddb5f",
+    "octaves": 5,
+    "generate_ms": 1857,
+    "write_ms": 269,
+    "rough_avg": 0.3,
+    "relief_um": 6.0
+   }
+  ],
+  "finish": {
+   "en": "The look of electroplated zinc with a clear (blue) passivation, ISO 4042 — the usual finish of steel bolts, nuts and washers.",
+   "pl": "Wygląd cynku galwanicznego z przezroczystą (niebieską) pasywacją, ISO 4042 — zwykłe wykończenie stalowych śrub, nakrętek i podkładek.",
+   "ru": "Вид гальванического цинка с прозрачной (голубой) пассивацией, ISO 4042 — обычное покрытие стальных болтов, гаек и шайб."
+  },
+  "colour": true,
+  "name": "Monge zinc plated, clear passivation",
+  "category": "metal",
+  "tile_mm": 40.0,
+  "base": [
+   0.6600000262260437,
+   0.75,
+   0.8299999833106995
+  ],
+  "metal": 1.0,
+  "rough_avg": 0.3,
+  "normal_rms": 0.03,
+  "assets": {
+   "normal_gl": "textures/monge-zinc-plated/v1/live/normal_gl.png",
+   "roughness": "textures/monge-zinc-plated/v1/live/roughness.png",
+   "render_monge": "textures/monge-zinc-plated/v1/render-monge.webp",
+   "render_three": "textures/monge-zinc-plated/v1/render-three.webp",
+   "tile": "textures/monge-zinc-plated/v1/tile.webp",
+   "color": "textures/monge-zinc-plated/v1/live/color.png"
+  }
+ },
+ {
+  "slug": "monge-stainless-passivated",
+  "version": "v1",
+  "files": [
+   {
+    "res": "1k",
+    "px": 1024,
+    "key": "textures/monge-stainless-passivated/v1/monge-stainless-passivated-1k.zip",
+    "bytes": 3262940,
+    "sha256": "d7e93872f9be4b00f479c6908bd5b3bda43c6e6beb0589578d77d10136aa7e8b",
+    "octaves": 3,
+    "generate_ms": 51,
+    "write_ms": 17,
+    "rough_avg": 0.27,
+    "relief_um": 6.3
+   },
+   {
+    "res": "2k",
+    "px": 2048,
+    "key": "textures/monge-stainless-passivated/v1/monge-stainless-passivated-2k.zip",
+    "bytes": 12131041,
+    "sha256": "13edca2a14a66b1bec4ce4e688e1ea7d7ccd41ff607c83d37f6ad73c62291879",
+    "octaves": 4,
+    "generate_ms": 124,
+    "write_ms": 57,
+    "rough_avg": 0.27,
+    "relief_um": 6.7
+   },
+   {
+    "res": "4k",
+    "px": 4096,
+    "key": "textures/monge-stainless-passivated/v1/monge-stainless-passivated-4k.zip",
+    "bytes": 45923973,
+    "sha256": "7f88df742a3f62e0246cd90622ec25b4d7ccbae86cd6deded481e1bd67291927",
+    "octaves": 5,
+    "generate_ms": 521,
+    "write_ms": 273,
+    "rough_avg": 0.27,
+    "relief_um": 6.9
+   }
+  ],
+  "finish": {
+   "en": "The look of stainless A2 / A4 fasteners (ISO 3506) after passivation (ISO 16048): an even light satin, not a polished mirror.",
+   "pl": "Wygląd elementów złącznych ze stali nierdzewnej A2 / A4 (ISO 3506) po pasywacji (ISO 16048): równa jasna satyna, nie polerowane lustro.",
+   "ru": "Вид крепежа из нержавейки A2 / A4 (ISO 3506) после пассивации (ISO 16048): ровный светлый сатин, а не полированное зеркало."
+  },
+  "colour": false,
+  "name": "Monge stainless A2 / A4, passivated",
+  "category": "metal",
+  "tile_mm": 40.0,
+  "base": [
+   0.6499999761581421,
+   0.6299999952316284,
+   0.6000000238418579
+  ],
+  "metal": 1.0,
+  "rough_avg": 0.27,
+  "normal_rms": 0.03,
+  "assets": {
+   "normal_gl": "textures/monge-stainless-passivated/v1/live/normal_gl.png",
+   "roughness": "textures/monge-stainless-passivated/v1/live/roughness.png",
+   "render_monge": "textures/monge-stainless-passivated/v1/render-monge.webp",
+   "render_three": "textures/monge-stainless-passivated/v1/render-three.webp",
+   "tile": "textures/monge-stainless-passivated/v1/tile.webp"
+  }
+ },
+ {
+  "slug": "monge-black-oxide",
+  "version": "v1",
+  "files": [
+   {
+    "res": "1k",
+    "px": 1024,
+    "key": "textures/monge-black-oxide/v1/monge-black-oxide-1k.zip",
+    "bytes": 3346755,
+    "sha256": "9f54f55da883c6e29df4d365703db9a59c6e4324ced97e54775d4f3633dcb8a8",
+    "octaves": 3,
+    "generate_ms": 136,
+    "write_ms": 18,
+    "rough_avg": 0.32,
+    "relief_um": 6.3
+   },
+   {
+    "res": "2k",
+    "px": 2048,
+    "key": "textures/monge-black-oxide/v1/monge-black-oxide-2k.zip",
+    "bytes": 12382777,
+    "sha256": "93e6ec647d254c20442d1cc0eab9527e28c1603fa8c5235817219fbfff2cd7ef",
+    "octaves": 4,
+    "generate_ms": 456,
+    "write_ms": 66,
+    "rough_avg": 0.32,
+    "relief_um": 6.3
+   },
+   {
+    "res": "4k",
+    "px": 4096,
+    "key": "textures/monge-black-oxide/v1/monge-black-oxide-4k.zip",
+    "bytes": 46537917,
+    "sha256": "adbc311826c54a2410b86bd7fb9883ebbe21d2c56807054cc899fffe64a5d7ec",
+    "octaves": 5,
+    "generate_ms": 1896,
+    "write_ms": 284,
+    "rough_avg": 0.32,
+    "relief_um": 6.6
+   }
+  ],
+  "finish": {
+   "en": "The look of black oxide with oil — the usual finish of socket head cap screws ISO 4762 in class 12.9: deep black satin, the oil a little glossier in patches.",
+   "pl": "Wygląd czernienia z olejem — zwykłe wykończenie śrub z łbem walcowym ISO 4762 klasy 12.9: głęboka czarna satyna, olej miejscami nieco bardziej błyszczący.",
+   "ru": "Вид чернения с маслом — обычное покрытие винтов с внутренним шестигранником ISO 4762 класса 12.9: глубокий чёрный сатин, масло местами чуть блестит."
+  },
+  "colour": true,
+  "name": "Monge black oxide, oiled",
+  "category": "metal",
+  "tile_mm": 40.0,
+  "base": [
+   0.08500000089406967,
+   0.08500000089406967,
+   0.09200000017881393
+  ],
+  "metal": 1.0,
+  "rough_avg": 0.32,
+  "normal_rms": 0.03,
+  "assets": {
+   "normal_gl": "textures/monge-black-oxide/v1/live/normal_gl.png",
+   "roughness": "textures/monge-black-oxide/v1/live/roughness.png",
+   "render_monge": "textures/monge-black-oxide/v1/render-monge.webp",
+   "render_three": "textures/monge-black-oxide/v1/render-three.webp",
+   "tile": "textures/monge-black-oxide/v1/tile.webp",
+   "color": "textures/monge-black-oxide/v1/live/color.png"
+  }
+ },
+ {
+  "slug": "monge-steel-plain",
+  "version": "v1",
+  "files": [
+   {
+    "res": "1k",
+    "px": 1024,
+    "key": "textures/monge-steel-plain/v1/monge-steel-plain-1k.zip",
+    "bytes": 3414881,
+    "sha256": "a6f772726f92b956f25803064ac1db75a1a4fe3b94e43761e072e108cbf837bf",
+    "octaves": 3,
+    "generate_ms": 135,
+    "write_ms": 18,
+    "rough_avg": 0.4,
+    "relief_um": 6.1
+   },
+   {
+    "res": "2k",
+    "px": 2048,
+    "key": "textures/monge-steel-plain/v1/monge-steel-plain-2k.zip",
+    "bytes": 12605439,
+    "sha256": "3c0dfe14ba9ff52879045de7ac03cde14c11f0632740f623ba3fb13fea5915b6",
+    "octaves": 4,
+    "generate_ms": 449,
+    "write_ms": 66,
+    "rough_avg": 0.4,
+    "relief_um": 6.3
+   },
+   {
+    "res": "4k",
+    "px": 4096,
+    "key": "textures/monge-steel-plain/v1/monge-steel-plain-4k.zip",
+    "bytes": 47382677,
+    "sha256": "f89608b949d863776d96c8c71c2b1c2178e2f19efcb77c3747ff3693cba936c8",
+    "octaves": 5,
+    "generate_ms": 1849,
+    "write_ms": 271,
+    "rough_avg": 0.4,
+    "relief_um": 6.5
+   }
+  ],
+  "finish": {
+   "en": "The look of plain steel «as processed», oiled — bolts 8.8 / 10.9 with no coating, KM lock nuts: dark grey heat-treated steel, a faint temper cast, a film of oil.",
+   "pl": "Wygląd stali bez powłoki, «po obróbce», naoliwionej — śruby 8.8 / 10.9 bez powłoki, nakrętki KM: ciemnoszara stal ulepszana, lekki nalot odpuszczania, warstwa oleju.",
+   "ru": "Вид стали без покрытия, «как после обработки», промасленной — болты 8.8 / 10.9 без покрытия, гайки KM: тёмно-серая термообработанная сталь, лёгкий цвет побежалости, плёнка масла."
+  },
+  "colour": true,
+  "name": "Monge plain steel, oiled",
+  "category": "metal",
+  "tile_mm": 40.0,
+  "base": [
+   0.2199999988079071,
+   0.2199999988079071,
+   0.23000000417232513
+  ],
+  "metal": 1.0,
+  "rough_avg": 0.4,
+  "normal_rms": 0.035,
+  "assets": {
+   "normal_gl": "textures/monge-steel-plain/v1/live/normal_gl.png",
+   "roughness": "textures/monge-steel-plain/v1/live/roughness.png",
+   "render_monge": "textures/monge-steel-plain/v1/render-monge.webp",
+   "render_three": "textures/monge-steel-plain/v1/render-three.webp",
+   "tile": "textures/monge-steel-plain/v1/tile.webp",
+   "color": "textures/monge-steel-plain/v1/live/color.png"
+  }
+ },
+ {
+  "slug": "monge-hot-dip-galvanized",
+  "version": "v1",
+  "files": [
+   {
+    "res": "1k",
+    "px": 1024,
+    "key": "textures/monge-hot-dip-galvanized/v1/monge-hot-dip-galvanized-1k.zip",
+    "bytes": 3299908,
+    "sha256": "aaabeca659387ac651caf05da3f8c17f7a2819cf9d1cfce51e02e72225003fc8",
+    "octaves": 4,
+    "generate_ms": 139,
+    "write_ms": 18,
+    "rough_avg": 0.55,
+    "relief_um": 22.0
+   },
+   {
+    "res": "2k",
+    "px": 2048,
+    "key": "textures/monge-hot-dip-galvanized/v1/monge-hot-dip-galvanized-2k.zip",
+    "bytes": 12411303,
+    "sha256": "c5802fd3d4266580eb45bcfba0a3098d17d7217179d519a729f06bbf51f2b46d",
+    "octaves": 5,
+    "generate_ms": 461,
+    "write_ms": 70,
+    "rough_avg": 0.55,
+    "relief_um": 22.3
+   },
+   {
+    "res": "4k",
+    "px": 4096,
+    "key": "textures/monge-hot-dip-galvanized/v1/monge-hot-dip-galvanized-4k.zip",
+    "bytes": 47197478,
+    "sha256": "28d9204046d6fe208dfb01c27facdf0b871d2838220e27685ba7e14bbd55f103",
+    "octaves": 6,
+    "generate_ms": 1881,
+    "write_ms": 331,
+    "rough_avg": 0.55,
+    "relief_um": 22.7
+   }
+  ],
+  "finish": {
+   "en": "The look of hot-dip galvanizing (ISO 10684): a thick zinc coat — dull, grey, slightly rough and mottled. For outdoor and structural bolts and nuts.",
+   "pl": "Wygląd cynkowania ogniowego (ISO 10684): gruba powłoka cynku — matowa, szara, lekko szorstka i nierówna. Do śrub i nakrętek zewnętrznych i konstrukcyjnych.",
+   "ru": "Вид горячего цинкования (ISO 10684): толстый слой цинка — тусклый, серый, слегка шершавый и пятнистый. Для наружных и строительных болтов и гаек."
+  },
+  "colour": true,
+  "name": "Monge hot-dip galvanized",
+  "category": "metal",
+  "tile_mm": 40.0,
+  "base": [
+   0.41999998688697815,
+   0.4399999976158142,
+   0.46000000834465027
+  ],
+  "metal": 1.0,
+  "rough_avg": 0.55,
+  "normal_rms": 0.05,
+  "assets": {
+   "normal_gl": "textures/monge-hot-dip-galvanized/v1/live/normal_gl.png",
+   "roughness": "textures/monge-hot-dip-galvanized/v1/live/roughness.png",
+   "render_monge": "textures/monge-hot-dip-galvanized/v1/render-monge.webp",
+   "render_three": "textures/monge-hot-dip-galvanized/v1/render-three.webp",
+   "tile": "textures/monge-hot-dip-galvanized/v1/tile.webp",
+   "color": "textures/monge-hot-dip-galvanized/v1/live/color.png"
+  }
+ },
+ {
+  "slug": "monge-zinc-flake",
+  "version": "v1",
+  "files": [
+   {
+    "res": "1k",
+    "px": 1024,
+    "key": "textures/monge-zinc-flake/v1/monge-zinc-flake-1k.zip",
+    "bytes": 3724376,
+    "sha256": "ceeb933ac02c6cae5b95cbd72be8e97306dc82cfee67035073dc6daa73967e43",
+    "octaves": 2,
+    "generate_ms": 132,
+    "write_ms": 24,
+    "rough_avg": 0.52,
+    "relief_um": 5.6
+   },
+   {
+    "res": "2k",
+    "px": 2048,
+    "key": "textures/monge-zinc-flake/v1/monge-zinc-flake-2k.zip",
+    "bytes": 14246810,
+    "sha256": "0fb69ab66f362867ab7c5f12cece53ddcb3e276740a0a609a3e5a8aded2a576c",
+    "octaves": 3,
+    "generate_ms": 443,
+    "write_ms": 71,
+    "rough_avg": 0.52,
+    "relief_um": 6.5
+   },
+   {
+    "res": "4k",
+    "px": 4096,
+    "key": "textures/monge-zinc-flake/v1/monge-zinc-flake-4k.zip",
+    "bytes": 53413603,
+    "sha256": "6663dfc1f50089084774b77bed4f3c0c1bb19519bba1399598e09b35ff8dfbf3",
+    "octaves": 4,
+    "generate_ms": 1809,
+    "write_ms": 299,
+    "rough_avg": 0.52,
+    "relief_um": 7.2
+   }
+  ],
+  "finish": {
+   "en": "The look of a silver zinc flake coating (ISO 10683): even, matte, silvery grey with a fine sparkle — common on 10.9 and 12.9 bolts.",
+   "pl": "Wygląd srebrnej powłoki płatkowej cynkowej (ISO 10683): równa, matowa, srebrzystoszara z drobnym połyskiem — częsta na śrubach 10.9 i 12.9.",
+   "ru": "Вид серебристого цинк-ламельного покрытия (ISO 10683): ровный матовый серебристо-серый с мелкими искрами — частое на болтах 10.9 и 12.9."
+  },
+  "colour": true,
+  "name": "Monge zinc flake, silver",
+  "category": "metal",
+  "tile_mm": 40.0,
+  "base": [
+   0.5799999833106995,
+   0.6000000238418579,
+   0.6200000047683716
+  ],
+  "metal": 1.0,
+  "rough_avg": 0.52,
+  "normal_rms": 0.045,
+  "assets": {
+   "normal_gl": "textures/monge-zinc-flake/v1/live/normal_gl.png",
+   "roughness": "textures/monge-zinc-flake/v1/live/roughness.png",
+   "render_monge": "textures/monge-zinc-flake/v1/render-monge.webp",
+   "render_three": "textures/monge-zinc-flake/v1/render-three.webp",
+   "tile": "textures/monge-zinc-flake/v1/tile.webp",
+   "color": "textures/monge-zinc-flake/v1/live/color.png"
+  }
+ },
+ {
+  "slug": "monge-zinc-yellow",
+  "version": "v1",
+  "files": [
+   {
+    "res": "1k",
+    "px": 1024,
+    "key": "textures/monge-zinc-yellow/v1/monge-zinc-yellow-1k.zip",
+    "bytes": 3295347,
+    "sha256": "07700b67726d2a68534ed5c3f8c01acf08574a2f02138629981b47e56d960478",
+    "octaves": 3,
+    "generate_ms": 159,
+    "write_ms": 24,
+    "rough_avg": 0.28,
+    "relief_um": 5.8
+   },
+   {
+    "res": "2k",
+    "px": 2048,
+    "key": "textures/monge-zinc-yellow/v1/monge-zinc-yellow-2k.zip",
+    "bytes": 12013010,
+    "sha256": "252e2ab12e650adc0ffbee5488c6d856e630f51d3592bfa21b70801aa10bb801",
+    "octaves": 4,
+    "generate_ms": 602,
+    "write_ms": 107,
+    "rough_avg": 0.28,
+    "relief_um": 5.9
+   },
+   {
+    "res": "4k",
+    "px": 4096,
+    "key": "textures/monge-zinc-yellow/v1/monge-zinc-yellow-4k.zip",
+    "bytes": 44854712,
+    "sha256": "139daaeca7ad330b350fc3f5580d5f22070434aa5ed7c9449d3f616389d262a3",
+    "octaves": 5,
+    "generate_ms": 2349,
+    "write_ms": 307,
+    "rough_avg": 0.28,
+    "relief_um": 6.1
+   }
+  ],
+  "finish": {
+   "en": "The look of zinc plating with an iridescent («yellow») passivation, ISO 4042: golden, with green and red-violet in the film here and there.",
+   "pl": "Wygląd cynku galwanicznego z opalizującą («żółtą») pasywacją, ISO 4042: złocisty, z zielenią i czerwono-fioletowym w warstwie tu i ówdzie.",
+   "ru": "Вид гальванического цинка с радужной («жёлтой») пассивацией, ISO 4042: золотистый, местами с зелёным и красно-фиолетовым отливом плёнки."
+  },
+  "colour": true,
+  "name": "Monge zinc plated, iridescent passivation",
+  "category": "metal",
+  "tile_mm": 40.0,
+  "base": [
+   0.8399999737739563,
+   0.699999988079071,
+   0.30000001192092896
+  ],
+  "metal": 1.0,
+  "rough_avg": 0.28,
+  "normal_rms": 0.03,
+  "assets": {
+   "normal_gl": "textures/monge-zinc-yellow/v1/live/normal_gl.png",
+   "roughness": "textures/monge-zinc-yellow/v1/live/roughness.png",
+   "render_monge": "textures/monge-zinc-yellow/v1/render-monge.webp",
+   "render_three": "textures/monge-zinc-yellow/v1/render-three.webp",
+   "tile": "textures/monge-zinc-yellow/v1/tile.webp",
+   "color": "textures/monge-zinc-yellow/v1/live/color.png"
+  }
+ },
+ {
+  "slug": "monge-stainless-bead-blasted",
+  "version": "v1",
+  "files": [
+   {
+    "res": "1k",
+    "px": 1024,
+    "key": "textures/monge-stainless-bead-blasted/v1/monge-stainless-bead-blasted-1k.zip",
+    "bytes": 3766098,
+    "sha256": "244bb55badecfb43ad3889991d3e66ed88f3ac59d4793c4aaf10b98e7316eae9",
+    "octaves": 2,
+    "generate_ms": 47,
+    "write_ms": 19,
+    "rough_avg": 0.48,
+    "relief_um": 11.1
+   },
+   {
+    "res": "2k",
+    "px": 2048,
+    "key": "textures/monge-stainless-bead-blasted/v1/monge-stainless-bead-blasted-2k.zip",
+    "bytes": 14529275,
+    "sha256": "96d0597679e07fcf949e84c6fd112b5c8f503cb7096df11fc8e06739f34bc718",
+    "octaves": 3,
+    "generate_ms": 111,
+    "write_ms": 68,
+    "rough_avg": 0.48,
+    "relief_um": 12.9
+   },
+   {
+    "res": "4k",
+    "px": 4096,
+    "key": "textures/monge-stainless-bead-blasted/v1/monge-stainless-bead-blasted-4k.zip",
+    "bytes": 55567108,
+    "sha256": "56e00b26da4f34d9e39ee9812159d1d06d6ef0bb86d09e77726d00992e580bbc",
+    "octaves": 4,
+    "generate_ms": 473,
+    "write_ms": 217,
+    "rough_avg": 0.48,
+    "relief_um": 14.2
+   }
+  ],
+  "finish": {
+   "en": "The look of bead-blasted stainless steel: an even fine matte satin with no direction (lay P of ISO 21920-1).",
+   "pl": "Wygląd stali nierdzewnej po piaskowaniu: równa drobna matowa satyna bez kierunku (układ P wg ISO 21920-1).",
+   "ru": "Вид нержавейки после пескоструя: ровный мелкий матовый сатин без направления (знак P по ISO 21920-1)."
+  },
+  "colour": false,
+  "name": "Monge bead-blasted stainless",
+  "category": "metal",
+  "tile_mm": 40.0,
+  "base": [
+   0.6200000047683716,
+   0.6000000238418579,
+   0.5699999928474426
+  ],
+  "metal": 1.0,
+  "rough_avg": 0.48,
+  "normal_rms": 0.06,
+  "assets": {
+   "normal_gl": "textures/monge-stainless-bead-blasted/v1/live/normal_gl.png",
+   "roughness": "textures/monge-stainless-bead-blasted/v1/live/roughness.png",
+   "render_monge": "textures/monge-stainless-bead-blasted/v1/render-monge.webp",
+   "render_three": "textures/monge-stainless-bead-blasted/v1/render-three.webp",
+   "tile": "textures/monge-stainless-bead-blasted/v1/tile.webp"
+  }
+ },
+ {
+  "slug": "monge-bearing-ground",
+  "version": "v1",
+  "files": [
+   {
+    "res": "1k",
+    "px": 1024,
+    "key": "textures/monge-bearing-ground/v1/monge-bearing-ground-1k.zip",
+    "bytes": 997888,
+    "sha256": "e180bdd87b6d87b8abb938c779b9c1d5d0968f778675966043c8cf10c9f895e3",
+    "octaves": 1,
+    "generate_ms": 38,
+    "write_ms": 15,
+    "rough_avg": 0.2,
+    "relief_um": 4.2
+   },
+   {
+    "res": "2k",
+    "px": 2048,
+    "key": "textures/monge-bearing-ground/v1/monge-bearing-ground-2k.zip",
+    "bytes": 2285549,
+    "sha256": "689bf625ced4e0cef0ee5a1cc882915a7de42826392b16c918e33dd001dc683b",
+    "octaves": 2,
+    "generate_ms": 104,
+    "write_ms": 38,
+    "rough_avg": 0.2,
+    "relief_um": 5.1
+   },
+   {
+    "res": "4k",
+    "px": 4096,
+    "key": "textures/monge-bearing-ground/v1/monge-bearing-ground-4k.zip",
+    "bytes": 5484552,
+    "sha256": "48c008e070b824556e5ef359e1103c4f8a1bf76cdb750c093e9063b45f70f904",
+    "octaves": 3,
+    "generate_ms": 481,
+    "write_ms": 147,
+    "rough_avg": 0.2,
+    "relief_um": 6.2
+   }
+  ],
+  "finish": {
+   "en": "The look of ground bearing steel 100Cr6 — the rings of rolling bearings: very fine parallel grinding marks, bright (lay = of ISO 21920-1).",
+   "pl": "Wygląd szlifowanej stali łożyskowej 100Cr6 — pierścienie łożysk tocznych: bardzo drobne równoległe rysy szlifowania, jasne (układ = wg ISO 21920-1).",
+   "ru": "Вид шлифованной подшипниковой стали 100Cr6 — кольца подшипников качения: очень тонкие параллельные риски шлифования, светлые (знак = по ISO 21920-1)."
+  },
+  "colour": false,
+  "name": "Monge ground bearing steel",
+  "category": "metal",
+  "tile_mm": 20.0,
+  "base": [
+   0.6000000238418579,
+   0.6000000238418579,
+   0.6000000238418579
+  ],
+  "metal": 1.0,
+  "rough_avg": 0.2,
+  "normal_rms": 0.03,
+  "assets": {
+   "normal_gl": "textures/monge-bearing-ground/v1/live/normal_gl.png",
+   "roughness": "textures/monge-bearing-ground/v1/live/roughness.png",
+   "render_monge": "textures/monge-bearing-ground/v1/render-monge.webp",
+   "render_three": "textures/monge-bearing-ground/v1/render-three.webp",
+   "tile": "textures/monge-bearing-ground/v1/tile.webp"
   }
  }
 ]

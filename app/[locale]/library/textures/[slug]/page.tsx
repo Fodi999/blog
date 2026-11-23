@@ -33,7 +33,7 @@ export default async function TexturePage({ params }: { params: Promise<{ locale
   const num = (v: number, d = 2) => v.toLocaleString(locale, { minimumFractionDigits: d, maximumFractionDigits: d });
   const facts: [string, string][] = [
     [p.facts.tile, `${num(tx.tile_mm, 0)} × ${num(tx.tile_mm, 0)} mm`],
-    [p.facts.base, tx.base.map((c) => num(c)).join(' · ')],
+    [tx.colour ? p.facts.baseAvg : p.facts.base, tx.base.map((c) => num(c)).join(' · ')],
     [p.facts.metal, num(tx.metal, 1)],
     [p.facts.rough, num(tx.rough_avg)],
     [p.facts.normal, num(tx.normal_rms)],
@@ -52,6 +52,7 @@ export default async function TexturePage({ params }: { params: Promise<{ locale
             <Eyebrow>{tx.slug}</Eyebrow>
           </div>
           <h1 className="mt-3 font-display text-[clamp(36px,5vw,64px)] leading-[1.02] font-semibold text-on-ink">{tx.name}</h1>
+          {tx.finish ? <p className="mt-4 max-w-[70ch] text-[17px] leading-relaxed text-on-ink-muted">{tx.finish[locale]}</p> : null}
         </div>
       </section>
 
@@ -60,6 +61,7 @@ export default async function TexturePage({ params }: { params: Promise<{ locale
           <TexturePreview
             normal={fileUrl(tx.assets.normal_gl)}
             roughness={fileUrl(tx.assets.roughness)}
+            colour={tx.assets.color ? fileUrl(tx.assets.color) : undefined}
             base={tx.base}
             metal={tx.metal}
             tileMm={tx.tile_mm}
@@ -72,7 +74,7 @@ export default async function TexturePage({ params }: { params: Promise<{ locale
 
         <div>
           <h2 className="font-display text-[24px] font-semibold text-on-ink">{p.download}</h2>
-          <p className="mt-1 text-[13.5px] text-on-ink-muted">{p.files}</p>
+          <p className="mt-1 text-[13.5px] text-on-ink-muted">{tx.colour ? p.filesColour : p.files}</p>
           <ul className="mt-5 grid gap-3">
             {tx.files.map((f) => (
               <li key={f.res} className="rounded-xl border border-hairline-ink-strong bg-ink-2/60 p-4">

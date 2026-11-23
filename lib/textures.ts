@@ -27,8 +27,12 @@ export type Texture = {
   metal: number;
   rough_avg: number;
   normal_rms: number;
+  /** a colour map (the colour varies — a passivation's tint); its average is `base` */
+  colour?: boolean;
+  /** what finish it shows — a look, never a claim of conformity */
+  finish?: { en: string; pl: string; ru: string };
   files: TextureFile[];
-  assets: { normal_gl: string; roughness: string; render_monge: string; render_three: string; tile: string };
+  assets: { normal_gl: string; roughness: string; render_monge: string; render_three: string; tile: string; color?: string };
 };
 
 export const textures = data as Texture[];

@@ -342,7 +342,8 @@ export const pl: Dict = {
     renders: { monge: 'Monge Render: szlifowana płyta i walec', three: 'three.js — te same pliki, które pobierasz', tile: '2 × 2 kafle: bez szwu' },
     download: 'Pobierz',
     files: 'ZIP: normalne (OpenGL), chropowatość, wysokość (16 bit), material.json, MaterialX',
-    facts: { tile: 'Kafel', base: 'Kolor bazowy (liniowy)', metal: 'Metaliczność', rough: 'Chropowatość, średnia', normal: 'Relief normalnych (RMS nachylenia)', made: 'Wykonane', madeValue: 'generator proceduralny Monge' },
+    filesColour: 'ZIP: kolor (sRGB), normalne (OpenGL), chropowatość, wysokość (16 bit), material.json, MaterialX',
+    facts: { tile: 'Kafel', base: 'Kolor bazowy (liniowy)', baseAvg: 'Kolor, średni (liniowy)', metal: 'Metaliczność', rough: 'Chropowatość, średnia', normal: 'Relief normalnych (RMS nachylenia)', made: 'Wykonane', madeValue: 'generator proceduralny Monge' },
     measured: 'Zmierzone przy generowaniu',
     table: { res: 'Rozmiar', octaves: 'Oktawy rys', time: 'Czas generowania', relief: 'Zakres wysokości', size: 'ZIP' },
     honestTitle: 'Czym są te pliki — a czym nie',
@@ -355,7 +356,7 @@ export const pl: Dict = {
     licence: 'Za darmo do własnych prac, także komercyjnych; nie wolno odsprzedawać ani rozpowszechniać plików jako plików.',
     licenceLink: 'Licencja',
     sha: 'SHA-256',
-    soon: 'Dalej: piaskowana, odlew, ocynk, radełko, matowy plastik, wygląd włókna węglowego — każda z generatora Monge, po kolei.',
+    soon: 'Dalej: fosforanowanie, cynk czarny, stal ciągniona, zgorzelina prętów zbrojeniowych — potem powierzchnie po obróbce i druku 3D: toczenie, frezowanie czołowe, warstwy FDM. Każda z generatora Monge, po kolei.',
   },
   live: { online: 'teraz na stronie', downloads: 'pobrań modeli', item: 'pobrano {n} razy', page: 'ten rozmiar pobrano {n} razy' },
   search: {
