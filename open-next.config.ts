@@ -1,6 +1,7 @@
 import { defineCloudflareConfig, getCloudflareContext } from "@opennextjs/cloudflare";
 import r2IncrementalCache from "@opennextjs/cloudflare/overrides/incremental-cache/r2-incremental-cache";
 import { withRegionalCache } from "@opennextjs/cloudflare/overrides/incremental-cache/regional-cache";
+import memoryQueue from "@opennextjs/cloudflare/overrides/queue/memory-queue";
 import type { IncrementalCache } from "@opennextjs/aws/types/overrides.js";
 
 // Rendered pages live in R2; each Cloudflare location keeps the ones it served in its own cache (long-lived:
@@ -31,6 +32,10 @@ const incrementalCache: IncrementalCache = {
 export default {
   ...defineCloudflareConfig({
     incrementalCache,
+    // a page past its revalidate time is served and rebuilt in the background through WORKER_SELF_REFERENCE. Was:
+    // no queue (OpenNext's "dummy") — once such a page fell out of the regional cache, every request to it failed
+    // with «FatalError: Dummy queue is not implemented» (500 on /en, /pl, /ru and the library, 2026-11-23)
+    queue: memoryQueue,
     // a cached page is answered before Next's routing runs
     enableCacheInterception: true,
   }),
